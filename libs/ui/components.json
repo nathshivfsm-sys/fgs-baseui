@@ -1,0 +1,17 @@
+{
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "css": "src/styles.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@cms/ui/components",
+    "utils": "@cms/ui/lib/cn",
+    "ui": "@cms/ui/components/ui",
+    "lib": "@cms/ui/lib",
+    "hooks": "@cms/ui/hooks"
+  }
+}

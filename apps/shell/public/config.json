@@ -1,0 +1,13 @@
+{
+  "environment": "development",
+  "remotes": {
+    "workorder": {
+      "name": "workorder",
+      "entry": "http://localhost:5101/remoteEntry.js"
+    },
+    "lead": {
+      "name": "lead",
+      "entry": "http://localhost:5102/remoteEntry.js"
+    }
+  }
+}

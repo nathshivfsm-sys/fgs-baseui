@@ -1,0 +1,63 @@
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# compiled output
+/dist
+**/dist
+/tmp
+/out-tsc
+*.tsbuildinfo
+
+# dependencies
+node_modules
+
+# Nx and Vite caches
+.nx/cache
+.nx/workspace-data
+.nx/migrate-runs
+**/.vite
+
+# local environment files
+.env
+.env.*
+!.env.example
+*.local
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.verdaccio/
+.vscode/
+.nx/
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Local AI tool state
+.claude/worktrees
+.claude/settings.local.json
