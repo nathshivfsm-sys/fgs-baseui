@@ -5,6 +5,33 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "storybook dev --port 6006 --config-dir .storybook"
+      }
+    },
+    "build-storybook": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "outputs": ["{workspaceRoot}/dist/storybook/ui"],
+      "options": {
+        "command": "storybook build --config-dir .storybook --output-dir dist/storybook/ui"
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run --project storybook"
+      }
+    },
+    "typecheck-storybook": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit --project .storybook/tsconfig.json"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"

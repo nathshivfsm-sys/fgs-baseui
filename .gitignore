@@ -65,3 +65,4 @@ Thumbs.db
 .verdaccio/
 .nx/
 .nvmrc
+.storybook/dist

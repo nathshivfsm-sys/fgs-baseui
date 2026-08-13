@@ -10,7 +10,15 @@ module.exports = withNx(
     compiler: 'babel',
     external: ['react', 'react-dom', 'react/jsx-runtime'],
     format: ['esm'],
-    assets: [{ input: '.', output: '.', glob: 'README.md' }],
+    assets: [
+      { input: __dirname, output: '.', glob: 'README.md' },
+      { input: `${__dirname}/src`, output: '.', glob: 'styles.css' },
+      {
+        input: `${__dirname}/src/styles`,
+        output: 'styles',
+        glob: '*.css',
+      },
+    ],
   },
   {
     // Provide additional rollup configuration here. See: https://rollupjs.org/configuration-options

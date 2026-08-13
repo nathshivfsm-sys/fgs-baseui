@@ -1,5 +1,5 @@
 import { Component, Suspense, type ReactNode } from 'react';
-import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { Button } from '@cms/ui';
@@ -17,16 +17,17 @@ class ProviderBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div className="rounded-lg border bg-card p-6" role="alert">
+        <div
+          className="rounded-lg border border-destructive/30 bg-destructive/5 p-6"
+          role="alert"
+        >
           <strong>{this.props.name} is unavailable.</strong>
-          <p className="text-sm text-muted-foreground">
-            {this.state.error.message}
-          </p>
+          <p className="text-sm text-destructive">{this.state.error.message}</p>
         </div>
       );
     }
     return (
-      <Suspense fallback={<p>Loading {this.props.name}…</p>}>
+      <Suspense fallback={<p role="status">Loading {this.props.name}…</p>}>
         {this.props.children}
       </Suspense>
     );
@@ -44,7 +45,7 @@ export function App() {
   );
   return (
     <div className="min-h-screen bg-background">
-      <header className="flex items-center justify-between border-b bg-card px-6 py-4">
+      <header className="flex flex-col items-start gap-4 border-b bg-card px-page-compact py-4 sm:flex-row sm:items-center sm:justify-between sm:px-page">
         <div>
           <p className="text-xs font-semibold uppercase text-primary">CMS</p>
           <h1 className="text-xl font-bold">Operations workspace</h1>
@@ -58,16 +59,37 @@ export function App() {
           Tenant: {tenantId}
         </Button>
       </header>
-      <div className="mx-auto grid max-w-6xl gap-6 p-6 md:grid-cols-[12rem_1fr]">
-        <nav className="flex gap-2 md:flex-col">
+      <div className="mx-auto grid max-w-app gap-6 p-page-compact sm:p-page md:grid-cols-[12rem_minmax(0,1fr)]">
+        <nav
+          aria-label="Primary"
+          className="grid grid-cols-2 gap-2 md:flex md:flex-col"
+        >
           <Button asChild variant="ghost">
-            <Link to="/workorders">Work orders</Link>
+            <NavLink
+              className={({ isActive }) =>
+                isActive
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground'
+              }
+              to="/workorders"
+            >
+              Work orders
+            </NavLink>
           </Button>
           <Button asChild variant="ghost">
-            <Link to="/leads">Leads</Link>
+            <NavLink
+              className={({ isActive }) =>
+                isActive
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground'
+              }
+              to="/leads"
+            >
+              Leads
+            </NavLink>
           </Button>
         </nav>
-        <main>
+        <main className="min-w-0">
           <Routes>
             <Route path="/" element={<Navigate to="/workorders" replace />} />
             <Route

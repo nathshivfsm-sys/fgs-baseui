@@ -10,7 +10,7 @@ if (!container) throw new Error('#root element not found');
 createRoot(container).render(
   <StrictMode>
     <QueryClientProvider client={standaloneRuntime.queryClient}>
-      <div className="mx-auto max-w-4xl p-6">
+      <div className="mx-auto max-w-content p-page-compact sm:p-page">
         <App runtime={standaloneRuntime} />
       </div>
     </QueryClientProvider>

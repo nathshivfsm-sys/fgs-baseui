@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "strict": true,
+    "types": ["node"]
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../apps/**/*.stories.tsx",
+    "../apps/**/vite-env.d.ts",
+    "../libs/**/*.stories.tsx"
+  ]
+}

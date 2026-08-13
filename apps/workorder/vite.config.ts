@@ -3,15 +3,7 @@ import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-
-const shared = {
-  react: { singleton: true, requiredVersion: '19.2.8' },
-  'react-dom': { singleton: true, requiredVersion: '19.2.8' },
-  'react-router-dom': { singleton: true, requiredVersion: '7.18.2' },
-  '@tanstack/react-query': { singleton: true, requiredVersion: '5.101.4' },
-  zustand: { singleton: true, requiredVersion: '5.0.14' },
-  '@cms/ui': { singleton: true, requiredVersion: '0.0.1' },
-};
+import { sharedDependencies } from '../../tools/module-federation/shared';
 
 export default defineConfig({
   resolve: {
@@ -39,7 +31,7 @@ export default defineConfig({
       name: 'workorder',
       filename: 'remoteEntry.js',
       exposes: { './App': './src/App.tsx' },
-      shared,
+      shared: sharedDependencies,
     }),
     react(),
   ],

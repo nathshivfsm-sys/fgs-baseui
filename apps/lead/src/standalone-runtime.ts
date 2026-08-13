@@ -1,6 +1,9 @@
-import { QueryClient } from '@tanstack/react-query';
 import { createStore } from 'zustand/vanilla';
-import type { AppState, CmsRuntime } from '@cms/platform-contract';
+import {
+  createCmsQueryClient,
+  type AppState,
+  type CmsRuntime,
+} from '@cms/platform-contract';
 
 const appStore = createStore<AppState>()((set) => ({
   tenantId: 'standalone',
@@ -11,5 +14,5 @@ const appStore = createStore<AppState>()((set) => ({
 
 export const standaloneRuntime: CmsRuntime = {
   appStore,
-  queryClient: new QueryClient(),
+  queryClient: createCmsQueryClient(),
 };
