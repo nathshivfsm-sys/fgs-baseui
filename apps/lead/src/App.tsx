@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
 import { useStore } from 'zustand';
@@ -10,6 +11,7 @@ import {
   type Lead,
   type LoadLeads,
 } from './lead.queries';
+import { createLeadUiStore } from './store/store';
 import './styles.css';
 
 export type { Lead, LoadLeads } from './lead.queries';
@@ -20,11 +22,17 @@ export interface AppProps {
 }
 
 export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
-  const tenantId = useStore(runtime.appStore, (state) => state.tenantId);
+  const [localStore] = useState(() => createLeadUiStore());
+  const viewDensity = useStore(localStore, (state) => state.viewDensity);
+  const toggleViewDensity = useStore(
+    localStore,
+    (state) => state.toggleViewDensity,
+  );
   const query = useQuery(
-    leadListQueryOptions(tenantId, load),
+    leadListQueryOptions(runtime.tenantId, load),
     runtime.queryClient,
   );
+  const cardPadding = viewDensity === 'compact' ? 'p-2' : 'p-4';
 
   return (
     <section className="space-y-4" data-testid="lead">
@@ -34,20 +42,35 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
           <h2 className="flex items-center gap-2 text-2xl font-bold">
             <Users className="size-6 text-primary" /> Leads
           </h2>
+          <p className="text-xs text-muted-foreground">
+            Global tenant: {runtime.tenantId} · User:{' '}
+            {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
+            Lead-local view: {viewDensity}
+          </p>
         </div>
-        <Button
-          aria-busy={query.isFetching}
-          className="w-full sm:w-auto"
-          disabled={query.isFetching}
-          onClick={() =>
-            runtime.queryClient.invalidateQueries({
-              queryKey: leadKeys.list(tenantId),
-              exact: true,
-            })
-          }
-        >
-          {query.isFetching && !query.isPending ? 'Refreshing…' : 'Refresh'}
-        </Button>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Button
+            aria-pressed={viewDensity === 'compact'}
+            className="w-full sm:w-auto"
+            onClick={toggleViewDensity}
+            variant="outline"
+          >
+            Toggle local view
+          </Button>
+          <Button
+            aria-busy={query.isFetching}
+            className="w-full sm:w-auto"
+            disabled={query.isFetching}
+            onClick={() =>
+              runtime.queryClient.invalidateQueries({
+                queryKey: leadKeys.list(runtime.tenantId),
+                exact: true,
+              })
+            }
+          >
+            {query.isFetching && !query.isPending ? 'Refreshing…' : 'Refresh'}
+          </Button>
+        </div>
       </div>
       <div className="grid gap-3">
         {query.isPending ? (
@@ -60,7 +83,10 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
           <p className="text-sm text-muted-foreground">No leads found.</p>
         ) : (
           query.data.map((item: Lead) => (
-            <article className="rounded-lg border bg-card p-4" key={item.id}>
+            <article
+              className={`rounded-lg border bg-card ${cardPadding}`}
+              key={item.id}
+            >
               <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
                 <strong>{item.name}</strong>
                 <span className="text-sm text-primary">{item.stage}</span>

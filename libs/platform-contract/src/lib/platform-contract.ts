@@ -1,14 +1,15 @@
 import type { QueryClient } from '@tanstack/react-query';
-import type { StoreApi } from 'zustand/vanilla';
 
-export interface AppState {
-  tenantId: string;
-  sidebarOpen: boolean;
-  setTenantId: (tenantId: string) => void;
-  toggleSidebar: () => void;
+export interface UserDetails {
+  readonly id: string;
+  readonly displayName: string;
+  readonly email: string;
+  readonly role: string;
 }
 
+/** Values and services that the shell explicitly provides to an MFE. */
 export interface CmsRuntime {
-  appStore: StoreApi<AppState>;
+  tenantId: string;
+  currentUser: UserDetails;
   queryClient: QueryClient;
 }

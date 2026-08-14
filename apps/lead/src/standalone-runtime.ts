@@ -1,18 +1,18 @@
-import { createStore } from 'zustand/vanilla';
 import {
   createCmsQueryClient,
-  type AppState,
   type CmsRuntime,
+  type UserDetails,
 } from '@cms/platform-contract';
 
-const appStore = createStore<AppState>()((set) => ({
-  tenantId: 'standalone',
-  sidebarOpen: true,
-  setTenantId: (tenantId) => set({ tenantId }),
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-}));
+const standaloneUser = {
+  id: 'standalone-user',
+  displayName: 'Standalone User',
+  email: 'standalone.user@example.com',
+  role: 'Developer',
+} satisfies UserDetails;
 
 export const standaloneRuntime: CmsRuntime = {
-  appStore,
+  tenantId: 'standalone',
+  currentUser: standaloneUser,
   queryClient: createCmsQueryClient(),
 };

@@ -1,27 +1,30 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useMemo, type ComponentType } from 'react';
-import { createStore } from 'zustand/vanilla';
 import {
   createCmsQueryClient,
   disposeCmsQueryClient,
-  type AppState,
   type CmsRuntime,
+  type UserDetails,
 } from '@cms/platform-contract';
 
+const storyUser = {
+  id: 'storybook-user',
+  displayName: 'Storybook User',
+  email: 'storybook.user@example.com',
+  role: 'Designer',
+} satisfies UserDetails;
+
 export function createStoryRuntime(tenantId = 'northwind'): CmsRuntime {
-  const appStore = createStore<AppState>()((set) => ({
+  return {
     tenantId,
-    sidebarOpen: true,
-    setTenantId: (nextTenantId) => set({ tenantId: nextTenantId }),
-    toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  }));
-  const queryClient = createCmsQueryClient({
-    defaultOptions: {
-      queries: { staleTime: 0, gcTime: 0, retry: false },
-      mutations: { retry: false },
-    },
-  });
-  return { appStore, queryClient };
+    currentUser: storyUser,
+    queryClient: createCmsQueryClient({
+      defaultOptions: {
+        queries: { staleTime: 0, gcTime: 0, retry: false },
+        mutations: { retry: false },
+      },
+    }),
+  };
 }
 
 type RuntimeProps = { runtime: CmsRuntime };

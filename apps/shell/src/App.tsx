@@ -1,10 +1,11 @@
-import { Component, Suspense, type ReactNode } from 'react';
+import { Component, Suspense, useMemo, type ReactNode } from 'react';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { Button } from '@cms/ui';
 import { lazyProvider } from './mf';
 import { cmsRuntime } from './runtime';
+import { shellStore } from './store/store';
 
 class ProviderBoundary extends Component<
   { children: ReactNode; name: string },
@@ -38,10 +39,12 @@ const Workorder = lazyProvider<{ runtime: CmsRuntime }>('workorder', 'App');
 const Lead = lazyProvider<{ runtime: CmsRuntime }>('lead', 'App');
 
 export function App() {
-  const tenantId = useStore(cmsRuntime.appStore, (state) => state.tenantId);
-  const setTenantId = useStore(
-    cmsRuntime.appStore,
-    (state) => state.setTenantId,
+  const tenantId = useStore(shellStore, (state) => state.tenantId);
+  const currentUser = useStore(shellStore, (state) => state.currentUser);
+  const setTenantId = useStore(shellStore, (state) => state.setTenantId);
+  const mfeRuntime = useMemo<CmsRuntime>(
+    () => ({ ...cmsRuntime, tenantId, currentUser }),
+    [currentUser, tenantId],
   );
   return (
     <div className="min-h-screen bg-background">
@@ -50,14 +53,22 @@ export function App() {
           <p className="text-xs font-semibold uppercase text-primary">CMS</p>
           <h1 className="text-xl font-bold">Operations workspace</h1>
         </div>
-        <Button
-          variant="outline"
-          onClick={() =>
-            setTenantId(tenantId === 'northwind' ? 'contoso' : 'northwind')
-          }
-        >
-          Tenant: {tenantId}
-        </Button>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+          <div className="text-sm">
+            <p className="font-medium">{currentUser.displayName}</p>
+            <p className="text-xs text-muted-foreground">
+              {currentUser.email} · {currentUser.role}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() =>
+              setTenantId(tenantId === 'northwind' ? 'contoso' : 'northwind')
+            }
+          >
+            Tenant: {tenantId}
+          </Button>
+        </div>
       </header>
       <div className="mx-auto grid max-w-app gap-6 p-page-compact sm:p-page md:grid-cols-[12rem_minmax(0,1fr)]">
         <nav
@@ -96,7 +107,7 @@ export function App() {
               path="/workorders/*"
               element={
                 <ProviderBoundary name="Work orders">
-                  <Workorder runtime={cmsRuntime} />
+                  <Workorder runtime={mfeRuntime} />
                 </ProviderBoundary>
               }
             />
@@ -104,7 +115,7 @@ export function App() {
               path="/leads/*"
               element={
                 <ProviderBoundary name="Leads">
-                  <Lead runtime={cmsRuntime} />
+                  <Lead runtime={mfeRuntime} />
                 </ProviderBoundary>
               }
             />
