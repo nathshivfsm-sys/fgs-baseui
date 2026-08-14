@@ -10,44 +10,64 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'secondary', 'destructive', 'outline', 'ghost'],
+      options: [
+        'default',
+        'brand',
+        'subtle',
+        'secondary',
+        'destructive',
+        'outline',
+        'ghost',
+      ],
     },
     size: {
       control: 'select',
-      options: ['default', 'sm', 'lg'],
+      options: ['sm', 'default', 'lg', 'iconSm', 'icon', 'iconLg'],
     },
     asChild: { control: 'boolean' },
+    loading: { control: 'boolean' },
   },
-  args: {
-    children: 'Continue',
-    onClick: fn(),
-  },
+  args: { children: 'Continue', onClick: fn() },
 } satisfies Meta<typeof Button>;
-
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement);
-    const button = canvas.getByRole('button', { name: 'Continue' });
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Continue',
+    });
     await userEvent.tab();
     await expect(button).toHaveFocus();
     await userEvent.click(button);
     await expect(args.onClick).toHaveBeenCalledOnce();
   },
 };
-
+export const Brand: Story = { args: { variant: 'brand' } };
+export const Subtle: Story = { args: { variant: 'subtle' } };
 export const Secondary: Story = { args: { variant: 'secondary' } };
 export const Destructive: Story = {
   args: { children: 'Delete', variant: 'destructive' },
 };
 export const Outline: Story = { args: { variant: 'outline' } };
 export const Ghost: Story = { args: { variant: 'ghost' } };
-export const Small: Story = { args: { size: 'sm' } };
-export const Large: Story = { args: { size: 'lg' } };
+export const Sizes: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-3">
+      <Button {...args} size="sm">
+        Small
+      </Button>
+      <Button {...args}>Default</Button>
+      <Button {...args} size="lg">
+        Large
+      </Button>
+    </div>
+  ),
+};
 export const Disabled: Story = { args: { disabled: true } };
-
+export const Loading: Story = {
+  args: { loading: true, loadingText: 'Saving…' },
+};
 export const AsLink: Story = {
   args: { asChild: true },
   render: (args) => (

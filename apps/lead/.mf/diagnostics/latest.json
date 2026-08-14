@@ -1,0 +1,10 @@
+{
+  "latestErrorEvent": {
+    "code": "TYPE-001",
+    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"yarn tsc --project /Users/HS105833/Desktop/Learning/React/orbit-mfe/apps/lead/node_modules/.federation/tsconfig.114fc1e6aa127dad481367ed42818b1c.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
+    "args": {
+      "cmd": "yarn tsc --project /Users/HS105833/Desktop/Learning/React/orbit-mfe/apps/lead/node_modules/.federation/tsconfig.114fc1e6aa127dad481367ed42818b1c.json"
+    },
+    "timestamp": 1786725258429
+  }
+}

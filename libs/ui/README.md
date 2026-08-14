@@ -1,24 +1,60 @@
 # @cms/ui
 
-Shared UI primitives and the Tailwind CSS v4 design contract for the CMS workspace.
+Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Radix primitives, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports.
 
-## Styling architecture
+## Consume from an MFE
 
-- `src/styles/theme.css` registers fonts, responsive/container values, spacing,
-  shadows, semantic colors, and radius utilities with Tailwind.
-- `src/styles/tokens.css` owns light and dark theme values.
-- `src/styles/base.css` contains the minimal cross-application document defaults.
-- `src/styles.css` is the public aggregate stylesheet.
+```tsx
+// Import once from the consuming application's CSS entry.
+@import 'tailwindcss';
+@import '@cms/ui/styles.css';
+```
 
-Each independently built application imports Tailwind and this aggregate stylesheet
-from its own CSS entry point. JavaScript imports remain side-effect free. Published
-consumers can import `@cms/ui/styles.css` before scanning their component sources.
+```tsx
+import { Button, RadioGroupField, SelectField, TextInput } from '@cms/ui';
 
-Use semantic utilities such as `bg-background`, `bg-brand-subtle`, `text-link`,
-`text-label`, `text-destructive`, `border-input`, and `ring-ring`. `primary` represents
-the Work Order interaction color (`#3538bf`); `brand` represents the Pricing
-navigation color (`#0049bc`). Geist is the default UI family and Inter is available
-through `font-form`. The 4/8px radius scale, 32/36/40px control heights, desktop
-workspace dimensions, table roles, statuses, and exact Figma shadows are registered
-as Tailwind v4 tokens. Prefer standard utilities unless a value expresses one of
-these stable product decisions.
+<TextInput label="Code" name="code" placeholder="Enter code" required />
+<SelectField label="Job type" name="jobType" options={[{ label: 'Maintenance', value: 'maintenance' }]} />
+<RadioGroupField label="Pricing" name="pricing" options={[{ label: 'Static', value: 'static' }]} />
+<Button loading={saving} loadingText="Saving…">Save</Button>
+```
+
+Components accept `className` for extension without requiring MFE-specific forks. Native inputs support both `value`/`onChange` and `defaultValue`; Radix controls support `value`/change callbacks and default-value equivalents.
+
+## Public components
+
+| Component | Default | Primary configuration |
+| --- | --- | --- |
+| `Button` | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `asChild`, native button events |
+| `IconButton` | ghost-compatible square default size | required `label`, `icon`, `size`, all `Button` states |
+| `TextInput` | 36px text field | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading` |
+| `Textarea` | 80px minimum height | `label`, `size`, `error`, `helperText`, native resize/value props |
+| `SelectField` | 36px Radix Select | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging |
+| `Select*` primitives | composable Radix API | trigger/content/item composition for advanced consumers |
+| `RadioGroupField` | horizontal group | `options`, orientation, controlled/uncontrolled value, error/disabled states |
+| `RadioGroup*` primitives | composable Radix API | custom radio compositions |
+| `SwitchField` | 44x23px, label before | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition` |
+| `Switch` | 44x23px | low-level Radix switch |
+| `Tabs*` | underline tabs | controlled/uncontrolled value, disabled triggers, keyboard navigation |
+| `Field` | 4px vertical gap | reusable label, description, required, helper, error, disabled layout |
+| `Callout` | `variant="info"` | info/success/warning/error, optional icon and title |
+| `SectionCard*` | 16px radius/padding | semantic settings/pricing section composition |
+## Design contract
+
+Figma values are centralized in `src/styles/tokens.css` and registered as Tailwind utilities by `src/styles/theme.css`. Form controls use Inter at 14px, 1.4 line-height, 8px radii, 1px borders, and 32/36/40px heights. `brand` is Pricing blue (`#0049bc`), `tab-active` is indigo (`#272757`), and `toggle-active` is green (`#009951`). Dark mode overrides remain semantic rather than component-specific.
+
+Every public component has an autodocs Storybook entry with state, size, edge-case, and interaction examples. Run:
+
+```bash
+npm run storybook:typecheck
+npm run storybook:test
+npm run storybook:build
+```
+
+## Accessibility
+
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, radio, switch, and tabs use Radix keyboard/focus behavior. Do not replace visible labels with placeholders.
+
+## Figma assumptions
+
+The linked frame shows desktop layout and default/selected states but does not expose queryable component-set pages for every hidden variant. Hover, active, focus-visible, disabled, error, loading, read-only, and dark-mode behavior therefore follows the shared shadcn/Radix accessibility contract while retaining the frame's visible dimensions, typography, spacing, radii, and colors. Responsive behavior is intrinsic: controls fill their container, tabs scroll horizontally, and fields/cards use min-width-safe layouts; no unsupported mobile screen composition was inferred.
