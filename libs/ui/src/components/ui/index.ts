@@ -2,6 +2,7 @@ export * from './button';
 export * from './callout';
 export * from './field';
 export * from './icon-button';
+export * from './metric-card';
 export * from './radio-group';
 export * from './section-card';
 export * from './select';

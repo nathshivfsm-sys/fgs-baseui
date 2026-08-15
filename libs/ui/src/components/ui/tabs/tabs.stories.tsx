@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
@@ -51,9 +50,3 @@ export const Default: Story = {
   },
 };
 export const DisabledTab: Story = { render: () => <Example /> };
-function ControlledExample() {
-  const [value, setValue] = useState('details');
-  return <Example onValueChange={setValue} value={value} />;
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };
-export const Uncontrolled: Story = { render: () => <Example /> };

@@ -11,11 +11,25 @@ Shared React 19 + TypeScript design-system components for the CMS micro frontend
 ```
 
 ```tsx
-import { Button, RadioGroupField, SelectField, TextInput } from '@cms/ui';
+import {
+  Button,
+  LocationPinIcon,
+  MetricCard,
+  RadioGroupField,
+  SelectField,
+  TextInput,
+} from '@cms/ui';
 
 <TextInput label="Code" name="code" placeholder="Enter code" required />
 <SelectField label="Job type" name="jobType" options={[{ label: 'Maintenance', value: 'maintenance' }]} />
 <RadioGroupField label="Pricing" name="pricing" options={[{ label: 'Static', value: 'static' }]} />
+<MetricCard
+  label="Total locations"
+  value={48}
+  description="Across all business units"
+  icon={<LocationPinIcon />}
+  tone="blue"
+/>
 <Button loading={saving} loadingText="Saving…">Save</Button>
 ```
 
@@ -23,25 +37,27 @@ Components accept `className` for extension without requiring MFE-specific forks
 
 ## Public components
 
-| Component | Default | Primary configuration |
-| --- | --- | --- |
-| `Button` | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `asChild`, native button events |
-| `IconButton` | ghost-compatible square default size | required `label`, `icon`, `size`, all `Button` states |
-| `TextInput` | 36px text field | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading` |
-| `Textarea` | 80px minimum height | `label`, `size`, `error`, `helperText`, native resize/value props |
-| `SelectField` | 36px Radix Select | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging |
-| `Select*` primitives | composable Radix API | trigger/content/item composition for advanced consumers |
-| `RadioGroupField` | horizontal group | `options`, orientation, controlled/uncontrolled value, error/disabled states |
-| `RadioGroup*` primitives | composable Radix API | custom radio compositions |
-| `SwitchField` | 44x23px, label before | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition` |
-| `Switch` | 44x23px | low-level Radix switch |
-| `Tabs*` | underline tabs | controlled/uncontrolled value, disabled triggers, keyboard navigation |
-| `Field` | 4px vertical gap | reusable label, description, required, helper, error, disabled layout |
-| `Callout` | `variant="info"` | info/success/warning/error, optional icon and title |
-| `SectionCard*` | 16px radius/padding | semantic settings/pricing section composition |
+| Component                | Default                               | Primary configuration                                                                         |
+| ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `asChild`, native button events                  |
+| `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                         |
+| `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`              |
+| `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                             |
+| `SelectField`            | 36px Radix Select                     | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging           |
+| `Select*` primitives     | composable Radix API                  | trigger/content/item composition for advanced consumers                                       |
+| `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                  |
+| `RadioGroup*` primitives | composable Radix API                  | custom radio compositions                                                                     |
+| `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
+| `Switch`                 | 44x23px                               | low-level Radix switch                                                                        |
+| `Tabs*`                  | underline tabs                        | controlled/uncontrolled value, disabled triggers, keyboard navigation                         |
+| `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                         |
+| `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                           |
+| `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state |
+| `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                 |
+
 ## Design contract
 
-Figma values are centralized in `src/styles/tokens.css` and registered as Tailwind utilities by `src/styles/theme.css`. Form controls use Inter at 14px, 1.4 line-height, 8px radii, 1px borders, and 32/36/40px heights. `brand` is Pricing blue (`#0049bc`), `tab-active` is indigo (`#272757`), and `toggle-active` is green (`#009951`). Dark mode overrides remain semantic rather than component-specific.
+Figma values are centralized in `src/styles/tokens.css` and registered as Tailwind utilities by `src/styles/theme.css`. Form controls use Inter at 14px, 1.4 line-height, 8px radii, 1px borders, and 32/36/40px heights. `brand` is Pricing blue (`#0049bc`), `tab-active` is indigo (`#272757`), and `toggle-active` is green (`#009951`). Metric cards use a 102px minimum height, 44px icon tile, 12px radius, and semantic blue/green/orange/purple/neutral tones. Dark mode overrides remain semantic rather than component-specific.
 
 Every public component has an autodocs Storybook entry with state, size, edge-case, and interaction examples. Run:
 

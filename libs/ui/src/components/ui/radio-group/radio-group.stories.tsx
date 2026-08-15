@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { RadioGroupField } from './radio-group';
@@ -57,18 +56,3 @@ export const Error: Story = {
   },
 };
 export const Disabled: Story = { args: { disabled: true } };
-export const Uncontrolled: Story = {
-  args: { defaultValue: 'dynamic', helperText: 'Uses defaultValue.' },
-};
-function ControlledExample() {
-  const [value, setValue] = useState('static');
-  return (
-    <RadioGroupField
-      label="Controlled pricing"
-      onValueChange={setValue}
-      options={options}
-      value={value}
-    />
-  );
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };

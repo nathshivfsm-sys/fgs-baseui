@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
+import { SearchIcon } from '../../../icons';
 import { TextInput } from './text-input';
 
 const meta = {
@@ -48,25 +48,6 @@ export const Search: Story = {
   args: {
     label: 'Search',
     placeholder: 'Search anything',
-    startAdornment: (
-      <svg className="size-4" fill="none" viewBox="0 0 16 16">
-        <circle cx="7" cy="7" r="4.5" stroke="currentColor" />
-        <path d="m10.5 10.5 3 3" stroke="currentColor" />
-      </svg>
-    ),
+    startAdornment: <SearchIcon className="size-4" />,
   },
-};
-function ControlledExample() {
-  const [value, setValue] = useState('Initial');
-  return (
-    <TextInput
-      label="Controlled value"
-      onChange={(event) => setValue(event.target.value)}
-      value={value}
-    />
-  );
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };
-export const Uncontrolled: Story = {
-  args: { defaultValue: 'Initial', helperText: 'The browser owns this value.' },
 };

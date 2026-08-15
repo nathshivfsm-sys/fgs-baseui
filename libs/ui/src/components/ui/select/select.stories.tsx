@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { SelectField } from './select';
@@ -52,18 +51,3 @@ export const Error: Story = {
   args: { error: 'Select a job type.', required: true },
 };
 export const Disabled: Story = { args: { disabled: true } };
-export const Uncontrolled: Story = {
-  args: { defaultValue: 'maintenance', helperText: 'Uses defaultValue.' },
-};
-function ControlledExample() {
-  const [value, setValue] = useState('maintenance');
-  return (
-    <SelectField
-      label="Controlled job type"
-      onValueChange={setValue}
-      options={options}
-      value={value}
-    />
-  );
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };

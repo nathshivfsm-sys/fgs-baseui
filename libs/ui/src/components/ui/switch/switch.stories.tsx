@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { SwitchField } from './switch';
@@ -37,17 +36,3 @@ export const Disabled: Story = { args: { disabled: true } };
 export const Error: Story = {
   args: { error: 'Tax status could not be saved.' },
 };
-export const Uncontrolled: Story = {
-  args: { defaultChecked: false, helperText: 'Uses defaultChecked.' },
-};
-function ControlledExample() {
-  const [checked, setChecked] = useState(true);
-  return (
-    <SwitchField
-      checked={checked}
-      label="Controlled switch"
-      onCheckedChange={setChecked}
-    />
-  );
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };

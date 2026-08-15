@@ -1,17 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
+import { PlusIcon } from '../../../icons';
 import { IconButton } from './icon-button';
 
-const icon = (
-  <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16">
-    <path
-      d="M8 3v10M3 8h10"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
+const icon = <PlusIcon className="size-4" />;
 const meta = {
   title: 'Components/IconButton',
   component: IconButton,

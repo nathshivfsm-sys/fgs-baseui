@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { Textarea } from './textarea';
@@ -44,21 +43,4 @@ export const Disabled: Story = {
 };
 export const ReadOnly: Story = {
   args: { readOnly: true, value: 'Locked description' },
-};
-function ControlledExample() {
-  const [value, setValue] = useState('Controlled');
-  return (
-    <Textarea
-      label="Controlled"
-      onChange={(event) => setValue(event.target.value)}
-      value={value}
-    />
-  );
-}
-export const Controlled: Story = { render: () => <ControlledExample /> };
-export const Uncontrolled: Story = {
-  args: {
-    defaultValue: 'Uncontrolled',
-    helperText: 'Resize vertically when more room is needed.',
-  },
 };

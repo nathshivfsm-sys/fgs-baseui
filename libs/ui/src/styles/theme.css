@@ -11,6 +11,8 @@
   --text-control--line-height: 1.25rem;
   --text-body: 1rem;
   --text-body--line-height: 1.4;
+  --text-metric-value: 1.25rem;
+  --text-metric-value--line-height: 1.5625rem;
   --text-title: 1.375rem;
   --text-title--line-height: 2.0625rem;
   --tracking-brand: 0.025em;
@@ -30,10 +32,13 @@
   --spacing-control-sm: 2rem;
   --spacing-control: 2.25rem;
   --spacing-control-lg: 2.5rem;
+  --spacing-metric-icon: 2.75rem;
+  --spacing-metric-card: 6.375rem;
 
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.5rem;
+  --radius-metric: 0.75rem;
   --radius-xl: 1rem;
   --radius-card: 1rem;
   --shadow-xs: 0 1px 2px 0 #1018280d;
@@ -93,4 +98,15 @@
   --color-toggle-active: var(--toggle-active);
   --color-tab-active: var(--tab-active);
   --color-info-strong: var(--info-strong);
+  --color-metric-blue: var(--metric-blue);
+  --color-metric-blue-foreground: var(--metric-blue-foreground);
+  --color-metric-green: var(--metric-green);
+  --color-metric-green-foreground: var(--metric-green-foreground);
+  --color-metric-orange: var(--metric-orange);
+  --color-metric-orange-foreground: var(--metric-orange-foreground);
+  --color-metric-purple: var(--metric-purple);
+  --color-metric-purple-foreground: var(--metric-purple-foreground);
+  --color-metric-neutral: var(--metric-neutral);
+  --color-metric-neutral-foreground: var(--metric-neutral-foreground);
+  --color-metric-positive: var(--metric-positive);
 }
