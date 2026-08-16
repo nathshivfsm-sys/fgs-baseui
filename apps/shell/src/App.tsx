@@ -1,8 +1,10 @@
 import { Component, Suspense, useMemo, type ReactNode } from 'react';
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
-import { Button } from '@cms/ui';
+import { AppShell } from './components/AppShell';
+import { ALL_NAV_ROUTES } from './components/nav-config';
+import { RoutePlaceholder } from './components/RoutePlaceholder';
 import { lazyProvider } from './mf';
 import { cmsRuntime } from './runtime';
 import { shellStore } from './store/store';
@@ -38,6 +40,8 @@ class ProviderBoundary extends Component<
 const Workorder = lazyProvider<{ runtime: CmsRuntime }>('workorder', 'App');
 const Lead = lazyProvider<{ runtime: CmsRuntime }>('lead', 'App');
 
+const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders']);
+
 export function App() {
   const tenantId = useStore(shellStore, (state) => state.tenantId);
   const currentUser = useStore(shellStore, (state) => state.currentUser);
@@ -46,83 +50,42 @@ export function App() {
     () => ({ ...cmsRuntime, tenantId, currentUser }),
     [currentUser, tenantId],
   );
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="flex flex-col items-start gap-4 border-b bg-card px-page-compact py-4 sm:flex-row sm:items-center sm:justify-between sm:px-page">
-        <div>
-          <p className="text-xs font-semibold uppercase text-primary">CMS</p>
-          <h1 className="text-xl font-bold">Operations workspace</h1>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
-          <div className="text-sm">
-            <p className="font-medium">{currentUser.displayName}</p>
-            <p className="text-xs text-muted-foreground">
-              {currentUser.email} · {currentUser.role}
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() =>
-              setTenantId(tenantId === 'northwind' ? 'contoso' : 'northwind')
-            }
-          >
-            Tenant: {tenantId}
-          </Button>
-        </div>
-      </header>
-      <div className="mx-auto grid max-w-app gap-6 p-page-compact sm:p-page md:grid-cols-[12rem_minmax(0,1fr)]">
-        <nav
-          aria-label="Primary"
-          className="grid grid-cols-2 gap-2 md:flex md:flex-col"
-        >
-          <Button asChild variant="ghost">
-            <NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground'
-              }
-              to="/workorders"
-            >
-              Work orders
-            </NavLink>
-          </Button>
-          <Button asChild variant="ghost">
-            <NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground'
-              }
-              to="/leads"
-            >
-              Leads
-            </NavLink>
-          </Button>
-        </nav>
-        <main className="min-w-0">
-          <Routes>
-            <Route path="/" element={<Navigate to="/workorders" replace />} />
-            <Route
-              path="/workorders/*"
-              element={
-                <ProviderBoundary name="Work orders">
-                  <Workorder runtime={mfeRuntime} />
-                </ProviderBoundary>
-              }
-            />
-            <Route
-              path="/leads/*"
-              element={
-                <ProviderBoundary name="Leads">
-                  <Lead runtime={mfeRuntime} />
-                </ProviderBoundary>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </div>
+    <AppShell
+      currentUser={currentUser}
+      onTenantChange={setTenantId}
+      tenantId={tenantId}
+    >
+      <Routes>
+        <Route path="/" element={<Navigate to="/workorders" replace />} />
+        <Route
+          path="/workorders/*"
+          element={
+            <ProviderBoundary name="Work orders">
+              <Workorder runtime={mfeRuntime} />
+            </ProviderBoundary>
+          }
+        />
+        <Route
+          path="/leads/*"
+          element={
+            <ProviderBoundary name="Leads">
+              <Lead runtime={mfeRuntime} />
+            </ProviderBoundary>
+          }
+        />
+        {ALL_NAV_ROUTES.filter(
+          (route) => !MFE_ROUTE_PATHS.has(route.path),
+        ).map((route) => (
+          <Route
+            element={<RoutePlaceholder label={route.label} section={route.section} />}
+            key={route.path}
+            path={route.path}
+          />
+        ))}
+      </Routes>
+    </AppShell>
   );
 }
 

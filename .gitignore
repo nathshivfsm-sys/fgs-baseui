@@ -10,6 +10,9 @@
 # dependencies
 node_modules
 
+# lock file
+package-lock.json
+
 # Nx and Vite caches
 .nx/cache
 .nx/workspace-data

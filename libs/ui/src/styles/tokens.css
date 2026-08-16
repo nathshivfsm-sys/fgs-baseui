@@ -17,6 +17,9 @@
   --brand: #0049bc;
   --brand-foreground: #ffffff;
   --brand-subtle: #e9f2ff;
+  --brand-blue: #1741b0;
+  --brand-blue-foreground: #ffffff;
+  --brand-blue-subtle: #eff6ff;
   --secondary: #f0f1f3;
   --secondary-foreground: #48505e;
   --muted: var(--secondary);
@@ -88,6 +91,9 @@
   --brand: #60a5fa;
   --brand-foreground: #0f172a;
   --brand-subtle: #172554;
+  --brand-blue: #60a5fa;
+  --brand-blue-foreground: #0f172a;
+  --brand-blue-subtle: #172554;
   --secondary: #2e323c;
   --secondary-foreground: #f0f1f3;
   --muted: var(--secondary);
