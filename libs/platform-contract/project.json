@@ -6,16 +6,24 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/platform-contract",
         "main": "libs/platform-contract/src/index.ts",
         "tsConfig": "libs/platform-contract/tsconfig.lib.json",
-        "assets": [
-          "libs/platform-contract/*.md"
-        ]
+        "assets": ["libs/platform-contract/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/platform-contract/tsconfig.json"
       }
     },
     "nx-release-publish": {
@@ -24,12 +32,10 @@
       }
     }
   },
-  "tags": [],
+  "tags": ["type:lib", "scope:shared"],
   "release": {
     "version": {
-      "manifestRootsToUpdate": [
-        "dist/{projectRoot}"
-      ],
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"
     }

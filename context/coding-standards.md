@@ -1,6 +1,7 @@
 # Coding Standards
 
 ## Project Overview & Tech Stack
+
 - **Monorepo**: Nx (Integrated workspace)
 - **Core Framework**: React 19+ with TypeScript (Strict Mode Enforced)
 - **Routing**: React Router v6+ (Data Routers)
@@ -39,11 +40,28 @@
 - Example v4 configuration:
 
   ```css
-  @import "tailwindcss";
+  @import 'tailwindcss';
 
   @theme {
     --color-primary: oklch(50% 0.2 250);
   }
+  ```
+
+## Icons
+
+- All icons are hand-traced from Figma into `libs/ui/src/icons`, using the `createFigmaIcon`
+  helper in `libs/ui/src/icons/icon-base.tsx`.
+- No external icon library (e.g. `lucide-react`) is a dependency anywhere in the workspace. If a
+  needed icon doesn't exist yet in `libs/ui/src/icons`, trace it from Figma rather than pulling in
+  a package.
+
+## Design System (`@cms/ui`) Component Count
+
+`@cms/ui`'s component count is frozen: do not add a new component until the existing
+ones have real consumers outside Storybook. An unconsumed component is an unvalidated
+API — its props will be wrong in some way the first real caller discovers, and by then
+it looks like a breaking change instead of a first draft. This applies to components
+only, not icons (icons are cheap to add and rarely need API iteration).
 
 ## Monorepo Architecture & Type Boundaries
 
@@ -76,7 +94,7 @@ Follow strict Nx module tags (`scope:<domain>` and `type:app|feature|data-access
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     };
-    
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, { ...options, headers });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -84,6 +102,8 @@ Follow strict Nx module tags (`scope:<domain>` and `type:app|feature|data-access
     }
     return response.json();
   }
+  ```
+
 - Validate all inputs with Zod
 
 ## Error Handling
@@ -96,8 +116,8 @@ Follow strict Nx module tags (`scope:<domain>` and `type:app|feature|data-access
 
 - to be updated later
 
-
 ## Essential Nx Commands
+
 - **Serve App**: `npx nx serve <app-name>`
 - **Build Target**: `npx nx build <target-name>`
 - **Test Single Project**: `npx nx test <target-name>`
@@ -111,4 +131,7 @@ Follow strict Nx module tags (`scope:<domain>` and `type:app|feature|data-access
 - No commented-out code unless specified
 - No unused imports or variables
 - Keep functions under 50 lines when possible
+
+```
+
 ```

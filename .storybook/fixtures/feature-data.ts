@@ -1,5 +1,5 @@
-import type { Lead } from '../../apps/lead/src/App';
-import type { Workorder } from '../../apps/workorder/src/App';
+import type { Lead } from '@cms/lead-data-access';
+import type { Workorder } from '@cms/workorder-data-access';
 
 export const leadFixtures = [
   { id: 'LD-208', name: 'Avery Stone · northwind', stage: 'Qualified' },

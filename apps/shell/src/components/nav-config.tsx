@@ -47,7 +47,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
     label: 'Sales',
     items: [
       { icon: LeadIcon, label: 'Lead', path: '/leads' },
-      { icon: InvoiceIcon, label: 'Invoice', path: '/invoices' },
+      { icon: InvoiceIcon, label: 'Invoice', path: '/invoice' },
       { icon: EstimateIcon, label: 'Estimate', path: '/estimates' },
       {
         icon: AgreementIcon,

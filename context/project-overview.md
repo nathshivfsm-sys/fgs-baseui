@@ -4,11 +4,11 @@
 
 ## Table of Contents
 
-| Section | Description |
-|---|---|
-| [Problem](#problem) | The operational pain points FieldPro is built to solve |
-| [Target Users](#target-users) | Who uses the platform and how |
-| [Features](#features) | Core modules and dashboard capabilities observed in the design |
+| Section                         | Description                                                                |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| [Problem](#problem)             | The operational pain points FieldPro is built to solve                     |
+| [Target Users](#target-users)   | Who uses the platform and how                                              |
+| [Features](#features)           | Core modules and dashboard capabilities observed in the design             |
 | [Roadmap Notes](#roadmap-notes) | Open questions, gaps, and suggested next steps based on the current design |
 
 ---
@@ -38,6 +38,7 @@ FieldPro addresses this by consolidating these workflows into one operational da
 Based on the sidebar navigation and dashboard screen:
 
 **Navigation structure (left sidebar)**
+
 - **Home**: Today, Dashboard
 - **Operations**: Jobs / Work Orders, Dispatch Board, Customers, Service Locations
 - **Sales**: Lead, Invoice, Estimate, Service Agreements
@@ -48,6 +49,7 @@ Based on the sidebar navigation and dashboard screen:
 - Utility actions: global "Create New" shortcut, collapsible sidebar
 
 **Dashboard (Overview) modules**
+
 - **Top-level stat cards**:
   - Awaiting PO vs. Schedule (PO required / awaiting schedule counts)
   - Unassigned Work Orders (today / overdue / upcoming)

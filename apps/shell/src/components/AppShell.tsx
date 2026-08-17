@@ -1,5 +1,6 @@
 import type { UserDetails } from '@cms/platform-contract';
 import { useState, type ReactNode } from 'react';
+import type { Theme } from '../lib/theme';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 
@@ -7,7 +8,9 @@ export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
   onTenantChange: (tenantId: string) => void;
+  onToggleTheme: () => void;
   tenantId: string;
+  theme: Theme;
 }
 
 /** Persistent sidebar + top nav shell wrapping every authenticated page. */
@@ -15,7 +18,9 @@ export function AppShell({
   children,
   currentUser,
   onTenantChange,
+  onToggleTheme,
   tenantId,
+  theme,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -51,7 +56,9 @@ export function AppShell({
           currentUser={currentUser}
           onOpenMobileSidebar={() => setMobileOpen(true)}
           onTenantChange={onTenantChange}
+          onToggleTheme={onToggleTheme}
           tenantId={tenantId}
+          theme={theme}
         />
         <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
       </div>

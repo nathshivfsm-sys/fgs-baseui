@@ -14,6 +14,7 @@ Turns a feature idea — plus any combination of free-text description, screensh
 Check what's already been provided in the conversation (feature name, description, goal, screenshots, Figma URL). Only ask about what's genuinely missing — don't re-ask for things already given.
 
 Core inputs to have before drafting:
+
 1. **Feature name / one-line summary**
 2. **Problem / motivation** — why does this need to exist?
 3. **Target users** — who is this for?
@@ -30,6 +31,7 @@ If the user has only a vague idea ("something to help users track X"), interroga
 **Screenshots**: If images are already visible in context (uploaded by the user), just look at them directly — no tool needed. Note what they show (current state, desired state, competitor reference, etc.) based on what the user says about them.
 
 **Figma link**: If a Figma URL is provided, pull live design context rather than treating the link as a dead reference:
+
 - Call `tool_search` with query like "figma design context" to load the Figma tools if not already loaded.
 - Use `Figma:get_design_context` (or `get_metadata` for a lighter pass) on the node/file to get structure, components, and variables.
 - Use `Figma:get_screenshot` to capture a visual of the relevant frame so the PRD can reference what the design actually looks like.

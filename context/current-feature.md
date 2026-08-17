@@ -2,42 +2,32 @@
 
 ## Status
 
-Implemented and verified in browser (dev server, Playwright). Build and typecheck pass. Not yet
-committed — awaiting go-ahead.
-
-## Goals
-
-Implement `context/features/top-nav-sidebar-prd.md`: a persistent left sidebar + top nav shell
-wrapping every authenticated page in the `shell` app.
-
-- Sidebar: FieldPro logo, "Create New" CTA, flat primary nav (Today, Dashboard, Jobs / Work
-  Orders, Dispatch Board, Customers, Service Locations), grouped sections (SALES, WORK, PAYMENTS,
-  PURCHASE, REPORTS), active-route highlighting, collapse-to-icons toggle.
-- Top nav: workspace switcher (wired to existing `shellStore.tenantId`), search input (UI only),
-  notification bell with unread badge (UI only), user menu (avatar/initials + logout/settings).
-- Responsive: sidebar becomes an off-canvas drawer below the `md` breakpoint.
-- Pixel-accurate icons/colors pulled from the Figma file referenced in the PRD via the Figma MCP
-  server, added to `libs/ui/src/icons`.
+Implementing `context/features/monorepo-architecture-remediation-prd.md`. Phases
+1-4 done and verified (lint, typecheck, full build, `test:query`, real browser
+checks). Requirements 30-31 (`nx release`/Verdaccio publish wiring) deferred —
+publish target and trigger undecided by choice, not implemented. Not yet
+committed.
 
 ## Notes
 
-Decisions made with the user before implementation:
+Surprises not already covered by the PRD itself:
 
-- Icons: hand-traced from Figma (not lucide-react), matching the existing `createFigmaIcon`
-  pattern in `libs/ui/src/icons`.
-- Nav items without a real MFE yet (Today, Dashboard, Customers, Service Locations, Invoice,
-  Estimate, etc.) route to a minimal placeholder page that shows the active nav item (and its
-  section, e.g. "Sales / Lead") so navigation and active-state are demonstrably correct without
-  building out full page content (out of scope per PRD non-goals).
-- The top nav's unlabeled utility icon row (between search and notifications) is intentionally
-  omitted — the PRD explicitly scopes the top nav spec to search, notifications, and the user
-  menu only (Goals, line 20) and flags that icon row's destinations as unconfirmed (Open
-  Questions).
-- Added two new tokens, `--brand-blue` / `--brand-blue-subtle` (light `#1741b0` / `#eff6ff`), to
-  `libs/ui/src/styles/tokens.css` for the exact PRD-specified "brand blue" used by the CTA button,
-  active nav state, and avatar — distinct from the existing `--brand` token so no unrelated
-  component's color changes.
-- Added `@radix-ui/react-dropdown-menu` to `libs/ui` for the workspace switcher and user menu,
-  matching the existing Radix-primitive pattern already used for Select/Switch/Tabs/RadioGroup.
+- Verifying Phase 4 in a browser (not just typecheck) surfaced a pre-existing,
+  unrelated runtime bug: `workorder`/`lead`/`shell` were missing `workspace:*`
+  deps for the Phase-3 data-access libs and `@cms/shared-api` in their own
+  `package.json`s, and `tools/integration` (home of `test:query`, part of CI's
+  fast lane) had no `package.json` at all and wasn't covered by any
+  `pnpm-workspace.yaml` glob — `test:query` was silently broken. Fixed.
+- Built an unplanned Nx generator, `tools/generators/remote-app` (invoke via
+  `npx nx g ./tools/generators/remote-app:remote-app <name>`), after this work
+  exposed how manual and error-prone adding a new remote app was. It does not
+  auto-wire a sidebar entry (icon/section/label is a design call); prints
+  instructions instead. Proved it via `apps/invoice`, kept per user's choice —
+  its pre-existing "Invoice" nav-config.tsx placeholder pointed at `/invoices`
+  (plural) while the generator creates `/invoice` (singular, no pluralization);
+  repointed it.
 
 ## History
+
+- [Top nav + sidebar shell](features/top-nav-sidebar-prd.md) — completed,
+  verified in browser, commit `cc0f939`. Branch point for the work above.

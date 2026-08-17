@@ -1,10 +1,4 @@
-import {
-  Button,
-  cn,
-  CollapseIcon,
-  FieldProLogoIcon,
-  PlusIcon,
-} from '@cms/ui';
+import { Button, cn, CollapseIcon, FieldProLogoIcon, PlusIcon } from '@cms/ui';
 import { NavLink } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from './nav-config';
 
@@ -27,7 +21,11 @@ function SidebarNavLink({
     <NavLink
       aria-label={collapsed ? item.label : undefined}
       className={({ isActive }) =>
-        cn(NAV_ITEM_CLASSES, collapsed && 'justify-center px-0', isActive && NAV_ITEM_ACTIVE_CLASSES)
+        cn(
+          NAV_ITEM_CLASSES,
+          collapsed && 'justify-center px-0',
+          isActive && NAV_ITEM_ACTIVE_CLASSES,
+        )
       }
       onClick={onNavigate}
       title={collapsed ? item.label : undefined}

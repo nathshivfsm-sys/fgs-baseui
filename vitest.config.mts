@@ -14,7 +14,7 @@ export default defineConfig({
         test: {
           name: 'query',
           environment: 'node',
-          include: ['apps/shell/src/query-runtime.integration.test.ts'],
+          include: ['tools/integration/src/query-runtime.integration.test.ts'],
         },
       },
       {
@@ -23,12 +23,7 @@ export default defineConfig({
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
         optimizeDeps: {
-          include: [
-            '@tanstack/react-query',
-            'lucide-react',
-            'zustand',
-            'zustand/vanilla',
-          ],
+          include: ['@tanstack/react-query', 'zustand', 'zustand/vanilla'],
         },
         test: {
           name: 'storybook',

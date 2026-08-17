@@ -1,4 +1,5 @@
 # Global Top Navigation & Sidebar
+
 ### Product Requirements Document
 
 ## 1. Overview
@@ -9,7 +10,7 @@ This PRD covers the persistent navigation shell for the FieldPro application: a 
 
 FieldPro's core workflows (jobs, sales, payments, purchasing, reporting) currently live behind a navigation pattern that isn't specified elsewhere in this request, so this spec assumes the standard problem a persistent nav shell solves: without a single, consistent wrapper, each page risks reinventing navigation, users lose track of where they are in the product, and new sections (like the newly-added Service Locations area) have no obvious place to live. Building the shell once, as a reusable layout, removes that duplication and gives every future page the same wayfinding for free.
 
-> *Assumption — flagged in Open Questions: the specific pain point driving this request wasn't provided. Confirm before treating the above as the source of truth.*
+> _Assumption — flagged in Open Questions: the specific pain point driving this request wasn't provided. Confirm before treating the above as the source of truth._
 
 ## 3. Goals
 
@@ -34,6 +35,7 @@ FieldPro's core workflows (jobs, sales, payments, purchasing, reporting) current
 - As a user, I want quick access to my account (avatar, initials, and a menu) so that I can manage my profile or sign out.
 
 ## 6. Design Reference
+
 - figma url: https://www.figma.com/design/dBJ6OGSYgq8bIVL4gt0uMK/Service-Location?node-id=2-5&t=Wl3uE3Pyf70SoPoc-0
 - screenshot if needed /context/screenshots/top-nav-sidebar.jpg
 
@@ -61,19 +63,19 @@ FieldPro's core workflows (jobs, sales, payments, purchasing, reporting) current
 
 ## 7. Functional Requirements
 
-| # | Requirement |
-|---|---|
-| 1 | The sidebar must render the FieldPro logo and wordmark at the top, above all navigation content. |
-| 2 | The sidebar must render a full-width "Create New" call-to-action button below the header. |
-| 3 | The sidebar must render the primary navigation items (Today, Dashboard, Jobs / Work Orders, Dispatch Board, Customers, Service Locations) as a flat, ungrouped list. |
-| 4 | The sidebar must render the SALES, WORK, PAYMENTS, PURCHASE, and REPORTS sections below the primary list, each with a section label and its own items, in the order shown in the design. |
-| 5 | The system must visually mark the navigation item matching the current route as active (light-blue background, blue icon/text, semibold label), and this must update automatically when the route changes. |
-| 6 | The sidebar must include a "Collapse" control at the bottom that toggles the sidebar between its full width and a collapsed (icon-only) state. |
-| 7 | The top nav must display the current workspace/company name with a control to switch workspaces. |
-| 8 | The top nav must include a search input that accepts free text; behavior on submit/results is out of scope for this spec and should be defined separately. |
-| 9 | The top nav must display a notification icon with a numeric unread-count badge that updates as notifications are read or received. |
-| 10 | The top nav must display the current user's avatar (initials as a fallback) with a menu for account-related actions. |
-| 11 | The navigation shell (sidebar + top nav) must persist across all authenticated pages rather than being re-implemented per page. |
+| #   | Requirement                                                                                                                                                                                                |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | The sidebar must render the FieldPro logo and wordmark at the top, above all navigation content.                                                                                                           |
+| 2   | The sidebar must render a full-width "Create New" call-to-action button below the header.                                                                                                                  |
+| 3   | The sidebar must render the primary navigation items (Today, Dashboard, Jobs / Work Orders, Dispatch Board, Customers, Service Locations) as a flat, ungrouped list.                                       |
+| 4   | The sidebar must render the SALES, WORK, PAYMENTS, PURCHASE, and REPORTS sections below the primary list, each with a section label and its own items, in the order shown in the design.                   |
+| 5   | The system must visually mark the navigation item matching the current route as active (light-blue background, blue icon/text, semibold label), and this must update automatically when the route changes. |
+| 6   | The sidebar must include a "Collapse" control at the bottom that toggles the sidebar between its full width and a collapsed (icon-only) state.                                                             |
+| 7   | The top nav must display the current workspace/company name with a control to switch workspaces.                                                                                                           |
+| 8   | The top nav must include a search input that accepts free text; behavior on submit/results is out of scope for this spec and should be defined separately.                                                 |
+| 9   | The top nav must display a notification icon with a numeric unread-count badge that updates as notifications are read or received.                                                                         |
+| 10  | The top nav must display the current user's avatar (initials as a fallback) with a menu for account-related actions.                                                                                       |
+| 11  | The navigation shell (sidebar + top nav) must persist across all authenticated pages rather than being re-implemented per page.                                                                            |
 
 ## 8. Edge Cases & Error States
 

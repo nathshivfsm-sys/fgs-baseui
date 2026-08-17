@@ -1,8 +1,14 @@
 import {
   createCmsQueryClient,
+  logCmsQueryError,
   type CmsRuntime,
   type UserDetails,
 } from '@cms/platform-contract';
+import { configureCustomFetch } from '@cms/shared-api';
+
+configureCustomFetch({
+  baseUrl: (import.meta.env.VITE_API_URL as string | undefined) ?? '',
+});
 
 const standaloneUser = {
   id: 'standalone-user',
@@ -14,5 +20,5 @@ const standaloneUser = {
 export const standaloneRuntime: CmsRuntime = {
   tenantId: 'standalone',
   currentUser: standaloneUser,
-  queryClient: createCmsQueryClient(),
+  queryClient: createCmsQueryClient({ onError: logCmsQueryError }),
 };

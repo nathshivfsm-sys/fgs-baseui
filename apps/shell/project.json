@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/shell/src",
   "projectType": "application",
+  "tags": ["type:app", "scope:shell"],
   "targets": {
     "serve": {
       "executor": "nx:run-commands",
@@ -14,15 +15,22 @@
     },
     "build": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"],
       "options": {
         "command": "vite build",
         "cwd": "apps/shell"
       }
     },
-    "test-query": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
       "executor": "nx:run-commands",
+      "cache": true,
       "options": {
-        "command": "vitest --run --project query"
+        "command": "tsc --noEmit -p apps/shell/tsconfig.json"
       }
     }
   }

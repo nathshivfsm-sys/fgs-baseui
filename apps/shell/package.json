@@ -9,8 +9,9 @@
     "preview": "vite preview --port 4200 --strictPort"
   },
   "dependencies": {
-    "@cms/platform-contract": "0.0.1",
-    "@cms/ui": "0.0.1",
+    "@cms/platform-contract": "workspace:*",
+    "@cms/shared-api": "workspace:*",
+    "@cms/ui": "workspace:*",
     "@module-federation/runtime": "2.8.2",
     "@tanstack/react-query": "5.101.4",
     "react": "19.2.8",

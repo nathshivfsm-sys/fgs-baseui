@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Wrench } from 'lucide-react';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
-import { Button } from '@cms/ui';
+import { BriefcaseIcon, Button, SectionCard } from '@cms/ui';
 import {
   loadWorkorders,
   workorderKeys,
   workorderListQueryOptions,
   type LoadWorkorders,
   type Workorder,
-} from './workorder.queries';
+} from '@cms/workorder-data-access';
+import { RemoteErrorBoundary } from './error-boundary';
 import { createWorkorderUiStore } from './store/store';
 import './styles.css';
 
-export type { LoadWorkorders, Workorder } from './workorder.queries';
+export type { LoadWorkorders, Workorder } from '@cms/workorder-data-access';
 
 export interface AppProps {
   runtime: CmsRuntime;
@@ -38,68 +38,71 @@ export function App({
   const cardPadding = viewDensity === 'compact' ? 'p-2' : 'p-4';
 
   return (
-    <section className="space-y-4" data-testid="workorder">
-      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">Maintenance</p>
-          <h2 className="flex items-center gap-2 text-2xl font-bold">
-            <Wrench className="size-6 text-primary" /> Work orders
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            Global tenant: {runtime.tenantId} · User:{' '}
-            {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
-            Work-order-local view: {viewDensity}
-          </p>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Button
-            aria-pressed={viewDensity === 'compact'}
-            className="w-full sm:w-auto"
-            onClick={toggleViewDensity}
-            variant="outline"
-          >
-            Toggle local view
-          </Button>
-          <Button
-            aria-busy={query.isFetching}
-            className="w-full sm:w-auto"
-            disabled={query.isFetching}
-            onClick={() =>
-              runtime.queryClient.invalidateQueries({
-                queryKey: workorderKeys.list(runtime.tenantId),
-                exact: true,
-              })
-            }
-          >
-            {query.isFetching && !query.isPending ? 'Refreshing…' : 'Refresh'}
-          </Button>
-        </div>
-      </div>
-      <div className="grid gap-3">
-        {query.isPending ? (
-          <p role="status">Loading work orders…</p>
-        ) : query.isError ? (
-          <p className="text-sm text-destructive" role="alert">
-            Unable to load work orders: {query.error.message}
-          </p>
-        ) : query.data.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No work orders found.</p>
-        ) : (
-          query.data.map((item: Workorder) => (
-            <article
-              className={`rounded-lg border bg-card ${cardPadding}`}
-              key={item.id}
+    <RemoteErrorBoundary>
+      <section className="space-y-4" data-testid="workorder">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">Maintenance</p>
+            <h2 className="flex items-center gap-2 text-2xl font-bold">
+              <BriefcaseIcon className="size-6 text-primary" /> Work orders
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Global tenant: {runtime.tenantId} · User:{' '}
+              {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
+              Work-order-local view: {viewDensity}
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <Button
+              aria-pressed={viewDensity === 'compact'}
+              className="w-full sm:w-auto"
+              onClick={toggleViewDensity}
+              variant="outline"
             >
-              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
-                <strong>{item.id}</strong>
-                <span className="text-sm text-primary">{item.status}</span>
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">{item.title}</p>
-            </article>
-          ))
-        )}
-      </div>
-    </section>
+              Toggle local view
+            </Button>
+            <Button
+              aria-busy={query.isFetching}
+              className="w-full sm:w-auto"
+              disabled={query.isFetching}
+              onClick={() =>
+                runtime.queryClient.invalidateQueries({
+                  queryKey: workorderKeys.list(runtime.tenantId),
+                  exact: true,
+                })
+              }
+            >
+              {query.isFetching && !query.isPending ? 'Refreshing…' : 'Refresh'}
+            </Button>
+          </div>
+        </div>
+        <div className="grid gap-3">
+          {query.isPending ? (
+            <p role="status">Loading work orders…</p>
+          ) : query.isError ? (
+            <p className="text-sm text-destructive" role="alert">
+              Unable to load work orders: {query.error.message}
+            </p>
+          ) : query.data.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No work orders found.
+            </p>
+          ) : (
+            query.data.map((item: Workorder) => (
+              <SectionCard className={cardPadding} key={item.id}>
+                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
+                  <strong>{item.id}</strong>
+                  <span className="text-sm text-primary">{item.status}</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {item.title}
+                </p>
+              </SectionCard>
+            ))
+          )}
+        </div>
+      </section>
+    </RemoteErrorBoundary>
   );
 }
 

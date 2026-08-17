@@ -1,0 +1,19 @@
+{
+  "name": "invoice",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5103 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --port 5103 --strictPort"
+  },
+  "dependencies": {
+    "@cms/platform-contract": "workspace:*",
+    "@cms/shared-api": "workspace:*",
+    "@cms/ui": "workspace:*",
+    "@tanstack/react-query": "5.101.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  }
+}

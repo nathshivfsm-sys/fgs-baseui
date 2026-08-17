@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/workorder/src",
   "projectType": "application",
+  "tags": ["type:app", "scope:workorder"],
   "targets": {
     "serve": {
       "executor": "nx:run-commands",
@@ -11,15 +12,26 @@
         "command": "vite",
         "cwd": "apps/workorder"
       },
-      "dependsOn": [
-        "shell:serve"
-      ]
+      "dependsOn": ["shell:serve"]
     },
     "build": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"],
       "options": {
         "command": "vite build",
         "cwd": "apps/workorder"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p apps/workorder/tsconfig.json"
       }
     }
   }

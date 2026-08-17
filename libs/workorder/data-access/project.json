@@ -1,0 +1,30 @@
+{
+  "name": "workorder-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/workorder/data-access/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:workorder"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/workorder/data-access",
+        "main": "libs/workorder/data-access/src/index.ts",
+        "tsConfig": "libs/workorder/data-access/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/workorder/data-access/tsconfig.json"
+      }
+    }
+  }
+}

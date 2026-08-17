@@ -1,0 +1,11 @@
+{
+  "name": "@cms/integration",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@cms/lead-data-access": "workspace:*",
+    "@cms/platform-contract": "workspace:*",
+    "@cms/workorder-data-access": "workspace:*"
+  }
+}

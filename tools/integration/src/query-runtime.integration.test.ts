@@ -6,11 +6,11 @@ import {
   type CmsQueryErrorEvent,
   type QueryRequestContext,
 } from '@cms/platform-contract';
-import { leadKeys, leadListQueryOptions } from '../../lead/src/lead.queries';
-import { standaloneRuntime as leadRuntime } from '../../lead/src/standalone-runtime';
-import { workorderKeys } from '../../workorder/src/workorder.queries';
-import { standaloneRuntime as workorderRuntime } from '../../workorder/src/standalone-runtime';
-import { cmsRuntime } from './runtime';
+import { leadKeys, leadListQueryOptions } from '@cms/lead-data-access';
+import { workorderKeys } from '@cms/workorder-data-access';
+import { standaloneRuntime as leadRuntime } from '../../../apps/lead/src/standalone-runtime';
+import { standaloneRuntime as workorderRuntime } from '../../../apps/workorder/src/standalone-runtime';
+import { cmsRuntime } from '../../../apps/shell/src/runtime';
 
 const ownedClients = [
   cmsRuntime.queryClient,
