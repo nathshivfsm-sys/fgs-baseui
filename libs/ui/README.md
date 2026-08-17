@@ -43,8 +43,8 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                         |
 | `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`              |
 | `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                             |
-| `SelectField`            | 36px Radix Select                     | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging           |
-| `Select*` primitives     | composable Radix API                  | trigger/content/item composition for advanced consumers                                       |
+| `SelectField`            | 36px Base UI Select                   | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging           |
+| `Select*` primitives     | composable Base UI API                | trigger/content/item composition for advanced consumers                                       |
 | `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                  |
 | `RadioGroup*` primitives | composable Base UI API                | custom radio compositions                                                                     |
 | `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
@@ -69,7 +69,7 @@ npm run storybook:build
 
 ## Accessibility
 
-Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select uses Radix keyboard/focus behavior; switch, tabs, and radio use Base UI's. Do not replace visible labels with placeholders.
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, switch, tabs, and radio use Base UI keyboard/focus behavior; dropdown menu is still Radix pending migration. Do not replace visible labels with placeholders.
 
 ## Known issues
 

@@ -1,13 +1,14 @@
-import * as SelectPrimitive from '@radix-ui/react-select';
+import { Select as SelectPrimitive } from '@base-ui/react/select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { useId } from 'react';
 import { CheckIcon, ChevronDownIcon } from '../../../icons';
+import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const selectTriggerVariants = cva(
-  'flex w-full items-center justify-between gap-2 rounded-md border border-input-strong bg-card px-4 font-form text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] data-[placeholder]:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'flex w-full items-center justify-between gap-2 rounded-md border border-input-strong bg-card px-4 font-form text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: {
       size: {
@@ -25,12 +26,12 @@ export const SelectGroup = SelectPrimitive.Group;
 export const SelectValue = SelectPrimitive.Value;
 
 export interface SelectTriggerProps
-  extends ComponentProps<typeof SelectPrimitive.Trigger>,
+  extends StringClassName<ComponentProps<typeof SelectPrimitive.Trigger>>,
     VariantProps<typeof selectTriggerVariants> {
   invalid?: boolean;
 }
 
-/** Trigger used by the composable shadcn/Radix Select API. */
+/** Trigger used by the composable shadcn/Base UI Select API. */
 export function SelectTrigger({
   children,
   className,
@@ -45,48 +46,59 @@ export function SelectTrigger({
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon asChild>
+      <SelectPrimitive.Icon>
         <ChevronDownIcon className="size-4 shrink-0" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
 }
 
-/** Portalled options surface with native Radix keyboard navigation. */
+export interface SelectContentProps
+  extends StringClassName<ComponentProps<typeof SelectPrimitive.Popup>> {
+  alignItemWithTrigger?: boolean;
+}
+
+/** Portalled options surface with native Base UI keyboard navigation. */
 export function SelectContent({
+  alignItemWithTrigger = false,
   children,
   className,
-  position = 'popper',
   ...props
-}: ComponentProps<typeof SelectPrimitive.Content>) {
+}: SelectContentProps) {
   return (
     <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        className={cn(
-          'z-50 max-h-80 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-border-component bg-popover text-popover-foreground shadow-surface',
-          position === 'popper' && 'translate-y-1',
-          className,
-        )}
-        position={position}
-        {...props}
+      <SelectPrimitive.Positioner
+        alignItemWithTrigger={alignItemWithTrigger}
+        align="start"
+        className="z-50"
+        side="bottom"
+        sideOffset={4}
       >
-        <SelectPrimitive.Viewport className="p-1">
-          {children}
-        </SelectPrimitive.Viewport>
-      </SelectPrimitive.Content>
+        <SelectPrimitive.Popup
+          className={cn(
+            'max-h-80 min-w-[var(--anchor-width)] overflow-hidden rounded-md border border-border-component bg-popover text-popover-foreground shadow-surface',
+            className,
+          )}
+          {...props}
+        >
+          <SelectPrimitive.List className="p-1">
+            {children}
+          </SelectPrimitive.List>
+        </SelectPrimitive.Popup>
+      </SelectPrimitive.Positioner>
     </SelectPrimitive.Portal>
   );
 }
 
-export function SelectItem({
-  children,
-  className,
-  ...props
-}: ComponentProps<typeof SelectPrimitive.Item>) {
+export type SelectItemProps = StringClassName<
+  ComponentProps<typeof SelectPrimitive.Item>
+>;
+
+export function SelectItem({ children, className, ...props }: SelectItemProps) {
   return (
     <SelectPrimitive.Item
       className={cn(
-        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-control outline-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}
@@ -106,17 +118,22 @@ export interface SelectOption {
 }
 
 export interface SelectFieldProps
-  extends Omit<ComponentProps<typeof SelectPrimitive.Root>, 'children'>,
-    VariantProps<typeof selectTriggerVariants> {
+  extends VariantProps<typeof selectTriggerVariants> {
   className?: string;
+  defaultValue?: string;
   description?: ReactNode;
+  disabled?: boolean;
   error?: boolean | ReactNode;
   helperText?: ReactNode;
   id?: string;
   label?: ReactNode;
+  name?: string;
+  onValueChange?: (value: string | null) => void;
   options: readonly SelectOption[];
   placeholder?: ReactNode;
+  required?: boolean;
   triggerClassName?: string;
+  value?: string;
 }
 
 /** High-level Select field for copyable MFE usage; also exposes composable primitives. */
@@ -128,6 +145,7 @@ export function SelectField({
   helperText,
   id,
   label,
+  onValueChange,
   options,
   placeholder = 'Select an option',
   required,
@@ -157,7 +175,16 @@ export function SelectField({
       label={label}
       required={required}
     >
-      <SelectPrimitive.Root disabled={disabled} required={required} {...props}>
+      <SelectPrimitive.Root
+        disabled={disabled}
+        onValueChange={
+          onValueChange
+            ? (value: string | null) => onValueChange(value)
+            : undefined
+        }
+        required={required}
+        {...props}
+      >
         <SelectTrigger
           aria-describedby={describedBy}
           id={selectId}
@@ -165,7 +192,12 @@ export function SelectField({
           size={size}
           className={triggerClassName}
         >
-          <SelectValue placeholder={placeholder} />
+          <SelectValue placeholder={placeholder}>
+            {(value: string | null) =>
+              options.find((option) => option.value === value)?.label ??
+              placeholder
+            }
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
