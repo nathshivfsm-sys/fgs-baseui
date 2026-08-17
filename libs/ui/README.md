@@ -13,6 +13,7 @@ Shared React 19 + TypeScript design-system components for the CMS micro frontend
 ```tsx
 import {
   Button,
+  ComboboxField,
   LocationPinIcon,
   MetricCard,
   RadioGroupField,
@@ -22,6 +23,7 @@ import {
 
 <TextInput label="Code" name="code" placeholder="Enter code" required />
 <SelectField label="Job type" name="jobType" options={[{ label: 'Maintenance', value: 'maintenance' }]} />
+<ComboboxField label="Assign to" name="assignee" options={[{ label: 'Alex Morgan', value: 'alex-morgan' }]} />
 <RadioGroupField label="Pricing" name="pricing" options={[{ label: 'Static', value: 'static' }]} />
 <MetricCard
   label="Total locations"
@@ -61,6 +63,8 @@ Components accept `className` for extension without requiring MFE-specific forks
 ## Design contract
 
 Figma values are centralized in `src/styles/tokens.css` and registered as Tailwind utilities by `src/styles/theme.css`. Form controls use Inter at 14px, 1.4 line-height, 8px radii, 1px borders, and 32/36/40px heights. `brand` is Pricing blue (`#0049bc`), `tab-active` is indigo (`#272757`), and `toggle-active` is green (`#009951`). Metric cards use a 102px minimum height, 44px icon tile, 12px radius, and semantic blue/green/orange/purple/neutral tones. Dark mode overrides remain semantic rather than component-specific.
+
+`components.json` is shadcn CLI config left over from before the Base UI migration; `npx shadcn add <component>` still works for scaffolding a new file, but its output is Radix-based and needs hand-porting to Base UI before it matches the rest of this library. None of the existing six migrated components are CLI-syncable anymore -- they diverge from any shadcn registry variant by design.
 
 Every public component has an autodocs Storybook entry with state, size, edge-case, and interaction examples. Run:
 
