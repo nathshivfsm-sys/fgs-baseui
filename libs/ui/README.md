@@ -1,6 +1,6 @@
 # @cms/ui
 
-Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Radix primitives, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports.
+Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports. Primitives are migrating from Radix UI to Base UI (`@base-ui/react`) component by component; see "Known issues" below for migration status and an open dev-server-only anomaly.
 
 ## Consume from an MFE
 
@@ -48,7 +48,7 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                  |
 | `RadioGroup*` primitives | composable Radix API                  | custom radio compositions                                                                     |
 | `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
-| `Switch`                 | 44x23px                               | low-level Radix switch                                                                        |
+| `Switch`                 | 44x23px                               | low-level Base UI switch                                                                      |
 | `Tabs*`                  | underline tabs                        | controlled/uncontrolled value, disabled triggers, keyboard navigation                         |
 | `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                         |
 | `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                           |
@@ -70,6 +70,26 @@ npm run storybook:build
 ## Accessibility
 
 Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, radio, switch, and tabs use Radix keyboard/focus behavior. Do not replace visible labels with placeholders.
+
+## Known issues
+
+`Switch` is migrating from Radix to Base UI (`@base-ui/react`). The automated
+gate is green — `nx lint ui`, `nx typecheck ui`, `storybook:typecheck`,
+`nx build ui`, and `storybook:test` (real Chromium via Vitest browser mode)
+all pass, including the a11y `test: 'error'` check and an interaction test
+that confirms `defaultChecked` applies correctly and toggles as expected.
+
+However, the interactive Storybook dev preview (`npm run storybook` / `nx run
+ui:storybook`) currently renders `Switch`'s initial `defaultChecked`/`checked`
+state incorrectly — the control visually and functionally shows unchecked
+regardless of the prop. This reproduces even after clearing Vite's dep cache
+and forcing `@base-ui/react/switch` into `optimizeDeps.include`, and does not
+affect the still-Radix `RadioGroup` story in the same dev session, so it is
+isolated to Base UI's `SwitchRoot` under this repo's Storybook Vite dev
+config specifically — not the component code, not the production build, and
+not the `storybook:test` harness (which bundles differently). Root cause not
+yet found. If you notice a Base UI-backed control looking wrong only in the
+interactive dev server, check `storybook:test` before assuming a regression.
 
 ## Figma assumptions
 
