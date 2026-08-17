@@ -46,7 +46,7 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `SelectField`            | 36px Radix Select                     | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging           |
 | `Select*` primitives     | composable Radix API                  | trigger/content/item composition for advanced consumers                                       |
 | `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                  |
-| `RadioGroup*` primitives | composable Radix API                  | custom radio compositions                                                                     |
+| `RadioGroup*` primitives | composable Base UI API                | custom radio compositions                                                                     |
 | `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
 | `Switch`                 | 44x23px                               | low-level Base UI switch                                                                      |
 | `Tabs*`                  | underline tabs, Base UI               | controlled/uncontrolled value, disabled triggers, keyboard navigation                         |
@@ -69,7 +69,7 @@ npm run storybook:build
 
 ## Accessibility
 
-Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select and radio use Radix keyboard/focus behavior; switch and tabs use Base UI's. Do not replace visible labels with placeholders.
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select uses Radix keyboard/focus behavior; switch, tabs, and radio use Base UI's. Do not replace visible labels with placeholders.
 
 ## Known issues
 
