@@ -1,6 +1,6 @@
 # @cms/ui
 
-Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports. All interactive primitives run on Base UI (`@base-ui/react`); the `@radix-ui/*` dependencies are being removed as a final cleanup step. See "Known issues" below for an open dev-server-only anomaly.
+Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports. All interactive primitives run on Base UI (`@base-ui/react`), which also unlocked `ComboboxField` -- a filterable, searchable select that Radix never shipped stable. See "Known issues" below for an open dev-server-only anomaly.
 
 ## Consume from an MFE
 
@@ -37,24 +37,26 @@ Components accept `className` for extension without requiring MFE-specific forks
 
 ## Public components
 
-| Component                | Default                               | Primary configuration                                                                         |
-| ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                   |
-| `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                         |
-| `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`              |
-| `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                             |
-| `SelectField`            | 36px Base UI Select                   | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging           |
-| `Select*` primitives     | composable Base UI API                | trigger/content/item composition for advanced consumers                                       |
-| `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                  |
-| `RadioGroup*` primitives | composable Base UI API                | custom radio compositions                                                                     |
-| `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
-| `Switch`                 | 44x23px                               | low-level Base UI switch                                                                      |
-| `Tabs*`                  | underline tabs, Base UI               | controlled/uncontrolled value, disabled triggers, keyboard navigation                         |
-| `DropdownMenu*`          | modal popup, Base UI                  | `DropdownMenuGroup` required around `DropdownMenuLabel`; items use `onClick`, not `onSelect`  |
-| `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                         |
-| `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                           |
-| `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state |
-| `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                 |
+| Component                | Default                               | Primary configuration                                                                               |
+| ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                         |
+| `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                               |
+| `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`                    |
+| `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                                   |
+| `SelectField`            | 36px Base UI Select                   | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging                 |
+| `Select*` primitives     | composable Base UI API                | trigger/content/item composition for advanced consumers                                             |
+| `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                        |
+| `RadioGroup*` primitives | composable Base UI API                | custom radio compositions                                                                           |
+| `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                             |
+| `Switch`                 | 44x23px                               | low-level Base UI switch                                                                            |
+| `Tabs*`                  | underline tabs, Base UI               | controlled/uncontrolled value, disabled triggers, keyboard navigation                               |
+| `DropdownMenu*`          | modal popup, Base UI                  | `DropdownMenuGroup` required around `DropdownMenuLabel`; items use `onClick`, not `onSelect`        |
+| `ComboboxField`          | 36px filterable Base UI Combobox      | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, `emptyMessage`, field messaging |
+| `Combobox*` primitives   | composable Base UI API                | input/trigger/content/item composition; `ComboboxOption.label` must be a `string`                   |
+| `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                               |
+| `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                                 |
+| `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state       |
+| `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                       |
 
 ## Design contract
 
@@ -70,7 +72,7 @@ npm run storybook:build
 
 ## Accessibility
 
-Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, switch, tabs, radio, and dropdown menu all use Base UI keyboard/focus behavior. Menus are modal by default: the rest of the page goes `aria-hidden`/inert while one is open. Do not replace visible labels with placeholders.
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label` -- including `ComboboxTrigger`, which defaults its own to "Show options" since it's a separate interactive control from the input. Select, switch, tabs, radio, dropdown menu, and combobox all use Base UI keyboard/focus behavior. Menus are modal by default: the rest of the page goes `aria-hidden`/inert while one is open. Do not replace visible labels with placeholders.
 
 ## Known issues
 
