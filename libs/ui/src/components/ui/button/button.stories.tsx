@@ -24,7 +24,6 @@ const meta = {
       control: 'select',
       options: ['sm', 'default', 'lg', 'iconSm', 'icon', 'iconLg'],
     },
-    asChild: { control: 'boolean' },
     loading: { control: 'boolean' },
   },
   args: { children: 'Continue', onClick: fn() },
@@ -69,10 +68,6 @@ export const Loading: Story = {
   args: { loading: true, loadingText: 'Saving…' },
 };
 export const AsLink: Story = {
-  args: { asChild: true },
-  render: (args) => (
-    <Button {...args}>
-      <a href="#button-stories">View documentation</a>
-    </Button>
-  ),
+  args: { render: <a href="#button-stories" /> },
+  render: (args) => <Button {...args}>View documentation</Button>,
 };

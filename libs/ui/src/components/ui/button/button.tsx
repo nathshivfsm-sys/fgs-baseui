@@ -1,4 +1,5 @@
-import { Slot } from '@radix-ui/react-slot';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
@@ -39,27 +40,27 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends ComponentProps<'button'>,
     VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
   loading?: boolean;
   loadingText?: ReactNode;
+  render?: useRender.RenderProp;
 }
 
 /** A reusable shadcn-style action with Figma-aligned variants and loading semantics. */
 export function Button({
-  asChild = false,
   children,
   className,
   disabled,
   loading = false,
   loadingText,
+  render,
   size,
   type,
   variant,
   ...props
 }: ButtonProps) {
-  const Component = asChild ? Slot : 'button';
+  const custom = render !== undefined;
   const content =
-    loading && !asChild ? (
+    loading && !custom ? (
       <>
         <span
           aria-hidden="true"
@@ -71,18 +72,22 @@ export function Button({
       children
     );
 
-  return (
-    <Component
-      aria-busy={loading || undefined}
-      aria-disabled={disabled || loading || undefined}
-      className={cn(buttonVariants({ variant, size }), className)}
-      disabled={asChild ? undefined : disabled || loading}
-      type={asChild ? undefined : (type ?? 'button')}
-      {...props}
-    >
-      {content}
-    </Component>
-  );
+  return useRender({
+    defaultTagName: 'button',
+    render,
+    props: mergeProps<'button'>(
+      {
+        'aria-busy': loading || undefined,
+        'aria-disabled': disabled || loading || undefined,
+        className: cn(buttonVariants({ variant, size }), className),
+        ...(custom
+          ? {}
+          : { disabled: disabled || loading, type: type ?? 'button' }),
+      },
+      props,
+      { children: content },
+    ),
+  });
 }
 
 export { buttonVariants };

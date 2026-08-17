@@ -1,6 +1,6 @@
 # @cms/ui
 
-Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports. Primitives are migrating from Radix UI to Base UI (`@base-ui/react`) component by component; see "Known issues" below for migration status and an open dev-server-only anomaly.
+Shared React 19 + TypeScript design-system components for the CMS micro frontends. The package uses shadcn composition patterns, Tailwind CSS v4 semantic tokens, and side-effect-free JavaScript exports. All interactive primitives run on Base UI (`@base-ui/react`); the `@radix-ui/*` dependencies are being removed as a final cleanup step. See "Known issues" below for an open dev-server-only anomaly.
 
 ## Consume from an MFE
 
@@ -33,13 +33,13 @@ import {
 <Button loading={saving} loadingText="Saving…">Save</Button>
 ```
 
-Components accept `className` for extension without requiring MFE-specific forks. Native inputs support both `value`/`onChange` and `defaultValue`; Radix controls support `value`/change callbacks and default-value equivalents.
+Components accept `className` for extension without requiring MFE-specific forks. Native inputs support both `value`/`onChange` and `defaultValue`; Base UI-backed controls support `value`/change callbacks and default-value equivalents.
 
 ## Public components
 
 | Component                | Default                               | Primary configuration                                                                         |
 | ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `asChild`, native button events                  |
+| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                   |
 | `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                         |
 | `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`              |
 | `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                             |
@@ -74,24 +74,26 @@ Labels and messages are linked by generated IDs, invalid fields expose `aria-inv
 
 ## Known issues
 
-`Switch` is migrating from Radix to Base UI (`@base-ui/react`). The automated
-gate is green — `nx lint ui`, `nx typecheck ui`, `storybook:typecheck`,
-`nx build ui`, and `storybook:test` (real Chromium via Vitest browser mode)
-all pass, including the a11y `test: 'error'` check and an interaction test
-that confirms `defaultChecked` applies correctly and toggles as expected.
+`Switch` runs on Base UI (`@base-ui/react`) as of the Radix -> Base UI
+migration. The automated gate is green — `nx lint ui`, `nx typecheck ui`,
+`storybook:typecheck`, `nx build ui`, and `storybook:test` (real Chromium via
+Vitest browser mode) all pass, including the a11y `test: 'error'` check and
+an interaction test that confirms `defaultChecked` applies correctly and
+toggles as expected.
 
 However, the interactive Storybook dev preview (`npm run storybook` / `nx run
 ui:storybook`) currently renders `Switch`'s initial `defaultChecked`/`checked`
 state incorrectly — the control visually and functionally shows unchecked
 regardless of the prop. This reproduces even after clearing Vite's dep cache
 and forcing `@base-ui/react/switch` into `optimizeDeps.include`, and does not
-affect the still-Radix `RadioGroup` story in the same dev session, so it is
-isolated to Base UI's `SwitchRoot` under this repo's Storybook Vite dev
-config specifically — not the component code, not the production build, and
-not the `storybook:test` harness (which bundles differently). Root cause not
-yet found. If you notice a Base UI-backed control looking wrong only in the
-interactive dev server, check `storybook:test` before assuming a regression.
+affect `RadioGroup`'s equivalent Base UI-backed story in the same dev
+session, so it is isolated to Base UI's `SwitchRoot` under this repo's
+Storybook Vite dev config specifically — not the component code, not the
+production build, and not the `storybook:test` harness (which bundles
+differently). Root cause not yet found. If you notice a Base UI-backed
+control looking wrong only in the interactive dev server, check
+`storybook:test` before assuming a regression.
 
 ## Figma assumptions
 
-The linked frame shows desktop layout and default/selected states but does not expose queryable component-set pages for every hidden variant. Hover, active, focus-visible, disabled, error, loading, read-only, and dark-mode behavior therefore follows the shared shadcn/Radix accessibility contract while retaining the frame's visible dimensions, typography, spacing, radii, and colors. Responsive behavior is intrinsic: controls fill their container, tabs scroll horizontally, and fields/cards use min-width-safe layouts; no unsupported mobile screen composition was inferred.
+The linked frame shows desktop layout and default/selected states but does not expose queryable component-set pages for every hidden variant. Hover, active, focus-visible, disabled, error, loading, read-only, and dark-mode behavior therefore follows the shared shadcn/Base UI accessibility contract while retaining the frame's visible dimensions, typography, spacing, radii, and colors. Responsive behavior is intrinsic: controls fill their container, tabs scroll horizontally, and fields/cards use min-width-safe layouts; no unsupported mobile screen composition was inferred.
