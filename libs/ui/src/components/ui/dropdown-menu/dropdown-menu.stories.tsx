@@ -3,6 +3,7 @@ import { expect, fn, userEvent, within } from 'storybook/test';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -25,15 +26,17 @@ function Example({ onSelect }: { onSelect?: (id: string) => void }) {
         Switch workspace
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => onSelect?.('graceful-cleaning')}>
-          Graceful Cleaning
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onSelect?.('acme-hvac')}>
-          Acme HVAC
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => onSelect?.('graceful-cleaning')}>
+            Graceful Cleaning
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSelect?.('acme-hvac')}>
+            Acme HVAC
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled onSelect={() => onSelect?.('archived')}>
+        <DropdownMenuItem disabled onClick={() => onSelect?.('archived')}>
           Archived (unavailable)
         </DropdownMenuItem>
       </DropdownMenuContent>

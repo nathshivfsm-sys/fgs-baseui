@@ -50,6 +50,7 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                       |
 | `Switch`                 | 44x23px                               | low-level Base UI switch                                                                      |
 | `Tabs*`                  | underline tabs, Base UI               | controlled/uncontrolled value, disabled triggers, keyboard navigation                         |
+| `DropdownMenu*`          | modal popup, Base UI                  | `DropdownMenuGroup` required around `DropdownMenuLabel`; items use `onClick`, not `onSelect`  |
 | `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                         |
 | `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                           |
 | `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state |
@@ -69,7 +70,7 @@ npm run storybook:build
 
 ## Accessibility
 
-Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, switch, tabs, and radio use Base UI keyboard/focus behavior; dropdown menu is still Radix pending migration. Do not replace visible labels with placeholders.
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label`. Select, switch, tabs, radio, and dropdown menu all use Base UI keyboard/focus behavior. Menus are modal by default: the rest of the page goes `aria-hidden`/inert while one is open. Do not replace visible labels with placeholders.
 
 ## Known issues
 
