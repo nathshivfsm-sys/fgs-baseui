@@ -10,10 +10,13 @@ import {
   DropdownMenuTrigger,
   IconButton,
   MenuIcon,
+  MoonIcon,
   SearchIcon,
+  SunIcon,
   TextInput,
 } from '@cms/ui';
 import { formatBadgeCount, getInitials } from '../lib/format';
+import type { Theme } from '../lib/theme';
 import { TENANT_NAMES } from '../store/constants';
 
 export interface TopNavProps {
@@ -21,7 +24,9 @@ export interface TopNavProps {
   notificationCount?: number;
   onOpenMobileSidebar: () => void;
   onTenantChange: (tenantId: string) => void;
+  onToggleTheme: () => void;
   tenantId: string;
+  theme: Theme;
 }
 
 /** Persistent top bar: workspace switcher, global search, notifications, and user menu. */
@@ -30,7 +35,9 @@ export function TopNav({
   notificationCount = 5,
   onOpenMobileSidebar,
   onTenantChange,
+  onToggleTheme,
   tenantId,
+  theme,
 }: TopNavProps) {
   return (
     <header className="flex h-topbar shrink-0 items-center gap-3 border-b border-divider bg-card px-4 sm:px-5">
@@ -78,6 +85,19 @@ export function TopNav({
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-1">
+        <IconButton
+          icon={
+            theme === 'dark' ? (
+              <SunIcon className="size-[18px]" />
+            ) : (
+              <MoonIcon className="size-[18px]" />
+            )
+          }
+          label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          onClick={onToggleTheme}
+          variant="ghost"
+        />
+
         <div className="relative">
           <IconButton
             icon={<BellIcon className="size-[18px]" />}

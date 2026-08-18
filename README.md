@@ -51,19 +51,21 @@ MFE. Invalidate the narrowest key possible; cross-feature prefix invalidation re
 an explicit product reason. Query functions receive TanStack Query's `AbortSignal` and
 must pass it to network clients that support cancellation.
 
-For SSR, create one QueryClient per request, prefetch and dehydrate it, then clear it
-after the response. Never reuse the browser singleton between server requests. Run
-`npm run test:query` to verify shared defaults, request deduplication, cancellation,
-cache sharing, standalone isolation, tenant scoping, and error callbacks.
+**SSR is planned, not implemented.** There is no server entry, `renderToString` call, or
+dehydrate/hydrate boundary anywhere in this repo yet; every QueryClient described above
+runs client-side. Run `pnpm run test:query` to verify shared defaults, request
+deduplication, cancellation, cache sharing, standalone isolation, tenant scoping, and
+error callbacks.
 
 ## Run locally
 
-Node 20.19+ is required. With nvm:
+Node 20.19+ and pnpm are required. With nvm and corepack:
 
 ```bash
 nvm use
-npm install
-npm run dev
+corepack enable
+pnpm install
+pnpm run dev
 ```
 
 Open http://127.0.0.1:4200. The shell reads remote URLs from
@@ -72,19 +74,25 @@ Open http://127.0.0.1:4200. The shell reads remote URLs from
 ## Validate
 
 ```bash
-npm run build
-npm run test:query
-npm run storybook:typecheck
-npm run storybook:build
-npm run storybook:test
-npx tsc --noEmit -p apps/shell/tsconfig.json
-npx tsc --noEmit -p apps/workorder/tsconfig.json
-npx tsc --noEmit -p apps/lead/tsconfig.json
+pnpm run format:check
+pnpm run lint
+pnpm run typecheck
+pnpm run build
+pnpm run test:query
+pnpm run storybook:typecheck
+pnpm run storybook:build
+pnpm run storybook:test
 ```
+
+`pnpm run lint` and `pnpm run typecheck` run against every project; use
+`pnpm exec nx affected -t <target>` to run only what changed relative to a base branch,
+which is what CI does. `test:query` currently covers only the shared QueryClient
+factory (`tools/integration`) — `workorder` and `lead` have no component-level tests
+yet.
 
 ## Storybook
 
-Run `npm run storybook` and open http://localhost:6006. The workspace uses one
+Run `pnpm run storybook` and open http://localhost:6006. The workspace uses one
 Storybook owned by `@cms/ui`; it discovers shared component stories in
 `libs/ui/src` and feature-composition stories in `apps/*/src`.
 
@@ -106,15 +114,63 @@ Conventions:
   stories.
 
 Before running browser tests locally or in CI for the first time, install the
-pinned Chromium browser with `npx playwright install chromium`. CI should run
-`npm ci`, that install command, `npm run storybook:typecheck`,
-`npm run storybook:build`, and `npm run storybook:test`.
+pinned Chromium browser with `pnpm exec playwright install chromium`. CI runs this
+install step plus `pnpm run storybook:typecheck`, `pnpm run storybook:build`, and
+`pnpm run storybook:test` in its slow lane — see `.github/workflows/ci.yml`.
 
 ## Production notes
 
-Deploy each app's `dist` directory independently. Replace the shell's
-`config.json` with immutable, versioned remote URLs. Cache hashed chunks for a
-long time, but serve `config.json` and remote entry files with short/no cache.
-The shell creates one Zustand store and one TanStack QueryClient, then passes
-both to providers through `CmsRuntime`; providers only create local instances
-in standalone mode.
+Each app builds and deploys to its own `dist` directory, but `@cms/ui` and
+`@cms/platform-contract` are not yet consumed as published packages: every
+`vite.config.ts` aliases both to their `libs/*/src` source
+(`tools/module-federation/shared.ts`'s `workspaceAliases()`), so each app's build
+compiles its own copy from source. Changing either library currently requires
+rebuilding all three apps, not just the ones with a version bump to pick up —
+`nx release` and the Verdaccio `local-registry` target exist for closing this gap
+but are not yet wired into a script or CI job. Module Federation's `shared`
+config still deduplicates the *runtime* singleton between the shell and its
+remotes; only the build-time dependency is source-aliased.
+
+Replace the shell's `config.json` with immutable, versioned remote URLs when
+deploying. Cache hashed chunks for a long time, but serve `config.json` and
+remote entry files with short/no cache. The shell creates one Zustand store and
+one TanStack QueryClient, then passes both to providers through `CmsRuntime`;
+providers only create local instances in standalone mode.
+
+`apps/shell/public/config.json` (shown below for local dev) is copied into
+`apps/shell/dist` at build time and fetched at runtime by
+`apps/shell/src/config.ts` — replace it per environment as part of deploying the
+shell, alongside each remote's own `dist`:
+
+```jsonc
+// Local dev — apps/shell/public/config.json
+{
+  "environment": "development",
+  "remotes": {
+    "workorder": { "name": "workorder", "entry": "http://localhost:5101/remoteEntry.js" },
+    "lead": { "name": "lead", "entry": "http://localhost:5102/remoteEntry.js" }
+  }
+}
+```
+
+```jsonc
+// Staging — versioned, immutable remote entry URLs per deploy
+{
+  "environment": "staging",
+  "remotes": {
+    "workorder": { "name": "workorder", "entry": "https://staging-workorder.example.com/v1.4.2/remoteEntry.js" },
+    "lead": { "name": "lead", "entry": "https://staging-lead.example.com/v1.4.2/remoteEntry.js" }
+  }
+}
+```
+
+```jsonc
+// Production — same shape, production hosts and versions
+{
+  "environment": "production",
+  "remotes": {
+    "workorder": { "name": "workorder", "entry": "https://workorder.example.com/v1.4.2/remoteEntry.js" },
+    "lead": { "name": "lead", "entry": "https://lead.example.com/v1.4.2/remoteEntry.js" }
+  }
+}
+```

@@ -1,0 +1,30 @@
+{
+  "name": "lead-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/lead/data-access/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:lead"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/lead/data-access",
+        "main": "libs/lead/data-access/src/index.ts",
+        "tsConfig": "libs/lead/data-access/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/lead/data-access/tsconfig.json"
+      }
+    }
+  }
+}

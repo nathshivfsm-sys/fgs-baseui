@@ -41,15 +41,6 @@ export type CmsQueryKey = readonly [
   ...parts: readonly unknown[],
 ];
 
-declare module '@tanstack/react-query' {
-  interface Register {
-    queryKey: CmsQueryKey;
-    mutationKey: CmsQueryKey;
-    queryMeta: CmsQueryMeta;
-    mutationMeta: CmsQueryMeta;
-  }
-}
-
 export interface QueryRequestContext {
   signal: AbortSignal;
 }
@@ -67,6 +58,16 @@ export type CmsQueryErrorEvent =
       mutationKey: QueryKey | undefined;
       meta: CmsQueryMeta | undefined;
     };
+
+/**
+ * Default telemetry sink for `createCmsQueryClient`'s `onError`. Every runtime
+ * (shell, standalone workorder, standalone lead) wires this in so query/mutation
+ * failures are observable instead of silently discarded. Swap for a real telemetry
+ * client by passing a different `onError` to `createCmsQueryClient`.
+ */
+export function logCmsQueryError(event: CmsQueryErrorEvent) {
+  console.error('[cms-query]', event.source, event.meta, event.error);
+}
 
 export interface CreateCmsQueryClientOptions {
   defaultOptions?: DefaultOptions;

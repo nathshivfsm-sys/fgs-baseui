@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/lead/src",
   "projectType": "application",
+  "tags": ["type:app", "scope:lead"],
   "targets": {
     "serve": {
       "executor": "nx:run-commands",
@@ -11,15 +12,26 @@
         "command": "vite",
         "cwd": "apps/lead"
       },
-      "dependsOn": [
-        "shell:serve"
-      ]
+      "dependsOn": ["shell:serve"]
     },
     "build": {
       "executor": "nx:run-commands",
+      "cache": true,
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"],
       "options": {
         "command": "vite build",
         "cwd": "apps/lead"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p apps/lead/tsconfig.json"
       }
     }
   }

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "RemoteApp",
+  "title": "Create a new Module Federation remote app",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Kebab-case app name (e.g. \"invoice\"). Becomes apps/<name>, the MF remote name, and the scope:<name> Nx tag.",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "What should the new remote app be called (kebab-case, e.g. invoice)?",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable label used in the error boundary and placeholder content. Defaults to a capitalized version of --name."
+    },
+    "port": {
+      "type": "number",
+      "description": "Dev server port. Defaults to one past the highest port already used by an existing app."
+    }
+  },
+  "required": ["name"]
+}

@@ -8,6 +8,10 @@
     "lead": {
       "name": "lead",
       "entry": "http://localhost:5102/remoteEntry.js"
+    },
+    "invoice": {
+      "name": "invoice",
+      "entry": "http://localhost:5103/remoteEntry.js"
     }
   }
 }

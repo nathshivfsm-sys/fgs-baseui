@@ -1,0 +1,19 @@
+{
+  "name": "@cms/workorder-data-access",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "dependencies": {
+    "tslib": "2.8.1",
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "5.101.4"
+  }
+}

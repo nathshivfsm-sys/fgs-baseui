@@ -6,9 +6,9 @@ A Field service management is the easiest way to get connected with local home s
 
 Read the following to get the full context of the project:
 
-- @context/project-overview.md
-- @context/coding-standards.md
-- @context/ai-interaction.md
-- @context/current-feature.md
+- @.claude/context/project-overview.md
+- @.claude/context/coding-standards.md
+- @.claude/context/ai-interaction.md
+- @.claude/context/current-feature.md
 
 **IMPORTANT:** Do not add authored by Claude to any commit messages

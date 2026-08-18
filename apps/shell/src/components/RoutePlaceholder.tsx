@@ -15,8 +15,8 @@ export function RoutePlaceholder({ label, section }: RoutePlaceholderProps) {
         </p>
         <h1 className="mt-1 text-title font-bold text-heading">{label}</h1>
         <p className="mt-2 text-control text-muted-foreground">
-          This page hasn't been built yet — you're viewing the nav shell's placeholder for{' '}
-          {section ? `${section} / ${label}` : label}.
+          This page hasn't been built yet — you're viewing the nav shell's
+          placeholder for {section ? `${section} / ${label}` : label}.
         </p>
       </SectionCard>
     </div>
