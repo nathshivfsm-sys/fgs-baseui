@@ -30,3 +30,27 @@ No feature currently in progress.
     user's choice — its pre-existing "Invoice" nav-config.tsx placeholder
     pointed at `/invoices` (plural) while the generator creates `/invoice`
     (singular, no pluralization); repointed it.
+- Radix UI → Base UI migration (`@cms/ui`) — all six interactive primitives
+  migrated, `@radix-ui/*` removed, and a new `Combobox` added, on
+  `feature/shadcn-cli-alignment`. Verified end-to-end (lint, typecheck,
+  full build, `storybook:test` 82/82 cold cache, `test:query`, `pnpm audit`).
+  - `bee6fe4` — add `@base-ui/react` dependency
+  - `84fc5dc` — migrate Switch (spike; established the conventions reused below)
+  - `c2710d1` — migrate Tabs
+  - `427909f` — migrate RadioGroup
+  - `e7872d4` — migrate Select
+  - `32fc758` — add DropdownMenu stories (behavioral baseline, written before migrating it)
+  - `c2132da` — migrate DropdownMenu + `TopNav.tsx` (landed together; MF shares `@cms/ui` as a singleton)
+  - `c3bc058` — replace Button's `asChild` with Base UI's `render`
+  - `bbb3bd9` — remove Radix dependencies (point of no return, tagged `pre-radix-removal`)
+  - `b15c329` — add `Combobox` (the actual capability payoff — Radix never shipped one)
+  - `fbf824f` — docs cleanup (`libs/ui/README.md`)
+  - `b7625d0` — point `components.json` at the Base UI shadcn registry
+    (`style: "base-nova"`, was `"new-york"`); also found via live testing
+    that `npx shadcn add` doesn't run in this repo at all (pre-existing
+    alias-resolution mismatch, unrelated to Radix vs Base UI, not fixed
+    here — see `libs/ui/README.md`)
+  - Known issue: the interactive `npm run storybook` dev preview renders
+    `Switch`'s initial checked state wrong; isolated to that dev-server path
+    only (not `storybook:test`, not the production build). Root cause not
+    found after three attempts; documented in `libs/ui/README.md`.
