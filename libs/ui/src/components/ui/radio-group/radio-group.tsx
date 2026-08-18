@@ -1,41 +1,63 @@
-import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
+import { Radio } from '@base-ui/react/radio';
+import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
 import type { ComponentProps, ReactNode } from 'react';
 import { useId } from 'react';
+import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
+
+export interface RadioGroupProps
+  extends Omit<
+    StringClassName<ComponentProps<typeof RadioGroupPrimitive>>,
+    'defaultValue' | 'onValueChange' | 'value'
+  > {
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  /** Base UI's RadioGroup has no built-in orientation; this drives layout and aria-orientation. */
+  orientation?: 'horizontal' | 'vertical';
+  value?: string;
+}
 
 export function RadioGroup({
   className,
+  onValueChange,
+  orientation,
   ...props
-}: ComponentProps<typeof RadioGroupPrimitive.Root>) {
+}: RadioGroupProps) {
   return (
-    <RadioGroupPrimitive.Root
+    <RadioGroupPrimitive
+      aria-orientation={orientation}
       className={cn(
         'flex gap-6',
-        props.orientation === 'vertical' && 'flex-col gap-3',
+        orientation === 'vertical' && 'flex-col gap-3',
         className,
       )}
+      onValueChange={
+        onValueChange ? (value: string) => onValueChange(value) : undefined
+      }
       {...props}
     />
   );
 }
 
+export interface RadioGroupItemProps
+  extends Omit<StringClassName<ComponentProps<typeof Radio.Root>>, 'value'> {
+  value: string;
+}
+
 /** Figma-aligned 16px radio with accessible selected, focus, and disabled states. */
-export function RadioGroupItem({
-  className,
-  ...props
-}: ComponentProps<typeof RadioGroupPrimitive.Item>) {
+export function RadioGroupItem({ className, ...props }: RadioGroupItemProps) {
   return (
-    <RadioGroupPrimitive.Item
+    <Radio.Root
       className={cn(
-        'aspect-square size-4 shrink-0 rounded-full border border-input-strong bg-card text-brand outline-none transition-[border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-brand',
+        'aspect-square size-4 shrink-0 rounded-full border border-input-strong bg-card text-brand outline-none transition-[border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-brand',
         className,
       )}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="flex size-full items-center justify-center">
+      <Radio.Indicator className="flex size-full items-center justify-center">
         <span className="size-2 rounded-full bg-brand" />
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
+      </Radio.Indicator>
+    </Radio.Root>
   );
 }
 
@@ -47,7 +69,7 @@ export interface RadioOption {
 }
 
 export interface RadioGroupFieldProps
-  extends Omit<ComponentProps<typeof RadioGroupPrimitive.Root>, 'children'> {
+  extends Omit<RadioGroupProps, 'children'> {
   description?: ReactNode;
   error?: ReactNode;
   helperText?: ReactNode;
@@ -64,6 +86,7 @@ export function RadioGroupField({
   id,
   label,
   options,
+  orientation,
   required,
   ...props
 }: RadioGroupFieldProps) {
@@ -90,39 +113,43 @@ export function RadioGroupField({
       {description != null && (
         <p className="text-control text-field-foreground">{description}</p>
       )}
-      <RadioGroupPrimitive.Root
+      <RadioGroup
         aria-describedby={describedBy}
         aria-invalid={Boolean(error) || undefined}
         aria-labelledby={label ? labelId : undefined}
-        className={cn(
-          'flex gap-6',
-          props.orientation === 'vertical' && 'flex-col gap-3',
-          className,
-        )}
+        className={className}
         id={groupId}
+        orientation={orientation}
         required={required}
         {...props}
       >
-        {options.map((option) => (
-          <label
-            className={cn(
-              'flex cursor-pointer items-start gap-3 text-body leading-[1.4] text-card-foreground',
-              option.disabled && 'cursor-not-allowed text-muted-foreground',
-            )}
-            key={option.value}
-          >
-            <RadioGroupItem disabled={option.disabled} value={option.value} />
-            <span>
-              {option.label}
-              {option.description != null && (
-                <span className="block text-control text-field-foreground">
-                  {option.description}
-                </span>
+        {options.map((option) => {
+          const optionLabelId = `${groupId}-option-${option.value}`;
+          return (
+            <label
+              className={cn(
+                'flex cursor-pointer items-start gap-3 text-body leading-[1.4] text-card-foreground',
+                option.disabled && 'cursor-not-allowed text-muted-foreground',
               )}
-            </span>
-          </label>
-        ))}
-      </RadioGroupPrimitive.Root>
+              key={option.value}
+            >
+              <RadioGroupItem
+                aria-labelledby={optionLabelId}
+                disabled={option.disabled}
+                value={option.value}
+              />
+              <span id={optionLabelId}>
+                {option.label}
+                {option.description != null && (
+                  <span className="block text-control text-field-foreground">
+                    {option.description}
+                  </span>
+                )}
+              </span>
+            </label>
+          );
+        })}
+      </RadioGroup>
       {error != null ? (
         <p
           className="text-control text-destructive"

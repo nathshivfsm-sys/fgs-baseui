@@ -1,5 +1,6 @@
 export * from './button';
 export * from './callout';
+export * from './combobox';
 export * from './dropdown-menu';
 export * from './field';
 export * from './icon-button';

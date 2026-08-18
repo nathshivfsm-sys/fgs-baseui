@@ -1,11 +1,12 @@
-import * as SwitchPrimitive from '@radix-ui/react-switch';
+import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { useId } from 'react';
+import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
 
 const switchVariants = cva(
-  'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent bg-secondary outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-toggle-active data-[state=checked]:bg-toggle-active',
+  'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent bg-secondary outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-toggle-active data-checked:bg-toggle-active',
   {
     variants: { size: { sm: 'h-5 w-9', default: 'h-[23px] w-11' } },
     defaultVariants: { size: 'default' },
@@ -16,9 +17,8 @@ const thumbVariants = cva(
   {
     variants: {
       size: {
-        sm: 'size-4 translate-x-0.5 data-[state=checked]:translate-x-[17px]',
-        default:
-          'size-[19px] translate-x-0.5 data-[state=checked]:translate-x-[22px]',
+        sm: 'size-4 translate-x-0.5 data-checked:translate-x-[17px]',
+        default: 'size-[19px] translate-x-0.5 data-checked:translate-x-[22px]',
       },
     },
     defaultVariants: { size: 'default' },
@@ -26,10 +26,10 @@ const thumbVariants = cva(
 );
 
 export interface SwitchProps
-  extends ComponentProps<typeof SwitchPrimitive.Root>,
+  extends StringClassName<ComponentProps<typeof SwitchPrimitive.Root>>,
     VariantProps<typeof switchVariants> {}
 
-/** Accessible shadcn/Radix switch matching the Figma 44x23px default. */
+/** Accessible shadcn/Base UI switch matching the Figma 44x23px default. */
 export function Switch({ className, size, ...props }: SwitchProps) {
   return (
     <SwitchPrimitive.Root
@@ -41,12 +41,13 @@ export function Switch({ className, size, ...props }: SwitchProps) {
   );
 }
 
-export interface SwitchFieldProps extends SwitchProps {
+export interface SwitchFieldProps extends Omit<SwitchProps, 'onCheckedChange'> {
   description?: ReactNode;
   error?: ReactNode;
   helperText?: ReactNode;
   label: ReactNode;
   labelPosition?: 'before' | 'after';
+  onCheckedChange?: (checked: boolean) => void;
 }
 
 export function SwitchField({
@@ -56,11 +57,13 @@ export function SwitchField({
   id,
   label,
   labelPosition = 'before',
+  onCheckedChange,
   required,
   ...props
 }: SwitchFieldProps) {
   const generatedId = useId();
   const switchId = id ?? generatedId;
+  const labelId = `${switchId}-label`;
   const messageId = `${switchId}-message`;
   return (
     <div className="flex flex-col gap-1 font-form">
@@ -69,6 +72,7 @@ export function SwitchField({
           <label
             className="text-control text-card-foreground"
             htmlFor={switchId}
+            id={labelId}
           >
             {label}
             {required && (
@@ -82,7 +86,13 @@ export function SwitchField({
           aria-describedby={
             error || helperText || description ? messageId : undefined
           }
+          aria-labelledby={labelId}
           id={switchId}
+          onCheckedChange={
+            onCheckedChange
+              ? (checked: boolean) => onCheckedChange(checked)
+              : undefined
+          }
           required={required}
           {...props}
         />
@@ -90,6 +100,7 @@ export function SwitchField({
           <label
             className="text-control text-card-foreground"
             htmlFor={switchId}
+            id={labelId}
           >
             {label}
           </label>

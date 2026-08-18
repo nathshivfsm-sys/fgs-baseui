@@ -118,36 +118,12 @@ export default tseslint.config(
               message:
                 'Use hand-traced icons from @cms/ui instead of lucide-react — see coding-standards.md.',
             },
-            {
-              group: ['@cms/ui/*'],
-              message:
-                'Import from the @cms/ui barrel, not a subpath. Subpaths exist only for the shadcn CLI and intra-library use.',
-            },
           ],
         },
       ],
       // TS already checks unused bindings with better fidelity (type-only imports, etc.).
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
-    },
-  },
-  {
-    // The @cms/ui barrel restriction above would ban the library's own internal
-    // subpath imports (component -> component, icon -> icon-base). Lift it here.
-    files: ['libs/ui/**/*.ts', 'libs/ui/**/*.tsx'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['lucide-react'],
-              message:
-                'Use hand-traced icons from @cms/ui instead of lucide-react — see coding-standards.md.',
-            },
-          ],
-        },
-      ],
     },
   },
   {

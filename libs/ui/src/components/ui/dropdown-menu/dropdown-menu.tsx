@@ -1,40 +1,53 @@
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
+import { Menu } from '@base-ui/react/menu';
 import type { ComponentProps } from 'react';
+import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
 
-export const DropdownMenu = DropdownMenuPrimitive.Root;
-export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+export const DropdownMenu = Menu.Root;
+export const DropdownMenuTrigger = Menu.Trigger;
+/** Groups related items with a `DropdownMenuLabel`; Base UI requires the pairing. */
+export const DropdownMenuGroup = Menu.Group;
 
-/** Portalled options surface with native Radix keyboard navigation. */
+export interface DropdownMenuContentProps
+  extends StringClassName<ComponentProps<typeof Menu.Popup>> {
+  align?: ComponentProps<typeof Menu.Positioner>['align'];
+  sideOffset?: ComponentProps<typeof Menu.Positioner>['sideOffset'];
+}
+
+/** Portalled options surface with native Base UI keyboard navigation. */
 export function DropdownMenuContent({
   align = 'end',
   className,
   sideOffset = 6,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+}: DropdownMenuContentProps) {
   return (
-    <DropdownMenuPrimitive.Portal>
-      <DropdownMenuPrimitive.Content
-        align={align}
-        className={cn(
-          'z-50 min-w-[8rem] overflow-hidden rounded-md border border-border-component bg-popover p-1 text-popover-foreground shadow-surface',
-          className,
-        )}
-        sideOffset={sideOffset}
-        {...props}
-      />
-    </DropdownMenuPrimitive.Portal>
+    <Menu.Portal>
+      <Menu.Positioner align={align} className="z-50" sideOffset={sideOffset}>
+        <Menu.Popup
+          className={cn(
+            'min-w-[8rem] overflow-hidden rounded-md border border-border-component bg-popover p-1 text-popover-foreground shadow-surface',
+            className,
+          )}
+          {...props}
+        />
+      </Menu.Positioner>
+    </Menu.Portal>
   );
 }
+
+export type DropdownMenuItemProps = StringClassName<
+  ComponentProps<typeof Menu.Item>
+>;
 
 export function DropdownMenuItem({
   className,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Item>) {
+}: DropdownMenuItemProps) {
   return (
-    <DropdownMenuPrimitive.Item
+    <Menu.Item
       className={cn(
-        'relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-control outline-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+        'relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}
@@ -42,12 +55,17 @@ export function DropdownMenuItem({
   );
 }
 
+export type DropdownMenuLabelProps = StringClassName<
+  ComponentProps<typeof Menu.GroupLabel>
+>;
+
+/** Must be rendered inside a `DropdownMenuGroup`. */
 export function DropdownMenuLabel({
   className,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Label>) {
+}: DropdownMenuLabelProps) {
   return (
-    <DropdownMenuPrimitive.Label
+    <Menu.GroupLabel
       className={cn(
         'px-2 py-1.5 text-caption font-semibold text-muted-foreground',
         className,
@@ -57,12 +75,16 @@ export function DropdownMenuLabel({
   );
 }
 
+export type DropdownMenuSeparatorProps = StringClassName<
+  ComponentProps<typeof Menu.Separator>
+>;
+
 export function DropdownMenuSeparator({
   className,
   ...props
-}: ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
+}: DropdownMenuSeparatorProps) {
   return (
-    <DropdownMenuPrimitive.Separator
+    <Menu.Separator
       className={cn('-mx-1 my-1 h-px bg-divider', className)}
       {...props}
     />

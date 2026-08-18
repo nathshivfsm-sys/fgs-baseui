@@ -4,6 +4,7 @@ import {
   ChevronDownIcon,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -50,27 +51,24 @@ export function TopNav({
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            className="flex shrink-0 items-center gap-1.5 text-control font-semibold text-heading outline-none"
-            type="button"
-          >
-            <span className="max-w-32 truncate sm:max-w-none">
-              {TENANT_NAMES[tenantId] ?? tenantId}
-            </span>
-            <ChevronDownIcon
-              aria-hidden="true"
-              className="size-3.5 shrink-0 text-muted-foreground"
-            />
-          </button>
+        <DropdownMenuTrigger className="flex shrink-0 items-center gap-1.5 text-control font-semibold text-heading outline-none">
+          <span className="max-w-32 truncate sm:max-w-none">
+            {TENANT_NAMES[tenantId] ?? tenantId}
+          </span>
+          <ChevronDownIcon
+            aria-hidden="true"
+            className="size-3.5 shrink-0 text-muted-foreground"
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
-          {Object.entries(TENANT_NAMES).map(([id, name]) => (
-            <DropdownMenuItem key={id} onSelect={() => onTenantChange(id)}>
-              {name}
-            </DropdownMenuItem>
-          ))}
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
+            {Object.entries(TENANT_NAMES).map(([id, name]) => (
+              <DropdownMenuItem key={id} onClick={() => onTenantChange(id)}>
+                {name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -93,7 +91,9 @@ export function TopNav({
               <MoonIcon className="size-[18px]" />
             )
           }
-          label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          label={
+            theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+          }
           onClick={onToggleTheme}
           variant="ghost"
         />
@@ -115,30 +115,29 @@ export function TopNav({
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              aria-label="Account menu"
-              className="flex items-center gap-1 rounded-full outline-none"
-              type="button"
-            >
-              <span className="flex size-8 items-center justify-center rounded-full bg-brand-blue text-caption font-bold text-brand-blue-foreground">
-                {getInitials(currentUser.displayName) || '?'}
-              </span>
-              <ChevronDownIcon
-                aria-hidden="true"
-                className="size-3 shrink-0 text-muted-foreground"
-              />
-            </button>
+          <DropdownMenuTrigger
+            aria-label="Account menu"
+            className="flex items-center gap-1 rounded-full outline-none"
+          >
+            <span className="flex size-8 items-center justify-center rounded-full bg-brand-blue text-caption font-bold text-brand-blue-foreground">
+              {getInitials(currentUser.displayName) || '?'}
+            </span>
+            <ChevronDownIcon
+              aria-hidden="true"
+              className="size-3 shrink-0 text-muted-foreground"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>
-              <p className="text-control font-semibold text-card-foreground">
-                {currentUser.displayName}
-              </p>
-              <p className="font-normal text-muted-foreground">
-                {currentUser.email}
-              </p>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <p className="text-control font-semibold text-card-foreground">
+                  {currentUser.displayName}
+                </p>
+                <p className="font-normal text-muted-foreground">
+                  {currentUser.email}
+                </p>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Log out</DropdownMenuItem>

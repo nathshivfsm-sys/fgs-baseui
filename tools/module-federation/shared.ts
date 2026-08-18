@@ -17,6 +17,11 @@ export const sharedDependencies = {
   'react-router-dom': { singleton: true, requiredVersion: '7.18.2' },
   '@tanstack/react-query': { singleton: true, requiredVersion: '5.101.4' },
   '@cms/ui': { singleton: true, requiredVersion: uiVersion, strictVersion: false },
+  // Trailing slash is @module-federation/vite's prefix-share convention: it covers
+  // every @cms/ui/<subpath> deep import as the same singleton as the barrel above,
+  // so a component reached via a deep import is still deduplicated across host/remote
+  // bundles instead of each one shipping its own copy.
+  '@cms/ui/': { singleton: true, requiredVersion: uiVersion, strictVersion: false },
   '@cms/platform-contract': {
     singleton: true,
     requiredVersion: platformContractVersion,
@@ -35,14 +40,30 @@ export const sharedDependencies = {
  * separate config files (three vite.config.ts plus .storybook/main.ts). Each caller
  * passes its own absolute path to the workspace root, since Vite config files and
  * Storybook's config loader each compute that root differently.
+ *
+ * Array form (not a plain object) so `@cms/ui` can express both a bare-specifier
+ * entry and a `@cms/ui/<subpath>` entry with different replacement targets. Vite's
+ * alias matcher (bundled @rollup/plugin-alias) treats a plain string `find` as a
+ * prefix match too (`importee === find || importee.startsWith(find + '/')`), so a
+ * single `'@cms/ui'` entry already "matched" deep imports — it just replaced them
+ * with the barrel *file* path, producing an unresolvable path like
+ * `.../index.ts/components/ui/button`. The two anchored regexes below give the
+ * bare specifier and every subpath their own, correct replacement.
  */
 export function workspaceAliases(workspaceRoot: string) {
-  return {
-    '@cms/ui': join(workspaceRoot, 'libs/ui/src/index.ts'),
-    '@cms/platform-contract': join(
-      workspaceRoot,
-      'libs/platform-contract/src/index.ts',
-    ),
-    '@cms/shared-api': join(workspaceRoot, 'libs/shared/api/src/index.ts'),
-  };
+  return [
+    { find: /^@cms\/ui$/, replacement: join(workspaceRoot, 'libs/ui/src/index.ts') },
+    {
+      find: /^@cms\/ui\//,
+      replacement: `${join(workspaceRoot, 'libs/ui/src')}/`,
+    },
+    {
+      find: '@cms/platform-contract',
+      replacement: join(workspaceRoot, 'libs/platform-contract/src/index.ts'),
+    },
+    {
+      find: '@cms/shared-api',
+      replacement: join(workspaceRoot, 'libs/shared/api/src/index.ts'),
+    },
+  ];
 }
