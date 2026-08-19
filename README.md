@@ -7,8 +7,15 @@ Minimal Nx 23 + React 19 CMS using Vite Module Federation.
 - `shell` (port 4200): layout, router, runtime config, Zustand store, QueryClient
 - `workorder` (port 5101): independently built federated provider
 - `lead` (port 5102): independently built federated provider
+- `invoice` (port 5103): independently built federated provider
 - `@cms/ui`: publishable shadcn-style React library with Tailwind v4
 - `@cms/platform-contract`: publishable runtime contract library
+- `@cms/shared-api`: `customFetch` wrapper and typed `ApiError`
+- `@cms/workorder-data-access`, `@cms/lead-data-access`: fetch functions, query hooks,
+  key factories, and Zod schemas for their domain
+
+Add a new remote with `pnpm exec nx g ./tools/generators/remote-app:remote-app <name>`;
+it prints the sidebar wiring for you to apply by hand.
 
 ## Styling architecture
 
@@ -87,8 +94,8 @@ pnpm run storybook:test
 `pnpm run lint` and `pnpm run typecheck` run against every project; use
 `pnpm exec nx affected -t <target>` to run only what changed relative to a base branch,
 which is what CI does. `test:query` currently covers only the shared QueryClient
-factory (`tools/integration`) — `workorder` and `lead` have no component-level tests
-yet.
+factory (`tools/integration`) — `workorder`, `lead`, and `invoice` have no
+component-level tests yet.
 
 ## Storybook
 
@@ -125,10 +132,10 @@ Each app builds and deploys to its own `dist` directory, but `@cms/ui` and
 `vite.config.ts` aliases both to their `libs/*/src` source
 (`tools/module-federation/shared.ts`'s `workspaceAliases()`), so each app's build
 compiles its own copy from source. Changing either library currently requires
-rebuilding all three apps, not just the ones with a version bump to pick up —
+rebuilding all four apps, not just the ones with a version bump to pick up —
 `nx release` and the Verdaccio `local-registry` target exist for closing this gap
 but are not yet wired into a script or CI job. Module Federation's `shared`
-config still deduplicates the *runtime* singleton between the shell and its
+config still deduplicates the _runtime_ singleton between the shell and its
 remotes; only the build-time dependency is source-aliased.
 
 Replace the shell's `config.json` with immutable, versioned remote URLs when
@@ -148,8 +155,9 @@ shell, alongside each remote's own `dist`:
   "environment": "development",
   "remotes": {
     "workorder": { "name": "workorder", "entry": "http://localhost:5101/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "http://localhost:5102/remoteEntry.js" }
-  }
+    "lead": { "name": "lead", "entry": "http://localhost:5102/remoteEntry.js" },
+    "invoice": { "name": "invoice", "entry": "http://localhost:5103/remoteEntry.js" },
+  },
 }
 ```
 
@@ -159,8 +167,9 @@ shell, alongside each remote's own `dist`:
   "environment": "staging",
   "remotes": {
     "workorder": { "name": "workorder", "entry": "https://staging-workorder.example.com/v1.4.2/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "https://staging-lead.example.com/v1.4.2/remoteEntry.js" }
-  }
+    "lead": { "name": "lead", "entry": "https://staging-lead.example.com/v1.4.2/remoteEntry.js" },
+    "invoice": { "name": "invoice", "entry": "https://staging-invoice.example.com/v1.4.2/remoteEntry.js" },
+  },
 }
 ```
 
@@ -170,7 +179,8 @@ shell, alongside each remote's own `dist`:
   "environment": "production",
   "remotes": {
     "workorder": { "name": "workorder", "entry": "https://workorder.example.com/v1.4.2/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "https://lead.example.com/v1.4.2/remoteEntry.js" }
-  }
+    "lead": { "name": "lead", "entry": "https://lead.example.com/v1.4.2/remoteEntry.js" },
+    "invoice": { "name": "invoice", "entry": "https://invoice.example.com/v1.4.2/remoteEntry.js" },
+  },
 }
 ```

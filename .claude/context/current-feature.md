@@ -47,10 +47,12 @@ No feature currently in progress.
   - `fbf824f` — docs cleanup (`libs/ui/README.md`)
   - `b7625d0` — point `components.json` at the Base UI shadcn registry
     (`style: "base-nova"`, was `"new-york"`); also found via live testing
-    that `npx shadcn add` doesn't run in this repo at all (pre-existing
+    that `npx shadcn add` didn't run in this repo at all (pre-existing
     alias-resolution mismatch, unrelated to Radix vs Base UI, not fixed
-    here — see `libs/ui/README.md`)
-  - Known issue: the interactive `npm run storybook` dev preview renders
+    in that commit). **Since fixed** — `tsconfig.base.json` now declares the
+    `@cms/ui/*` wildcard, so the CLI resolves its aliases and `shadcn add`
+    works, provided an explicit `--path` is passed; see `libs/ui/README.md`.
+  - Known issue: the interactive `pnpm run storybook` dev preview renders
     `Switch`'s initial checked state wrong; isolated to that dev-server path
     only (not `storybook:test`, not the production build). Root cause not
     found after three attempts; documented in `libs/ui/README.md`.
