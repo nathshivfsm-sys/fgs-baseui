@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,16 +51,24 @@ export const Default: Story = {
     const trigger = canvas.getByRole('button', { name: 'Switch workspace' });
     await userEvent.click(trigger);
 
+    // Opening is asynchronous (portal + positioning), so query with findBy
+    // rather than asserting on the same tick as the click.
     const body = within(document.body);
     await expect(
-      body.getByRole('menuitem', { name: 'Graceful Cleaning' }),
+      await body.findByRole('menuitem', { name: 'Graceful Cleaning' }),
     ).toBeVisible();
     await expect(body.getByText('Workspaces')).toBeVisible();
 
     // The menu is modal: the rest of the page (including the trigger) goes
     // aria-hidden/inert while it's open, so closing has to happen via
-    // keyboard rather than a second click on the now-inert trigger.
+    // keyboard rather than a second click on the now-inert trigger. Wait for
+    // the close to settle so the story ends in a non-inert state.
     await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(
+        body.queryByRole('menuitem', { name: 'Graceful Cleaning' }),
+      ).not.toBeInTheDocument(),
+    );
   },
 };
 
@@ -79,9 +87,11 @@ export const SelectItem: Story = {
     await userEvent.click(item);
 
     // Selecting an item closes the menu; end the story in that closed state.
-    await expect(
-      body.queryByRole('menuitem', { name: 'Acme HVAC' }),
-    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        body.queryByRole('menuitem', { name: 'Acme HVAC' }),
+      ).not.toBeInTheDocument(),
+    );
   },
 };
 
@@ -93,11 +103,17 @@ export const DisabledItem: Story = {
       canvas.getByRole('button', { name: 'Switch workspace' }),
     );
 
-    const disabledItem = await within(document.body).findByRole('menuitem', {
+    const body = within(document.body);
+    const disabledItem = await body.findByRole('menuitem', {
       name: 'Archived (unavailable)',
     });
     await expect(disabledItem).toHaveAttribute('data-disabled');
 
     await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(
+        body.queryByRole('menuitem', { name: 'Archived (unavailable)' }),
+      ).not.toBeInTheDocument(),
+    );
   },
 };
