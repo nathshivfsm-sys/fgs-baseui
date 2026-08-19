@@ -1,17 +1,19 @@
 import type { ComponentProps } from 'react';
 import { cn } from '../../../lib/cn';
+import { cardSurfaceVariants } from '../card';
 
-/** Neutral 16px-radius section surface used by the Figma settings and pricing groups. */
+/**
+ * Neutral 16px-radius section surface used by the Figma settings and pricing
+ * groups. Shares `Card`'s surface styling; use `Card` for content cards with
+ * header/action/footer slots, `SectionCard` for page-level `<section>` groups.
+ */
 export function SectionCard({
   className,
   ...props
 }: ComponentProps<'section'>) {
   return (
     <section
-      className={cn(
-        'rounded-card border border-border-component bg-card p-4 text-card-foreground',
-        className,
-      )}
+      className={cn(cardSurfaceVariants(), 'p-4', className)}
       {...props}
     />
   );

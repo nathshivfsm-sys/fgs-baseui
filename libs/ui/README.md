@@ -43,6 +43,13 @@ Components accept `className` for extension without requiring MFE-specific forks
 | ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                         |
 | `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                               |
+| `Checkbox`               | 16px, Base UI                         | `size`, `invalid`, `indeterminate`, `checked`/`defaultChecked`, `onCheckedChange`                   |
+| `Accordion*`             | single panel open, Base UI            | `value`/`defaultValue` (array), `multiple`, per-item `disabled`, height transition                  |
+| `Avatar*`                | 32px, initials fallback               | `size` (published as `data-size`), `AvatarImage`/`AvatarFallback`/`AvatarBadge`/`AvatarGroup`       |
+| `Card*`                  | `size="default"` (16px spacing)       | `size`, header/title/description/action/content/footer slots                                        |
+| `Dialog*`                | modal, close action, Base UI          | `showCloseButton`, `closeLabel`, header/footer slots; footer `showCloseButton`                      |
+| `Popover*`               | 288px wide, bottom/center             | `align`, `alignOffset`, `side`, `sideOffset`, header/title/description slots                        |
+| `Calendar`               | single month, label caption           | `mode`, `captionLayout`, `buttonVariant`, `showWeekNumber`, all react-day-picker props              |
 | `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`                    |
 | `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                                   |
 | `SelectField`            | 36px Base UI Select                   | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging                 |
@@ -59,6 +66,13 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                                 |
 | `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state       |
 | `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                       |
+
+### Shared internals worth knowing
+
+- `Card` and `SectionCard` share one surface definition, `cardSurfaceVariants` (radius, border, background). `Card` is the content card with header/action/footer slots; `SectionCard` is the page-level `<section>` group. Neither redefines the surface.
+- `Dialog`'s corner close action is an `IconButton`, and its footer dismiss action is a `Button`, both passed through Base UI's `render` prop rather than reimplemented. `Calendar`'s day cells and month navigation reuse `Button`/`buttonVariants` the same way.
+- `Combobox` reuses `selectTriggerVariants` for its input geometry; `SelectField`, `ComboboxField`, `TextInput`, and `Textarea` all compose `Field` for label/description/error layout.
+- Composed parts that need to react to a parent's configuration read it from a `data-*` attribute on the root (`data-size` on `Card`/`Avatar`, `data-slot` on every part). `Calendar` also keys off `data-slot` to drop its background inside `CardContent` and `PopoverContent`.
 
 ## Design contract
 
@@ -88,7 +102,7 @@ npm run storybook:build
 
 ## Accessibility
 
-Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label` -- including `ComboboxTrigger`, which defaults its own to "Show options" since it's a separate interactive control from the input. Select, switch, tabs, radio, dropdown menu, and combobox all use Base UI keyboard/focus behavior. Menus are modal by default: the rest of the page goes `aria-hidden`/inert while one is open. Do not replace visible labels with placeholders.
+Labels and messages are linked by generated IDs, invalid fields expose `aria-invalid`, errors use live alert semantics, loading actions expose `aria-busy`, and icon-only actions require an accessible `label` -- including `ComboboxTrigger`, which defaults its own to "Show options" since it's a separate interactive control from the input, and `DialogContent`'s close action, whose label is configurable via `closeLabel`. `Checkbox` renders a `button[role=checkbox]` (Base UI), so pair a visible label with `aria-labelledby` rather than `label[for]`. Select, switch, tabs, radio, dropdown menu, and combobox all use Base UI keyboard/focus behavior. Menus are modal by default: the rest of the page goes `aria-hidden`/inert while one is open. Do not replace visible labels with placeholders.
 
 ## Known issues
 

@@ -8,6 +8,8 @@ export * from './check-icon';
 export * from './chevron-down-icon';
 export * from './chevron-left-icon';
 export * from './chevron-right-icon';
+export * from './chevron-up-icon';
+export * from './close-icon';
 export * from './collapse-icon';
 export * from './columns-icon';
 export * from './dashboard-icon';
