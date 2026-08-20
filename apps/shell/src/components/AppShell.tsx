@@ -7,6 +7,7 @@ import { TopNav } from './TopNav';
 export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
+  onLogout: () => void;
   onTenantChange: (tenantId: string) => void;
   onToggleTheme: () => void;
   tenantId: string;
@@ -17,6 +18,7 @@ export interface AppShellProps {
 export function AppShell({
   children,
   currentUser,
+  onLogout,
   onTenantChange,
   onToggleTheme,
   tenantId,
@@ -54,6 +56,7 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <TopNav
           currentUser={currentUser}
+          onLogout={onLogout}
           onOpenMobileSidebar={() => setMobileOpen(true)}
           onTenantChange={onTenantChange}
           onToggleTheme={onToggleTheme}

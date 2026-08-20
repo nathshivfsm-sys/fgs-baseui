@@ -1,12 +1,23 @@
 import { Component, Suspense, useMemo, type ReactNode } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import {
+  matchPath,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
+import { RequireAuth, useAuth } from '@cms/shared-auth';
 import { AppShell } from './components/AppShell';
 import { ALL_NAV_ROUTES } from './components/nav-config';
+import { PublicShell } from './components/PublicShell';
 import { RoutePlaceholder } from './components/RoutePlaceholder';
 import { lazyProvider } from './mf';
+import { LoginPage } from './pages/LoginPage';
+import { PUBLIC_ROUTE_PATTERNS } from './routes';
 import { cmsRuntime } from './runtime';
+import { GUEST_USER } from './store/constants';
 import { shellStore } from './store/store';
 
 class ProviderBoundary extends Component<
@@ -45,24 +56,37 @@ const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders', '/invoice']);
 
 export function App() {
   const tenantId = useStore(shellStore, (state) => state.tenantId);
-  const currentUser = useStore(shellStore, (state) => state.currentUser);
   const theme = useStore(shellStore, (state) => state.theme);
   const setTenantId = useStore(shellStore, (state) => state.setTenantId);
   const toggleTheme = useStore(shellStore, (state) => state.toggleTheme);
+  const { logout, user } = useAuth();
+  const { pathname } = useLocation();
+
   const mfeRuntime = useMemo<CmsRuntime>(
-    () => ({ ...cmsRuntime, tenantId, currentUser }),
-    [currentUser, tenantId],
+    () => ({ ...cmsRuntime, tenantId, currentUser: user ?? GUEST_USER }),
+    [tenantId, user],
   );
 
-  return (
-    <AppShell
-      currentUser={currentUser}
-      onTenantChange={setTenantId}
-      onToggleTheme={toggleTheme}
-      tenantId={tenantId}
-      theme={theme}
-    >
-      <Routes>
+  const isPublicRoute = PUBLIC_ROUTE_PATTERNS.some(
+    (pattern) => matchPath(pattern, pathname) !== null,
+  );
+
+  const routes = (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Mounted outside RequireAuth on purpose: the invoice remote mixes a public
+          payment route with protected ones and applies its own guard per route. */}
+      <Route
+        path="/invoice/*"
+        element={
+          <ProviderBoundary name="Invoice">
+            <Invoice runtime={mfeRuntime} />
+          </ProviderBoundary>
+        }
+      />
+
+      <Route element={<RequireAuth />}>
         <Route path="/" element={<Navigate to="/workorders" replace />} />
         <Route
           path="/workorders/*"
@@ -80,14 +104,6 @@ export function App() {
             </ProviderBoundary>
           }
         />
-        <Route
-          path="/invoice/*"
-          element={
-            <ProviderBoundary name="Invoice">
-              <Invoice runtime={mfeRuntime} />
-            </ProviderBoundary>
-          }
-        />
         {ALL_NAV_ROUTES.filter((route) => !MFE_ROUTE_PATHS.has(route.path)).map(
           (route) => (
             <Route
@@ -99,8 +115,25 @@ export function App() {
             />
           ),
         )}
-      </Routes>
+      </Route>
+    </Routes>
+  );
+
+  // Anonymous visitors — and anyone on a public route — get the logo-only chrome. The
+  // `user !== null` check also narrows the type for AppShell's non-nullable prop.
+  return user !== null && !isPublicRoute ? (
+    <AppShell
+      currentUser={user}
+      onLogout={logout}
+      onTenantChange={setTenantId}
+      onToggleTheme={toggleTheme}
+      tenantId={tenantId}
+      theme={theme}
+    >
+      {routes}
     </AppShell>
+  ) : (
+    <PublicShell>{routes}</PublicShell>
   );
 }
 
