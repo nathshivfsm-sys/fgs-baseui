@@ -1,29 +1,37 @@
 import type { CmsRuntime } from '@cms/platform-contract';
-import { SectionCard } from '@cms/ui';
+import { RequireAuth } from '@cms/shared-auth';
+import { Route, Routes } from 'react-router-dom';
 import { RemoteErrorBoundary } from './error-boundary';
+import { InvoiceDetailPage } from './pages/detail';
+import { InvoiceListPage } from './pages/list';
+import { InvoicePaymentPage } from './pages/payment';
 import './styles.css';
 
 export interface AppProps {
   runtime: CmsRuntime;
 }
 
+/**
+ * The remote owns its own access rules. Paths are relative, so this table mounts at
+ * /invoice under the shell and at / on the standalone dev server without changes.
+ *
+ * `payment/:invoiceId` outranks `:invoiceId` regardless of order — React Router scores a
+ * static segment above a dynamic one — so a customer-facing payment link never falls
+ * through to the protected detail route.
+ */
 export function App({ runtime }: AppProps) {
   return (
     <RemoteErrorBoundary>
-      <section className="space-y-4" data-testid="invoice">
-        <div>
-          <h2 className="text-2xl font-bold">Invoice</h2>
-          <p className="text-xs text-muted-foreground">
-            Global tenant: {runtime.tenantId} · User:{' '}
-            {runtime.currentUser.displayName} ({runtime.currentUser.role})
-          </p>
-        </div>
-        <SectionCard>
-          <p className="text-sm text-muted-foreground">
-            Invoice remote is running. Replace this with real content.
-          </p>
-        </SectionCard>
-      </section>
+      <div data-testid="invoice" data-tenant={runtime.tenantId}>
+        <Routes>
+          <Route path="payment/:invoiceId" element={<InvoicePaymentPage />} />
+
+          <Route element={<RequireAuth />}>
+            <Route index element={<InvoiceListPage />} />
+            <Route path=":invoiceId" element={<InvoiceDetailPage />} />
+          </Route>
+        </Routes>
+      </div>
     </RemoteErrorBoundary>
   );
 }
