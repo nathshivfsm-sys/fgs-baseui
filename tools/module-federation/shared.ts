@@ -4,24 +4,32 @@ import { join } from 'node:path';
 const require = createRequire(import.meta.url);
 
 const uiVersion: string = require('../../libs/ui/package.json').version;
-const platformContractVersion: string = require(
-  '../../libs/platform-contract/package.json',
-).version;
-const sharedApiVersion: string = require(
-  '../../libs/shared/api/package.json',
-).version;
+const platformContractVersion: string =
+  require('../../libs/platform-contract/package.json').version;
+const sharedApiVersion: string =
+  require('../../libs/shared/api/package.json').version;
+const sharedAuthVersion: string =
+  require('../../libs/shared/auth/package.json').version;
 
 export const sharedDependencies = {
   react: { singleton: true, requiredVersion: '19.2.8' },
   'react-dom': { singleton: true, requiredVersion: '19.2.8' },
   'react-router-dom': { singleton: true, requiredVersion: '7.18.2' },
   '@tanstack/react-query': { singleton: true, requiredVersion: '5.101.4' },
-  '@cms/ui': { singleton: true, requiredVersion: uiVersion, strictVersion: false },
+  '@cms/ui': {
+    singleton: true,
+    requiredVersion: uiVersion,
+    strictVersion: false,
+  },
   // Trailing slash is @module-federation/vite's prefix-share convention: it covers
   // every @cms/ui/<subpath> deep import as the same singleton as the barrel above,
   // so a component reached via a deep import is still deduplicated across host/remote
   // bundles instead of each one shipping its own copy.
-  '@cms/ui/': { singleton: true, requiredVersion: uiVersion, strictVersion: false },
+  '@cms/ui/': {
+    singleton: true,
+    requiredVersion: uiVersion,
+    strictVersion: false,
+  },
   '@cms/platform-contract': {
     singleton: true,
     requiredVersion: platformContractVersion,
@@ -30,6 +38,14 @@ export const sharedDependencies = {
   '@cms/shared-api': {
     singleton: true,
     requiredVersion: sharedApiVersion,
+    strictVersion: false,
+  },
+  // Must be a singleton: the auth React context is consumed by remotes, and a second
+  // instance of this module would give each remote its own context object — `useAuth`
+  // would then throw "must be used within an AuthProvider" despite the host providing one.
+  '@cms/shared-auth': {
+    singleton: true,
+    requiredVersion: sharedAuthVersion,
     strictVersion: false,
   },
 } as const;
@@ -52,7 +68,24 @@ export const sharedDependencies = {
  */
 export function workspaceAliases(workspaceRoot: string) {
   return [
-    { find: /^@cms\/ui$/, replacement: join(workspaceRoot, 'libs/ui/src/index.ts') },
+    // NOTE: `@cms/shared-auth` is deliberately absent. An alias rewrites the bare
+    // specifier to a file path before the federation plugin can wrap the import in a
+    // `loadShare` call, so the module silently bypasses the shared scope and every
+    // container ends up with its own copy — the plugin itself reports this at build
+    // time as "Detected alias conflicts with shared modules". That is harmless for
+    // stateless libraries but fatal for `@cms/shared-auth`, whose React context is
+    // identified by object identity: a remote would throw "useAuth must be used within
+    // an AuthProvider" despite the host rendering one. It resolves through its
+    // package.json `exports` instead. See libs/shared/auth/README.md.
+    //
+    // The four entries below still carry that conflict; they are currently duplicated
+    // across containers too. Harmless so far — none of them holds cross-boundary state
+    // — but the first stateful addition to @cms/ui (a theme context, a toast store)
+    // will break the same way, and the fix is the same one applied to shared-auth.
+    {
+      find: /^@cms\/ui$/,
+      replacement: join(workspaceRoot, 'libs/ui/src/index.ts'),
+    },
     {
       find: /^@cms\/ui\//,
       replacement: `${join(workspaceRoot, 'libs/ui/src')}/`,
