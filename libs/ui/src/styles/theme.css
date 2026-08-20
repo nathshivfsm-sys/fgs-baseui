@@ -43,6 +43,22 @@
   --radius-card: 1rem;
   --shadow-xs: 0 1px 2px 0 #1018280d;
   --shadow-surface: 4px 4px 64px 16px #00000005;
+
+  /* Text-caret blink for one-time-code inputs, which draw their own caret
+     because the underlying field is visually hidden. */
+  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+
+  @keyframes caret-blink {
+    0%,
+    70%,
+    100% {
+      opacity: 1;
+    }
+    20%,
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 @theme inline {

@@ -26,6 +26,7 @@ export * from './lead-icon';
 export * from './location-pin-icon';
 export * from './lock-icon';
 export * from './menu-icon';
+export * from './minus-icon';
 export * from './moon-icon';
 export * from './more-vertical-icon';
 export * from './organization-icon';
