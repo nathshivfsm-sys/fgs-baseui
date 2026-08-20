@@ -11,12 +11,12 @@ even though the host is rendering one. It is therefore declared `singleton: true
 `tools/module-federation/shared.ts`, alongside `react`, `react-dom`, and
 `react-router-dom`.
 
-**`singleton: true` alone is not enough**, and this cost real debugging time. Every other
-`@cms/*` library also appears in `workspaceAliases()`, which rewrites the bare specifier
-to an absolute source path. That rewrite happens _before_ the federation plugin can
-replace the import with a `loadShare` call, so the module never reaches the shared scope
-and each container quietly bundles its own copy — declared singleton or not. The plugin
-reports it at build time:
+**`singleton: true` alone is not enough**, and this cost real debugging time. Every
+`@cms/*` library used to be aliased to its source path in each app's `vite.config.ts`.
+That rewrite happens _before_ the federation plugin can replace the import with a
+`loadShare` call, so the module never reaches the shared scope and each container
+quietly bundles its own copy — declared singleton or not. The plugin said so on every
+build:
 
 ```
 [Module Federation] Detected alias conflicts with shared modules:
@@ -25,19 +25,21 @@ reports it at build time:
                     Module Federation's sharing mechanism.
 ```
 
-That duplication is invisible for stateless libraries, which is why it went unnoticed
-until this one. Two rules follow:
+The duplication is invisible for stateless libraries, which is why it went unnoticed
+until this one: a React context is identified by object identity, so the second copy made
+remotes throw `useAuth must be used within an AuthProvider` while the host was rendering
+one. The apps no longer alias `@cms/*` at all — every one of these libraries resolves
+through its `package.json` `exports`, which point at `./src/index.ts` so the pnpm
+workspace symlink lands on a file that exists. Storybook still aliases them
+(`.storybook/aliases.ts`); it has no Module Federation and the workspace root declares no
+`@cms/*` dependencies to resolve through.
 
-1. **`@cms/shared-auth` must not be added to `workspaceAliases()`.**
-2. Its `package.json` `exports` therefore point at `./src/index.ts`, not the
-   `./src/index.js` the other libraries name — resolution now really goes through
-   node_modules (the pnpm workspace symlink), so the target has to be a file that
-   exists. Vite resolves the symlink to a path inside the workspace and transpiles it
-   like any other source file.
+**Never add a `resolve.alias` entry for anything in `sharedDependencies`.**
 
 Verified end to end in a real browser against both the dev servers and the production
 build: an anonymous visit to `/invoice` redirects to `/login`, while
-`/invoice/payment/:invoiceId` renders.
+`/invoice/payment/:invoiceId` renders. The runtime shared scope shows exactly one
+provider per `@cms/*` package, supplied by the shell.
 
 ## API
 

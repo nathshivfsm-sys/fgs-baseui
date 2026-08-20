@@ -128,15 +128,20 @@ install step plus `pnpm run storybook:typecheck`, `pnpm run storybook:build`, an
 ## Production notes
 
 Each app builds and deploys to its own `dist` directory, but `@cms/ui` and
-`@cms/platform-contract` are not yet consumed as published packages: every
-`vite.config.ts` aliases both to their `libs/*/src` source
-(`tools/module-federation/shared.ts`'s `workspaceAliases()`), so each app's build
-compiles its own copy from source. Changing either library currently requires
-rebuilding all four apps, not just the ones with a version bump to pick up —
-`nx release` and the Verdaccio `local-registry` target exist for closing this gap
-but are not yet wired into a script or CI job. Module Federation's `shared`
-config still deduplicates the _runtime_ singleton between the shell and its
-remotes; only the build-time dependency is source-aliased.
+`@cms/platform-contract` are not yet consumed as published packages: each library's
+`package.json` `exports` points at its own `libs/*/src` source, which the apps reach
+through the pnpm workspace symlink, so each app's build compiles its own copy from
+source. Changing either library currently requires rebuilding all four apps, not just
+the ones with a version bump to pick up — `nx release` and the Verdaccio
+`local-registry` target exist for closing this gap but are not yet wired into a script
+or CI job. Module Federation's `shared` config deduplicates the _runtime_ singleton
+between the shell and its remotes; only the build-time dependency is source-resolved.
+
+No `vite.config.ts` may add a `resolve.alias` for a `@cms/*` package. An alias rewrites
+the bare specifier before `@module-federation/vite` can wrap the import in `loadShare`,
+which silently defeats `singleton: true` — see `tools/module-federation/shared.ts`.
+Storybook is the one exception (`.storybook/aliases.ts`); it has no Module Federation,
+and the workspace root declares no `@cms/*` dependencies to resolve through.
 
 Replace the shell's `config.json` with immutable, versioned remote URLs when
 deploying. Cache hashed chunks for a long time, but serve `config.json` and
