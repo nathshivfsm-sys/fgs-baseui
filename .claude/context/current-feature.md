@@ -2,11 +2,29 @@
 
 ## Status
 
-No feature currently in progress.
+[Auth-based routing](features/auth-based-routing.md) — implemented and verified on
+`feature/auth-based-routing`, **not yet committed** (awaiting review).
+
+Shared `@cms/shared-auth` library (session, `useAuth`, `RequireAuth`), a dummy login
+screen in the shell, and a hybrid public/private route table in the `invoice` remote:
+`/invoice/payment/:invoiceId` is public, `/invoice` and `/invoice/:invoiceId` are
+guarded. Public pages render under a logo-only top bar instead of the authenticated
+sidebar and top nav.
 
 ## Notes
 
-(none)
+- Verified with `lint`, `typecheck`, `build`, `test:query`, `storybook:test`
+  (122/122), plus a 23-check scripted browser pass run against **both** the dev servers
+  and the production `vite preview` build.
+- Two pre-existing failures are unrelated to this work and were not fixed:
+  - `<%= name %>:lint` / `<%= name %>:typecheck` — Nx registers
+    `tools/generators/remote-app/files/project.json` (an EJS template) as a phantom
+    project whose targets point at `apps/<%= name %>`, a path that never exists.
+  - `[ Module Federation DTS ] Failed to generate type declaration #TYPE-001` — emitted
+    by every remote build including untouched ones (`lead`, `workorder`); non-fatal,
+    the build succeeds.
+- **Do not run `pnpm run format`** on this checkout — Prettier rewrites CRLF to LF across
+  every tracked file, producing a ~250-file diff. Format only the files you touched.
 
 ## History
 
