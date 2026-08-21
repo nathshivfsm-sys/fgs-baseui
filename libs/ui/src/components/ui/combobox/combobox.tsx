@@ -30,19 +30,24 @@ export interface ComboboxInputProps
       StringClassName<ComponentProps<typeof ComboboxPrimitive.Input>>,
       'size'
     >,
-    Pick<SelectTriggerProps, 'invalid' | 'size'> {}
+    Pick<SelectTriggerProps, 'invalid' | 'size' | 'variant'> {}
 
 /** Input used by the composable Combobox API; reuses Select's trigger geometry and tokens. */
 export function ComboboxInput({
   className,
   invalid,
   size,
+  variant,
   ...props
 }: ComboboxInputProps) {
   return (
     <ComboboxPrimitive.Input
       aria-invalid={invalid || undefined}
-      className={cn(selectTriggerVariants({ size }), 'pr-8', className)}
+      className={cn(
+        selectTriggerVariants({ size, variant }),
+        'pr-8',
+        className,
+      )}
       {...props}
     />
   );

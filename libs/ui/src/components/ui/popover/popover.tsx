@@ -55,6 +55,17 @@ export function PopoverHeader({ className, ...props }: ComponentProps<'div'>) {
   );
 }
 
+/** Trailing action row, e.g. Cancel and Save for an inline edit form. */
+export function PopoverFooter({ className, ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('flex items-center justify-end gap-2', className)}
+      data-slot="popover-footer"
+      {...props}
+    />
+  );
+}
+
 export type PopoverTitleProps = StringClassName<
   ComponentProps<typeof PopoverPrimitive.Title>
 >;

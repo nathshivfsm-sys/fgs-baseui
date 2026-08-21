@@ -8,7 +8,11 @@ const meta = {
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
   args: { 'aria-label': 'Service taxable', onCheckedChange: fn() },
-  argTypes: { size: { control: 'select', options: ['sm', 'default', 'lg'] } },
+  argTypes: {
+    size: { control: 'select', options: ['sm', 'default', 'lg'] },
+    radius: { control: 'inline-radio', options: ['xs', 'sm'] },
+    tone: { control: 'inline-radio', options: ['brand', 'action'] },
+  },
 } satisfies Meta<typeof Checkbox>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -31,6 +35,20 @@ export const Disabled: Story = {
   args: { disabled: true, defaultChecked: true },
 };
 export const Invalid: Story = { args: { invalid: true } };
+
+/** Form checkboxes in the designs use a 2px radius and the action blue. */
+export const SoftFormStyle: Story = {
+  args: { defaultChecked: true, radius: 'xs', size: 'sm', tone: 'action' },
+};
+
+export const Radii: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-3">
+      <Checkbox {...args} defaultChecked radius="xs" />
+      <Checkbox {...args} defaultChecked radius="sm" />
+    </div>
+  ),
+};
 
 /**
  * `Checkbox` renders a `button[role=checkbox]`, so a visible label is linked

@@ -6,12 +6,20 @@ import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
 
 const checkboxVariants = cva(
-  'peer relative flex shrink-0 items-center justify-center rounded-sm border border-input-strong bg-card text-primary-foreground outline-none transition-[background-color,border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-brand data-checked:bg-brand aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20',
+  'peer relative flex shrink-0 items-center justify-center border border-input-strong bg-card text-primary-foreground outline-none transition-[background-color,border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20',
   {
     variants: {
       size: { sm: 'size-3.5', default: 'size-4', lg: 'size-5' },
+      /** The designs use a 2px radius in forms and 4px in table headers. */
+      radius: { xs: 'rounded-xs', sm: 'rounded-sm' },
+      tone: {
+        brand: 'data-checked:border-brand data-checked:bg-brand',
+        /** Interactive blue used by the Service Location screens. */
+        action:
+          'data-checked:border-action data-checked:bg-action data-checked:text-action-foreground',
+      },
     },
-    defaultVariants: { size: 'default' },
+    defaultVariants: { size: 'default', radius: 'sm', tone: 'brand' },
   },
 );
 
@@ -25,13 +33,15 @@ export interface CheckboxProps
 export function Checkbox({
   className,
   invalid,
+  radius,
   size,
+  tone,
   ...props
 }: CheckboxProps) {
   return (
     <CheckboxPrimitive.Root
       aria-invalid={invalid || undefined}
-      className={cn(checkboxVariants({ size }), className)}
+      className={cn(checkboxVariants({ radius, size, tone }), className)}
       data-slot="checkbox"
       {...props}
     >

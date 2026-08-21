@@ -10,7 +10,9 @@ const meta = {
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
   args: { icon, label: 'Add item', onClick: fn(), variant: 'ghost' },
-  argTypes: { size: { control: 'select', options: ['sm', 'default', 'lg'] } },
+  argTypes: {
+    size: { control: 'select', options: ['xs', 'sm', 'default', 'lg'] },
+  },
 } satisfies Meta<typeof IconButton>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -27,9 +29,21 @@ export const Default: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <div className="flex items-center gap-3">
+      <IconButton {...args} size="xs" />
       <IconButton {...args} size="sm" />
       <IconButton {...args} />
       <IconButton {...args} size="lg" />
+    </div>
+  ),
+};
+
+/** 28px bordered actions as used by the table row action cluster. */
+export const RowActions: Story = {
+  args: { variant: 'surface' },
+  render: (args) => (
+    <div className="flex items-center gap-2">
+      <IconButton {...args} label="Edit location" size="xs" />
+      <IconButton {...args} label="More actions" size="xs" />
     </div>
   ),
 };

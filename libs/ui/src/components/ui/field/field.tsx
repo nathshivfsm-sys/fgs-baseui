@@ -1,7 +1,31 @@
+import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
 
-export interface FieldProps extends ComponentProps<'div'> {
+const fieldLabelVariants = cva('', {
+  variants: {
+    size: {
+      default: 'text-control leading-[1.4] text-card-foreground',
+      /** 12px/16 medium heading label used by the Service Location forms. */
+      compact: 'text-caption font-medium leading-4 text-heading',
+    },
+  },
+  defaultVariants: { size: 'default' },
+});
+
+const fieldMessageVariants = cva('', {
+  variants: {
+    size: {
+      default: 'text-control leading-[1.4]',
+      compact: 'text-caption leading-4',
+    },
+  },
+  defaultVariants: { size: 'default' },
+});
+
+export interface FieldProps
+  extends ComponentProps<'div'>,
+    VariantProps<typeof fieldLabelVariants> {
   description?: ReactNode;
   descriptionId?: string;
   disabled?: boolean;
@@ -26,6 +50,7 @@ export function Field({
   htmlFor,
   label,
   required,
+  size,
   ...props
 }: FieldProps) {
   return (
@@ -36,10 +61,7 @@ export function Field({
       {...props}
     >
       {label != null && (
-        <label
-          className="text-control leading-[1.4] text-card-foreground"
-          htmlFor={htmlFor}
-        >
+        <label className={fieldLabelVariants({ size })} htmlFor={htmlFor}>
           {label}
           {required && (
             <span aria-hidden="true" className="ml-1 text-destructive">
@@ -50,7 +72,10 @@ export function Field({
       )}
       {description != null && (
         <p
-          className="text-control leading-[1.4] text-field-foreground"
+          className={cn(
+            fieldMessageVariants({ size }),
+            'text-field-foreground',
+          )}
           id={descriptionId}
         >
           {description}
@@ -59,7 +84,7 @@ export function Field({
       {children}
       {error != null ? (
         <p
-          className="text-control leading-[1.4] text-destructive"
+          className={cn(fieldMessageVariants({ size }), 'text-destructive')}
           id={errorId}
           role="alert"
         >
@@ -68,7 +93,10 @@ export function Field({
       ) : (
         helperText != null && (
           <p
-            className="text-control leading-[1.4] text-field-foreground"
+            className={cn(
+              fieldMessageVariants({ size }),
+              'text-field-foreground',
+            )}
             id={errorId}
           >
             {helperText}
@@ -78,3 +106,5 @@ export function Field({
     </div>
   );
 }
+
+export { fieldLabelVariants, fieldMessageVariants };

@@ -50,3 +50,26 @@ export const Default: Story = {
   },
 };
 export const DisabledTab: Story = { render: () => <Example /> };
+
+/** Compact notes tabs from the Service Location form. */
+export const Compact: Story = {
+  render: () => (
+    <Tabs defaultValue="internal">
+      <TabsList aria-label="Notes" bordered className="w-96">
+        <TabsTrigger size="sm" tone="action" value="internal">
+          Internal Notes
+        </TabsTrigger>
+        <TabsTrigger size="sm" tone="action" value="external">
+          External Notes
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="internal">Internal notes content</TabsContent>
+      <TabsContent value="external">External notes content</TabsContent>
+    </Tabs>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('tab', { name: 'External Notes' }));
+    await expect(canvas.getByText('External notes content')).toBeVisible();
+  },
+};

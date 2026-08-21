@@ -1,4 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
+import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
@@ -26,7 +27,9 @@ export function DropdownMenuContent({
       <Menu.Positioner align={align} className="z-50" sideOffset={sideOffset}>
         <Menu.Popup
           className={cn(
-            'min-w-[8rem] overflow-hidden rounded-md border border-border-component bg-popover p-1 text-popover-foreground shadow-surface',
+            // 6px padding is what insets the highlighted row from the popup
+            // edges in the designs.
+            'min-w-52 overflow-hidden rounded-metric border border-border-soft bg-popover p-1.5 text-popover-foreground shadow-popup',
             className,
           )}
           {...props}
@@ -36,20 +39,34 @@ export function DropdownMenuContent({
   );
 }
 
-export type DropdownMenuItemProps = StringClassName<
-  ComponentProps<typeof Menu.Item>
->;
+const dropdownMenuItemVariants = cva(
+  'relative flex min-h-9 cursor-default select-none items-center gap-3 rounded-md px-3 py-1.5 text-control font-medium outline-none transition-colors data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+  {
+    variants: {
+      variant: {
+        /** Muted leading icon that adopts the action blue while highlighted. */
+        default:
+          'text-control-foreground data-highlighted:bg-action-subtle data-highlighted:text-action [&_svg]:text-icon-muted data-highlighted:[&_svg]:text-action',
+        destructive:
+          'text-destructive data-highlighted:bg-destructive/10 data-highlighted:text-destructive-strong [&_svg]:text-destructive data-highlighted:[&_svg]:text-destructive-strong',
+      },
+    },
+    defaultVariants: { variant: 'default' },
+  },
+);
+
+export interface DropdownMenuItemProps
+  extends StringClassName<ComponentProps<typeof Menu.Item>>,
+    VariantProps<typeof dropdownMenuItemVariants> {}
 
 export function DropdownMenuItem({
   className,
+  variant,
   ...props
 }: DropdownMenuItemProps) {
   return (
     <Menu.Item
-      className={cn(
-        'relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
-        className,
-      )}
+      className={cn(dropdownMenuItemVariants({ variant }), className)}
       {...props}
     />
   );
@@ -67,7 +84,7 @@ export function DropdownMenuLabel({
   return (
     <Menu.GroupLabel
       className={cn(
-        'px-2 py-1.5 text-caption font-semibold text-muted-foreground',
+        'px-3 py-1.5 text-caption font-semibold text-muted-foreground',
         className,
       )}
       {...props}
@@ -85,8 +102,10 @@ export function DropdownMenuSeparator({
 }: DropdownMenuSeparatorProps) {
   return (
     <Menu.Separator
-      className={cn('-mx-1 my-1 h-px bg-divider', className)}
+      className={cn('-mx-1.5 my-1.5 h-px bg-divider', className)}
       {...props}
     />
   );
 }
+
+export { dropdownMenuItemVariants };

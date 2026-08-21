@@ -11,6 +11,9 @@ const buttonVariants = cva(
       variant: {
         default:
           'bg-primary text-primary-foreground shadow-xs hover:bg-primary-hover active:bg-primary-hover/90',
+        /** Interactive blue from the Service Location screens. */
+        action:
+          'bg-action text-action-foreground hover:bg-action-hover active:bg-action-hover/90',
         brand:
           'bg-brand text-brand-foreground shadow-xs hover:bg-brand/90 active:bg-brand/80',
         subtle:
@@ -21,6 +24,12 @@ const buttonVariants = cva(
           'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/80',
         outline:
           'border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
+        /**
+         * White card surface with a divider-weight hairline: the Import,
+         * Export, Filter, Columns, and Cancel actions in the Figma designs.
+         */
+        surface:
+          'border border-divider bg-card text-control-foreground hover:bg-secondary/60 active:bg-secondary',
         ghost:
           'hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
       },
@@ -28,6 +37,11 @@ const buttonVariants = cva(
         sm: 'h-control-sm px-3',
         default: 'h-control px-4 py-2',
         lg: 'h-control-lg px-6',
+        /** 34px toolbar density; hugs content like the Figma auto-layout. */
+        compact: 'min-h-control-compact px-3 py-1.5',
+        /** 38px page-header and footer action density. */
+        comfortable: 'min-h-control-comfortable px-4 py-2',
+        iconXs: 'size-control-xs p-0',
         iconSm: 'size-control-sm p-0',
         icon: 'size-control p-0',
         iconLg: 'size-control-lg p-0',

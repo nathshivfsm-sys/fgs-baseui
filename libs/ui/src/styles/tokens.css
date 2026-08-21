@@ -14,6 +14,12 @@
   --primary-hover: #2f32a8;
   --primary-foreground: #ffffff;
   --primary-subtle: #f0f6fc;
+  /* Interactive blue used by the Service Location screens for primary actions,
+     active pagination/tabs, checked checkboxes, and in-table record links. */
+  --action: #2563eb;
+  --action-hover: #1d4ed8;
+  --action-foreground: #ffffff;
+  --action-subtle: #eff6ff;
   --brand: #0049bc;
   --brand-foreground: #ffffff;
   --brand-subtle: #e9f2ff;
@@ -29,6 +35,9 @@
 
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: #ffffff;
+  /* Darker red for text on tinted destructive surfaces, where --destructive
+     itself does not reach a 4.5:1 contrast ratio. */
+  --destructive-strong: #b42318;
   --success: #17b26a;
   --success-foreground: #052e16;
   --warning: #fef9c2;
@@ -36,7 +45,8 @@
   --warning-foreground: #a65f00;
 
   --border: #dadde2;
-  --border-soft: #f7f7f7;
+  /* Soft hairline for form panels, field borders, and section dividers. */
+  --border-soft: #f0f3fb;
   --border-component: #d9d9d9;
   --divider: #e5e7eb;
   --input: #d1d5dc;
@@ -88,6 +98,10 @@
   --primary-hover: #a5b4fc;
   --primary-foreground: #111827;
   --primary-subtle: #252650;
+  --action: #3b82f6;
+  --action-hover: #60a5fa;
+  --action-foreground: #0f172a;
+  --action-subtle: #172554;
   --brand: #60a5fa;
   --brand-foreground: #0f172a;
   --brand-subtle: #172554;
@@ -103,6 +117,7 @@
 
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: #ffffff;
+  --destructive-strong: #fda29b;
   --success: #4ade80;
   --success-foreground: #052e16;
   --warning: #422006;

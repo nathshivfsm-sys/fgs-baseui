@@ -12,6 +12,9 @@ const meta = {
     helperText: 'Up to 20 characters.',
     htmlFor: 'field-example',
   },
+  argTypes: {
+    size: { control: 'inline-radio', options: ['default', 'compact'] },
+  },
 } satisfies Meta<typeof Field>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -27,7 +30,16 @@ export const Default: Story = {
     </Field>
   ),
 };
-export const Required: Story = { args: { required: true } };
+export const Required: Story = {
+  args: { required: true },
+  render: Default.render,
+};
+
+/** 12px medium label used by the Service Location forms. */
+export const Compact: Story = {
+  args: { description: undefined, required: true, size: 'compact' },
+  render: Default.render,
+};
 export const Error: Story = {
   args: { error: 'A code is required.', helperText: undefined },
   render: Default.render,

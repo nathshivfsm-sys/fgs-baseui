@@ -33,14 +33,15 @@ export function InputOTP({
   );
 }
 
-/** Groups adjacent slots so they render as one segmented control. */
+/**
+ * Row of slots. Per the Login designs the cells are separate rounded boxes with
+ * an 8px gap that share the row width, so the group grows to its container and
+ * each slot flexes inside it.
+ */
 export function InputOTPGroup({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn(
-        'flex items-center rounded-md has-aria-invalid:border-destructive has-aria-invalid:ring-[3px] has-aria-invalid:ring-destructive/20',
-        className,
-      )}
+      className={cn('flex w-full items-center gap-2', className)}
       data-slot="input-otp-group"
       {...props}
     />
@@ -52,7 +53,15 @@ export interface InputOTPSlotProps extends ComponentProps<'div'> {
   index: number;
 }
 
-/** Single character cell; reads its character and caret state from `InputOTP`. */
+/**
+ * Single character cell; reads its character and caret state from `InputOTP`.
+ *
+ * Geometry matches the Login designs: 52px tall, 8px radius, `--input` hairline
+ * on a card surface. Cells grow to fill the row and fall back to
+ * `--spacing-otp-slot` wide when the container is unconstrained. The digit
+ * typography and the active, invalid, and disabled states are NOT specified in
+ * Figma (every cell there is empty) and follow the library's form conventions.
+ */
 export function InputOTPSlot({
   className,
   index,
@@ -64,7 +73,7 @@ export function InputOTPSlot({
   return (
     <div
       className={cn(
-        'relative flex size-control-sm items-center justify-center border-y border-r border-input-strong bg-card font-form text-control text-card-foreground outline-none transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
+        'relative flex h-otp-slot min-w-0 grow basis-otp-slot items-center justify-center rounded-md border border-input bg-card font-form text-body font-semibold text-card-foreground outline-none transition-[border-color,box-shadow] aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
         className,
       )}
       data-active={isActive}
@@ -74,7 +83,7 @@ export function InputOTPSlot({
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-4 w-px animate-caret-blink bg-card-foreground motion-reduce:animate-none" />
+          <div className="h-5 w-px animate-caret-blink bg-card-foreground motion-reduce:animate-none" />
         </div>
       )}
     </div>

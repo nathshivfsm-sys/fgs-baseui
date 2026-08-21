@@ -12,17 +12,29 @@ const meta = {
       control: 'select',
       options: [
         'default',
+        'action',
         'brand',
         'subtle',
         'secondary',
         'destructive',
         'outline',
+        'surface',
         'ghost',
       ],
     },
     size: {
       control: 'select',
-      options: ['sm', 'default', 'lg', 'iconSm', 'icon', 'iconLg'],
+      options: [
+        'sm',
+        'default',
+        'lg',
+        'compact',
+        'comfortable',
+        'iconXs',
+        'iconSm',
+        'icon',
+        'iconLg',
+      ],
     },
     loading: { control: 'boolean' },
   },
@@ -50,6 +62,17 @@ export const Destructive: Story = {
 };
 export const Outline: Story = { args: { variant: 'outline' } };
 export const Ghost: Story = { args: { variant: 'ghost' } };
+
+/** Interactive blue primary from the Service Location screens. */
+export const Action: Story = {
+  args: { children: 'Add new location', variant: 'action' },
+};
+
+/** White card surface used for Import, Export, Filter, Columns, and Cancel. */
+export const Surface: Story = {
+  args: { children: 'Import', variant: 'surface' },
+};
+
 export const Sizes: Story = {
   render: (args) => (
     <div className="flex items-center gap-3">
@@ -59,6 +82,23 @@ export const Sizes: Story = {
       <Button {...args}>Default</Button>
       <Button {...args} size="lg">
         Large
+      </Button>
+    </div>
+  ),
+};
+
+/** 34px toolbar and 38px page-action densities measured from the designs. */
+export const Densities: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-3">
+      <Button {...args} size="compact" variant="surface">
+        Filter
+      </Button>
+      <Button {...args} size="comfortable" variant="surface">
+        Export
+      </Button>
+      <Button {...args} size="comfortable" variant="action">
+        Add new location
       </Button>
     </div>
   ),

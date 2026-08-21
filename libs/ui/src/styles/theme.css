@@ -29,12 +29,21 @@
   --spacing-sidebar-compact: 14rem;
   --spacing-sidebar: 16rem;
   --spacing-topbar: 3.25rem;
+  --spacing-control-xs: 1.75rem;
   --spacing-control-sm: 2rem;
   --spacing-control: 2.25rem;
   --spacing-control-lg: 2.5rem;
+  /* Density steps measured from the Service Location designs: 34px toolbar
+     controls and 38px page-header / footer actions. Both hug their content. */
+  --spacing-control-compact: 2.125rem;
+  --spacing-control-comfortable: 2.375rem;
   --spacing-metric-icon: 2.75rem;
   --spacing-metric-card: 6.375rem;
+  /* One-time-code cell from the Login designs: 52px tall, and the width each
+     cell falls back to before it grows to fill the row. */
+  --spacing-otp-slot: 3.25rem;
 
+  --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.5rem;
@@ -43,6 +52,9 @@
   --radius-card: 1rem;
   --shadow-xs: 0 1px 2px 0 #1018280d;
   --shadow-surface: 4px 4px 64px 16px #00000005;
+  /* Menus and other floating surfaces read as lifted in the designs, which the
+     near-invisible --shadow-surface does not convey. */
+  --shadow-popup: 0 12px 32px -8px #1018281f, 0 2px 6px -2px #10182814;
 
   /* Text-caret blink for one-time-code inputs, which draw their own caret
      because the underlying field is visually hidden. */
@@ -75,6 +87,10 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-subtle: var(--primary-subtle);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-foreground: var(--action-foreground);
+  --color-action-subtle: var(--action-subtle);
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-subtle: var(--brand-subtle);
@@ -89,6 +105,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-strong: var(--destructive-strong);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);

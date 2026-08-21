@@ -10,6 +10,7 @@ const meta = {
   args: { label: 'Item description', placeholder: 'Write a description' },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
+    variant: { control: 'inline-radio', options: ['default', 'soft'] },
     error: { control: 'text' },
   },
 } satisfies Meta<typeof Textarea>;
@@ -43,4 +44,29 @@ export const Disabled: Story = {
 };
 export const ReadOnly: Story = {
   args: { readOnly: true, value: 'Locked description' },
+};
+
+/** The Service Location notes appearance, including the character counter. */
+export const SoftWithCount: Story = {
+  args: {
+    label: 'Internal Notes',
+    maxLength: 2000,
+    placeholder: 'Enter internal notes about the location...',
+    showCount: true,
+    variant: 'soft',
+  },
+  render: (args) => (
+    <div className="w-[34rem]">
+      <Textarea {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText('0/2000')).toBeVisible();
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Internal Notes' }),
+      'Client prefers monthly invoices.',
+    );
+    await expect(canvas.getByText('32/2000')).toBeVisible();
+  },
 };
