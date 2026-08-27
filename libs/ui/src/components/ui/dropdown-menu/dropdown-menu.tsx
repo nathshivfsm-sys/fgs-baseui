@@ -108,4 +108,35 @@ export function DropdownMenuSeparator({
   );
 }
 
+export type DropdownMenuCheckboxItemProps = StringClassName<
+  ComponentProps<typeof Menu.CheckboxItem>
+>;
+
+/** Checkable menu option that remains open while its value changes. */
+export function DropdownMenuCheckboxItem({
+  children,
+  className,
+  ...props
+}: DropdownMenuCheckboxItemProps) {
+  return (
+    <Menu.CheckboxItem
+      className={cn(
+        dropdownMenuItemVariants(),
+        'pr-9 data-checked:text-action',
+        className,
+      )}
+      closeOnClick={false}
+      {...props}
+    >
+      <Menu.CheckboxItemIndicator
+        aria-hidden="true"
+        className="absolute right-3 text-action"
+      >
+        ✓
+      </Menu.CheckboxItemIndicator>
+      {children}
+    </Menu.CheckboxItem>
+  );
+}
+
 export { dropdownMenuItemVariants };
