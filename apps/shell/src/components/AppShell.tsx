@@ -7,8 +7,6 @@ export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
   onLogout: () => void;
-  onTenantChange: (tenantId: string) => void;
-  onToggleTheme: () => void;
   tenantId: string;
 }
 
@@ -17,8 +15,6 @@ export function AppShell({
   children,
   currentUser,
   onLogout,
-  onTenantChange,
-  onToggleTheme,
   tenantId
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
