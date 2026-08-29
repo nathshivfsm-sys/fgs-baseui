@@ -4,11 +4,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "import": "./index.esm.js",
-      "default": "./index.esm.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
     },
-    "./styles.css": "./styles.css"
+    "./styles.css": "./src/styles.css",
+    "./*": "./src/*"
   },
   "sideEffects": [
     "**/*.css"

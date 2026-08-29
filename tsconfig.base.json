@@ -19,6 +19,7 @@
       "@cms/ui": ["./libs/ui/src/index.ts"],
       "@cms/ui/*": ["./libs/ui/src/*"],
       "@cms/shared-api": ["./libs/shared/api/src/index.ts"],
+      "@cms/shared-auth": ["./libs/shared/auth/src/index.ts"],
       "@cms/workorder-data-access": [
         "./libs/workorder/data-access/src/index.ts"
       ],

@@ -5,9 +5,11 @@ import {
   type UserDetails,
 } from '@cms/platform-contract';
 import { configureCustomFetch } from '@cms/shared-api';
+import { getSessionToken } from '@cms/shared-auth';
 
 configureCustomFetch({
   baseUrl: (import.meta.env.VITE_API_URL as string | undefined) ?? '',
+  getAuthToken: getSessionToken,
 });
 
 const standaloneUser = {

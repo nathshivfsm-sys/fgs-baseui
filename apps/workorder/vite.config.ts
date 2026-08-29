@@ -1,19 +1,10 @@
-import { fileURLToPath, URL } from 'node:url';
 import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import {
-  sharedDependencies,
-  workspaceAliases,
-} from '../../tools/module-federation/shared';
-
-const workspaceRoot = fileURLToPath(new URL('../../', import.meta.url));
+import { sharedDependencies } from '../../tools/module-federation/shared';
 
 export default defineConfig({
-  resolve: {
-    alias: workspaceAliases(workspaceRoot),
-  },
   server: {
     port: 5101,
     strictPort: true,

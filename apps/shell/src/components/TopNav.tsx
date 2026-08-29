@@ -23,6 +23,7 @@ import { TENANT_NAMES } from '../store/constants';
 export interface TopNavProps {
   currentUser: UserDetails;
   notificationCount?: number;
+  onLogout: () => void;
   onOpenMobileSidebar: () => void;
   onTenantChange: (tenantId: string) => void;
   onToggleTheme: () => void;
@@ -34,6 +35,7 @@ export interface TopNavProps {
 export function TopNav({
   currentUser,
   notificationCount = 5,
+  onLogout,
   onOpenMobileSidebar,
   onTenantChange,
   onToggleTheme,
@@ -140,7 +142,7 @@ export function TopNav({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -1,5 +1,5 @@
 {
-  "name": "@cms/platform-contract",
+  "name": "@cms/shared-auth",
   "version": "0.0.1",
   "type": "module",
   "exports": {
@@ -13,6 +13,8 @@
     "tslib": "2.8.1"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "5.101.4"
+    "@cms/platform-contract": "workspace:*",
+    "react": "19.2.8",
+    "react-router-dom": "7.18.2"
   }
 }

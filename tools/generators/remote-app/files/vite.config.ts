@@ -1,19 +1,12 @@
-import { fileURLToPath, URL } from 'node:url';
 import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import {
-  sharedDependencies,
-  workspaceAliases,
-} from '../../tools/module-federation/shared';
+import { sharedDependencies } from '../../tools/module-federation/shared';
 
-const workspaceRoot = fileURLToPath(new URL('../../', import.meta.url));
-
+// No `resolve.alias` for `@cms/*`: an alias rewrites the bare specifier before Module
+// Federation can share it. See tools/module-federation/shared.ts.
 export default defineConfig({
-  resolve: {
-    alias: workspaceAliases(workspaceRoot),
-  },
   server: {
     port: <%= port %>,
     strictPort: true,
