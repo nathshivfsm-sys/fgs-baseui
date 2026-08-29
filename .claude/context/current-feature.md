@@ -10,6 +10,41 @@ No feature currently in progress.
 
 ## History
 
+- [Navigation shell UI refresh — top nav & sidebar](features/nav-shell-ui-refresh-prd.md) —
+  completed, verified, **not yet committed**. Branch `feature/navigation-ui-updates`.
+  Verified: `lint`, `typecheck`, `storybook:typecheck`, `build` (all 9 projects),
+  `test:query` (4/4), `storybook:test` (187/187, including the shell's new stories), plus
+  real-browser checks of both sidebar states, the account menu, dark mode, and the
+  responsive tenant-name behaviour below. The PRD is up to date with the actual
+  implementation, including everything discovered while building (see its §11).
+  - Presentation-layer refresh of the existing shell, not new navigation capability.
+    Routes, section grouping, and the collapse mechanism are unchanged.
+  - Three intake decisions: the tenant name becomes static text (workspace switcher
+    removed), the theme toggle is removed entirely, and `UserDetails` gains an optional
+    `avatarUrl`.
+  - Removing the theme toggle leaves no UI route to dark mode — the persisted preference
+    still applies at boot, but nothing in the UI can change it anymore. Needs a
+    replacement entry point before dark mode ships to users; not solved here.
+  - Mid-build, the collapsed sidebar was redirected away from its Figma frame (icon-only,
+    tooltip-driven) to keep every label visible, stacked under its icon and wrapping as
+    needed — PRD §6.3/§11 explain why. The reference behind that decision was a screenshot
+    pasted mid-conversation, not a Figma node, and it was never saved to
+    `.claude/context/screenshots/` — a gap worth closing since every other visual in the
+    PRD has a durable, linkable source and this one doesn't.
+  - The top nav's responsive behaviour needed real design work, not just breakpoint
+    tweaks: an early attempt hid the tenant name below `lg` and only afterward discovered
+    the reveal classes had no matching `hidden` base, so the elements were never actually
+    hiding — they were always rendered and getting flex-shrunk into unreadable stubs
+    ("Nor…", "N."). A two-row header redesign was tried and rejected by the user as not
+    looking right. The shipped fix, directed by the user: the tenant name stays inline
+    ≥1240px and relocates into the account dropdown (above the user's name, its own
+    divider) below that — a new `--breakpoint-nav: 77.5rem` token in `theme.css` marks
+    the cutoff precisely rather than approximating with a stock Tailwind breakpoint.
+  - A `pnpm install`/`nx run-many` side effect silently rewrote `package.json`'s `dev`
+    script parallelism (3→4) at some point this session. Unrelated to this feature;
+    reverted before marking complete. Worth a light eye on `git status` after heavy Nx
+    usage in this repo in case it recurs.
+
 - [Top nav + sidebar shell](features/top-nav-sidebar-prd.md) — completed,
   verified in browser, commit `cc0f939`. Branch point for the work below.
 - [Monorepo architecture remediation](features/monorepo-architecture-remediation-prd.md)

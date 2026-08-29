@@ -1,65 +1,56 @@
 import type { UserDetails } from '@cms/platform-contract';
 import { useState, type ReactNode } from 'react';
-import type { Theme } from '../lib/theme';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 
 export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
-  onTenantChange: (tenantId: string) => void;
-  onToggleTheme: () => void;
   tenantId: string;
-  theme: Theme;
 }
 
-/** Persistent sidebar + top nav shell wrapping every authenticated page. */
-export function AppShell({
-  children,
-  currentUser,
-  onTenantChange,
-  onToggleTheme,
-  tenantId,
-  theme,
-}: AppShellProps) {
+/**
+ * Persistent top nav + sidebar shell wrapping every authenticated page.
+ * The bar spans the full width above the sidebar, which is what lets it own
+ * the logo: its left block sits directly over the sidebar column.
+ */
+export function AppShell({ children, currentUser, tenantId }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <div className="hidden lg:block!">
-        <Sidebar
-          collapsed={collapsed}
-          onToggleCollapse={() => setCollapsed((value) => !value)}
-        />
-      </div>
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
+      <TopNav
+        currentUser={currentUser}
+        onOpenMobileSidebar={() => setMobileOpen(true)}
+        tenantId={tenantId}
+      />
 
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 flex lg:hidden!">
-          <button
-            aria-label="Close navigation"
-            className="absolute inset-0 bg-foreground/40"
-            onClick={() => setMobileOpen(false)}
-            type="button"
-          />
+      <div className="flex min-h-0 flex-1">
+        <div className="hidden lg:block!">
           <Sidebar
-            className="relative z-10 shadow-surface"
-            collapsed={false}
-            onNavigate={() => setMobileOpen(false)}
-            showCollapseControl={false}
+            collapsed={collapsed}
+            onToggleCollapse={() => setCollapsed((value) => !value)}
           />
         </div>
-      )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopNav
-          currentUser={currentUser}
-          onOpenMobileSidebar={() => setMobileOpen(true)}
-          onTenantChange={onTenantChange}
-          onToggleTheme={onToggleTheme}
-          tenantId={tenantId}
-          theme={theme}
-        />
+        {mobileOpen && (
+          <div className="fixed inset-0 z-40 flex lg:hidden!">
+            <button
+              aria-label="Close navigation"
+              className="absolute inset-0 bg-foreground/40"
+              onClick={() => setMobileOpen(false)}
+              type="button"
+            />
+            <Sidebar
+              className="relative z-10 shadow-surface"
+              collapsed={false}
+              onNavigate={() => setMobileOpen(false)}
+              showCollapseControl={false}
+            />
+          </div>
+        )}
+
         <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>

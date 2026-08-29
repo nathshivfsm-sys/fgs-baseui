@@ -46,22 +46,13 @@ const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders', '/invoice']);
 export function App() {
   const tenantId = useStore(shellStore, (state) => state.tenantId);
   const currentUser = useStore(shellStore, (state) => state.currentUser);
-  const theme = useStore(shellStore, (state) => state.theme);
-  const setTenantId = useStore(shellStore, (state) => state.setTenantId);
-  const toggleTheme = useStore(shellStore, (state) => state.toggleTheme);
   const mfeRuntime = useMemo<CmsRuntime>(
     () => ({ ...cmsRuntime, tenantId, currentUser }),
     [currentUser, tenantId],
   );
 
   return (
-    <AppShell
-      currentUser={currentUser}
-      onTenantChange={setTenantId}
-      onToggleTheme={toggleTheme}
-      tenantId={tenantId}
-      theme={theme}
-    >
+    <AppShell currentUser={currentUser} tenantId={tenantId}>
       <Routes>
         <Route path="/" element={<Navigate to="/workorders" replace />} />
         <Route
