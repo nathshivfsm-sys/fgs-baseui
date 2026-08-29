@@ -34,6 +34,7 @@ const TOPNAV_ICON_CLASSES =
 export interface TopNavProps {
   currentUser: UserDetails;
   notificationCount?: number;
+  onLogout: () => void;
   onOpenMobileSidebar: () => void;
   tenantId: string;
 }
@@ -42,6 +43,7 @@ export interface TopNavProps {
 export function TopNav({
   currentUser,
   notificationCount = 5,
+  onLogout,
   onOpenMobileSidebar,
   tenantId,
 }: TopNavProps) {
@@ -184,7 +186,7 @@ export function TopNav({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

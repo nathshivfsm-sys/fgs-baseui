@@ -2,11 +2,56 @@
 
 ## Status
 
-No feature currently in progress.
+[Auth-based routing](features/auth-based-routing.md) — implemented and verified,
+**committed on `feature/auth-based-routing` but not yet merged or reviewed**.
+
+Shared `@cms/shared-auth` library (session, `useAuth`, `RequireAuth`), a dummy login
+screen in the shell, and a hybrid public/private route table in the `invoice` remote:
+`/invoice/payment/:invoiceId` is public, `/invoice` and `/invoice/:invoiceId` are
+guarded. Public pages render under a logo-only top bar instead of the authenticated
+sidebar and top nav.
+
+Five commits, branched from `develop` at `6f38d20`:
+
+| Commit | Scope |
+| --------- | -------------------------------------------------------------- |
+| `98b0cba` | `feat(shared-auth)` — the library, its MF singleton registration |
+| `f12980b` | `feat(shell)` — login page, guards on every nav route, logout, `getAuthToken` |
+| `a27a2be` | `feat(invoice)` — public payment route alongside guarded list/detail |
+| `b681120` | `docs` — this file |
+| `8c2f02b` | `fix(mf)` — the resolution fix below |
 
 ## Notes
 
-(none)
+- Verified with `lint`, `typecheck`, `build`, `test:query`, `storybook:test`
+  (122/122), plus a 23-check scripted browser pass run against **both** the dev servers
+  and the production `vite preview` build.
+- **Unplanned but load-bearing: `resolve.alias` was silently defeating Module Federation
+  `singleton: true` for every `@cms/*` package.** An alias rewrites the bare specifier
+  before the plugin can wrap the import in `loadShare`, so the shared scope was bypassed
+  and each container bundled its own copy. Invisible until `@cms/shared-auth` added a
+  React context — remotes then threw `useAuth must be used within an AuthProvider` in
+  both dev and the production build. `libs/ui/README.md` had already flagged the
+  plugin's warning about this as unexplained; it is now diagnosed and fixed.
+  - Fix: each library's `package.json` `exports` points at its own source, and the alias
+    is gone from all four apps plus the generator template. Storybook keeps aliasing
+    (no MF there, and the workspace root has no `@cms/*` symlinks) — moved to
+    `.storybook/aliases.ts` so it cannot be reached for from a federation config.
+  - Cost: the `'@cms/ui/'` prefix-share had to go — the plugin resolves a prefix share
+    against the package root, not through `exports`, and failed the build looking for
+    `libs/ui/index.js`. `@cms/ui/<subpath>` imports still resolve but are no longer
+    singletons. Safe today; nothing deep-imports.
+  - Follow-up recorded in [defferred-work.md](defferred-work.md): publishing must
+    generate a dist manifest rather than copy the source one through.
+- Two pre-existing failures are unrelated to this work and were not fixed:
+  - `<%= name %>:lint` / `<%= name %>:typecheck` — Nx registers
+    `tools/generators/remote-app/files/project.json` (an EJS template) as a phantom
+    project whose targets point at `apps/<%= name %>`, a path that never exists.
+  - `[ Module Federation DTS ] Failed to generate type declaration #TYPE-001` — emitted
+    by every remote build including untouched ones (`lead`, `workorder`); non-fatal,
+    the build succeeds.
+- **Do not run `pnpm run format`** on this checkout — Prettier rewrites CRLF to LF across
+  every tracked file, producing a ~250-file diff. Format only the files you touched.
 
 ## History
 

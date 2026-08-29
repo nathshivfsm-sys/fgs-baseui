@@ -156,6 +156,9 @@ importers:
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
+      '@cms/shared-auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
@@ -168,6 +171,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      react-router-dom:
+        specifier: 7.18.2
+        version: 7.18.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
 
   apps/lead:
     dependencies:
@@ -204,6 +210,9 @@ importers:
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
+      '@cms/shared-auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
@@ -276,6 +285,21 @@ importers:
 
   libs/shared/api:
     dependencies:
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+
+  libs/shared/auth:
+    dependencies:
+      '@cms/platform-contract':
+        specifier: workspace:*
+        version: link:../../platform-contract
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-router-dom:
+        specifier: 7.18.2
+        version: 7.18.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       tslib:
         specifier: 2.8.1
         version: 2.8.1

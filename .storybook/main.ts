@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
-import { workspaceAliases } from '../tools/module-federation/shared';
+import { storybookAliases } from './aliases';
 
 const workspaceRoot = fileURLToPath(new URL('../', import.meta.url));
 
@@ -24,7 +24,7 @@ const config: StorybookConfig = {
     return mergeConfig(baseConfig, {
       plugins: [tailwindcss()],
       resolve: {
-        alias: workspaceAliases(workspaceRoot),
+        alias: storybookAliases(workspaceRoot),
       },
     });
   },

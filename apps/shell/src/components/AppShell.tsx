@@ -6,15 +6,21 @@ import { TopNav } from './TopNav';
 export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
+  onLogout: () => void;
+  onTenantChange: (tenantId: string) => void;
+  onToggleTheme: () => void;
   tenantId: string;
 }
 
-/**
- * Persistent top nav + sidebar shell wrapping every authenticated page.
- * The bar spans the full width above the sidebar, which is what lets it own
- * the logo: its left block sits directly over the sidebar column.
- */
-export function AppShell({ children, currentUser, tenantId }: AppShellProps) {
+/** Persistent sidebar + top nav shell wrapping every authenticated page. */
+export function AppShell({
+  children,
+  currentUser,
+  onLogout,
+  onTenantChange,
+  onToggleTheme,
+  tenantId
+}: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -24,6 +30,7 @@ export function AppShell({ children, currentUser, tenantId }: AppShellProps) {
         currentUser={currentUser}
         onOpenMobileSidebar={() => setMobileOpen(true)}
         tenantId={tenantId}
+        onLogout={onLogout}
       />
 
       <div className="flex min-h-0 flex-1">
