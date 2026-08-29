@@ -36,12 +36,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Email is the active tab by default (Figma defaults to Mobile Phone; this
+    // product defaults to Email — see the PRD).
+    await expect(
+      canvas.getByRole('tab', { name: /email/i }),
+    ).toHaveAttribute('aria-selected', 'true');
+    await expect(canvas.getByLabelText(/email address/i)).toHaveValue(
+      DEMO_CREDENTIALS.email,
+    );
+  },
+};
 
 export const SuccessfulLogin: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('button', { name: 'Sign in' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Next' }));
     await expect(
       await canvas.findByText('Home page (protected)'),
     ).toBeInTheDocument();
@@ -51,18 +63,16 @@ export const SuccessfulLogin: Story = {
 export const InvalidCredentials: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // Regex, not an exact string: Field renders the required marker inside the
-    // <label>, so its text content is "Password*".
-    const password = canvas.getByLabelText(/password/i);
+    const email = canvas.getByLabelText(/email address/i);
 
-    await userEvent.clear(password);
-    await userEvent.type(password, 'wrong-password');
-    await userEvent.click(canvas.getByRole('button', { name: 'Sign in' }));
+    await userEvent.clear(email);
+    await userEvent.type(email, 'someone-else@example.com');
+    await userEvent.click(canvas.getByRole('button', { name: 'Next' }));
 
     await expect(await canvas.findByRole('alert')).toHaveTextContent(
       'not recognised',
     );
-    await expect(canvas.getByRole('button', { name: 'Sign in' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Next' })).toBeVisible();
   },
 };
 
@@ -72,15 +82,33 @@ export const RedirectsToInterceptedRoute: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole('button', { name: 'Sign in' }),
+      await canvas.findByRole('button', { name: 'Next' }),
     ).toBeVisible();
     await expect(canvas.getByLabelText(/email address/i)).toHaveValue(
       DEMO_CREDENTIALS.email,
     );
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Sign in' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Next' }));
     await expect(
       await canvas.findByText('Invoices (protected)'),
     ).toBeInTheDocument();
+  },
+};
+
+/**
+ * There's no SMS backend behind the Mobile Phone tab, so switching to it
+ * disables Next rather than pretending to authenticate.
+ */
+export const MobilePhoneTabIsInert: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(
+      canvas.getByRole('tab', { name: /mobile phone/i }),
+    );
+
+    await expect(
+      canvas.getByLabelText(/mobile phone number/i),
+    ).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Next' })).toBeDisabled();
   },
 };
