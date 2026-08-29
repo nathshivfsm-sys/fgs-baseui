@@ -21,19 +21,29 @@ const tabsListVariants = cva('flex items-center overflow-x-auto font-form', {
   variants: {
     /** Draws the full-width hairline the compact tabs sit on. */
     bordered: { false: '', true: 'border-b border-border-soft' },
+    /** Pill-track container for `TabsTrigger`'s `tone: 'segmented'`. */
+    variant: {
+      default: '',
+      segmented: 'gap-1 rounded-lg bg-secondary p-1',
+    },
   },
-  defaultVariants: { bordered: false },
+  defaultVariants: { bordered: false, variant: 'default' },
 });
 
 export interface TabsListProps
   extends StringClassName<ComponentProps<typeof TabsPrimitive.List>>,
     VariantProps<typeof tabsListVariants> {}
 
-export function TabsList({ bordered, className, ...props }: TabsListProps) {
+export function TabsList({
+  bordered,
+  className,
+  variant,
+  ...props
+}: TabsListProps) {
   return (
     <TabsPrimitive.List
       activateOnFocus
-      className={cn(tabsListVariants({ bordered }), className)}
+      className={cn(tabsListVariants({ bordered, variant }), className)}
       {...props}
     />
   );
@@ -51,6 +61,9 @@ const tabsTriggerVariants = cva(
          * `TabsList bordered`; the active tab overlaps it with its own border.
          */
         sm: 'border-b border-transparent px-3 py-1.5 text-caption font-medium capitalize leading-4 data-active:-mb-px',
+        /** Pairs with `TabsList variant="segmented"` — the Login identifier tabs. */
+        segmented:
+          'flex-1 justify-center gap-2 rounded-md px-4 py-2.5 text-control leading-5',
       },
       tone: {
         default:
@@ -58,6 +71,13 @@ const tabsTriggerVariants = cva(
         /** Interactive blue used by the Service Location screens. */
         action:
           'text-heading data-active:border-action data-active:text-action',
+        /**
+         * White pill on the active tab, matching the segmented track.
+         * `text-muted-foreground` on `bg-secondary` reads 4.4:1, just under
+         * AA — `text-control-foreground` is the darker token that clears it.
+         */
+        segmented:
+          'text-control-foreground data-active:bg-card data-active:text-brand-blue data-active:shadow-xs',
       },
     },
     defaultVariants: { size: 'default', tone: 'default' },
