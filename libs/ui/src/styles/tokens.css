@@ -60,7 +60,35 @@
   --field-placeholder: #b3b3b3;
   --icon-muted: #828a9b;
   --nav-foreground: #4b5563;
-  --nav-section: #9ca3af;
+  /* Figma specifies #9ca3af, which is 2.53:1 on --card and fails AA for the
+     12px section labels this drives. Darkened to the nearest passing grey. */
+  --nav-section: #6b7280;
+  /* Sidebar footer text and the collapsed rail's hairline group separators.
+     Named for the nav rather than borrowed from --table-foreground, which
+     happens to share the value but not the meaning. */
+  --nav-muted: #6b7280;
+  --nav-divider: #c2c3c5;
+  --nav-border: #f3f4f6;
+
+  /* Top bar. Kept separate from --brand-blue so the bar can be re-themed
+     without moving every other brand-blue surface with it. */
+  --topnav: #1741b0;
+  --topnav-foreground: #ffffff;
+  --topnav-border: #e5e7eb;
+  /* Not in the Figma frames: hover/pressed wash for the top bar's icon
+     buttons, which the design only shows at rest. */
+  --topnav-hover: #ffffff1a;
+  --topnav-search: #f9fafb;
+  --topnav-search-border: #e5e7eb;
+  /* The design's rgba(107,114,128,0.5) resolves to ~2.3:1 against
+     --topnav-search and fails AA, so the placeholder is darkened to the
+     lightest value that clears 4.5:1. */
+  --topnav-search-placeholder: #6b7280;
+  --avatar-fallback: #7f9ce6;
+  /* The design fills this circle with a photo, so it never specifies a colour
+     for initials. White on --avatar-fallback is ~2.5:1, so initials take a
+     dark navy instead. */
+  --avatar-fallback-foreground: #12275e;
   --control-foreground: #374151;
   --surface-subtle: #f0f4ff;
   --table-header: #f1f7fd;
@@ -140,6 +168,22 @@
   --icon-muted: #9fa5b2;
   --nav-foreground: var(--muted-foreground);
   --nav-section: var(--placeholder);
+  --nav-muted: var(--muted-foreground);
+  --nav-divider: var(--border);
+  --nav-border: var(--border);
+
+  /* The Figma frames are light-mode only. The bar stays a recognisably
+     branded blue here rather than flattening into a dark neutral, so the
+     product still reads as FieldPro in dark mode. */
+  --topnav: #16305f;
+  --topnav-foreground: #f9fafb;
+  --topnav-border: var(--border);
+  --topnav-hover: #ffffff1f;
+  --topnav-search: #111827;
+  --topnav-search-border: var(--border);
+  --topnav-search-placeholder: var(--placeholder);
+  --avatar-fallback: #3b5aa0;
+  --avatar-fallback-foreground: #e5e7eb;
   --control-foreground: var(--foreground);
   --surface-subtle: #151d33;
   --table-header: #172554;

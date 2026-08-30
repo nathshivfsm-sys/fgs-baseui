@@ -1,9 +1,16 @@
-import { Button, cn, CollapseIcon, FieldProLogoIcon, PlusIcon } from '@cms/ui';
-import { NavLink } from 'react-router-dom';
+import { Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
+import { NavLink, useMatch } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from './nav-config';
 
 const NAV_ITEM_CLASSES =
-  'flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-control text-control-foreground transition-colors hover:bg-secondary';
+  'flex w-full items-center text-control text-control-foreground transition-colors hover:bg-secondary';
+const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-lg px-3';
+/**
+ * Collapsed items stack the label under the icon and let it wrap, so the row
+ * grows to fit rather than running at the expanded state's fixed 36px.
+ */
+const NAV_ITEM_COLLAPSED_CLASSES =
+  'flex-col justify-center gap-1 px-1 py-2 text-center text-caption leading-tight';
 const NAV_ITEM_ACTIVE_CLASSES =
   'bg-brand-blue-subtle font-semibold text-brand-blue hover:bg-brand-blue-subtle';
 
@@ -17,32 +24,27 @@ function SidebarNavLink({
   onNavigate?: () => void;
 }) {
   const Icon = item.icon;
+  const isActive = useMatch({ path: item.path, end: false }) !== null;
+
   return (
     <NavLink
-      aria-label={collapsed ? item.label : undefined}
-      className={({ isActive }) =>
-        cn(
-          NAV_ITEM_CLASSES,
-          collapsed && 'justify-center px-0',
-          isActive && NAV_ITEM_ACTIVE_CLASSES,
-        )
-      }
+      className={cn(
+        NAV_ITEM_CLASSES,
+        collapsed ? NAV_ITEM_COLLAPSED_CLASSES : NAV_ITEM_EXPANDED_CLASSES,
+        isActive && NAV_ITEM_ACTIVE_CLASSES,
+      )}
       onClick={onNavigate}
-      title={collapsed ? item.label : undefined}
       to={item.path}
     >
-      {({ isActive }) => (
-        <>
-          <Icon
-            aria-hidden="true"
-            className={cn(
-              'size-[15px] shrink-0',
-              isActive ? 'text-brand-blue' : 'text-nav-section',
-            )}
-          />
-          {!collapsed && <span className="truncate">{item.label}</span>}
-        </>
-      )}
+      <Icon
+        aria-hidden="true"
+        className={cn(
+          'shrink-0',
+          collapsed ? 'size-5' : 'size-nav-icon',
+          isActive ? 'text-brand-blue' : 'text-nav-section',
+        )}
+      />
+      <span className={cn(!collapsed && 'truncate')}>{item.label}</span>
     </NavLink>
   );
 }
@@ -55,7 +57,7 @@ export interface SidebarProps {
   showCollapseControl?: boolean;
 }
 
-/** Persistent left navigation shell: logo, Create New CTA, primary nav, and grouped sections. */
+/** Persistent left navigation: Create New CTA, primary nav, and grouped sections. */
 export function Sidebar({
   className,
   collapsed,
@@ -67,31 +69,35 @@ export function Sidebar({
     <aside
       aria-label="Primary"
       className={cn(
-        'flex h-full flex-col border-r border-divider bg-card transition-[width]',
-        collapsed ? 'w-16' : 'w-[210px]',
+        'flex h-full flex-col border-r border-nav-border bg-card transition-[width]',
+        collapsed ? 'w-sidebar-collapsed' : 'w-sidebar-expanded',
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b border-border-soft p-4">
-        <FieldProLogoIcon aria-hidden="true" className="size-7 shrink-0" />
-        {!collapsed && (
-          <p className="truncate text-body font-bold text-heading">FieldPro</p>
-        )}
-      </div>
-
-      <div className="p-3">
+      <div className="p-3 text-center">
         <Button
           aria-label="Create New"
-          className="w-full justify-center gap-2 bg-brand-blue text-brand-blue-foreground hover:bg-brand-blue/90 active:bg-brand-blue/80"
-          size={collapsed ? 'icon' : 'default'}
+          className={cn(
+            'gap-2 bg-brand-blue text-brand-blue-foreground hover:bg-brand-blue/90 active:bg-brand-blue/80',
+            !collapsed && 'w-full justify-center',
+          )}
+          size={collapsed ? 'icon' : 'lg'}
         >
-          <PlusIcon aria-hidden="true" className="size-3.5 shrink-0" />
+          <PlusIcon
+            aria-hidden="true"
+            className={cn('shrink-0', collapsed ? 'size-5' : 'size-4')}
+          />
           {!collapsed && 'Create New'}
         </Button>
       </div>
 
-      <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-2 pb-2">
-        <div className="flex flex-col gap-1">
+      <nav
+        className={cn(
+          'flex min-h-0 flex-1 flex-col overflow-y-auto pb-2',
+          !collapsed && 'gap-1 px-2',
+        )}
+      >
+        <div className={cn('flex flex-col', !collapsed && 'gap-1')}>
           {PRIMARY_NAV_ITEMS.map((item) => (
             <SidebarNavLink
               collapsed={collapsed}
@@ -103,7 +109,16 @@ export function Sidebar({
         </div>
 
         {NAV_SECTIONS.map((section) => (
-          <div className="flex flex-col gap-1 pt-1" key={section.label}>
+          <div
+            className={cn(
+              'flex flex-col',
+              collapsed
+                ? 'mt-1 border-t border-nav-divider pt-1'
+                : 'gap-1 pt-1',
+            )}
+            key={section.label}
+          >
+            {/* FR-22: the label is what a hairline replaces when collapsed. */}
             {!collapsed && (
               <p className="px-3 py-1.5 text-caption font-semibold uppercase tracking-section text-nav-section">
                 {section.label}
@@ -122,13 +137,15 @@ export function Sidebar({
       </nav>
 
       {showCollapseControl && (
-        <div className="border-t border-divider p-3">
+        <div
+          className={cn(
+            'flex h-nav-footer shrink-0 items-center border-t border-nav-divider px-3',
+            collapsed ? 'justify-center' : 'justify-end',
+          )}
+        >
           <button
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className={cn(
-              'flex h-5 items-center gap-2 text-control text-muted-foreground hover:text-control-foreground',
-              collapsed && 'w-full justify-center',
-            )}
+            className="flex items-center gap-2 rounded-sm text-control text-nav-muted transition-colors hover:text-control-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             onClick={onToggleCollapse}
             type="button"
           >

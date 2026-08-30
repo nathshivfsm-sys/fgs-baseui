@@ -125,10 +125,7 @@ export function App() {
     <AppShell
       currentUser={user}
       onLogout={logout}
-      onTenantChange={setTenantId}
-      onToggleTheme={toggleTheme}
       tenantId={tenantId}
-      theme={theme}
     >
       {routes}
     </AppShell>

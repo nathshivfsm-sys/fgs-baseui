@@ -36,7 +36,7 @@ export interface NavSection {
 export const PRIMARY_NAV_ITEMS: readonly NavItem[] = [
   { icon: HomeIcon, label: 'Today', path: '/today' },
   { icon: DashboardIcon, label: 'Dashboard', path: '/dashboard' },
-  { icon: BriefcaseIcon, label: 'Jobs / Work Orders', path: '/workorders' },
+  { icon: BriefcaseIcon, label: 'Work Orders', path: '/workorders' },
   { icon: DispatchBoardIcon, label: 'Dispatch Board', path: '/dispatch-board' },
   { icon: UsersIcon, label: 'Customers', path: '/customers' },
   { icon: PinIcon, label: 'Service Locations', path: '/service-locations' },

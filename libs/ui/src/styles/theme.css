@@ -15,10 +15,19 @@
   --text-metric-value--line-height: 1.5625rem;
   --text-title: 1.375rem;
   --text-title--line-height: 2.0625rem;
+  /* Tenant name in the top bar, and the numeral inside its notification badge. */
+  --text-tenant: 1.1875rem;
+  --text-tenant--line-height: 1.25rem;
+  --text-badge: 0.6875rem;
+  --text-badge--line-height: 1rem;
   --tracking-brand: 0.025em;
   --tracking-section: 0.05em;
 
   --breakpoint-xs: 20rem;
+  /* Point where the top bar no longer has room to show the tenant name
+     inline alongside search and the icon cluster; below this it relocates
+     into the account dropdown instead (see TopNav.tsx). */
+  --breakpoint-nav: 77.5rem;
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 160rem;
   --container-form: 62.5rem;
@@ -28,7 +37,24 @@
   --spacing-page: 1.5rem;
   --spacing-sidebar-compact: 14rem;
   --spacing-sidebar: 16rem;
-  --spacing-topbar: 3.25rem;
+  /* Nav shell, measured from the redesigned Figma frames: a 56px top bar over
+     a 208px sidebar that narrows to a 64px icon rail. */
+  --spacing-sidebar-expanded: 13rem;
+  /* Wide enough for a two-line wrapped label under the icon ("Dispatch /
+     Board"), which is what the collapsed rail shows instead of a tooltip. */
+  --spacing-sidebar-collapsed: 6rem;
+  --spacing-topbar: 3.5rem;
+  /* Top-bar parts. The 189px identity block ends level with the sidebar's
+     right edge, so the logo sits directly over that column. */
+  --spacing-topnav-identity: 11.8125rem;
+  --spacing-topnav-search: 23.75rem;
+  --spacing-topnav-icon: 1.5625rem;
+  --spacing-topnav-avatar: 1.875rem;
+  --spacing-topnav-badge: 1.125rem;
+  /* Sidebar parts: 15px nav glyph when labelled, 45px footer rail. The
+     collapsed rail's 20px glyph is plain `size-5`. */
+  --spacing-nav-icon: 0.9375rem;
+  --spacing-nav-footer: 2.8125rem;
   --spacing-control-xs: 1.75rem;
   --spacing-control-sm: 2rem;
   --spacing-control: 2.25rem;
@@ -126,6 +152,18 @@
   --color-icon-muted: var(--icon-muted);
   --color-nav-foreground: var(--nav-foreground);
   --color-nav-section: var(--nav-section);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-divider: var(--nav-divider);
+  --color-nav-border: var(--nav-border);
+  --color-topnav: var(--topnav);
+  --color-topnav-foreground: var(--topnav-foreground);
+  --color-topnav-border: var(--topnav-border);
+  --color-topnav-hover: var(--topnav-hover);
+  --color-topnav-search: var(--topnav-search);
+  --color-topnav-search-border: var(--topnav-search-border);
+  --color-topnav-search-placeholder: var(--topnav-search-placeholder);
+  --color-avatar-fallback: var(--avatar-fallback);
+  --color-avatar-fallback-foreground: var(--avatar-fallback-foreground);
   --color-control-foreground: var(--control-foreground);
   --color-surface-subtle: var(--surface-subtle);
   --color-table-header: var(--table-header);

@@ -5,6 +5,8 @@ export interface UserDetails {
   readonly displayName: string;
   readonly email: string;
   readonly role: string;
+  /** Optional so existing hosts keep compiling; consumers fall back to initials. */
+  readonly avatarUrl?: string;
 }
 
 /** Values and services that the shell explicitly provides to an MFE. */
