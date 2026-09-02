@@ -12,7 +12,7 @@ const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-lg px-3';
 const NAV_ITEM_COLLAPSED_CLASSES =
   'flex-col justify-center gap-1 px-1 py-2 text-center text-caption leading-tight';
 const NAV_ITEM_ACTIVE_CLASSES =
-  'bg-brand-blue-subtle font-semibold text-brand-blue hover:bg-brand-blue-subtle';
+  'bg-brand-blue-subtle text-brand-blue hover:bg-brand-blue-subtle';
 
 function SidebarNavLink({
   collapsed,
