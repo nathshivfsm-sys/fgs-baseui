@@ -50,15 +50,18 @@ class ProviderBoundary extends Component<
 
 const Workorder = lazyProvider<{ runtime: CmsRuntime }>('workorder', 'App');
 const Lead = lazyProvider<{ runtime: CmsRuntime }>('lead', 'App');
+const Settings = lazyProvider<{ runtime: CmsRuntime }>('settings', 'App');
 const Invoice = lazyProvider<{ runtime: CmsRuntime }>('invoice', 'App');
 
-const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders', '/invoice']);
+const MFE_ROUTE_PATHS = new Set([
+  '/leads',
+  '/workorders',
+  '/invoice',
+  '/settings',
+]);
 
 export function App() {
   const tenantId = useStore(shellStore, (state) => state.tenantId);
-  const theme = useStore(shellStore, (state) => state.theme);
-  const setTenantId = useStore(shellStore, (state) => state.setTenantId);
-  const toggleTheme = useStore(shellStore, (state) => state.toggleTheme);
   const { logout, user } = useAuth();
   const { pathname } = useLocation();
 
@@ -104,6 +107,14 @@ export function App() {
             </ProviderBoundary>
           }
         />
+        <Route
+          path="/settings/*"
+          element={
+            <ProviderBoundary name="Settings">
+              <Settings runtime={mfeRuntime} />
+            </ProviderBoundary>
+          }
+        />
         {ALL_NAV_ROUTES.filter((route) => !MFE_ROUTE_PATHS.has(route.path)).map(
           (route) => (
             <Route
@@ -122,11 +133,7 @@ export function App() {
   // Anonymous visitors — and anyone on a public route — get the logo-only chrome. The
   // `user !== null` check also narrows the type for AppShell's non-nullable prop.
   return user !== null && !isPublicRoute ? (
-    <AppShell
-      currentUser={user}
-      onLogout={logout}
-      tenantId={tenantId}
-    >
+    <AppShell currentUser={user} onLogout={logout} tenantId={tenantId}>
       {routes}
     </AppShell>
   ) : (

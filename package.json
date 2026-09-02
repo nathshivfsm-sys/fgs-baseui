@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx run-many -t serve --projects=shell,workorder,lead,invoice --parallel=3",
-    "build": "nx run-many -t build --projects=platform-contract,ui,workorder,lead,invoice,shell",
+    "dev": "nx run-many -t serve --projects='shell,workorder,lead,invoice,settings --parallel=5'",
+    "build": "nx run-many -t build --projects=platform-contract,ui,workorder,lead,invoice,settings,shell",
     "test:query": "nx run integration:test-query",
     "graph": "nx graph",
     "storybook": "nx run ui:storybook",

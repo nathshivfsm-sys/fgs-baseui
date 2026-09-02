@@ -23,6 +23,7 @@ export * from './radio-group';
 export * from './scroll-area';
 export * from './section-card';
 export * from './select';
+export * from './setting-card';
 export * from './skeleton';
 export * from './switch';
 export * from './tabs';

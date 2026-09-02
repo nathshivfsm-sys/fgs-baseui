@@ -67,6 +67,8 @@
   --spacing-control-comfortable: 2.375rem;
   --spacing-metric-icon: 2.75rem;
   --spacing-metric-card: 6.375rem;
+  /* 60px icon tile on the Setup page's category cards (Figma node 70:231). */
+  --spacing-setting-icon: 3.75rem;
   /* One-time-code cell from the Login designs: 52px tall, and the width each
      cell falls back to before it grows to fill the row. */
   --spacing-otp-slot: 3.25rem;

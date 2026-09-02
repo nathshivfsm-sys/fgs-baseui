@@ -12,6 +12,10 @@
     "invoice": {
       "name": "invoice",
       "entry": "http://localhost:5103/remoteEntry.js"
+    },
+    "settings": {
+      "name": "settings",
+      "entry": "http://localhost:5104/remoteEntry.js"
     }
   }
 }

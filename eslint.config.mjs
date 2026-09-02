@@ -103,6 +103,10 @@ export default tseslint.config(
               onlyDependOnLibsWithTags: ['scope:invoice', 'scope:shared'],
             },
             {
+              sourceTag: 'scope:settings',
+              onlyDependOnLibsWithTags: ['scope:settings', 'scope:shared'],
+            },
+            {
               sourceTag: 'scope:shared',
               onlyDependOnLibsWithTags: ['scope:shared'],
             },
