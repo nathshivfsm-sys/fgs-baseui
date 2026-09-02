@@ -80,19 +80,16 @@ export function SectionHeader({
   );
 }
 
-const sectionTitleVariants = cva(
-  'm-0 font-form font-semibold text-card-foreground',
-  {
-    variants: {
-      size: {
-        default: 'text-body leading-[1.4]',
-        /** 14px title used inside the compact form panels. */
-        sm: 'text-control leading-[1.4]',
-      },
+const sectionTitleVariants = cva('m-0 font-semibold text-card-foreground', {
+  variants: {
+    size: {
+      default: 'text-body leading-[1.4]',
+      /** 14px title used inside the compact form panels. */
+      sm: 'text-control leading-[1.4]',
     },
-    defaultVariants: { size: 'default' },
   },
-);
+  defaultVariants: { size: 'default' },
+});
 
 export interface SectionTitleProps
   extends ComponentProps<'h2'>,
@@ -115,7 +112,7 @@ export function SectionSubheading({
   return (
     <h3
       className={cn(
-        'm-0 font-form text-caption font-medium uppercase leading-4 tracking-section text-heading',
+        'm-0 text-caption font-medium uppercase leading-4 tracking-section text-heading',
         className,
       )}
       {...props}

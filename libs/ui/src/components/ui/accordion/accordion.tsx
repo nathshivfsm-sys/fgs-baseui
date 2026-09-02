@@ -11,7 +11,7 @@ export type AccordionProps = StringClassName<
 export function Accordion({ className, ...props }: AccordionProps) {
   return (
     <AccordionPrimitive.Root
-      className={cn('flex w-full flex-col font-form', className)}
+      className={cn('flex w-full flex-col', className)}
       data-slot="accordion"
       {...props}
     />

@@ -11,7 +11,7 @@ const cardSurfaceVariants = cva(
 );
 
 const cardVariants = cva(
-  'group/card flex min-w-0 flex-col gap-(--card-spacing) overflow-hidden py-(--card-spacing) font-form text-control has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card',
+  'group/card flex min-w-0 flex-col gap-(--card-spacing) overflow-hidden py-(--card-spacing) text-control has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card',
   {
     variants: {
       size: {

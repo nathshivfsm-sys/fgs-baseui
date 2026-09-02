@@ -97,7 +97,7 @@ export function RadioGroupField({
   const describedBy = error || helperText ? messageId : undefined;
   return (
     <div
-      className="flex flex-col gap-2 font-form"
+      className="flex flex-col gap-2"
       data-invalid={Boolean(error) || undefined}
     >
       {label != null && (

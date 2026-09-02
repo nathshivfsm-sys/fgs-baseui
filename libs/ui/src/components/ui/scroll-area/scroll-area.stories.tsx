@@ -27,7 +27,7 @@ export const Default: Story = {
       {...args}
       className="h-48 w-64 rounded-md border border-border-component bg-card"
     >
-      <ul className="flex flex-col gap-2 p-3 font-form text-control text-card-foreground">
+      <ul className="flex flex-col gap-2 p-3 text-control text-card-foreground">
         {workOrders.map((workOrder) => (
           <li key={workOrder}>{workOrder}</li>
         ))}
@@ -46,7 +46,7 @@ export const Horizontal: Story = {
       <div className="flex w-max gap-3 p-3">
         {workOrders.slice(0, 10).map((workOrder) => (
           <div
-            className="w-32 shrink-0 rounded-md bg-secondary p-3 font-form text-control text-card-foreground"
+            className="w-32 shrink-0 rounded-md bg-secondary p-3 text-control text-card-foreground"
             key={workOrder}
           >
             {workOrder}
@@ -65,7 +65,7 @@ export const BothAxes: Story = {
       {...args}
       className="h-48 w-64 rounded-md border border-border-component bg-card"
     >
-      <div className="w-[40rem] p-3 font-form text-control text-card-foreground">
+      <div className="w-[40rem] p-3 text-control text-card-foreground">
         {workOrders.map((workOrder) => (
           <p className="whitespace-nowrap" key={workOrder}>
             {workOrder} — scheduled, assigned, and awaiting dispatch

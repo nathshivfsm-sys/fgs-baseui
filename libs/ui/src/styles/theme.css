@@ -1,6 +1,8 @@
 @theme {
-  --font-sans: Geist, Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-form: Inter, Geist, ui-sans-serif, system-ui, sans-serif;
+  /* Resolved from styles/font.css, which is the only file that names a
+     typeface. The app has a single sans family, so `font-sans` is the one
+     sans utility — there is deliberately no second family token. */
+  --font-sans: var(--font-app-family), var(--font-app-fallback);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --text-caption: 0.75rem;

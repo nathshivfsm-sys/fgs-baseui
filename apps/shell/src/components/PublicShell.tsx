@@ -54,7 +54,7 @@ function BrandBanner() {
       <div className="relative z-10 flex items-center gap-3">
         <HexLogoIcon aria-hidden="true" className="size-14 shrink-0" />
         <div>
-          <p className="font-form text-[2.625rem] font-extrabold leading-none tracking-tight text-white">
+          <p className="text-[2.625rem] font-extrabold leading-none tracking-tight text-white">
             FSM
           </p>
           <p className="mt-1 text-control text-white/70">

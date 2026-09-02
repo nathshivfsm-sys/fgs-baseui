@@ -1,0 +1,55 @@
+/* ============================================================================
+   APPLICATION TYPEFACE — single swap point
+   ============================================================================
+
+   This file is the ONLY place in the repo that names a typeface. Every app
+   (shell, workorder, lead, invoice) and Storybook reach the font through
+   libs/ui/src/styles.css, so changing it here changes it everywhere.
+
+   ── To swap the application font ──────────────────────────────────────────
+   1. Install the replacement into the UI lib:
+        pnpm add @fontsource-variable/<font> --save-exact --filter @cms/ui
+   2. Replace the two @import lines below.
+   3. Set --font-app-family to the family name that package declares
+      (check the @font-face rules in its CSS — Fontsource variable packages
+      use the "<Name> Variable" convention).
+   4. Set --font-app-supports-slashed-zero / --font-app-supports-tabular
+      to match what the new font actually ships (see note below).
+
+   No component, token, or app file needs to change. Nothing outside this
+   file references a font by name.
+
+   ── Why the `opsz` build ──────────────────────────────────────────────────
+   Inter's optical-size axis runs 14–32. Our type scale spans 0.6875rem (11px)
+   badges to 1.375rem (22px) titles. With optical sizing the small end renders
+   with Inter's "Text" cut (more open spacing, better at 11–14px) and the large
+   end tightens automatically. Costs ~24KB over the weight-only build on the
+   latin subset. To drop it, import 'wght.css' / 'wght-italic.css' instead.
+
+   ── Feature support, verified against the shipped woff2 ───────────────────
+   Present:  calt, ccmp, tnum, pnum, numr, dnom, frac, locl
+   Absent:   zero (slashed zero), ss##/cv## character variants
+   Fontsource's subsetting strips those. If a future font ships `zero`, flip
+   --font-app-supports-slashed-zero to 1 and identifier columns pick it up
+   with no component edits.
+   ========================================================================== */
+
+@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/inter/opsz-italic.css';
+
+:root {
+  /* The family name declared by the @font-face rules imported above. */
+  --font-app-family: 'Inter Variable';
+
+  /* Rendered while the webfont loads, and if it fails to load entirely.
+     System UI faces are listed first so the fallback still looks like a
+     native application rather than Times New Roman. */
+  --font-app-fallback:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+
+  /* Capability flags for the active font. Consumed by the numeric utilities
+     in base.css. 1 = the font ships the feature, 0 = it does not. */
+  --font-app-supports-tabular: 1;
+  --font-app-supports-slashed-zero: 0;
+}

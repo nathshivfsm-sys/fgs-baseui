@@ -124,7 +124,7 @@ function EditLocationExample(props: PopoverContentProps) {
   };
 
   return (
-    <div className="flex w-64 items-center justify-between gap-2 rounded-md border border-divider bg-card px-3 py-2 font-form text-control text-card-foreground">
+    <div className="flex w-64 items-center justify-between gap-2 rounded-md border border-divider bg-card px-3 py-2 text-control text-card-foreground">
       <span className="flex min-w-0 flex-col">
         <span className="truncate font-medium" data-testid="location-name">
           {name}

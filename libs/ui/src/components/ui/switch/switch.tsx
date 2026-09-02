@@ -66,7 +66,7 @@ export function SwitchField({
   const labelId = `${switchId}-label`;
   const messageId = `${switchId}-message`;
   return (
-    <div className="flex flex-col gap-1 font-form">
+    <div className="flex flex-col gap-1">
       <div className="flex items-center gap-4">
         {labelPosition === 'before' && (
           <label

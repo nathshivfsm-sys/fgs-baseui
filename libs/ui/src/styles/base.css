@@ -7,6 +7,10 @@
     min-width: 20rem;
     color-scheme: light;
     font-family: var(--font-sans);
+    /* The active font carries an optical-size axis (see styles/font.css), so
+       let the browser pick the cut that suits each size. Harmless no-op for a
+       replacement font without the axis. */
+    font-optical-sizing: auto;
     text-rendering: optimizeLegibility;
   }
 
@@ -28,4 +32,17 @@
   textarea {
     font: inherit;
   }
+}
+
+/* Locks figures to a fixed advance width so digits stack in vertical columns.
+   Matters wherever near-identical values sit in a list and differ by a single
+   character — record codes (LOC-1001 vs LOC-1007), ZIPs, amounts, counts.
+
+   The feature values come from the capability flags in styles/font.css, so a
+   replacement typeface that lacks tnum or zero resolves them to 0 and renders
+   unchanged instead of silently misapplying a feature it does not have. */
+@utility tabular-figures {
+  font-feature-settings:
+    'tnum' var(--font-app-supports-tabular),
+    'zero' var(--font-app-supports-slashed-zero);
 }

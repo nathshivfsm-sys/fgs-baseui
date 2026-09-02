@@ -17,7 +17,7 @@ export function Tabs(props: TabsProps) {
   return <TabsPrimitive.Root {...props} />;
 }
 
-const tabsListVariants = cva('flex items-center overflow-x-auto font-form', {
+const tabsListVariants = cva('flex items-center overflow-x-auto', {
   variants: {
     /** Draws the full-width hairline the compact tabs sit on. */
     bordered: { false: '', true: 'border-b border-border-soft' },

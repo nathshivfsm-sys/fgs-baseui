@@ -50,7 +50,7 @@ export function TooltipContent({
       >
         <TooltipPrimitive.Popup
           className={cn(
-            'relative inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground-strong px-3 py-1.5 font-form text-caption text-background transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0',
+            'relative inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground-strong px-3 py-1.5 text-caption text-background transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0',
             className,
           )}
           data-slot="tooltip-content"
