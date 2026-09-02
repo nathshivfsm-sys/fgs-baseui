@@ -13,40 +13,40 @@ const INVOICES = [
 export function InvoiceListPage() {
   const { user } = useAuth();
 
+  // No page gutters here — the host shell (and bootstrap.tsx when standalone)
+  // supplies them, so this remote stays aligned with every other one.
   return (
-    <div className="p-page-compact sm:p-page">
-      <SectionCard>
-        <h1 className="text-title font-bold text-heading">Invoices</h1>
-        <p className="mt-1 text-control text-muted-foreground">
-          Signed in as {user?.displayName}
-        </p>
+    <SectionCard>
+      <h1 className="text-title font-bold text-heading">Invoices</h1>
+      <p className="mt-1 text-control text-foreground-muted">
+        Signed in as {user?.displayName}
+      </p>
 
-        <ul className="mt-4 flex flex-col divide-y divide-divider">
-          {INVOICES.map((invoice) => (
-            <li
-              className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3 text-control"
-              key={invoice.id}
+      <ul className="mt-4 flex flex-col divide-y divide-divider">
+        {INVOICES.map((invoice) => (
+          <li
+            className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3 text-control"
+            key={invoice.id}
+          >
+            <Link
+              className="font-semibold text-primary hover:underline"
+              to={invoice.id}
             >
-              <Link
-                className="font-semibold text-brand-blue hover:underline"
-                to={invoice.id}
-              >
-                {invoice.id}
-              </Link>
-              <span className="text-muted-foreground">{invoice.customer}</span>
-              <span className="ml-auto font-semibold text-heading">
-                {invoice.amount}
-              </span>
-              <Link
-                className="text-muted-foreground hover:underline"
-                to={`payment/${invoice.id}`}
-              >
-                Public payment link
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </SectionCard>
-    </div>
+              {invoice.id}
+            </Link>
+            <span className="text-foreground-muted">{invoice.customer}</span>
+            <span className="ml-auto font-semibold text-heading">
+              {invoice.amount}
+            </span>
+            <Link
+              className="text-foreground-muted hover:underline"
+              to={`payment/${invoice.id}`}
+            >
+              Public payment link
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </SectionCard>
   );
 }

@@ -129,7 +129,5 @@ export function resolveSettingTone(
   iconName: string,
   index: number,
 ): SettingCardTone {
-  return (
-    COMPANY_TONE_MAP[iconName] ?? TONE_CYCLE[index % TONE_CYCLE.length]
-  );
+  return COMPANY_TONE_MAP[iconName] ?? TONE_CYCLE[index % TONE_CYCLE.length];
 }

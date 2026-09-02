@@ -13,7 +13,7 @@ import type { DataTablePaginationProps } from '../types';
 import { buildPageItems } from '../utils';
 
 const pageControlClass =
-  'inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-input bg-card text-caption font-medium text-control-foreground outline-none transition-colors hover:bg-secondary/60 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-input bg-surface text-caption font-medium text-foreground outline-none transition-colors hover:bg-secondary/60 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-40';
 
 /** Range summary, rows-per-page control, and numbered pager. */
 export function DataTablePagination<TData extends RowData>({
@@ -40,7 +40,7 @@ export function DataTablePagination<TData extends RowData>({
         className,
       )}
     >
-      <p className="text-input text-muted-foreground">
+      <p className="text-foreground-muted">
         {totalRows === 0
           ? `No ${rowLabel} found`
           : `Showing ${firstRow} to ${lastRow} of ${totalRows} ${rowLabel}`}
@@ -48,10 +48,7 @@ export function DataTablePagination<TData extends RowData>({
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <span
-            className="text-input text-muted-foreground"
-            id={pageSizeLabelId}
-          >
+          <span className="text-foreground-muted" id={pageSizeLabelId}>
             Rows per page:
           </span>
           <Select
@@ -60,7 +57,7 @@ export function DataTablePagination<TData extends RowData>({
           >
             <SelectTrigger
               aria-labelledby={pageSizeLabelId}
-              className="w-[4.25rem] border-input bg-card"
+              className="w-[4.25rem] border-input bg-surface"
               size="sm"
             >
               <SelectValue />
@@ -94,7 +91,7 @@ export function DataTablePagination<TData extends RowData>({
                 className={cn(
                   pageControlClass,
                   item === pageIndex &&
-                    'border-brand bg-brand text-brand-foreground hover:bg-brand/90',
+                    'border-primary bg-primary text-action-foreground hover:bg-primary/90',
                 )}
                 key={item}
                 onClick={() => table.setPageIndex(item)}
@@ -105,7 +102,7 @@ export function DataTablePagination<TData extends RowData>({
             ) : (
               <span
                 aria-hidden="true"
-                className="inline-flex size-8 items-center justify-center text-caption text-muted-foreground"
+                className="inline-flex size-8 items-center justify-center text-caption text-foreground-muted"
                 key={item}
               >
                 &hellip;

@@ -11,10 +11,12 @@ export function InvoicePaymentPage() {
   const [paid, setPaid] = useState(false);
 
   return (
-    <div className="mx-auto max-w-md p-page-compact sm:p-page">
+    // Only the narrow measure is this page's concern; the surrounding gutters
+    // come from the host shell.
+    <div className="mx-auto w-full max-w-md">
       <SectionCard>
         <h1 className="text-title font-bold text-heading">Pay invoice</h1>
-        <p className="mt-1 text-control text-muted-foreground">
+        <p className="mt-1 text-control text-foreground-muted">
           Invoice <span className="font-semibold">{invoiceId}</span>
         </p>
 

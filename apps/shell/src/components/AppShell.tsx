@@ -1,5 +1,6 @@
 import type { UserDetails } from '@cms/platform-contract';
 import { useState, type ReactNode } from 'react';
+import { PageContainer } from './PageContainer';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 
@@ -15,7 +16,7 @@ export function AppShell({
   children,
   currentUser,
   onLogout,
-  tenantId
+  tenantId,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,7 +47,7 @@ export function AppShell({
               type="button"
             />
             <Sidebar
-              className="relative z-10 shadow-surface"
+              className="relative z-10 shadow-sm"
               collapsed={false}
               onNavigate={() => setMobileOpen(false)}
               showCollapseControl={false}
@@ -54,7 +55,9 @@ export function AppShell({
           </div>
         )}
 
-        <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+        <main className="min-w-0 flex-1 overflow-y-auto">
+          <PageContainer>{children}</PageContainer>
+        </main>
       </div>
     </div>
   );

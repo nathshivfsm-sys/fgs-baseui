@@ -68,7 +68,7 @@ export function AvatarBadge({ className, ...props }: ComponentProps<'span'>) {
   return (
     <span
       className={cn(
-        'absolute right-0 bottom-0 z-10 inline-flex select-none items-center justify-center rounded-full bg-brand text-brand-foreground ring-2 ring-background',
+        'absolute right-0 bottom-0 z-10 inline-flex select-none items-center justify-center rounded-full bg-primary text-action-foreground ring-2 ring-background',
         'group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden',
         'group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2',
         'group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2',

@@ -26,7 +26,7 @@ import type {
   DataTableToolbarProps,
 } from '../types';
 
-const toolbarControlClass = 'border-input bg-card text-control-foreground';
+const toolbarControlClass = 'border-input bg-surface text-foreground';
 
 /** Row above the grid holding scope, search, and view controls. */
 export function DataTableToolbar({
@@ -59,7 +59,7 @@ export function DataTableSearch({
     <div className={cn('w-full sm:w-56', className)}>
       <TextInput
         aria-label={label}
-        className="border-input bg-card"
+        className="border-input bg-surface"
         onChange={(event) => onValueChange(event.target.value)}
         placeholder={placeholder}
         startAdornment={<SearchIcon className="size-4" />}
@@ -86,7 +86,7 @@ export function DataTableFilterButton({
             {active ? (
               <span
                 aria-hidden="true"
-                className="size-1.5 rounded-full bg-brand"
+                className="size-1.5 rounded-full bg-primary"
               />
             ) : null}
           </Button>
@@ -150,7 +150,7 @@ export function DataTableOverflowMenu({
         render={
           <Button
             aria-label={label}
-            className={cn(toolbarControlClass, 'size-control p-0')}
+            className={cn(toolbarControlClass, 'size-9 p-0')}
             title={label}
             variant="outline"
           >

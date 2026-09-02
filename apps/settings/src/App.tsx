@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
+  BodySmall,
+  Heading1,
   SearchIcon,
   SettingCard,
   SettingCardGrid,
@@ -10,7 +12,10 @@ import {
   TextInput,
 } from '@cms/ui';
 import { allSettings } from './constants/settings';
-import { resolveSettingIcon, resolveSettingTone } from './constants/setting-icons';
+import {
+  resolveSettingIcon,
+  resolveSettingTone,
+} from './constants/setting-icons';
 import { SETTING_TABS } from './constants/setting-tabs';
 import type { SettingsTabKey } from './constants/types';
 import { RemoteErrorBoundary } from './error-boundary';
@@ -33,13 +38,13 @@ export function App() {
 
   return (
     <RemoteErrorBoundary>
-      <section className="px-8 py-3 space-y-6" data-testid="settings">
+      <section className="py-3 space-y-6" data-testid="settings">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className='pb-3'>
-            <h1 className="text-2xl font-bold text-heading">Setup</h1>
-            <p className="text-control text-table-foreground">
+          <div className="pb-3">
+            <Heading1>Setup</Heading1>
+            <BodySmall color="foreground-subtle">
               Configure your FSM environment
-            </p>
+            </BodySmall>
           </div>
           <TextInput
             aria-label="Search settings"
@@ -57,12 +62,7 @@ export function App() {
         >
           <TabsList aria-label="Setup categories" bordered>
             {SETTING_TABS.map((tab) => (
-              <TabsTrigger
-                className={tab.spacerBefore ? 'ml-6' : undefined}
-                key={tab.key}
-                tone="action"
-                value={tab.key}
-              >
+              <TabsTrigger key={tab.key} tone="action" value={tab.key}>
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -70,9 +70,9 @@ export function App() {
 
           <TabsContent value={activeTab}>
             {filteredCategories.length === 0 ? (
-              <p className="text-control text-table-foreground" role="status">
+              <BodySmall color="foreground-subtle" role="status">
                 No settings match "{query}"
-              </p>
+              </BodySmall>
             ) : (
               <SettingCardGrid>
                 {filteredCategories.map((category, index) => {

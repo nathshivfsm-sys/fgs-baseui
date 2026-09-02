@@ -29,7 +29,7 @@ export function DropdownMenuContent({
           className={cn(
             // 6px padding is what insets the highlighted row from the popup
             // edges in the designs.
-            'min-w-52 overflow-hidden rounded-metric border border-border-soft bg-popover p-1.5 text-popover-foreground shadow-popup',
+            'min-w-52 overflow-hidden rounded-lg border border-border-subtle bg-surface p-1.5 text-surface-foreground shadow-lg',
             className,
           )}
           {...props}
@@ -46,7 +46,7 @@ const dropdownMenuItemVariants = cva(
       variant: {
         /** Muted leading icon that adopts the action blue while highlighted. */
         default:
-          'text-control-foreground data-highlighted:bg-action-subtle data-highlighted:text-action [&_svg]:text-icon-muted data-highlighted:[&_svg]:text-action',
+          'text-foreground data-highlighted:bg-action-subtle data-highlighted:text-action [&_svg]:text-icon-muted data-highlighted:[&_svg]:text-action',
         destructive:
           'text-destructive data-highlighted:bg-destructive/10 data-highlighted:text-destructive-strong [&_svg]:text-destructive data-highlighted:[&_svg]:text-destructive-strong',
       },
@@ -84,7 +84,7 @@ export function DropdownMenuLabel({
   return (
     <Menu.GroupLabel
       className={cn(
-        'px-3 py-1.5 text-caption font-semibold text-muted-foreground',
+        'px-3 py-1.5 text-caption font-semibold text-foreground-muted',
         className,
       )}
       {...props}

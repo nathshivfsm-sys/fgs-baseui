@@ -7,11 +7,11 @@ import { cn } from '../../../lib/cn';
  * background). `SectionCard` composes it so both stay visually identical.
  */
 const cardSurfaceVariants = cva(
-  'rounded-card border border-border-component bg-card text-card-foreground',
+  'rounded-xl border border-border bg-surface text-surface-foreground',
 );
 
 const cardVariants = cva(
-  'group/card flex min-w-0 flex-col gap-(--card-spacing) overflow-hidden py-(--card-spacing) text-control has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-card *:[img:last-child]:rounded-b-card',
+  'group/card flex min-w-0 flex-col gap-(--card-spacing) overflow-hidden py-(--card-spacing) text-control has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
   {
     variants: {
       size: {
@@ -75,7 +75,7 @@ export function CardDescription({
 }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn('text-control text-field-foreground', className)}
+      className={cn('text-control text-input-foreground', className)}
       data-slot="card-description"
       {...props}
     />
@@ -110,7 +110,7 @@ export function CardFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 rounded-b-card border-t border-divider bg-secondary/40 p-(--card-spacing)',
+        'flex items-center gap-2 rounded-b-xl border-t border-divider bg-secondary/40 p-(--card-spacing)',
         className,
       )}
       data-slot="card-footer"

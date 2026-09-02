@@ -57,8 +57,8 @@ export interface InputOTPSlotProps extends ComponentProps<'div'> {
  * Single character cell; reads its character and caret state from `InputOTP`.
  *
  * Geometry matches the Login designs: 52px tall, 8px radius, `--input` hairline
- * on a card surface. Cells grow to fill the row and fall back to
- * `--spacing-otp-slot` wide when the container is unconstrained. The digit
+ * on a card surface. Cells grow to fill the row and fall back to 52px
+ * (`basis-13`) wide when the container is unconstrained. The digit
  * typography and the active, invalid, and disabled states are NOT specified in
  * Figma (every cell there is empty) and follow the library's form conventions.
  */
@@ -73,7 +73,7 @@ export function InputOTPSlot({
   return (
     <div
       className={cn(
-        'relative flex h-otp-slot min-w-0 grow basis-otp-slot items-center justify-center rounded-md border border-input bg-card text-body font-semibold text-card-foreground outline-none transition-[border-color,box-shadow] aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
+        'relative flex h-13 min-w-0 grow basis-13 items-center justify-center rounded-md border border-input bg-surface text-body font-semibold text-surface-foreground outline-none transition-[border-color,box-shadow] aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
         className,
       )}
       data-active={isActive}
@@ -83,7 +83,7 @@ export function InputOTPSlot({
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-5 w-px animate-caret-blink bg-card-foreground motion-reduce:animate-none" />
+          <div className="h-5 w-px animate-caret-blink bg-surface-foreground motion-reduce:animate-none" />
         </div>
       )}
     </div>

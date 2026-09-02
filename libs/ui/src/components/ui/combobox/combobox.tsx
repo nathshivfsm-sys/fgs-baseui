@@ -67,7 +67,7 @@ export function ComboboxTrigger({
     <ComboboxPrimitive.Trigger
       aria-label={ariaLabel}
       className={cn(
-        'absolute right-3 flex items-center text-field-foreground disabled:cursor-not-allowed disabled:opacity-60',
+        'absolute right-3 flex items-center text-input-foreground disabled:cursor-not-allowed disabled:opacity-60',
         className,
       )}
       {...props}
@@ -102,7 +102,7 @@ export function ComboboxContent({
       >
         <ComboboxPrimitive.Popup
           className={cn(
-            'max-h-80 min-w-[var(--anchor-width)] overflow-hidden rounded-md border border-border-component bg-popover text-popover-foreground shadow-surface',
+            'max-h-80 min-w-[var(--anchor-width)] overflow-hidden rounded-md border border-border bg-surface text-surface-foreground shadow-sm',
             className,
           )}
           {...props}
@@ -122,7 +122,7 @@ export function ComboboxEmpty({ className, ...props }: ComboboxEmptyProps) {
   return (
     <ComboboxPrimitive.Empty
       className={cn(
-        'px-2 py-1.5 text-control text-field-foreground',
+        'px-2 py-1.5 text-control text-input-foreground',
         className,
       )}
       {...props}
@@ -150,7 +150,7 @@ export function ComboboxItem({
   return (
     <ComboboxPrimitive.Item
       className={cn(
-        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 px-2 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 px-2 text-control outline-none data-highlighted:bg-primary-subtle data-highlighted:text-primary-subtle-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}

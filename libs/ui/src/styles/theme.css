@@ -7,8 +7,8 @@
 
   --text-caption: 0.75rem;
   --text-caption--line-height: 1rem;
-  --text-input: 0.8125rem;
-  --text-input--line-height: 1.25rem;
+  --text-field: 0.8125rem;
+  --text-field--line-height: 1.25rem;
   --text-control: 0.875rem;
   --text-control--line-height: 1.25rem;
   --text-body: 1rem;
@@ -35,56 +35,20 @@
   --container-form: 62.5rem;
   --container-content: 74rem;
   --container-app: 90rem;
-  --spacing-page-compact: 1rem;
-  --spacing-page: 1.5rem;
-  --spacing-sidebar-compact: 14rem;
-  --spacing-sidebar: 16rem;
-  /* Nav shell, measured from the redesigned Figma frames: a 56px top bar over
-     a 208px sidebar that narrows to a 64px icon rail. */
-  --spacing-sidebar-expanded: 13rem;
-  /* Wide enough for a two-line wrapped label under the icon ("Dispatch /
-     Board"), which is what the collapsed rail shows instead of a tooltip. */
-  --spacing-sidebar-collapsed: 6rem;
-  --spacing-topbar: 3.5rem;
-  /* Top-bar parts. The 189px identity block ends level with the sidebar's
-     right edge, so the logo sits directly over that column. */
-  --spacing-topnav-identity: 11.8125rem;
-  --spacing-topnav-search: 23.75rem;
-  --spacing-topnav-icon: 1.5625rem;
-  --spacing-topnav-avatar: 1.875rem;
-  --spacing-topnav-badge: 1.125rem;
-  /* Sidebar parts: 15px nav glyph when labelled, 45px footer rail. The
-     collapsed rail's 20px glyph is plain `size-5`. */
-  --spacing-nav-icon: 0.9375rem;
-  --spacing-nav-footer: 2.8125rem;
-  --spacing-control-xs: 1.75rem;
-  --spacing-control-sm: 2rem;
-  --spacing-control: 2.25rem;
-  --spacing-control-lg: 2.5rem;
-  /* Density steps measured from the Service Location designs: 34px toolbar
-     controls and 38px page-header / footer actions. Both hug their content. */
-  --spacing-control-compact: 2.125rem;
-  --spacing-control-comfortable: 2.375rem;
-  --spacing-metric-icon: 2.75rem;
-  --spacing-metric-card: 6.375rem;
-  /* 60px icon tile on the Setup page's category cards (Figma node 70:231). */
-  --spacing-setting-icon: 3.75rem;
-  /* One-time-code cell from the Login designs: 52px tall, and the width each
-     cell falls back to before it grows to fill the row. */
-  --spacing-otp-slot: 3.25rem;
 
+  /* Corner radii, deduplicated: the old `lg` repeated `md` and `card`
+     repeated `xl`, so both were dropped. */
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
-  --radius-lg: 0.5rem;
-  --radius-metric: 0.75rem;
+  --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-card: 1rem;
+
   --shadow-xs: 0 1px 2px 0 #1018280d;
-  --shadow-surface: 4px 4px 64px 16px #00000005;
+  --shadow-sm: 4px 4px 64px 16px #00000005;
   /* Menus and other floating surfaces read as lifted in the designs, which the
      near-invisible --shadow-surface does not convey. */
-  --shadow-popup: 0 12px 32px -8px #1018281f, 0 2px 6px -2px #10182814;
+  --shadow-lg: 0 12px 32px -8px #1018281f, 0 2px 6px -2px #10182814;
 
   /* Text-caret blink for one-time-code inputs, which draw their own caret
      because the underlying field is visually hidden. */
@@ -105,86 +69,62 @@
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-foreground-strong: var(--foreground-strong);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-raised-foreground: var(--surface-raised-foreground);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-surface-inverse-foreground: var(--surface-inverse-foreground);
+  --color-surface-inverse-hover: var(--surface-inverse-hover);
+  --color-accent-surface: var(--accent-surface);
+  --color-accent-surface-foreground: var(--accent-surface-foreground);
   --color-heading: var(--heading);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-card-link: var(--card-link);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
+  --color-foreground-strong: var(--foreground-strong);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-label: var(--label);
+  --color-placeholder: var(--placeholder);
+  --color-icon-muted: var(--icon-muted);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
   --color-action: var(--action);
   --color-action-hover: var(--action-hover);
   --color-action-foreground: var(--action-foreground);
   --color-action-subtle: var(--action-subtle);
-  --color-brand: var(--brand);
-  --color-brand-foreground: var(--brand-foreground);
-  --color-brand-subtle: var(--brand-subtle);
-  --color-brand-blue: var(--brand-blue);
-  --color-brand-blue-foreground: var(--brand-blue-foreground);
-  --color-brand-blue-subtle: var(--brand-blue-subtle);
+  --color-link: var(--link);
+  --color-ring: var(--ring);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-destructive-strong: var(--destructive-strong);
   --color-success: var(--success);
+  --color-success-strong: var(--success-strong);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-border: var(--warning-border);
   --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-strong: var(--destructive-strong);
   --color-border: var(--border);
-  --color-border-soft: var(--border-soft);
-  --color-border-component: var(--border-component);
+  --color-border-subtle: var(--border-subtle);
   --color-divider: var(--divider);
   --color-input: var(--input);
   --color-input-strong: var(--input-strong);
-  --color-ring: var(--ring);
-  --color-link: var(--link);
-  --color-label: var(--label);
-  --color-placeholder: var(--placeholder);
-  --color-field-foreground: var(--field-foreground);
-  --color-field-placeholder: var(--field-placeholder);
-  --color-icon-muted: var(--icon-muted);
-  --color-nav-foreground: var(--nav-foreground);
-  --color-nav-section: var(--nav-section);
-  --color-nav-muted: var(--nav-muted);
-  --color-nav-divider: var(--nav-divider);
-  --color-nav-border: var(--nav-border);
-  --color-topnav: var(--topnav);
-  --color-topnav-foreground: var(--topnav-foreground);
-  --color-topnav-border: var(--topnav-border);
-  --color-topnav-hover: var(--topnav-hover);
-  --color-topnav-search: var(--topnav-search);
-  --color-topnav-search-border: var(--topnav-search-border);
-  --color-topnav-search-placeholder: var(--topnav-search-placeholder);
-  --color-avatar-fallback: var(--avatar-fallback);
-  --color-avatar-fallback-foreground: var(--avatar-fallback-foreground);
-  --color-control-foreground: var(--control-foreground);
-  --color-surface-subtle: var(--surface-subtle);
-  --color-table-header: var(--table-header);
-  --color-table-header-foreground: var(--table-header-foreground);
-  --color-table-foreground: var(--table-foreground);
-  --color-toggle-active: var(--toggle-active);
-  --color-tab-active: var(--tab-active);
-  --color-info-strong: var(--info-strong);
-  --color-metric-blue: var(--metric-blue);
-  --color-metric-blue-foreground: var(--metric-blue-foreground);
-  --color-metric-green: var(--metric-green);
-  --color-metric-green-foreground: var(--metric-green-foreground);
-  --color-metric-orange: var(--metric-orange);
-  --color-metric-orange-foreground: var(--metric-orange-foreground);
-  --color-metric-purple: var(--metric-purple);
-  --color-metric-purple-foreground: var(--metric-purple-foreground);
-  --color-metric-neutral: var(--metric-neutral);
-  --color-metric-neutral-foreground: var(--metric-neutral-foreground);
-  --color-metric-positive: var(--metric-positive);
+  --color-input-foreground: var(--input-foreground);
+  --color-data-1: var(--data-1);
+  --color-data-1-foreground: var(--data-1-foreground);
+  --color-data-2: var(--data-2);
+  --color-data-2-foreground: var(--data-2-foreground);
+  --color-data-3: var(--data-3);
+  --color-data-3-foreground: var(--data-3-foreground);
+  --color-data-4: var(--data-4);
+  --color-data-4-foreground: var(--data-4-foreground);
+  --color-data-5: var(--data-5);
+  --color-data-5-foreground: var(--data-5-foreground);
 }

@@ -3,15 +3,15 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
 
 const metricCardIconVariants = cva(
-  'flex size-metric-icon shrink-0 items-center justify-center rounded-md [&_svg]:size-[22px]',
+  'flex size-11 shrink-0 items-center justify-center rounded-md [&_svg]:size-[22px]',
   {
     variants: {
       tone: {
-        blue: 'bg-metric-blue text-metric-blue-foreground',
-        green: 'bg-metric-green text-metric-green-foreground',
-        orange: 'bg-metric-orange text-metric-orange-foreground',
-        purple: 'bg-metric-purple text-metric-purple-foreground',
-        neutral: 'bg-metric-neutral text-metric-neutral-foreground',
+        blue: 'bg-data-1 text-data-1-foreground',
+        green: 'bg-data-2 text-data-2-foreground',
+        orange: 'bg-data-3 text-data-3-foreground',
+        purple: 'bg-data-4 text-data-4-foreground',
+        neutral: 'bg-data-5 text-data-5-foreground',
       },
     },
     defaultVariants: { tone: 'blue' },
@@ -21,8 +21,8 @@ const metricCardIconVariants = cva(
 const metricCardDescriptionVariants = cva('text-caption leading-4', {
   variants: {
     tone: {
-      default: 'text-table-foreground',
-      positive: 'text-metric-positive',
+      default: 'text-foreground-subtle',
+      positive: 'text-success-strong',
       negative: 'text-destructive',
     },
   },
@@ -62,7 +62,7 @@ export function MetricCard({
     <article
       aria-busy={loading || undefined}
       className={cn(
-        'flex min-h-metric-card min-w-0 items-center gap-3 rounded-metric border border-divider bg-card px-4 py-3 text-card-foreground',
+        'flex min-h-26 min-w-0 items-center gap-3 rounded-lg border border-divider bg-surface px-4 py-3 text-surface-foreground',
         className,
       )}
       {...props}
@@ -77,7 +77,7 @@ export function MetricCard({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-caption leading-4 text-table-foreground">{label}</p>
+        <p className="text-caption leading-4 text-foreground-subtle">{label}</p>
         <div
           aria-live="polite"
           className="text-metric-value font-bold text-heading tabular-figures"

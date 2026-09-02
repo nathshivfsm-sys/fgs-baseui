@@ -46,7 +46,7 @@ export function AccordionTrigger({
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
         className={cn(
-          'group/accordion-trigger flex flex-1 items-center justify-between gap-3 rounded-sm py-2.5 text-left text-control font-medium text-card-foreground outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-icon-muted',
+          'group/accordion-trigger flex flex-1 items-center justify-between gap-3 rounded-sm py-2.5 text-left text-control font-medium text-surface-foreground outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-icon-muted',
           className,
         )}
         data-slot="accordion-trigger"
@@ -72,7 +72,7 @@ export function AccordionContent({
 }: AccordionContentProps) {
   return (
     <AccordionPrimitive.Panel
-      className="h-(--accordion-panel-height) overflow-hidden text-control text-card-foreground transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
+      className="h-(--accordion-panel-height) overflow-hidden text-control text-surface-foreground transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0"
       data-slot="accordion-content"
       {...props}
     >

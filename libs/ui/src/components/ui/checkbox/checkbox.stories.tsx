@@ -11,7 +11,7 @@ const meta = {
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     radius: { control: 'inline-radio', options: ['xs', 'sm'] },
-    tone: { control: 'inline-radio', options: ['brand', 'action'] },
+    tone: { control: 'inline-radio', options: ['primary', 'action'] },
   },
 } satisfies Meta<typeof Checkbox>;
 export default meta;
@@ -57,7 +57,7 @@ export const Radii: Story = {
 export const WithVisibleLabel: Story = {
   args: { 'aria-label': undefined, 'aria-labelledby': 'taxable-label' },
   render: (args) => (
-    <div className="flex items-center gap-2 text-control text-card-foreground">
+    <div className="flex items-center gap-2 text-control text-surface-foreground">
       <Checkbox {...args} />
       <span id="taxable-label">Service taxable</span>
     </div>

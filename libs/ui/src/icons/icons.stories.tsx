@@ -77,7 +77,7 @@ export const AllIcons: Story = {
     <div className="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3">
       {icons.map(([name, Icon]) => (
         <div
-          className="flex items-center gap-3 rounded-md border border-divider bg-card p-3 text-card-foreground"
+          className="flex items-center gap-3 rounded-md border border-divider bg-surface p-3 text-surface-foreground"
           key={name}
         >
           <Icon className="size-6 shrink-0" />

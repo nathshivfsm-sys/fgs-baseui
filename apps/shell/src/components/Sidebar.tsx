@@ -3,8 +3,8 @@ import { NavLink, useMatch } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from './nav-config';
 
 const NAV_ITEM_CLASSES =
-  'flex w-full items-center text-control text-control-foreground transition-colors hover:bg-secondary';
-const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-lg px-3';
+  'flex w-full items-center text-control text-foreground transition-colors hover:bg-secondary';
+const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-md px-3';
 /**
  * Collapsed items stack the label under the icon and let it wrap, so the row
  * grows to fit rather than running at the expanded state's fixed 36px.
@@ -12,7 +12,7 @@ const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-lg px-3';
 const NAV_ITEM_COLLAPSED_CLASSES =
   'flex-col justify-center gap-1 px-1 py-2 text-center text-caption leading-tight';
 const NAV_ITEM_ACTIVE_CLASSES =
-  'bg-brand-blue-subtle text-brand-blue hover:bg-brand-blue-subtle';
+  'bg-action-subtle text-primary hover:bg-action-subtle';
 
 function SidebarNavLink({
   collapsed,
@@ -40,8 +40,8 @@ function SidebarNavLink({
         aria-hidden="true"
         className={cn(
           'shrink-0',
-          collapsed ? 'size-5' : 'size-nav-icon',
-          isActive ? 'text-brand-blue' : 'text-nav-section',
+          collapsed ? 'size-5' : 'size-4',
+          isActive ? 'text-primary' : 'text-foreground-subtle',
         )}
       />
       <span className={cn(!collapsed && 'truncate')}>{item.label}</span>
@@ -69,8 +69,11 @@ export function Sidebar({
     <aside
       aria-label="Primary"
       className={cn(
-        'flex h-full flex-col border-r border-nav-border bg-card transition-[width]',
-        collapsed ? 'w-sidebar-collapsed' : 'w-sidebar-expanded',
+        // `divider` rather than `border-subtle` for the shell seam: subtle is
+        // #2e323c in dark, only 1.14:1 against the surface, so the edge all but
+        // disappears. divider tracks the original value in both schemes.
+        'flex h-full flex-col border-r border-divider bg-surface transition-[width]',
+        collapsed ? 'w-24' : 'w-52',
         className,
       )}
     >
@@ -78,7 +81,7 @@ export function Sidebar({
         <Button
           aria-label="Create New"
           className={cn(
-            'gap-2 bg-brand-blue text-brand-blue-foreground hover:bg-brand-blue/90 active:bg-brand-blue/80',
+            'gap-2 bg-primary text-action-foreground hover:bg-primary/90 active:bg-primary/80',
             !collapsed && 'w-full justify-center',
           )}
           size={collapsed ? 'icon' : 'lg'}
@@ -112,15 +115,13 @@ export function Sidebar({
           <div
             className={cn(
               'flex flex-col',
-              collapsed
-                ? 'mt-1 border-t border-nav-divider pt-1'
-                : 'gap-1 pt-1',
+              collapsed ? 'mt-1 border-t border-border pt-1' : 'gap-1 pt-1',
             )}
             key={section.label}
           >
             {/* FR-22: the label is what a hairline replaces when collapsed. */}
             {!collapsed && (
-              <p className="px-3 py-1.5 text-caption font-semibold uppercase tracking-section text-nav-section">
+              <p className="px-3 py-1.5 text-caption font-semibold uppercase tracking-section text-foreground-subtle">
                 {section.label}
               </p>
             )}
@@ -139,13 +140,13 @@ export function Sidebar({
       {showCollapseControl && (
         <div
           className={cn(
-            'flex h-nav-footer shrink-0 items-center border-t border-nav-divider px-3',
+            'flex h-11 shrink-0 items-center border-t border-border px-3',
             collapsed ? 'justify-center' : 'justify-end',
           )}
         >
           <button
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="flex items-center gap-2 rounded-sm text-control text-nav-muted transition-colors hover:text-control-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="flex items-center gap-2 rounded-sm text-control text-foreground-subtle transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             onClick={onToggleCollapse}
             type="button"
           >

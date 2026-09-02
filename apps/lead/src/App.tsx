@@ -39,11 +39,11 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
       <section className="space-y-4" data-testid="lead">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Sales</p>
+            <p className="text-sm text-foreground-muted">Sales</p>
             <h2 className="flex items-center gap-2 text-2xl font-bold">
               <UsersIcon className="size-6 text-primary" /> Leads
             </h2>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground-muted">
               Global tenant: {runtime.tenantId} · User:{' '}
               {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
               Lead-local view: {viewDensity}
@@ -81,7 +81,7 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
               Unable to load leads: {query.error.message}
             </p>
           ) : query.data.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No leads found.</p>
+            <p className="text-sm text-foreground-muted">No leads found.</p>
           ) : (
             query.data.map((item: Lead) => (
               <SectionCard className={cardPadding} key={item.id}>
@@ -89,7 +89,7 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
                   <strong>{item.name}</strong>
                   <span className="text-sm text-primary">{item.stage}</span>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">{item.id}</p>
+                <p className="mt-2 text-sm text-foreground-muted">{item.id}</p>
               </SectionCard>
             ))
           )}

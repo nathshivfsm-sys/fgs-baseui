@@ -5,7 +5,7 @@ import { cn } from '../../../lib/cn';
 const fieldLabelVariants = cva('', {
   variants: {
     size: {
-      default: 'text-control leading-[1.4] text-card-foreground',
+      default: 'text-control leading-[1.4] text-surface-foreground',
       /** 12px/16 medium heading label used by the Service Location forms. */
       compact: 'text-caption font-medium leading-4 text-heading',
     },
@@ -74,7 +74,7 @@ export function Field({
         <p
           className={cn(
             fieldMessageVariants({ size }),
-            'text-field-foreground',
+            'text-input-foreground',
           )}
           id={descriptionId}
         >
@@ -95,7 +95,7 @@ export function Field({
           <p
             className={cn(
               fieldMessageVariants({ size }),
-              'text-field-foreground',
+              'text-input-foreground',
             )}
             id={errorId}
           >

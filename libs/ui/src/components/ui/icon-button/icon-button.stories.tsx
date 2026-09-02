@@ -47,6 +47,5 @@ export const RowActions: Story = {
     </div>
   ),
 };
-export const Brand: Story = { args: { variant: 'brand' } };
 export const Disabled: Story = { args: { disabled: true } };
 export const Loading: Story = { args: { loading: true } };

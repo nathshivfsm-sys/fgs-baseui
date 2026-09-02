@@ -32,7 +32,7 @@ class ProviderBoundary extends Component<
     if (this.state.error) {
       return (
         <div
-          className="rounded-lg border border-destructive/30 bg-destructive/5 p-6"
+          className="rounded-md border border-destructive/30 bg-destructive/5 p-6"
           role="alert"
         >
           <strong>{this.props.name} is unavailable.</strong>

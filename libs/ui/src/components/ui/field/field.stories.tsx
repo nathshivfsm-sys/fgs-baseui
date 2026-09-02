@@ -23,7 +23,7 @@ export const Default: Story = {
   render: (args) => (
     <Field {...args}>
       <input
-        className="h-control rounded-md border border-input-strong px-4"
+        className="h-9 rounded-md border border-input-strong px-4"
         id="field-example"
         placeholder="Enter code"
       />
@@ -49,7 +49,7 @@ export const Disabled: Story = {
   render: (args) => (
     <Field {...args}>
       <input
-        className="h-control rounded-md border border-input-strong px-4"
+        className="h-9 rounded-md border border-input-strong px-4"
         disabled
         id="field-example"
       />

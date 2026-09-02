@@ -14,37 +14,35 @@ const buttonVariants = cva(
         /** Interactive blue from the Service Location screens. */
         action:
           'bg-action text-action-foreground hover:bg-action-hover active:bg-action-hover/90',
-        brand:
-          'bg-brand text-brand-foreground shadow-xs hover:bg-brand/90 active:bg-brand/80',
         subtle:
-          'bg-brand-subtle text-brand hover:bg-brand-subtle/80 active:bg-brand-subtle/70',
+          'bg-action-subtle text-primary hover:bg-action-subtle/80 active:bg-action-subtle/70',
         secondary:
           'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:bg-secondary/70',
         destructive:
           'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/80',
         outline:
-          'border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
+          'border border-input bg-background shadow-xs hover:bg-primary-subtle hover:text-primary-subtle-foreground active:bg-primary-subtle/80',
         /**
          * White card surface with a divider-weight hairline: the Import,
          * Export, Filter, Columns, and Cancel actions in the Figma designs.
          */
         surface:
-          'border border-divider bg-card text-control-foreground hover:bg-secondary/60 active:bg-secondary',
+          'border border-divider bg-surface text-foreground hover:bg-secondary/60 active:bg-secondary',
         ghost:
-          'hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
+          'hover:bg-primary-subtle hover:text-primary-subtle-foreground active:bg-primary-subtle/80',
       },
       size: {
-        sm: 'h-control-sm px-3',
-        default: 'h-control px-4 py-2',
-        lg: 'h-control-lg px-6',
+        sm: 'h-8 px-3',
+        default: 'h-9 px-4 py-2',
+        lg: 'h-10 px-6',
         /** 34px toolbar density; hugs content like the Figma auto-layout. */
-        compact: 'min-h-control-compact px-3 py-1.5',
+        compact: 'min-h-9 px-3 py-1.5',
         /** 38px page-header and footer action density. */
-        comfortable: 'min-h-control-comfortable px-4 py-2',
-        iconXs: 'size-control-xs p-0',
-        iconSm: 'size-control-sm p-0',
-        icon: 'size-control p-0',
-        iconLg: 'size-control-lg p-0',
+        comfortable: 'min-h-10 px-4 py-2',
+        iconXs: 'size-7 p-0',
+        iconSm: 'size-8 p-0',
+        icon: 'size-9 p-0',
+        iconLg: 'size-10 p-0',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

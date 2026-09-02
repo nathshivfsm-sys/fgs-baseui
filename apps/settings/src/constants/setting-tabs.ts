@@ -16,7 +16,7 @@ export const SETTING_TABS: readonly SettingTab[] = [
   { key: 'usersAndPayroll', label: 'Users & Payroll' },
   { key: 'operations', label: 'Operations' },
   { key: 'sales', label: 'Sales' },
-  { key: 'billingAndFinance', label: 'Billing & Finance', spacerBefore: true },
+  { key: 'billingAndFinance', label: 'Billing & Finance' },
   { key: 'serviceAgreements', label: 'Service Agreements' },
   { key: 'assetsAndInventory', label: 'Assets & Inventory' },
   { key: 'system', label: 'System' },

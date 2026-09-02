@@ -20,11 +20,11 @@ export function Tabs(props: TabsProps) {
 const tabsListVariants = cva('flex items-center overflow-x-auto', {
   variants: {
     /** Draws the full-width hairline the compact tabs sit on. */
-    bordered: { false: '', true: 'border-b border-border-soft' },
+    bordered: { false: '', true: 'border-b border-border-subtle' },
     /** Pill-track container for `TabsTrigger`'s `tone: 'segmented'`. */
     variant: {
       default: '',
-      segmented: 'gap-1 rounded-lg bg-secondary p-1',
+      segmented: 'gap-1 rounded-md bg-secondary p-1',
     },
   },
   defaultVariants: { bordered: false, variant: 'default' },
@@ -50,7 +50,7 @@ export function TabsList({
 }
 
 const tabsTriggerVariants = cva(
-  'shrink-0 rounded-t-sm outline-none transition-[color,border-color,background-color,box-shadow] hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 data-active:font-semibold',
+  'shrink-0 rounded-t-sm outline-none transition-[color,border-color,background-color,box-shadow] hover:bg-primary-subtle/50 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 data-active:font-semibold',
   {
     variants: {
       size: {
@@ -67,17 +67,17 @@ const tabsTriggerVariants = cva(
       },
       tone: {
         default:
-          'text-card-foreground data-active:border-tab-active data-active:text-tab-active',
+          'text-surface-foreground data-active:border-primary-strong data-active:text-primary-strong',
         /** Interactive blue used by the Service Location screens. */
         action:
           'text-heading data-active:border-action data-active:text-action',
         /**
          * White pill on the active tab, matching the segmented track.
-         * `text-muted-foreground` on `bg-secondary` reads 4.4:1, just under
-         * AA — `text-control-foreground` is the darker token that clears it.
+         * `text-foreground-muted` on `bg-secondary` reads 4.4:1, just under
+         * AA — `text-foreground` is the darker token that clears it.
          */
         segmented:
-          'text-control-foreground data-active:bg-card data-active:text-brand-blue data-active:shadow-xs',
+          'text-foreground data-active:bg-surface data-active:text-primary data-active:shadow-xs',
       },
     },
     defaultVariants: { size: 'default', tone: 'default' },

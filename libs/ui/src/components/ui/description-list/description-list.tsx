@@ -39,7 +39,7 @@ export function DescriptionTerm({ className, ...props }: ComponentProps<'dt'>) {
   return (
     <dt
       className={cn(
-        'text-caption font-medium leading-4 text-table-foreground',
+        'text-caption font-medium leading-4 text-foreground-subtle',
         className,
       )}
       data-slot="description-term"
@@ -83,7 +83,7 @@ export function DescriptionItem({
     <div className={cn('flex min-w-0 flex-col gap-0.5', className)} {...props}>
       <DescriptionTerm>{term}</DescriptionTerm>
       <DescriptionDetails
-        className={empty ? 'text-table-foreground' : undefined}
+        className={empty ? 'text-foreground-subtle' : undefined}
       >
         {empty ? fallback : children}
       </DescriptionDetails>

@@ -34,7 +34,7 @@ export function PopoverContent({
       >
         <PopoverPrimitive.Popup
           className={cn(
-            'flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-md border border-border-component bg-popover p-3 text-control text-popover-foreground shadow-surface outline-none transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
+            'flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-md border border-border bg-surface p-3 text-control text-surface-foreground shadow-sm outline-none transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
             className,
           )}
           data-slot="popover-content"
@@ -73,7 +73,7 @@ export type PopoverTitleProps = StringClassName<
 export function PopoverTitle({ className, ...props }: PopoverTitleProps) {
   return (
     <PopoverPrimitive.Title
-      className={cn('font-semibold text-card-foreground', className)}
+      className={cn('font-semibold text-surface-foreground', className)}
       data-slot="popover-title"
       {...props}
     />
@@ -90,7 +90,7 @@ export function PopoverDescription({
 }: PopoverDescriptionProps) {
   return (
     <PopoverPrimitive.Description
-      className={cn('text-field-foreground', className)}
+      className={cn('text-input-foreground', className)}
       data-slot="popover-description"
       {...props}
     />

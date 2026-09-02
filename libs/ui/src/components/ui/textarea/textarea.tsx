@@ -5,7 +5,7 @@ import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const textareaVariants = cva(
-  'w-full min-w-60 resize-y rounded-md border bg-card text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] placeholder:text-field-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'w-full min-w-60 resize-y rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: {
       size: {
@@ -16,7 +16,7 @@ const textareaVariants = cva(
       variant: {
         default: 'border-input-strong px-4',
         /** Service Location notes appearance: hairline border, 12px padding. */
-        soft: 'border-border-soft px-3 py-2',
+        soft: 'border-border-subtle px-3 py-2',
       },
     },
     defaultVariants: { size: 'default', variant: 'default' },
@@ -121,7 +121,7 @@ export function Textarea({
           aria-live="polite"
           // Figma specifies #9CA3AF here, which fails WCAG AA on the card
           // surface; using the slightly darker table-foreground token instead.
-          className="text-caption leading-4 text-table-foreground text-right"
+          className="text-caption leading-4 text-foreground-subtle text-right"
           id={countId}
         >
           {maxLength == null ? length : `${length}/${maxLength}`}

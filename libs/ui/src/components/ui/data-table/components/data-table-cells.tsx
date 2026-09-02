@@ -48,8 +48,8 @@ export function DataTableStackedCell({
         className={cn(
           'truncate',
           tone === 'strong'
-            ? 'font-semibold text-card-foreground'
-            : 'text-table-foreground',
+            ? 'font-semibold text-surface-foreground'
+            : 'text-foreground-subtle',
         )}
       >
         {primary}
@@ -59,8 +59,8 @@ export function DataTableStackedCell({
           className={cn(
             'truncate',
             tone === 'strong'
-              ? 'text-caption text-muted-foreground'
-              : 'text-table-foreground',
+              ? 'text-caption text-foreground-muted'
+              : 'text-foreground-subtle',
           )}
         >
           {secondary}
@@ -99,7 +99,7 @@ export function DataTableRowActions({
       {onEdit ? (
         <Button
           aria-label={editLabel}
-          className="size-7 border-input bg-card p-0 text-control-foreground"
+          className="size-7 border-input bg-surface p-0 text-foreground"
           onClick={onEdit}
           title={editLabel}
           variant="outline"
@@ -113,7 +113,7 @@ export function DataTableRowActions({
             render={
               <Button
                 aria-label={menuLabel}
-                className="size-7 border-input bg-card p-0 text-control-foreground"
+                className="size-7 border-input bg-surface p-0 text-foreground"
                 title={menuLabel}
                 variant="outline"
               >

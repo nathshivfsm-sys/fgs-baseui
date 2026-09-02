@@ -150,7 +150,7 @@ function LocationScopeSelect() {
     <Select defaultValue="all">
       <SelectTrigger
         aria-label="Location scope"
-        className="w-auto gap-2 border-input bg-card pr-3 font-medium"
+        className="w-auto gap-2 border-input bg-surface pr-3 font-medium"
       >
         <span className="flex items-center gap-2">
           <LocationPinIcon className="size-4 text-icon-muted" />
@@ -284,11 +284,11 @@ function FullPageFrame({ children }: { children: ReactNode }) {
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-5">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-caption font-semibold tracking-wide text-brand uppercase">
+            <p className="text-caption font-semibold tracking-wide text-primary uppercase">
               Operations
             </p>
             <h1 className="text-2xl font-bold text-heading">Locations</h1>
-            <p className="mt-1 text-control text-muted-foreground">
+            <p className="mt-1 text-control text-foreground-muted">
               Manage service locations and their assigned business units.
             </p>
           </div>
@@ -344,7 +344,7 @@ export const EmbeddedLayout: Story = {
     <section className="mx-auto flex max-w-5xl flex-col gap-3">
       <div>
         <h2 className="text-lg font-semibold text-heading">Recent locations</h2>
-        <p className="text-input text-muted-foreground">
+        <p className="text-foreground-muted">
           The six most recently updated locations.
         </p>
       </div>
@@ -408,7 +408,7 @@ export const ErrorLayout: Story = {
       <div className="flex flex-col items-center gap-3">
         <div>
           <p className="font-semibold text-heading">Locations unavailable</p>
-          <p className="mt-1 text-input text-muted-foreground">
+          <p className="mt-1 text-foreground-muted">
             Check your connection and try again.
           </p>
         </div>

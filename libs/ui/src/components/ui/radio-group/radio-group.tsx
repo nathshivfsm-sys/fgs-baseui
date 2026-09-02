@@ -49,13 +49,13 @@ export function RadioGroupItem({ className, ...props }: RadioGroupItemProps) {
   return (
     <Radio.Root
       className={cn(
-        'aspect-square size-4 shrink-0 rounded-full border border-input-strong bg-card text-brand outline-none transition-[border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-brand',
+        'aspect-square size-4 shrink-0 rounded-full border border-input-strong bg-surface text-primary outline-none transition-[border-color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-primary',
         className,
       )}
       {...props}
     >
       <Radio.Indicator className="flex size-full items-center justify-center">
-        <span className="size-2 rounded-full bg-brand" />
+        <span className="size-2 rounded-full bg-primary" />
       </Radio.Indicator>
     </Radio.Root>
   );
@@ -101,7 +101,7 @@ export function RadioGroupField({
       data-invalid={Boolean(error) || undefined}
     >
       {label != null && (
-        <div className="text-control text-card-foreground" id={labelId}>
+        <div className="text-control text-surface-foreground" id={labelId}>
           {label}
           {required && (
             <span aria-hidden="true" className="ml-1 text-destructive">
@@ -111,7 +111,7 @@ export function RadioGroupField({
         </div>
       )}
       {description != null && (
-        <p className="text-control text-field-foreground">{description}</p>
+        <p className="text-control text-input-foreground">{description}</p>
       )}
       <RadioGroup
         aria-describedby={describedBy}
@@ -128,8 +128,8 @@ export function RadioGroupField({
           return (
             <label
               className={cn(
-                'flex cursor-pointer items-start gap-3 text-body leading-[1.4] text-card-foreground',
-                option.disabled && 'cursor-not-allowed text-muted-foreground',
+                'flex cursor-pointer items-start gap-3 text-body leading-[1.4] text-surface-foreground',
+                option.disabled && 'cursor-not-allowed text-foreground-muted',
               )}
               key={option.value}
             >
@@ -141,7 +141,7 @@ export function RadioGroupField({
               <span id={optionLabelId}>
                 {option.label}
                 {option.description != null && (
-                  <span className="block text-control text-field-foreground">
+                  <span className="block text-control text-input-foreground">
                     {option.description}
                   </span>
                 )}
@@ -160,7 +160,7 @@ export function RadioGroupField({
         </p>
       ) : (
         helperText != null && (
-          <p className="text-control text-field-foreground" id={messageId}>
+          <p className="text-control text-input-foreground" id={messageId}>
             {helperText}
           </p>
         )

@@ -6,15 +6,15 @@ import { cardSurfaceVariants } from '../card';
 const sectionCardVariants = cva('', {
   variants: {
     tone: {
-      default: 'border-border-component',
+      default: 'border-border',
       /** Hairline panel border used by the Service Location form. */
-      soft: 'border-border-soft',
+      soft: 'border-border-subtle',
     },
     radius: {
       /** 16px, the library default. */
-      card: 'rounded-card',
+      card: 'rounded-xl',
       /** 12px, the Service Location form panels. */
-      panel: 'rounded-metric',
+      panel: 'rounded-lg',
     },
     padding: {
       default: 'p-4',
@@ -55,10 +55,13 @@ export function SectionCard({
   );
 }
 
-const sectionHeaderVariants = cva('flex min-h-control items-center gap-2', {
+const sectionHeaderVariants = cva('flex min-h-9 items-center gap-2', {
   variants: {
     /** Adds the hairline rule the Figma section headers sit above. */
-    bordered: { false: 'mb-6', true: 'mb-4 border-b border-border-soft pb-2' },
+    bordered: {
+      false: 'mb-6',
+      true: 'mb-4 border-b border-border-subtle pb-2',
+    },
   },
   defaultVariants: { bordered: false },
 });
@@ -80,7 +83,7 @@ export function SectionHeader({
   );
 }
 
-const sectionTitleVariants = cva('m-0 font-semibold text-card-foreground', {
+const sectionTitleVariants = cva('m-0 font-semibold text-surface-foreground', {
   variants: {
     size: {
       default: 'text-body leading-[1.4]',

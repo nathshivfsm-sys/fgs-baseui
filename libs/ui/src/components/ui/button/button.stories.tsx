@@ -13,7 +13,6 @@ const meta = {
       options: [
         'default',
         'action',
-        'brand',
         'subtle',
         'secondary',
         'destructive',
@@ -54,7 +53,6 @@ export const Default: Story = {
     await expect(args.onClick).toHaveBeenCalledOnce();
   },
 };
-export const Brand: Story = { args: { variant: 'brand' } };
 export const Subtle: Story = { args: { variant: 'subtle' } };
 export const Secondary: Story = { args: { variant: 'secondary' } };
 export const Destructive: Story = {

@@ -55,7 +55,7 @@ export function DataTableBody<TData extends RowData>({
       <TableBody>
         <TableRow className="hover:bg-transparent">
           <TableCell
-            className="h-32 text-center text-muted-foreground"
+            className="h-32 text-center text-foreground-muted"
             colSpan={columnCount}
           >
             {emptyState}

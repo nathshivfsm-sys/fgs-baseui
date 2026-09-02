@@ -11,13 +11,13 @@ import { Field } from '../field';
  */
 const controlVariants = {
   size: {
-    sm: 'h-control-sm px-3',
-    default: 'h-control px-4',
-    lg: 'h-control-lg px-4',
+    sm: 'h-8 px-3',
+    default: 'h-9 px-4',
+    lg: 'h-10 px-4',
   },
   variant: {
     default: 'border-input-strong',
-    soft: 'border-border-soft',
+    soft: 'border-border-subtle',
   },
 } as const;
 
@@ -27,7 +27,7 @@ const softPadding = [
 ] as const;
 
 const textInputVariants = cva(
-  'w-full min-w-0 rounded-md border bg-card text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] placeholder:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'w-full min-w-0 rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-input-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: controlVariants,
     compoundVariants: [...softPadding],
@@ -41,25 +41,27 @@ const textInputVariants = cva(
  * as they do in Figma.
  */
 const inputShellVariants = cva(
-  'flex w-full min-w-0 items-center gap-2 rounded-md border bg-card text-control text-card-foreground transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:bg-secondary data-disabled:opacity-60 data-invalid:border-destructive data-invalid:ring-[3px] data-invalid:ring-destructive/20',
+  'flex w-full min-w-0 items-center gap-2 rounded-md border bg-surface text-control text-surface-foreground transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:bg-secondary data-disabled:opacity-60 data-invalid:border-destructive data-invalid:ring-[3px] data-invalid:ring-destructive/20',
   {
     variants: {
       // Padding only: the height is emitted by compoundVariants so exactly one
-      // height utility is ever produced. `h-control` is a custom theme key that
-      // tailwind-merge does not treat as a height utility, so a later `h-auto`
-      // would not override it.
+      // height utility is ever produced. Note that `h-9` is a standard Tailwind
+      // key, so tailwind-merge *does* treat it as a height and a caller passing
+      // `h-auto` through `className` will replace it. That is the intended
+      // precedence, but it differs from the old custom `h-control` key, which
+      // tailwind-merge could not see and so never dropped.
       size: { sm: 'px-3', default: 'px-4', lg: 'px-4' },
       variant: controlVariants.variant,
       /** Lets content wrap onto additional rows and the shell grow to fit. */
       multiline: { false: '', true: 'flex-wrap py-1' },
     },
     compoundVariants: [
-      { multiline: false, size: 'sm', class: 'h-control-sm' },
-      { multiline: false, size: 'default', class: 'h-control' },
-      { multiline: false, size: 'lg', class: 'h-control-lg' },
-      { multiline: true, size: 'sm', class: 'min-h-control-sm' },
-      { multiline: true, size: 'default', class: 'min-h-control' },
-      { multiline: true, size: 'lg', class: 'min-h-control-lg' },
+      { multiline: false, size: 'sm', class: 'h-8' },
+      { multiline: false, size: 'default', class: 'h-9' },
+      { multiline: false, size: 'lg', class: 'h-10' },
+      { multiline: true, size: 'sm', class: 'min-h-8' },
+      { multiline: true, size: 'default', class: 'min-h-9' },
+      { multiline: true, size: 'lg', class: 'min-h-10' },
       ...softPadding,
     ],
     defaultVariants: { size: 'default', variant: 'default', multiline: false },
@@ -146,7 +148,7 @@ export function TextInput({
       className={
         hasShell
           ? cn(
-              'h-full min-w-0 flex-1 bg-transparent p-0 leading-[1.4] outline-none placeholder:text-field-foreground disabled:cursor-not-allowed',
+              'h-full min-w-0 flex-1 bg-transparent p-0 leading-[1.4] outline-none placeholder:text-input-foreground disabled:cursor-not-allowed',
               addOn != null && 'px-2',
               inputClassName,
             )
@@ -168,7 +170,6 @@ export function TextInput({
 
   return (
     <Field
-      className="w-full"
       description={description}
       descriptionId={descriptionId}
       disabled={disabled}

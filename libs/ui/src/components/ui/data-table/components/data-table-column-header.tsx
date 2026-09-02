@@ -27,7 +27,7 @@ export function DataTableColumnHeader<TData extends RowData>({
   return (
     <button
       className={cn(
-        '-mx-1 inline-flex max-w-full items-center gap-1.5 rounded-sm px-1 py-0.5 font-semibold text-heading outline-none transition-colors hover:text-brand focus-visible:ring-[3px] focus-visible:ring-ring/30',
+        '-mx-1 inline-flex max-w-full items-center gap-1.5 rounded-sm px-1 py-0.5 font-semibold text-heading outline-none transition-colors hover:text-primary focus-visible:ring-[3px] focus-visible:ring-ring/30',
         className,
       )}
       onClick={column.getToggleSortingHandler()}
@@ -40,7 +40,7 @@ export function DataTableColumnHeader<TData extends RowData>({
       ) : (
         <ChevronDownIcon
           className={cn(
-            'size-3 shrink-0 text-brand',
+            'size-3 shrink-0 text-primary',
             sorted === 'asc' && 'rotate-180',
           )}
         />

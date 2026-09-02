@@ -75,7 +75,8 @@ export const AllTones: Story = {
         tone: 'green' as const,
       },
       {
-        description: 'Configure tax jurisdictions, rates, and state-level settings.',
+        description:
+          'Configure tax jurisdictions, rates, and state-level settings.',
         footerText: '26 Rules',
         icon: <SettingsTaxStatesIcon />,
         title: 'Tax & States',

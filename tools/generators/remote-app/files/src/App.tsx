@@ -13,13 +13,13 @@ export function App({ runtime }: AppProps) {
       <section className="space-y-4" data-testid="<%= name %>">
         <div>
           <h2 className="text-2xl font-bold"><%= displayName %></h2>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground-muted">
             Global tenant: {runtime.tenantId} · User:{' '}
             {runtime.currentUser.displayName} ({runtime.currentUser.role})
           </p>
         </div>
         <SectionCard>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground-muted">
             <%= displayName %> remote is running. Replace this with real content.
           </p>
         </SectionCard>

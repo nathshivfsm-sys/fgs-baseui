@@ -1,5 +1,6 @@
 import { HexLogoIcon } from '@cms/ui';
 import type { ReactNode } from 'react';
+import { PageContainer } from './PageContainer';
 
 export interface PublicShellProps {
   children: ReactNode;
@@ -49,7 +50,7 @@ function BrandBannerArt() {
 /** Blue brand banner used by every public page, in place of the authenticated top nav. */
 function BrandBanner() {
   return (
-    <header className="relative flex h-[8.3125rem] shrink-0 items-center overflow-hidden bg-brand-blue px-6 shadow-[inset_0_4px_4px_0_rgba(0,0,0,0.25)] sm:px-8">
+    <header className="relative flex h-[8.3125rem] shrink-0 items-center overflow-hidden bg-primary px-6 shadow-[inset_0_4px_4px_0_rgba(0,0,0,0.25)] sm:px-8">
       <BrandBannerArt />
       <div className="relative z-10 flex items-center gap-3">
         <HexLogoIcon aria-hidden="true" className="size-14 shrink-0" />
@@ -72,7 +73,7 @@ function PublicFooter() {
     <footer className="shrink-0 px-6 py-6 text-center">
       {/* No destinations are defined for these yet, so they render as inert text
           rather than links that would go nowhere. */}
-      <p className="flex items-center justify-center gap-2 text-caption text-muted-foreground">
+      <p className="flex items-center justify-center gap-2 text-caption text-foreground-muted">
         <span>Privacy Policy</span>
         <span aria-hidden="true">•</span>
         <span>Terms of Service</span>
@@ -91,7 +92,9 @@ export function PublicShell({ children }: PublicShellProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <BrandBanner />
-      <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+      <main className="min-w-0 flex-1 overflow-y-auto">
+        <PageContainer>{children}</PageContainer>
+      </main>
       <PublicFooter />
     </div>
   );

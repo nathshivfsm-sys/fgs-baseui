@@ -64,14 +64,16 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center p-page-compact sm:p-page">
+    // flex-1 rather than min-h-full: PageContainer owns the gutters and is the
+    // flex column this fills, so the card stays centred in the space left over.
+    <div className="flex flex-1 items-center justify-center">
       <SectionCard className="relative w-full max-w-sm overflow-hidden p-10">
-        <div className="absolute left-0 top-9 h-11 w-1.5 rounded-r bg-brand-blue" />
+        <div className="absolute left-0 top-9 h-11 w-1.5 rounded-r bg-primary" />
 
         <h1 className="text-title font-bold text-heading">
           Verify your account
         </h1>
-        <p className="mt-1 text-control text-muted-foreground">
+        <p className="mt-1 text-control text-foreground-muted">
           Enter your mobile number or email address and we&apos;ll send you a
           verification code to sign in.
         </p>
@@ -142,7 +144,7 @@ export function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-4 flex items-center justify-center gap-2 text-caption text-muted-foreground">
+        <p className="mt-4 flex items-center justify-center gap-2 text-caption text-foreground-muted">
           <LockIcon aria-hidden="true" className="size-3.5 shrink-0" />
           Your information is secure and encrypted.
         </p>
@@ -150,13 +152,13 @@ export function LoginPage() {
         <div aria-hidden="true" className="mt-3 flex items-center gap-3">
           <div className="h-px flex-1 bg-divider" />
           {/* text-placeholder reads 2.47:1 on white and fails AA; muted-foreground clears it. */}
-          <span className="text-caption text-muted-foreground">or</span>
+          <span className="text-caption text-foreground-muted">or</span>
           <div className="h-px flex-1 bg-divider" />
         </div>
 
         {/* No destination is defined for this yet (PRD Non-Goals), so it renders
             as styled text rather than a link/button that would do nothing. */}
-        <p className="mt-3 text-center text-control font-semibold text-brand-blue">
+        <p className="mt-3 text-center text-control font-semibold text-primary">
           Need help signing in?
         </p>
       </SectionCard>

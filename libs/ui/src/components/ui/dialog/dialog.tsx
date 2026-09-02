@@ -49,7 +49,7 @@ export function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Popup
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-card border border-border-component bg-popover p-4 text-control text-popover-foreground shadow-surface outline-none transition-[opacity,scale] duration-100 ease-out sm:max-w-sm data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
+          'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-border bg-surface p-4 text-control text-surface-foreground shadow-sm outline-none transition-[opacity,scale] duration-100 ease-out sm:max-w-sm data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
           className,
         )}
         data-slot="dialog-content"
@@ -103,7 +103,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-card border-t border-divider bg-secondary/40 p-4 sm:flex-row sm:justify-end',
+        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-divider bg-secondary/40 p-4 sm:flex-row sm:justify-end',
         className,
       )}
       data-slot="dialog-footer"
@@ -146,7 +146,7 @@ export function DialogDescription({
 }: DialogDescriptionProps) {
   return (
     <DialogPrimitive.Description
-      className={cn('text-field-foreground', className)}
+      className={cn('text-input-foreground', className)}
       data-slot="dialog-description"
       {...props}
     />

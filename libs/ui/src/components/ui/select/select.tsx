@@ -8,18 +8,18 @@ import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const selectTriggerVariants = cva(
-  'flex w-full items-center justify-between gap-2 rounded-md border bg-card px-4 text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-4 text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-input-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: {
       size: {
-        sm: 'h-control-sm px-3',
-        default: 'h-control',
-        lg: 'h-control-lg',
+        sm: 'h-8 px-3',
+        default: 'h-9',
+        lg: 'h-10',
       },
       variant: {
         default: 'border-input-strong',
         /** Service Location form appearance: hairline border, 12px padding. */
-        soft: 'border-border-soft',
+        soft: 'border-border-subtle',
       },
     },
     compoundVariants: [
@@ -89,7 +89,7 @@ export function SelectContent({
       >
         <SelectPrimitive.Popup
           className={cn(
-            'max-h-80 min-w-[var(--anchor-width)] overflow-hidden rounded-md border border-border-component bg-popover text-popover-foreground shadow-surface',
+            'max-h-80 min-w-[var(--anchor-width)] overflow-hidden rounded-md border border-border bg-surface text-surface-foreground shadow-sm',
             className,
           )}
           {...props}
@@ -111,7 +111,7 @@ export function SelectItem({ children, className, ...props }: SelectItemProps) {
   return (
     <SelectPrimitive.Item
       className={cn(
-        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+        'relative flex min-h-8 cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-control outline-none data-highlighted:bg-primary-subtle data-highlighted:text-primary-subtle-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}
@@ -133,7 +133,7 @@ function SelectItemCheckbox() {
   return (
     <span
       aria-hidden="true"
-      className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-input-strong bg-card text-action-foreground transition-[background-color,border-color] group-data-selected/select-item:border-action group-data-selected/select-item:bg-action"
+      className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-input-strong bg-surface text-action-foreground transition-[background-color,border-color] group-data-selected/select-item:border-action group-data-selected/select-item:bg-action"
     >
       <CheckIcon className="size-3 opacity-0 group-data-selected/select-item:opacity-100" />
     </span>
@@ -149,7 +149,7 @@ export function MultiSelectItem({
   return (
     <SelectPrimitive.Item
       className={cn(
-        'group/select-item relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-control outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
+        'group/select-item relative flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-control outline-none data-highlighted:bg-primary-subtle data-highlighted:text-primary-subtle-foreground data-disabled:pointer-events-none data-disabled:opacity-50',
         className,
       )}
       {...props}

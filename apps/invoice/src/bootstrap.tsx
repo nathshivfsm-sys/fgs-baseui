@@ -16,7 +16,9 @@ createRoot(container).render(
           render directly at /, and /payment/:invoiceId still exercises the public path. */}
       <AuthProvider initialSession={DEMO_SESSION}>
         <BrowserRouter>
-          <div className="mx-auto max-w-content">
+          {/* Stands in for the shell's PageContainer: the pages render flush and
+              rely on whoever hosts them for the gutters. */}
+          <div className="mx-auto max-w-content p-4 sm:p-6">
             <App runtime={standaloneRuntime} />
           </div>
         </BrowserRouter>

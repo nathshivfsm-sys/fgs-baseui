@@ -25,17 +25,39 @@ built application keeps a small compiler entry in `apps/*/src/styles.css` so it 
 run standalone or through Module Federation. The UI JavaScript barrel has no global
 CSS side effects.
 
-Use semantic color utilities (`bg-background`, `text-muted-foreground`,
-`text-destructive`) instead of palette colors. The theme reflects the Pricing and Work
-Order Figma systems: `primary` is the Work Order interaction color, while `brand` is
-the Pricing navigation/brand color; subtle surfaces, table, form, status, and text
-roles are exposed separately. Inter is the single application font, self-hosted and
+Design tokens live in two layers, and the distinction matters. `tokens.css` first
+declares **primitives** — a generic palette named by hue family and ramp step
+(`--blue-55`, `--gray-blue-10`), running 5 for the lightest to 100 for the darkest.
+These are raw values and are identical in both color schemes. It then declares
+**semantic roles** (`--surface`, `--foreground-muted`, `--border-subtle`, `--data-1`)
+which reference a primitive and are reassigned in the `.dark` block.
+
+Build UI against the roles: `bg-surface`, `text-foreground-subtle`,
+`border-border-subtle`. A component that reaches for a primitive opts out of dark
+mode, because primitives do not change between schemes. No token is named after a
+component. `libs/ui/src/theme` mirrors the whole set as TypeScript unions plus
+`themeVar` accessors for the cases a utility class cannot reach.
+
+Spacing has no named tokens. Tailwind derives every step from `--spacing` (4px), so
+`h-9` is 36px and `w-56` is 224px directly.
+
+`primary` is the brand color and the main interaction color — the two were separate
+roles holding different blues, and are now one. There is no `brand` role; use
+`primary`, with `primary-hover`, `primary-strong`, `primary-subtle`, and
+`primary-foreground` for its states. `action` remains a distinct, lighter
+interaction blue used by the Service Location screens. `surface-inverse` is the dark
+banner blue and is deliberately independent, so the top bar can be re-themed without
+moving the interaction color.
+
+Inter is the single application font, self-hosted and
 declared once in `libs/ui/src/styles/font.css` — the only file in the repo that names
 a typeface. Swap the font there and every app plus Storybook follows; no component
 change is needed. Use `font-sans` for type and `tabular-figures` where digits need to
 align in columns (record codes, amounts, counts).
-Shared product-level values such as `max-w-app`, `max-w-content`, `p-page`,
-`h-control`, and `w-sidebar` are defined in `libs/ui/src/styles/theme.css`. Exact
+Shared product-level values such as `max-w-app`, `max-w-content`, and the named type
+scale (`text-caption`, `text-field`, `text-control`, `text-body`, `text-title`) are
+defined in `libs/ui/src/styles/theme.css`. The 13px step is `field`, not `input`:
+`--color-input` exists, so `text-input` resolved to the color instead of the size.
 Figma light values and intentionally derived dark values are maintained together in
 `tokens.css`.
 

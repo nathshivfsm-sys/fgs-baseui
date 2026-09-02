@@ -7,11 +7,11 @@ const calloutVariants = cva(
   {
     variants: {
       variant: {
-        info: 'bg-brand-subtle text-brand',
+        info: 'bg-action-subtle text-primary',
         success: 'bg-success/15 text-success-foreground',
         warning:
           'border border-warning-border bg-warning text-warning-foreground',
-        error: 'border border-destructive/30 bg-card text-destructive',
+        error: 'border border-destructive/30 bg-surface text-destructive',
       },
     },
     defaultVariants: { variant: 'info' },

@@ -4,16 +4,22 @@ import { ChevronRightIcon } from '../../../icons';
 import { cn } from '../../../lib/cn';
 import { cardSurfaceVariants } from '../card';
 
+// 60px icon tile from Figma node 70:231. Previously `--spacing-setting-icon`;
+// spacing is now Tailwind's numeric scale, so 60px is `size-15`.
 const settingCardIconVariants = cva(
-  'flex size-setting-icon shrink-0 items-center justify-center rounded-metric [&_svg]:size-8',
+  'flex size-15 shrink-0 items-center justify-center rounded-lg [&_svg]:size-8',
   {
     variants: {
+      /**
+       * Tones map onto the categorical `data-*` roles rather than colour names,
+       * so retinting a slot in the theme moves every card using it.
+       */
       tone: {
-        blue: 'bg-metric-blue text-metric-blue-foreground',
-        green: 'bg-metric-green text-metric-green-foreground',
-        orange: 'bg-metric-orange text-metric-orange-foreground',
-        purple: 'bg-metric-purple text-metric-purple-foreground',
-        neutral: 'bg-metric-neutral text-metric-neutral-foreground',
+        blue: 'bg-data-1 text-data-1-foreground',
+        green: 'bg-data-2 text-data-2-foreground',
+        orange: 'bg-data-3 text-data-3-foreground',
+        purple: 'bg-data-4 text-data-4-foreground',
+        neutral: 'bg-data-5 text-data-5-foreground',
       },
     },
     defaultVariants: { tone: 'blue' },
@@ -54,7 +60,7 @@ export function SettingCard({
     <button
       className={cn(
         cardSurfaceVariants(),
-        'group/setting-card flex w-full flex-col overflow-hidden text-left font-form transition-colors hover:border-input-strong focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30',
+        'group/setting-card flex w-full flex-col overflow-hidden text-left transition-colors hover:border-input-strong focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30',
         className,
       )}
       data-slot="setting-card"
@@ -74,16 +80,14 @@ export function SettingCard({
             {title}
           </p>
           {description != null && (
-            <p className="mt-1 line-clamp-2 text-caption text-table-foreground">
+            <p className="mt-1 line-clamp-2 text-caption text-foreground-subtle">
               {description}
             </p>
           )}
         </div>
       </div>
       <div className="flex items-center justify-between border-t border-divider px-5 py-3">
-        <span className="text-control text-control-foreground">
-          {footerText}
-        </span>
+        <span className="text-control text-foreground">{footerText}</span>
         <ChevronRightIcon
           aria-hidden="true"
           className="size-4 shrink-0 text-icon-muted"
@@ -93,7 +97,10 @@ export function SettingCard({
   );
 }
 
-export function SettingCardGrid({ className, ...props }: ComponentProps<'div'>) {
+export function SettingCardGrid({
+  className,
+  ...props
+}: ComponentProps<'div'>) {
   return (
     <div
       className={cn(

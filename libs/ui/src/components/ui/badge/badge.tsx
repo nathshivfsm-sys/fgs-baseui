@@ -41,7 +41,7 @@ const badgeVariants = cva(
       {
         variant: 'soft',
         tone: 'success',
-        class: 'bg-metric-green text-metric-positive',
+        class: 'bg-data-2 text-success-strong',
       },
       {
         variant: 'soft',
@@ -53,12 +53,12 @@ const badgeVariants = cva(
         tone: 'destructive',
         class: 'bg-destructive/10 text-destructive-strong',
       },
-      { variant: 'soft', tone: 'info', class: 'bg-brand-subtle text-brand' },
+      { variant: 'soft', tone: 'info', class: 'bg-action-subtle text-primary' },
       // Solid: saturated surface, inverted text.
       {
         variant: 'solid',
         tone: 'neutral',
-        class: 'bg-secondary-foreground text-card',
+        class: 'bg-secondary-foreground text-surface',
       },
       {
         variant: 'solid',
@@ -73,7 +73,7 @@ const badgeVariants = cva(
       {
         variant: 'solid',
         tone: 'warning',
-        class: 'bg-warning-foreground text-card',
+        class: 'bg-warning-foreground text-surface',
       },
       {
         variant: 'solid',
@@ -83,7 +83,7 @@ const badgeVariants = cva(
       {
         variant: 'solid',
         tone: 'info',
-        class: 'bg-brand text-brand-foreground',
+        class: 'bg-primary text-action-foreground',
       },
       // Outline: hairline border, saturated text.
       {
@@ -99,7 +99,7 @@ const badgeVariants = cva(
       {
         variant: 'outline',
         tone: 'success',
-        class: 'border-success/40 text-metric-positive',
+        class: 'border-success/40 text-success-strong',
       },
       {
         variant: 'outline',
@@ -111,7 +111,11 @@ const badgeVariants = cva(
         tone: 'destructive',
         class: 'border-destructive/40 text-destructive-strong',
       },
-      { variant: 'outline', tone: 'info', class: 'border-brand/40 text-brand' },
+      {
+        variant: 'outline',
+        tone: 'info',
+        class: 'border-primary/40 text-primary',
+      },
     ],
     defaultVariants: { size: 'default', tone: 'neutral', variant: 'soft' },
   },

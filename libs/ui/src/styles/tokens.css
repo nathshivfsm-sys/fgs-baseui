@@ -1,207 +1,264 @@
+/* ============================================================================
+   DESIGN TOKENS
+   ============================================================================
+
+   Two layers, and the split matters:
+
+   1. PRIMITIVES — a generic palette named by hue family and ramp step. These
+      are raw values and are identical in light and dark; a primitive never
+      changes meaning. Ramps run 5 (lightest) to 100 (darkest).
+
+   2. SEMANTIC ROLES — what a colour is *for*. Roles reference primitives and
+      are reassigned in the .dark block. Components must use roles, never
+      primitives, because the roles are what make light/dark work.
+
+   No token is named after a component. Structural measurements that used to
+   live here as --spacing-* are gone: Tailwind derives any step from --spacing
+   (4px), so h-9 replaces h-control and w-56 replaces w-sidebar.
+   ========================================================================== */
+
 :root {
+  /* ── Primitives ──────────────────────────────────────────────────────── */
+
+  --white-5: #ffffff;
+
+  --neutral-20a: #ffffff1a;
+  --neutral-30: #fbfbfb;
+  --neutral-45: #d9d9d9;
+  --neutral-60: #c2c3c5;
+  --neutral-75: #b3b3b3;
+  --neutral-85: #737373;
+  --neutral-100: #1e1e1e;
+
+  --gray-blue-5: #f9fafb;
+  --gray-blue-10: #f3f4f6;
+  --gray-blue-20: #e5e7eb;
+  --gray-blue-25: #dadde2;
+  --gray-blue-30: #d1d5dc;
+  --gray-blue-40: #c4c9d2;
+  --gray-blue-45: #b8bec9;
+  --gray-blue-55: #9fa5b2;
+  --gray-blue-60: #828a9b;
+  --gray-blue-65: #6a7282;
+  --gray-blue-75: #667085;
+  --gray-blue-80: #4b5563;
+  --gray-blue-85: #364153;
+  --gray-blue-95: #2e323c;
+  --gray-blue-100: #1f2937;
+
+  --blue-5: #f0f4ff;
+  --blue-10: #f1f7fd;
+  --blue-20: #dbe9fa;
+  --blue-25: #c7d2fe;
+  --blue-30: #a5b4fc;
+  --blue-40: #93c5fd;
+  --blue-45: #7f9ce6;
+  --blue-55: #60a5fa;
+  --blue-60: #3b82f6;
+  --blue-65: #155dfc;
+  --blue-75: #2563eb;
+  --blue-80: #3b5fcc;
+  --blue-85: #1d4ed8;
+  --blue-95: #3b5aa0;
+  --blue-100: #1741b0;
+
+  --dark-blue-5: #0049bc;
+  --dark-blue-15: #04337e;
+  --dark-blue-30: #16305f;
+  --dark-blue-40: #12275e;
+  --dark-blue-55: #172554;
+  --dark-blue-65: #1e293b;
+  --dark-blue-75: #151d33;
+  --dark-blue-90: #0f172a;
+  --dark-blue-100: #111827;
+
+  --indigo-5: #efebff;
+  --indigo-25: #c4b5fd;
+  --indigo-45: #818cf8;
+  --indigo-60: #7c3aed;
+  --indigo-80: #3538bf;
+  --indigo-100: #2f32a8;
+
+  --dark-indigo-5: #272757;
+  --dark-indigo-55: #252650;
+  --dark-indigo-100: #2e1065;
+
+  --green-5: #ecfdf5;
+  --green-15: #6ee7b7;
+  --green-30: #4ade80;
+  --green-40: #22c55e;
+  --green-55: #17b26a;
+  --green-65: #059669;
+  --green-75: #009951;
+  --green-90: #047857;
+  --green-100: #052e16;
+
+  --yellow-5: #fef9c2;
+  --yellow-100: #fef08a;
+
+  --orange-5: #fff2e2;
+  --orange-25: #fdba74;
+  --orange-45: #c2410c;
+  --orange-60: #a65f00;
+  --orange-80: #854d0e;
+  --orange-100: #422006;
+
+  --red-5: #fda29b;
+  --red-30: #ff6467;
+  --red-55: #e7000b;
+  --red-75: #b42318;
+  --red-100: #431407;
+
+  /* ── Semantic roles: light ───────────────────────────────────────────── */
   --radius: 0.5rem;
-  --background: #fbfbfb;
-  --foreground: #364153;
-  --foreground-strong: #2e323c;
-  --heading: #111827;
-  --card: #ffffff;
-  --card-foreground: #1e1e1e;
-  --card-link: #3b5fcc;
-  --popover: #ffffff;
-  --popover-foreground: #1e1e1e;
 
-  --primary: #3538bf;
-  --primary-hover: #2f32a8;
-  --primary-foreground: #ffffff;
-  --primary-subtle: #f0f6fc;
-  /* Interactive blue used by the Service Location screens for primary actions,
-     active pagination/tabs, checked checkboxes, and in-table record links. */
-  --action: #2563eb;
-  --action-hover: #1d4ed8;
-  --action-foreground: #ffffff;
-  --action-subtle: #eff6ff;
-  --brand: #0049bc;
-  --brand-foreground: #ffffff;
-  --brand-subtle: #e9f2ff;
-  --brand-blue: #1741b0;
-  --brand-blue-foreground: #ffffff;
-  --brand-blue-subtle: #eff6ff;
-  --secondary: #f0f1f3;
-  --secondary-foreground: #48505e;
-  --muted: var(--secondary);
-  --muted-foreground: #667085;
-  --accent: var(--primary-subtle);
-  --accent-foreground: var(--primary);
+  /* Surfaces */
+  --background: var(--neutral-30);
+  --surface: var(--white-5);
+  --surface-foreground: var(--neutral-100);
+  --surface-subtle: var(--blue-5);
+  --surface-sunken: var(--gray-blue-5);
+  --surface-raised: var(--blue-10);
+  --surface-raised-foreground: var(--dark-blue-5);
+  --surface-inverse: var(--blue-100);
+  --surface-inverse-foreground: var(--white-5);
+  --surface-inverse-hover: var(--neutral-20a);
+  --accent-surface: var(--blue-45);
+  --accent-surface-foreground: var(--dark-blue-40);
 
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: #ffffff;
-  /* Darker red for text on tinted destructive surfaces, where --destructive
-     itself does not reach a 4.5:1 contrast ratio. */
-  --destructive-strong: #b42318;
-  --success: #17b26a;
-  --success-foreground: #052e16;
-  --warning: #fef9c2;
-  --warning-border: #fff085;
-  --warning-foreground: #a65f00;
+  /* Text */
+  --heading: var(--dark-blue-100);
+  --foreground-strong: var(--gray-blue-95);
+  --foreground: var(--gray-blue-85);
+  --foreground-muted: var(--gray-blue-75);
+  --foreground-subtle: var(--gray-blue-65);
+  --label: var(--gray-blue-65);
+  --placeholder: var(--gray-blue-55);
+  --icon-muted: var(--gray-blue-60);
 
-  --border: #dadde2;
-  /* Soft hairline for form panels, field borders, and section dividers. */
-  --border-soft: #f0f3fb;
-  --border-component: #d9d9d9;
-  --divider: #e5e7eb;
-  --input: #d1d5dc;
-  --input-strong: #757575;
-  --ring: var(--primary);
+  /* Interactive */
+  --primary: var(--dark-blue-5);
+  --primary-hover: var(--dark-blue-15);
+  --primary-strong: var(--dark-blue-40);
+  --primary-foreground: var(--white-5);
+  --primary-subtle: var(--blue-10);
+  --primary-subtle-foreground: var(--dark-blue-5);
+  --action: var(--blue-75);
+  --action-hover: var(--blue-85);
+  --action-foreground: var(--white-5);
+  --action-subtle: var(--blue-5);
+  --link: var(--blue-65);
+  --ring: var(--dark-blue-5);
 
-  --link: #155dfc;
-  --label: #6a7282;
-  --placeholder: #9fa5b2;
-  --field-foreground: #737373;
-  --field-placeholder: #b3b3b3;
-  --icon-muted: #828a9b;
-  --nav-foreground: #4b5563;
-  /* Figma specifies #9ca3af, which is 2.53:1 on --card and fails AA for the
-     12px section labels this drives. Darkened to the nearest passing grey. */
-  --nav-section: #6b7280;
-  /* Sidebar footer text and the collapsed rail's hairline group separators.
-     Named for the nav rather than borrowed from --table-foreground, which
-     happens to share the value but not the meaning. */
-  --nav-muted: #6b7280;
-  --nav-divider: #c2c3c5;
-  --nav-border: #f3f4f6;
+  /* Neutral fills */
+  --secondary: var(--gray-blue-10);
+  --secondary-foreground: var(--gray-blue-80);
 
-  /* Top bar. Kept separate from --brand-blue so the bar can be re-themed
-     without moving every other brand-blue surface with it. */
-  --topnav: #1741b0;
-  --topnav-foreground: #ffffff;
-  --topnav-border: #e5e7eb;
-  /* Not in the Figma frames: hover/pressed wash for the top bar's icon
-     buttons, which the design only shows at rest. */
-  --topnav-hover: #ffffff1a;
-  --topnav-search: #f9fafb;
-  --topnav-search-border: #e5e7eb;
-  /* The design's rgba(107,114,128,0.5) resolves to ~2.3:1 against
-     --topnav-search and fails AA, so the placeholder is darkened to the
-     lightest value that clears 4.5:1. */
-  --topnav-search-placeholder: #6b7280;
-  --avatar-fallback: #7f9ce6;
-  /* The design fills this circle with a photo, so it never specifies a colour
-     for initials. White on --avatar-fallback is ~2.5:1, so initials take a
-     dark navy instead. */
-  --avatar-fallback-foreground: #12275e;
-  --control-foreground: #374151;
-  --surface-subtle: #f0f4ff;
-  --table-header: #f1f7fd;
-  --table-header-foreground: var(--brand);
-  --table-foreground: #6b7280;
-  --toggle-active: #009951;
-  --tab-active: #272757;
-  --info-strong: #04337e;
+  /* Status */
+  --success: var(--green-55);
+  --success-strong: var(--green-90);
+  --success-foreground: var(--green-100);
+  --warning: var(--yellow-5);
+  --warning-border: var(--yellow-100);
+  --warning-foreground: var(--orange-60);
+  --destructive: var(--red-55);
+  --destructive-foreground: var(--white-5);
+  --destructive-strong: var(--red-75);
 
-  --metric-blue: #eff6ff;
-  --metric-blue-foreground: #2563eb;
-  --metric-green: #ecfdf5;
-  --metric-green-foreground: #059669;
-  --metric-orange: #fff2e2;
-  --metric-orange-foreground: #c2410c;
-  --metric-purple: #efebff;
-  --metric-purple-foreground: #7c3aed;
-  --metric-neutral: #dbe9fa;
-  --metric-neutral-foreground: #2563eb;
-  --metric-positive: #047857;
+  /* Lines and fields */
+  --border: var(--gray-blue-25);
+  --border-subtle: var(--blue-5);
+  --divider: var(--gray-blue-20);
+  --input: var(--gray-blue-30);
+  --input-strong: var(--neutral-85);
+  --input-foreground: var(--neutral-85);
+
+  /* Categorical data */
+  --data-1: var(--blue-5);
+  --data-1-foreground: var(--blue-75);
+  --data-2: var(--green-5);
+  --data-2-foreground: var(--green-65);
+  --data-3: var(--orange-5);
+  --data-3-foreground: var(--orange-45);
+  --data-4: var(--indigo-5);
+  --data-4-foreground: var(--indigo-60);
+  --data-5: var(--blue-20);
+  --data-5-foreground: var(--blue-75);
 }
 
 .dark {
-  --background: #111827;
-  --foreground: #e5e7eb;
-  --foreground-strong: #f9fafb;
-  --heading: #f9fafb;
-  --card: #1f2937;
-  --card-foreground: #f3f4f6;
-  --card-link: #93c5fd;
-  --popover: #1f2937;
-  --popover-foreground: #f3f4f6;
+  /* Roles only. Primitives are mode-invariant by design. */
 
-  --primary: #818cf8;
-  --primary-hover: #a5b4fc;
-  --primary-foreground: #111827;
-  --primary-subtle: #252650;
-  --action: #3b82f6;
-  --action-hover: #60a5fa;
-  --action-foreground: #0f172a;
-  --action-subtle: #172554;
-  --brand: #60a5fa;
-  --brand-foreground: #0f172a;
-  --brand-subtle: #172554;
-  --brand-blue: #60a5fa;
-  --brand-blue-foreground: #0f172a;
-  --brand-blue-subtle: #172554;
-  --secondary: #2e323c;
-  --secondary-foreground: #f0f1f3;
-  --muted: var(--secondary);
-  --muted-foreground: #b8bec9;
-  --accent: var(--primary-subtle);
-  --accent-foreground: #c7d2fe;
+  /* Surfaces */
+  --background: var(--dark-blue-100);
+  --surface: var(--gray-blue-100);
+  --surface-foreground: var(--gray-blue-10);
+  --surface-subtle: var(--dark-blue-75);
+  --surface-sunken: var(--dark-blue-100);
+  --surface-raised: var(--dark-blue-55);
+  --surface-raised-foreground: var(--blue-40);
+  --surface-inverse: var(--dark-blue-30);
+  --surface-inverse-foreground: var(--gray-blue-5);
+  --surface-inverse-hover: var(--neutral-20a);
+  --accent-surface: var(--blue-95);
+  --accent-surface-foreground: var(--gray-blue-20);
 
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: #ffffff;
-  --destructive-strong: #fda29b;
-  --success: #4ade80;
-  --success-foreground: #052e16;
-  --warning: #422006;
-  --warning-border: #854d0e;
-  --warning-foreground: #fef08a;
+  /* Text */
+  --heading: var(--gray-blue-5);
+  --foreground-strong: var(--gray-blue-5);
+  --foreground: var(--gray-blue-20);
+  --foreground-muted: var(--gray-blue-45);
+  --foreground-subtle: var(--gray-blue-45);
+  --label: var(--gray-blue-40);
+  --placeholder: var(--gray-blue-55);
+  --icon-muted: var(--gray-blue-55);
 
-  --border: #48505e;
-  --border-soft: #2e323c;
-  --border-component: var(--border);
-  --divider: var(--border);
-  --input: #667085;
-  --input-strong: #9fa5b2;
-  --ring: var(--primary);
+  /* Interactive */
+  --primary: var(--blue-55);
+  --primary-hover: var(--blue-40);
+  --primary-strong: var(--blue-25);
+  --primary-foreground: var(--dark-blue-100);
+  --primary-subtle: var(--dark-blue-55);
+  --primary-subtle-foreground: var(--blue-40);
+  --action: var(--blue-60);
+  --action-hover: var(--blue-55);
+  --action-foreground: var(--dark-blue-90);
+  --action-subtle: var(--dark-blue-55);
+  --link: var(--blue-55);
+  --ring: var(--blue-55);
 
-  --link: #60a5fa;
-  --label: #c4c9d2;
-  --placeholder: #9fa5b2;
-  --field-foreground: #c4c9d2;
-  --field-placeholder: #828a9b;
-  --icon-muted: #9fa5b2;
-  --nav-foreground: var(--muted-foreground);
-  --nav-section: var(--placeholder);
-  --nav-muted: var(--muted-foreground);
-  --nav-divider: var(--border);
-  --nav-border: var(--border);
+  /* Neutral fills */
+  --secondary: var(--gray-blue-95);
+  --secondary-foreground: var(--gray-blue-10);
 
-  /* The Figma frames are light-mode only. The bar stays a recognisably
-     branded blue here rather than flattening into a dark neutral, so the
-     product still reads as FieldPro in dark mode. */
-  --topnav: #16305f;
-  --topnav-foreground: #f9fafb;
-  --topnav-border: var(--border);
-  --topnav-hover: #ffffff1f;
-  --topnav-search: #111827;
-  --topnav-search-border: var(--border);
-  --topnav-search-placeholder: var(--placeholder);
-  --avatar-fallback: #3b5aa0;
-  --avatar-fallback-foreground: #e5e7eb;
-  --control-foreground: var(--foreground);
-  --surface-subtle: #151d33;
-  --table-header: #172554;
-  --table-header-foreground: #93c5fd;
-  --table-foreground: var(--muted-foreground);
-  --toggle-active: #22c55e;
-  --tab-active: #a5b4fc;
-  --info-strong: #93c5fd;
+  /* Status */
+  --success: var(--green-30);
+  --success-strong: var(--green-15);
+  --success-foreground: var(--green-100);
+  --warning: var(--orange-100);
+  --warning-border: var(--orange-80);
+  --warning-foreground: var(--yellow-100);
+  --destructive: var(--red-30);
+  --destructive-foreground: var(--white-5);
+  --destructive-strong: var(--red-5);
 
-  --metric-blue: #172554;
-  --metric-blue-foreground: #93c5fd;
-  --metric-green: #052e16;
-  --metric-green-foreground: #6ee7b7;
-  --metric-orange: #431407;
-  --metric-orange-foreground: #fdba74;
-  --metric-purple: #2e1065;
-  --metric-purple-foreground: #c4b5fd;
-  --metric-neutral: #1e293b;
-  --metric-neutral-foreground: #93c5fd;
-  --metric-positive: #6ee7b7;
+  /* Lines and fields */
+  --border: var(--gray-blue-80);
+  --border-subtle: var(--gray-blue-95);
+  --divider: var(--gray-blue-80);
+  --input: var(--gray-blue-75);
+  --input-strong: var(--gray-blue-55);
+  --input-foreground: var(--gray-blue-40);
+
+  /* Categorical data */
+  --data-1: var(--dark-blue-55);
+  --data-1-foreground: var(--blue-40);
+  --data-2: var(--green-100);
+  --data-2-foreground: var(--green-15);
+  --data-3: var(--red-100);
+  --data-3-foreground: var(--orange-25);
+  --data-4: var(--dark-indigo-100);
+  --data-4-foreground: var(--indigo-25);
+  --data-5: var(--dark-blue-65);
+  --data-5-foreground: var(--blue-40);
 }

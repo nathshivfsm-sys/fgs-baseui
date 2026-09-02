@@ -75,7 +75,7 @@ export function PhoneInput({
             aria-label={countryLabel}
             // Flush left segment: no radius or outer border, only the divider
             // that separates it from the number input.
-            className="h-full w-auto shrink-0 justify-start gap-1 rounded-none border-0 border-r border-r-border-soft px-2"
+            className="h-full w-auto shrink-0 justify-start gap-1 rounded-none border-0 border-r border-r-border-subtle px-2"
             variant={variant}
           >
             <span aria-hidden="true" className="text-control leading-5">

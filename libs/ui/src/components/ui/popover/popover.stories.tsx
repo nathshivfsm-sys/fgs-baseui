@@ -124,12 +124,12 @@ function EditLocationExample(props: PopoverContentProps) {
   };
 
   return (
-    <div className="flex w-64 items-center justify-between gap-2 rounded-md border border-divider bg-card px-3 py-2 text-control text-card-foreground">
+    <div className="flex w-64 items-center justify-between gap-2 rounded-md border border-divider bg-surface px-3 py-2 text-control text-surface-foreground">
       <span className="flex min-w-0 flex-col">
         <span className="truncate font-medium" data-testid="location-name">
           {name}
         </span>
-        <span className="text-caption leading-4 text-table-foreground">
+        <span className="text-caption leading-4 text-foreground-subtle">
           {businessUnits.find((entry) => entry.value === unit)?.label}
         </span>
       </span>

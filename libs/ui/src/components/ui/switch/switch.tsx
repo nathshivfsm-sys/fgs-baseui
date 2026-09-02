@@ -5,15 +5,20 @@ import { useId } from 'react';
 import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
 
+// The checked fill uses `success-strong`, not `success`. WCAG 1.4.11 wants 3:1
+// for a control's boundary and for the fill that conveys its state, and the
+// thumb is `bg-surface`: `--success` (#17b26a) gives only 2.76:1 against white,
+// while `--success-strong` (#047857) gives 5.48:1. axe does not test 1.4.11, so
+// this is not covered by the story suite.
 const switchVariants = cva(
-  'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent bg-secondary outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-toggle-active data-checked:bg-toggle-active',
+  'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border border-transparent bg-secondary outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-checked:border-success-strong data-checked:bg-success-strong',
   {
     variants: { size: { sm: 'h-5 w-9', default: 'h-[23px] w-11' } },
     defaultVariants: { size: 'default' },
   },
 );
 const thumbVariants = cva(
-  'pointer-events-none block rounded-full bg-card shadow-xs transition-transform',
+  'pointer-events-none block rounded-full bg-surface shadow-xs transition-transform',
   {
     variants: {
       size: {
@@ -70,7 +75,7 @@ export function SwitchField({
       <div className="flex items-center gap-4">
         {labelPosition === 'before' && (
           <label
-            className="text-control text-card-foreground"
+            className="text-control text-surface-foreground"
             htmlFor={switchId}
             id={labelId}
           >
@@ -98,7 +103,7 @@ export function SwitchField({
         />
         {labelPosition === 'after' && (
           <label
-            className="text-control text-card-foreground"
+            className="text-control text-surface-foreground"
             htmlFor={switchId}
             id={labelId}
           >
@@ -116,7 +121,7 @@ export function SwitchField({
         </p>
       ) : (
         (helperText ?? description) != null && (
-          <p className="text-control text-field-foreground" id={messageId}>
+          <p className="text-control text-input-foreground" id={messageId}>
             {helperText ?? description}
           </p>
         )

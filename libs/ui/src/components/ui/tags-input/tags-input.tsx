@@ -167,7 +167,7 @@ export function TagsInput({
         <input
           aria-describedby={describedBy}
           aria-invalid={Boolean(error) || undefined}
-          className="h-6 min-w-24 flex-1 bg-transparent p-0 text-control leading-5 outline-none placeholder:text-field-foreground disabled:cursor-not-allowed"
+          className="h-6 min-w-24 flex-1 bg-transparent p-0 text-control leading-5 outline-none placeholder:text-input-foreground disabled:cursor-not-allowed"
           // Stays enabled at the limit so existing tags can still be removed;
           // `addTag` is what enforces `maxTags`.
           disabled={disabled}

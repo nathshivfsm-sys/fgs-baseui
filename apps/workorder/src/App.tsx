@@ -42,11 +42,11 @@ export function App({
       <section className="space-y-4" data-testid="workorder">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Maintenance</p>
+            <p className="text-sm text-foreground-muted">Maintenance</p>
             <h2 className="flex items-center gap-2 text-2xl font-bold">
               <BriefcaseIcon className="size-6 text-primary" /> Work orders
             </h2>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-foreground-muted">
               Global tenant: {runtime.tenantId} · User:{' '}
               {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
               Work-order-local view: {viewDensity}
@@ -84,7 +84,7 @@ export function App({
               Unable to load work orders: {query.error.message}
             </p>
           ) : query.data.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-foreground-muted">
               No work orders found.
             </p>
           ) : (
@@ -94,7 +94,7 @@ export function App({
                   <strong>{item.id}</strong>
                   <span className="text-sm text-primary">{item.status}</span>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-foreground-muted">
                   {item.title}
                 </p>
               </SectionCard>

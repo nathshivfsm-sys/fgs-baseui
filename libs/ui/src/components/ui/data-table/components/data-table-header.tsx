@@ -52,7 +52,7 @@ export function DataTableHeader<TData extends RowData>({
                 {content}
                 {enableColumnResizing && header.column.getCanResize() ? (
                   <span
-                    className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none bg-transparent hover:bg-brand/40 data-[resizing=true]:bg-brand"
+                    className="absolute top-0 right-0 h-full w-1 cursor-col-resize touch-none select-none bg-transparent hover:bg-primary/40 data-[resizing=true]:bg-primary"
                     data-resizing={header.column.getIsResizing()}
                     onDoubleClick={() => header.column.resetSize()}
                     onMouseDown={header.getResizeHandler()}
