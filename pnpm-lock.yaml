@@ -202,6 +202,27 @@ importers:
         specifier: 5.0.14
         version: 5.0.14(@types/react@19.2.18)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
 
+  apps/settings:
+    dependencies:
+      '@cms/platform-contract':
+        specifier: workspace:*
+        version: link:../../libs/platform-contract
+      '@cms/shared-api':
+        specifier: workspace:*
+        version: link:../../libs/shared/api
+      '@cms/ui':
+        specifier: workspace:*
+        version: link:../../libs/ui
+      '@tanstack/react-query':
+        specifier: 5.101.4
+        version: 5.101.4(react@19.2.8)
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+
   apps/shell:
     dependencies:
       '@cms/platform-contract':

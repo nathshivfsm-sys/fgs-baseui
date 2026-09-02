@@ -43,7 +43,13 @@ function replaceOnce(
   replace: string,
 ): void {
   const content = tree.read(filePath, 'utf-8') ?? '';
-  if (!content.includes(search)) {
+  // Anchors are authored with bare \n, but files in this repo are checked out with
+  // CRLF line endings — normalize both the search and the inserted text to whatever
+  // EOL the file actually uses, so multi-line anchors match and we don't leave the
+  // file with mixed line endings.
+  const eol = content.includes('\r\n') ? '\r\n' : '\n';
+  const normalizedSearch = eol === '\r\n' ? search.replace(/\n/g, '\r\n') : search;
+  if (!content.includes(normalizedSearch)) {
     throw new Error(
       `remote-app generator: expected anchor text not found in ${filePath}. ` +
         `The file has likely changed since this generator was written — update the ` +
@@ -51,7 +57,8 @@ function replaceOnce(
         `Anchor: ${JSON.stringify(search)}`,
     );
   }
-  tree.write(filePath, content.replace(search, replace));
+  const normalizedReplace = eol === '\r\n' ? replace.replace(/\n/g, '\r\n') : replace;
+  tree.write(filePath, content.replace(normalizedSearch, normalizedReplace));
 }
 
 function wireIntoShellConfig(tree: Tree, name: string, port: number): void {
@@ -88,12 +95,25 @@ function wireIntoShellApp(
       `const ${className} = lazyProvider<{ runtime: CmsRuntime }>('${name}', 'App');`,
   );
 
-  replaceOnce(
-    tree,
-    appPath,
-    `const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders']);`,
-    `const MFE_ROUTE_PATHS = new Set(['/leads', '/workorders', '/${name}']);`,
-  );
+  {
+    const content = tree.read(appPath, 'utf-8') ?? '';
+    const match = content.match(
+      /const MFE_ROUTE_PATHS = new Set\(\[([^\]]*)\]\);/,
+    );
+    if (!match) {
+      throw new Error(
+        `remote-app generator: expected "const MFE_ROUTE_PATHS = new Set([...]);" not found in ${appPath}. ` +
+          `Update the generator's MFE_ROUTE_PATHS pattern in tools/generators/remote-app/generator.ts to match.`,
+      );
+    }
+    tree.write(
+      appPath,
+      content.replace(
+        match[0],
+        `const MFE_ROUTE_PATHS = new Set([${match[1]}, '/${name}']);`,
+      ),
+    );
+  }
 
   replaceOnce(
     tree,
@@ -130,14 +150,40 @@ function wireIntoRootScripts(tree: Tree, name: string): void {
     tree,
     'package.json',
   );
+
+  const devMatch = pkg.scripts.dev.match(/--projects=([\w,-]+)/);
+  if (!devMatch) {
+    throw new Error(
+      `remote-app generator: expected "--projects=..." not found in the root "dev" script. ` +
+        `Update wireIntoRootScripts in tools/generators/remote-app/generator.ts to match.`,
+    );
+  }
   pkg.scripts.dev = pkg.scripts.dev.replace(
-    '--projects=shell,workorder,lead',
-    `--projects=shell,workorder,lead,${name}`,
+    devMatch[0],
+    `--projects=${devMatch[1]},${name}`,
   );
+
+  const buildMatch = pkg.scripts.build.match(/--projects=([\w,-]+)/);
+  if (!buildMatch) {
+    throw new Error(
+      `remote-app generator: expected "--projects=..." not found in the root "build" script. ` +
+        `Update wireIntoRootScripts in tools/generators/remote-app/generator.ts to match.`,
+    );
+  }
+  const buildProjects = buildMatch[1].split(',');
+  const shellIndex = buildProjects.indexOf('shell');
+  if (shellIndex === -1) {
+    throw new Error(
+      `remote-app generator: expected "shell" in the root "build" script's --projects list. ` +
+        `Update wireIntoRootScripts in tools/generators/remote-app/generator.ts to match.`,
+    );
+  }
+  buildProjects.splice(shellIndex, 0, name);
   pkg.scripts.build = pkg.scripts.build.replace(
-    '--projects=platform-contract,ui,workorder,lead,shell',
-    `--projects=platform-contract,ui,workorder,lead,${name},shell`,
+    buildMatch[0],
+    `--projects=${buildProjects.join(',')}`,
   );
+
   writeJson(tree, 'package.json', pkg);
 }
 

@@ -66,6 +66,7 @@ Components accept `className` for extension without requiring MFE-specific forks
 | `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                                 |
 | `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state       |
 | `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                       |
+| `SettingCard`            | blue icon tone, 60px icon tile        | `icon`, `title`, `description`, `footerText`, `tone`; `SettingCardGrid` for the responsive layout    |
 
 ### Shared internals worth knowing
 
@@ -121,6 +122,7 @@ Where each component came from. Check this before running `shadcn add` — sever
 | `IconButton`   | Square icon-only action with a required accessible `label`                          |
 | `MetricCard`   | Dashboard stat tile — 102px min height, 44px icon tile, semantic tones              |
 | `SectionCard*` | Page-level `<section>` grouping for settings/pricing composition                    |
+| `SettingCard`  | Setup page category card — a real `<button>` (not `Card`, which is a `div`) carrying `cardSurfaceVariants` directly, the same seam `SectionCard` uses for its own `<section>` root; reuses `MetricCard`'s `bg-metric-*`/`text-metric-*-foreground` tone tokens at a 60px/12px-radius tile instead of inventing new colors |
 
 ### Naming collisions — read before `shadcn add`
 
