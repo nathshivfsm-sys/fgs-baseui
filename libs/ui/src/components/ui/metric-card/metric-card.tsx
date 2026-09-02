@@ -62,7 +62,7 @@ export function MetricCard({
     <article
       aria-busy={loading || undefined}
       className={cn(
-        'flex min-h-metric-card min-w-0 items-center gap-3 rounded-metric border border-divider bg-card px-4 py-3 font-form text-card-foreground',
+        'flex min-h-metric-card min-w-0 items-center gap-3 rounded-metric border border-divider bg-card px-4 py-3 text-card-foreground',
         className,
       )}
       {...props}
@@ -80,7 +80,7 @@ export function MetricCard({
         <p className="text-caption leading-4 text-table-foreground">{label}</p>
         <div
           aria-live="polite"
-          className="text-metric-value font-bold text-heading"
+          className="text-metric-value font-bold text-heading tabular-figures"
         >
           {loading ? (
             <>

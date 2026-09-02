@@ -73,7 +73,7 @@ export function InputOTPSlot({
   return (
     <div
       className={cn(
-        'relative flex h-otp-slot min-w-0 grow basis-otp-slot items-center justify-center rounded-md border border-input bg-card font-form text-body font-semibold text-card-foreground outline-none transition-[border-color,box-shadow] aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
+        'relative flex h-otp-slot min-w-0 grow basis-otp-slot items-center justify-center rounded-md border border-input bg-card text-body font-semibold text-card-foreground outline-none transition-[border-color,box-shadow] aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/30',
         className,
       )}
       data-active={isActive}

@@ -8,7 +8,7 @@ import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const selectTriggerVariants = cva(
-  'flex w-full items-center justify-between gap-2 rounded-md border bg-card px-4 font-form text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'flex w-full items-center justify-between gap-2 rounded-md border bg-card px-4 text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-field-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: {
       size: {

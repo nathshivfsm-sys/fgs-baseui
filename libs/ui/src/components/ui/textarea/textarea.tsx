@@ -5,7 +5,7 @@ import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const textareaVariants = cva(
-  'w-full min-w-60 resize-y rounded-md border bg-card font-form text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] placeholder:text-field-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'w-full min-w-60 resize-y rounded-md border bg-card text-control leading-[1.4] text-card-foreground outline-none transition-[border-color,box-shadow] placeholder:text-field-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
   {
     variants: {
       size: {

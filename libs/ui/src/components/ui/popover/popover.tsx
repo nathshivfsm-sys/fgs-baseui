@@ -34,7 +34,7 @@ export function PopoverContent({
       >
         <PopoverPrimitive.Popup
           className={cn(
-            'flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-md border border-border-component bg-popover p-3 font-form text-control text-popover-foreground shadow-surface outline-none transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
+            'flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-md border border-border-component bg-popover p-3 text-control text-popover-foreground shadow-surface outline-none transition-[opacity,transform] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
             className,
           )}
           data-slot="popover-content"

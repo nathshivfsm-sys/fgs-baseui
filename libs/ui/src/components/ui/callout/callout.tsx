@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
 
 const calloutVariants = cva(
-  'flex w-full items-start gap-3 rounded-md px-4 py-2.5 font-form text-control leading-[1.4]',
+  'flex w-full items-start gap-3 rounded-md px-4 py-2.5 text-control leading-[1.4]',
   {
     variants: {
       variant: {

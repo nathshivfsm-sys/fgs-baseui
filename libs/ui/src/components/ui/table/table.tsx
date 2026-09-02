@@ -15,7 +15,7 @@ export function Table({ className, containerClassName, ...props }: TableProps) {
     <div className={cn('w-full overflow-x-auto', containerClassName)}>
       <table
         className={cn(
-          'w-full border-collapse text-left font-form text-control',
+          'w-full border-collapse text-left text-control tabular-figures',
           className,
         )}
         {...props}

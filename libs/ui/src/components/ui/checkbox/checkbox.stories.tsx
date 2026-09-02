@@ -57,7 +57,7 @@ export const Radii: Story = {
 export const WithVisibleLabel: Story = {
   args: { 'aria-label': undefined, 'aria-labelledby': 'taxable-label' },
   render: (args) => (
-    <div className="flex items-center gap-2 font-form text-control text-card-foreground">
+    <div className="flex items-center gap-2 text-control text-card-foreground">
       <Checkbox {...args} />
       <span id="taxable-label">Service taxable</span>
     </div>

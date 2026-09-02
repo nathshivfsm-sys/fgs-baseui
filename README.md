@@ -29,8 +29,11 @@ Use semantic color utilities (`bg-background`, `text-muted-foreground`,
 `text-destructive`) instead of palette colors. The theme reflects the Pricing and Work
 Order Figma systems: `primary` is the Work Order interaction color, while `brand` is
 the Pricing navigation/brand color; subtle surfaces, table, form, status, and text
-roles are exposed separately. Geist is the application font and Inter remains
-available as `font-form` for form patterns originating in the Pricing component set.
+roles are exposed separately. Inter is the single application font, self-hosted and
+declared once in `libs/ui/src/styles/font.css` — the only file in the repo that names
+a typeface. Swap the font there and every app plus Storybook follows; no component
+change is needed. Use `font-sans` for type and `tabular-figures` where digits need to
+align in columns (record codes, amounts, counts).
 Shared product-level values such as `max-w-app`, `max-w-content`, `p-page`,
 `h-control`, and `w-sidebar` are defined in `libs/ui/src/styles/theme.css`. Exact
 Figma light values and intentionally derived dark values are maintained together in

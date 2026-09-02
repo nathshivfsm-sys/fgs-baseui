@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
 
-const descriptionListVariants = cva('m-0 grid min-w-0 font-form', {
+const descriptionListVariants = cva('m-0 grid min-w-0', {
   variants: {
     columns: {
       1: 'grid-cols-1',
@@ -54,7 +54,10 @@ export function DescriptionDetails({
 }: ComponentProps<'dd'>) {
   return (
     <dd
-      className={cn('m-0 text-control leading-5 text-heading', className)}
+      className={cn(
+        'm-0 text-control leading-5 text-heading tabular-figures',
+        className,
+      )}
       data-slot="description-details"
       {...props}
     />
