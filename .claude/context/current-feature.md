@@ -2,7 +2,21 @@
 
 ## Status
 
-[Login screen redesign — "Verify your account"](features/login-screen-redesign-prd.md)
+**Replace native HTML typography with `@cms/ui` Typography** — in progress on
+`feature/typography-component-migration`.
+
+Settings already consumes `Heading1` / `BodySmall`. This pass replaces remaining
+`<p>` / `<h1>`–`<h6>` usage in apps and shared UI with the existing level
+components (`Heading1`–`Heading4`, `Body`, `BodySmall`), keeping heading
+semantics and overlaying `className` / `color` / `bold` only where the current
+visuals sit off the default scale (caption size, tenant wordmark, etc.).
+
+Native `<label>`, `<span>`, SVG markup, and the Typography renderer itself are
+out of scope.
+
+## History
+
+- [Login screen redesign — "Verify your account"](features/login-screen-redesign-prd.md)
 — implemented and verified, **committed on `feature/navigation-ui-updates` (continuing
 that branch per user direction rather than cutting a new one), not yet merged or
 reviewed**.

@@ -1,8 +1,10 @@
 import { DEMO_CREDENTIALS, useAuth } from '@cms/shared-auth';
 import {
+  BodySmall,
   Button,
   Callout,
   ChevronRightIcon,
+  Heading1,
   LockIcon,
   MailIcon,
   MobileIcon,
@@ -70,13 +72,11 @@ export function LoginPage() {
       <SectionCard className="relative w-full max-w-sm overflow-hidden p-10">
         <div className="absolute left-0 top-9 h-11 w-1.5 rounded-r bg-primary" />
 
-        <h1 className="text-title font-bold text-heading">
-          Verify your account
-        </h1>
-        <p className="mt-1 text-control text-foreground-muted">
+        <Heading1 bold>Verify your account</Heading1>
+        <BodySmall className="mt-1" color="foreground-muted">
           Enter your mobile number or email address and we&apos;ll send you a
           verification code to sign in.
-        </p>
+        </BodySmall>
 
         <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
           <Tabs
@@ -144,10 +144,13 @@ export function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-4 flex items-center justify-center gap-2 text-caption text-foreground-muted">
+        <BodySmall
+          className="mt-4 flex items-center justify-center gap-2 text-caption"
+          color="foreground-muted"
+        >
           <LockIcon aria-hidden="true" className="size-3.5 shrink-0" />
           Your information is secure and encrypted.
-        </p>
+        </BodySmall>
 
         <div aria-hidden="true" className="mt-3 flex items-center gap-3">
           <div className="h-px flex-1 bg-divider" />
@@ -158,9 +161,9 @@ export function LoginPage() {
 
         {/* No destination is defined for this yet (PRD Non-Goals), so it renders
             as styled text rather than a link/button that would do nothing. */}
-        <p className="mt-3 text-center text-control font-semibold text-primary">
+        <BodySmall className="mt-3 text-center font-semibold" color="primary">
           Need help signing in?
-        </p>
+        </BodySmall>
       </SectionCard>
     </div>
   );

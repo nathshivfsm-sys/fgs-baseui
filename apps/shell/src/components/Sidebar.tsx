@@ -1,4 +1,4 @@
-import { Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
+import { BodySmall, Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
 import { NavLink, useMatch } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from './nav-config';
 
@@ -121,9 +121,13 @@ export function Sidebar({
           >
             {/* FR-22: the label is what a hairline replaces when collapsed. */}
             {!collapsed && (
-              <p className="px-3 py-1.5 text-caption font-semibold uppercase tracking-section text-foreground-subtle">
+              <BodySmall
+                className="px-3 py-1.5 text-caption font-semibold tracking-section"
+                color="foreground-subtle"
+                isUpperCase
+              >
                 {section.label}
-              </p>
+              </BodySmall>
             )}
             {section.items.map((item) => (
               <SidebarNavLink

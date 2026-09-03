@@ -1,4 +1,5 @@
 import { AuthProvider, DEMO_CREDENTIALS, RequireAuth } from '@cms/shared-auth';
+import { Body } from '@cms/ui';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { expect, userEvent, within } from 'storybook/test';
@@ -15,8 +16,11 @@ function LoginFlow({ initialPath }: { initialPath: string }) {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route element={<RequireAuth />}>
-            <Route path="/" element={<p>Home page (protected)</p>} />
-            <Route path="/invoice" element={<p>Invoices (protected)</p>} />
+            <Route path="/" element={<Body>Home page (protected)</Body>} />
+            <Route
+              path="/invoice"
+              element={<Body>Invoices (protected)</Body>}
+            />
           </Route>
         </Routes>
       </AuthProvider>
@@ -41,9 +45,10 @@ export const Default: Story = {
     const canvas = within(canvasElement);
     // Email is the active tab by default (Figma defaults to Mobile Phone; this
     // product defaults to Email — see the PRD).
-    await expect(
-      canvas.getByRole('tab', { name: /email/i }),
-    ).toHaveAttribute('aria-selected', 'true');
+    await expect(canvas.getByRole('tab', { name: /email/i })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
     await expect(canvas.getByLabelText(/email address/i)).toHaveValue(
       DEMO_CREDENTIALS.email,
     );
@@ -102,13 +107,9 @@ export const RedirectsToInterceptedRoute: Story = {
 export const MobilePhoneTabIsInert: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(
-      canvas.getByRole('tab', { name: /mobile phone/i }),
-    );
+    await userEvent.click(canvas.getByRole('tab', { name: /mobile phone/i }));
 
-    await expect(
-      canvas.getByLabelText(/mobile phone number/i),
-    ).toBeVisible();
+    await expect(canvas.getByLabelText(/mobile phone number/i)).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Next' })).toBeDisabled();
   },
 };

@@ -1,4 +1,4 @@
-import { HexLogoIcon } from '@cms/ui';
+import { Body, BodySmall, HexLogoIcon } from '@cms/ui';
 import type { ReactNode } from 'react';
 import { PageContainer } from './PageContainer';
 
@@ -55,12 +55,12 @@ function BrandBanner() {
       <div className="relative z-10 flex items-center gap-3">
         <HexLogoIcon aria-hidden="true" className="size-14 shrink-0" />
         <div>
-          <p className="text-[2.625rem] font-extrabold leading-none tracking-tight text-white">
+          <Body className="text-[2.625rem] font-extrabold leading-none tracking-tight text-white">
             FSM
-          </p>
-          <p className="mt-1 text-control text-white/70">
+          </Body>
+          <BodySmall className="mt-1 text-white/70">
             Field Service Management
-          </p>
+          </BodySmall>
         </div>
       </div>
     </header>
@@ -73,16 +73,19 @@ function PublicFooter() {
     <footer className="shrink-0 px-6 py-6 text-center">
       {/* No destinations are defined for these yet, so they render as inert text
           rather than links that would go nowhere. */}
-      <p className="flex items-center justify-center gap-2 text-caption text-foreground-muted">
+      <BodySmall
+        className="flex items-center justify-center gap-2 text-caption"
+        color="foreground-muted"
+      >
         <span>Privacy Policy</span>
         <span aria-hidden="true">•</span>
         <span>Terms of Service</span>
         <span aria-hidden="true">•</span>
         <span>Support</span>
-      </p>
-      <p className="mt-2 text-caption text-placeholder">
+      </BodySmall>
+      <BodySmall className="mt-2 text-caption" color="placeholder">
         © 2025 FSM. All rights reserved.
-      </p>
+      </BodySmall>
     </footer>
   );
 }

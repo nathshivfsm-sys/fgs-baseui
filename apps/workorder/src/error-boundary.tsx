@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react';
+import { BodySmall } from '@cms/ui';
 
 interface RemoteErrorBoundaryProps {
   children: ReactNode;
@@ -32,7 +33,7 @@ export class RemoteErrorBoundary extends Component<
           role="alert"
         >
           <strong>Work orders is unavailable.</strong>
-          <p className="text-sm text-destructive">{this.state.error.message}</p>
+          <BodySmall color="destructive">{this.state.error.message}</BodySmall>
         </div>
       );
     }

@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../select';
+import { BodySmall } from '../../typography';
 import type { DataTablePaginationProps } from '../types';
 import { buildPageItems } from '../utils';
 
@@ -40,11 +41,11 @@ export function DataTablePagination<TData extends RowData>({
         className,
       )}
     >
-      <p className="text-foreground-muted">
+      <BodySmall color="foreground-muted">
         {totalRows === 0
           ? `No ${rowLabel} found`
           : `Showing ${firstRow} to ${lastRow} of ${totalRows} ${rowLabel}`}
-      </p>
+      </BodySmall>
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
