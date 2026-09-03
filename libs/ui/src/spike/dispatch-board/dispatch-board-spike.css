@@ -1,0 +1,91 @@
+/**
+ * SPIKE ONLY — token bridge for FullCalendar v7.
+ *
+ * v7 exposes a theme-namespaced palette layer (--fc-monarch-*), so the whole
+ * calendar can be re-themed from one block. Dark mode needs no extra rules:
+ * the FieldPro tokens already flip in tokens.css, so mapping onto them is enough.
+ */
+
+.spike-board {
+  --fc-monarch-background: var(--color-card);
+  --fc-monarch-foreground: var(--color-card-foreground);
+  --fc-monarch-border: var(--color-border);
+  --fc-monarch-strong-border: var(--color-border-component);
+  --fc-monarch-muted: var(--color-muted);
+  --fc-monarch-muted-foreground: var(--color-muted-foreground);
+  --fc-monarch-faint: var(--color-surface-subtle);
+  --fc-monarch-faint-foreground: var(--color-muted-foreground);
+  --fc-monarch-strong: var(--color-foreground-strong);
+  --fc-monarch-now: var(--color-destructive);
+  --fc-monarch-primary: var(--color-primary);
+  --fc-monarch-primary-foreground: var(--color-primary-foreground);
+  --fc-monarch-primary-over: var(--color-primary-hover);
+  --fc-monarch-highlight: var(--color-accent);
+  --fc-monarch-outline: var(--color-ring);
+  --fc-monarch-ring-color: var(--color-ring);
+  --fc-monarch-popover: var(--color-popover);
+  --fc-monarch-popover-foreground: var(--color-popover-foreground);
+}
+
+/* Work-order card inside an event block. Progressive disclosure by container
+   query, so no ResizeObserver runs during a drag. */
+.spike-event {
+  container-type: inline-size;
+  min-inline-size: 56px;
+  block-size: 100%;
+  overflow: hidden;
+  padding: 2px 6px;
+  border-left: 3px solid var(--spike-tone, currentColor);
+  /* Text sits on FullCalendar's event fill, so it must use the event's own
+     contrast colour. Using a page foreground token here gives 1.6:1. */
+  color: var(--fc-event-contrast-color, var(--color-primary-foreground));
+  line-height: 1.25;
+}
+
+.spike-event__id {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.spike-event__title,
+.spike-event__street,
+.spike-event__times {
+  display: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@container (min-width: 120px) {
+  .spike-event__times {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+  }
+}
+
+@container (min-width: 200px) {
+  .spike-event__title {
+    display: block;
+  }
+}
+
+@container (min-width: 320px) {
+  .spike-event__street {
+    display: block;
+  }
+}
+
+/* Conflict / rejection affordances are never colour-only. */
+.spike-event--conflict {
+  outline: 2px dashed var(--color-warning);
+  outline-offset: -2px;
+}
+
+.spike-queue-card {
+  cursor: grab;
+}
+
+.spike-queue-card:active {
+  cursor: grabbing;
+}
