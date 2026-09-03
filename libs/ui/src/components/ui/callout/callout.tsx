@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
+import { BodySmall } from '../typography';
 
 const calloutVariants = cva(
   'flex w-full items-start gap-3 rounded-md px-4 py-2.5 text-control leading-[1.4]',
@@ -46,7 +47,9 @@ export function Callout({
         </span>
       )}
       <div className="min-w-0">
-        {title != null && <p className="font-semibold">{title}</p>}
+        {title != null && (
+          <BodySmall className="font-semibold">{title}</BodySmall>
+        )}
         <div>{children}</div>
       </div>
     </div>

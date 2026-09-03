@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
+import { BodySmall } from '../typography';
 
 const fieldLabelVariants = cva('', {
   variants: {
@@ -71,36 +72,33 @@ export function Field({
         </label>
       )}
       {description != null && (
-        <p
-          className={cn(
-            fieldMessageVariants({ size }),
-            'text-input-foreground',
-          )}
+        <BodySmall
+          className={fieldMessageVariants({ size })}
+          color="input-foreground"
           id={descriptionId}
         >
           {description}
-        </p>
+        </BodySmall>
       )}
       {children}
       {error != null ? (
-        <p
-          className={cn(fieldMessageVariants({ size }), 'text-destructive')}
+        <BodySmall
+          className={fieldMessageVariants({ size })}
+          color="destructive"
           id={errorId}
           role="alert"
         >
           {error}
-        </p>
+        </BodySmall>
       ) : (
         helperText != null && (
-          <p
-            className={cn(
-              fieldMessageVariants({ size }),
-              'text-input-foreground',
-            )}
+          <BodySmall
+            className={fieldMessageVariants({ size })}
+            color="input-foreground"
             id={errorId}
           >
             {helperText}
-          </p>
+          </BodySmall>
         )
       )}
     </div>

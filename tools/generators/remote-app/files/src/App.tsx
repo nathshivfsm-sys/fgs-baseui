@@ -1,5 +1,5 @@
 import type { CmsRuntime } from '@cms/platform-contract';
-import { SectionCard } from '@cms/ui';
+import { BodySmall, Heading2, SectionCard } from '@cms/ui';
 import { RemoteErrorBoundary } from './error-boundary';
 import './styles.css';
 
@@ -12,16 +12,18 @@ export function App({ runtime }: AppProps) {
     <RemoteErrorBoundary>
       <section className="space-y-4" data-testid="<%= name %>">
         <div>
-          <h2 className="text-2xl font-bold"><%= displayName %></h2>
-          <p className="text-xs text-foreground-muted">
+          <Heading2 bold className="text-2xl">
+            <%= displayName %>
+          </Heading2>
+          <BodySmall className="text-caption" color="foreground-muted">
             Global tenant: {runtime.tenantId} · User:{' '}
             {runtime.currentUser.displayName} ({runtime.currentUser.role})
-          </p>
+          </BodySmall>
         </div>
         <SectionCard>
-          <p className="text-sm text-foreground-muted">
+          <BodySmall color="foreground-muted">
             <%= displayName %> remote is running. Replace this with real content.
-          </p>
+          </BodySmall>
         </SectionCard>
       </section>
     </RemoteErrorBoundary>

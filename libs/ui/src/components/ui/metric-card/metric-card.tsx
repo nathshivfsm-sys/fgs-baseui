@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../../../lib/cn';
+import { BodySmall } from '../typography';
 
 const metricCardIconVariants = cva(
   'flex size-11 shrink-0 items-center justify-center rounded-md [&_svg]:size-[22px]',
@@ -77,7 +78,9 @@ export function MetricCard({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-caption leading-4 text-foreground-subtle">{label}</p>
+        <BodySmall className="text-caption leading-4" color="foreground-subtle">
+          {label}
+        </BodySmall>
         <div
           aria-live="polite"
           className="text-metric-value font-bold text-heading tabular-figures"
@@ -95,11 +98,11 @@ export function MetricCard({
           )}
         </div>
         {description != null && (
-          <p
+          <BodySmall
             className={metricCardDescriptionVariants({ tone: descriptionTone })}
           >
             {description}
-          </p>
+          </BodySmall>
         )}
       </div>
     </article>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
-import { Button, SectionCard, UsersIcon } from '@cms/ui';
+import { BodySmall, Button, Heading2, SectionCard, UsersIcon } from '@cms/ui';
 import {
   leadKeys,
   leadListQueryOptions,
@@ -39,15 +39,15 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
       <section className="space-y-4" data-testid="lead">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-foreground-muted">Sales</p>
-            <h2 className="flex items-center gap-2 text-2xl font-bold">
+            <BodySmall color="foreground-muted">Sales</BodySmall>
+            <Heading2 bold className="flex items-center gap-2 text-2xl">
               <UsersIcon className="size-6 text-primary" /> Leads
-            </h2>
-            <p className="text-xs text-foreground-muted">
+            </Heading2>
+            <BodySmall className="text-caption" color="foreground-muted">
               Global tenant: {runtime.tenantId} · User:{' '}
               {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
               Lead-local view: {viewDensity}
-            </p>
+            </BodySmall>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Button
@@ -75,13 +75,13 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
         </div>
         <div className="grid gap-3">
           {query.isPending ? (
-            <p role="status">Loading leads…</p>
+            <BodySmall role="status">Loading leads…</BodySmall>
           ) : query.isError ? (
-            <p className="text-sm text-destructive" role="alert">
+            <BodySmall color="destructive" role="alert">
               Unable to load leads: {query.error.message}
-            </p>
+            </BodySmall>
           ) : query.data.length === 0 ? (
-            <p className="text-sm text-foreground-muted">No leads found.</p>
+            <BodySmall color="foreground-muted">No leads found.</BodySmall>
           ) : (
             query.data.map((item: Lead) => (
               <SectionCard className={cardPadding} key={item.id}>
@@ -89,7 +89,9 @@ export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
                   <strong>{item.name}</strong>
                   <span className="text-sm text-primary">{item.stage}</span>
                 </div>
-                <p className="mt-2 text-sm text-foreground-muted">{item.id}</p>
+                <BodySmall className="mt-2" color="foreground-muted">
+                  {item.id}
+                </BodySmall>
               </SectionCard>
             ))
           )}

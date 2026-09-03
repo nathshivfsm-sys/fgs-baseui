@@ -4,6 +4,8 @@ import {
   AvatarFallback,
   AvatarImage,
   BellIcon,
+  Body,
+  BodySmall,
   ChevronDownIcon,
   DropdownMenu,
   DropdownMenuContent,
@@ -68,12 +70,13 @@ export function TopNav({
       {/* FR-4: never wraps, never squeezes the search field. Below `nav`
           there's no room for it alongside search + the icon cluster, so it
           relocates into the account dropdown instead (see below). */}
-      <p
-        className="hidden min-w-0 truncate text-tenant font-semibold nav:block"
+      <Body
+        className="hidden text-tenant font-semibold nav:block"
         title={tenantName}
+        truncationEnabled
       >
         {tenantName}
-      </p>
+      </Body>
 
       <div className="ml-auto mr-10 w-full min-w-0 max-w-95">
         <TextInput
@@ -162,26 +165,28 @@ export function TopNav({
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {/* Mirrors the bar's tenant name below `nav`, where there's no
-                room to show it inline (see the `<p>` above). */}
+                room to show it inline (see the Body above). */}
             <DropdownMenuGroup className="hidden max-nav:block">
               <DropdownMenuLabel>
-                <p
-                  className="truncate text-control font-semibold text-surface-foreground"
+                <BodySmall
+                  className="font-semibold"
+                  color="surface-foreground"
                   title={tenantName}
+                  truncationEnabled
                 >
                   {tenantName}
-                </p>
+                </BodySmall>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="hidden max-nav:block" />
             <DropdownMenuGroup>
               <DropdownMenuLabel>
-                <p className="text-control font-semibold text-surface-foreground">
+                <BodySmall className="font-semibold" color="surface-foreground">
                   {currentUser.displayName}
-                </p>
-                <p className="font-normal text-foreground-muted">
+                </BodySmall>
+                <BodySmall color="foreground-muted">
                   {currentUser.email}
-                </p>
+                </BodySmall>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

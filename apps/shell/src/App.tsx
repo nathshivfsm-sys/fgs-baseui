@@ -9,6 +9,7 @@ import {
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { RequireAuth, useAuth } from '@cms/shared-auth';
+import { BodySmall } from '@cms/ui';
 import { AppShell } from './components/AppShell';
 import { ALL_NAV_ROUTES } from './components/nav-config';
 import { PublicShell } from './components/PublicShell';
@@ -36,12 +37,16 @@ class ProviderBoundary extends Component<
           role="alert"
         >
           <strong>{this.props.name} is unavailable.</strong>
-          <p className="text-sm text-destructive">{this.state.error.message}</p>
+          <BodySmall color="destructive">{this.state.error.message}</BodySmall>
         </div>
       );
     }
     return (
-      <Suspense fallback={<p role="status">Loading {this.props.name}…</p>}>
+      <Suspense
+        fallback={
+          <BodySmall role="status">Loading {this.props.name}…</BodySmall>
+        }
+      >
         {this.props.children}
       </Suspense>
     );

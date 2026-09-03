@@ -1,4 +1,12 @@
-import { Button, Callout, LockIcon, SectionCard } from '@cms/ui';
+import {
+  Body,
+  BodySmall,
+  Button,
+  Callout,
+  Heading1,
+  LockIcon,
+  SectionCard,
+} from '@cms/ui';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -15,12 +23,14 @@ export function InvoicePaymentPage() {
     // come from the host shell.
     <div className="mx-auto w-full max-w-md">
       <SectionCard>
-        <h1 className="text-title font-bold text-heading">Pay invoice</h1>
-        <p className="mt-1 text-control text-foreground-muted">
+        <Heading1 bold>Pay invoice</Heading1>
+        <BodySmall className="mt-1" color="foreground-muted">
           Invoice <span className="font-semibold">{invoiceId}</span>
-        </p>
+        </BodySmall>
 
-        <p className="mt-4 text-metric-value font-bold text-heading">$250.00</p>
+        <Body bold className="mt-4 text-metric-value" color="heading">
+          $250.00
+        </Body>
 
         <Callout
           className="mt-4"

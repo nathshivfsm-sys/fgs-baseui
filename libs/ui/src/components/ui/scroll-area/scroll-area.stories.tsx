@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ScrollArea } from './scroll-area';
+import { Body } from '../typography';
 
 const meta = {
   title: 'Components/ScrollArea',
@@ -67,9 +68,9 @@ export const BothAxes: Story = {
     >
       <div className="w-[40rem] p-3 text-control text-surface-foreground">
         {workOrders.map((workOrder) => (
-          <p className="whitespace-nowrap" key={workOrder}>
+          <Body className="whitespace-nowrap" key={workOrder}>
             {workOrder} — scheduled, assigned, and awaiting dispatch
-          </p>
+          </Body>
         ))}
       </div>
     </ScrollArea>
