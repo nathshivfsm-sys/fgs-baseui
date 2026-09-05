@@ -38,7 +38,7 @@ export function App() {
 
   return (
     <RemoteErrorBoundary>
-      <section className="py-3 space-y-6" data-testid="settings">
+      <section className="space-y-6" data-testid="settings">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="pb-3">
             <Heading1>Setup</Heading1>
@@ -62,7 +62,7 @@ export function App() {
         >
           <TabsList aria-label="Setup categories" bordered>
             {SETTING_TABS.map((tab) => (
-              <TabsTrigger key={tab.key} tone="action" value={tab.key}>
+              <TabsTrigger key={tab.key} tone="action" value={tab.key} className='cursor-pointer'>
                 {tab.label}
               </TabsTrigger>
             ))}

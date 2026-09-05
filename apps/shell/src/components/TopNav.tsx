@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { UserDetails } from '@cms/platform-contract';
 import {
   Avatar,
@@ -47,6 +48,7 @@ export function TopNav({
   onOpenMobileSidebar,
   tenantId,
 }: TopNavProps) {
+  const navigate = useNavigate();
   const tenantName = TENANT_NAMES[tenantId] ?? tenantId;
   const initials = getInitials(currentUser.displayName) || '?';
 
@@ -131,6 +133,7 @@ export function TopNav({
           label="Settings"
           size="lg"
           variant="ghost"
+          onClick={() => navigate('/settings')}
         />
 
         <DropdownMenu>
