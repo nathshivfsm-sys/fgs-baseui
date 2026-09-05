@@ -4,38 +4,47 @@ import {
   BriefcaseIcon,
   CheckIcon,
   ColumnsIcon,
-  DashboardIcon,
-  DispatchBoardIcon,
-  EstimateIcon,
   InvoiceIcon,
-  LeadIcon,
-  LocationPinIcon,
   LockIcon,
   MailIcon,
   MessageIcon,
   OrganizationIcon,
   PaymentIcon,
-  ProjectsIcon,
   ReportIcon,
   ScheduleIcon,
   SettingsBusinessTypeIcon,
   SettingsBusinessUnitIcon,
+  SettingsBillingCategoryIcon,
+  SettingsEstimateSettingsIcon,
   SettingsGeneralInfoIcon,
   SettingsIcon,
+  SettingsJobTypeIcon,
+  SettingsLeadIcon,
+  SettingsPayPeriodIcon,
   SettingsPostalCodesIcon,
+  SettingsRecommendationStatusIcon,
+  SettingsResolutionCodesIcon,
+  SettingsRoleIcon,
+  SettingsSalesActivitiesIcon,
+  SettingsSalesPipelineStatusIcon,
+  SettingsSetupDescriptionsIcon,
+  SettingsTagsIcon,
   SettingsTaxStatesIcon,
+  SettingsTimeAttendanceIcon,
+  SettingsTimeslotsIcon,
+  SettingsTradeSkillsIcon,
+  SettingsUserIcon,
+  SettingsWorkOrderBookingIcon,
+  SettingsZoneIcon,
   TrendingUpIcon,
-  UsersIcon,
   type FigmaIconProps,
   type SettingCardTone,
 } from '@cms/ui';
 import type { ComponentType } from 'react';
 
 /**
- * Only the 5 Company-tab categories have a traced Figma icon (settings-setup-page-prd.md
- * §8/§12). Every other category maps to the closest existing `@cms/ui` icon; anything
- * without a reasonable match falls back to the generic `SettingsIcon` rather than
- * inventing a new, un-sourced icon.
+ * Figma-traced icon mappings for Settings categories (18 icons from Figma).
+ * Remaining icons fall back to closest existing `@cms/ui` icons until their Figma designs are traced.
  */
 const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   // Company — traced from Figma node 70:231
@@ -45,52 +54,52 @@ const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   SettingsPostalCodesIcon,
   SettingsBusinessTypeIcon,
 
-  // Users & Payroll
-  SettingsUserIcon: UsersIcon,
-  SettingsRoleIcon: LockIcon,
-  SettingsPayPeriodIcon: ScheduleIcon,
-  SettingsTimeAttendanceIcon: ScheduleIcon,
+  // Users & Payroll — traced from Figma
+  SettingsUserIcon,
+  SettingsRoleIcon,
+  SettingsPayPeriodIcon,
+  SettingsTimeAttendanceIcon,
 
-  // Operations
-  SettingsTradeSkillsIcon: BriefcaseIcon,
-  SettingsWorkOrderBookingIcon: DispatchBoardIcon,
-  SettingsJobTypeIcon: ColumnsIcon,
-  SettingsBillingCategoryIcon: PaymentIcon,
-  SettingsTimeslotsIcon: ScheduleIcon,
-  SettingsZoneIcon: LocationPinIcon,
-  SettingsResolutionCodesIcon: CheckIcon,
-  SettingsTagsIcon: SettingsIcon,
-  SettingsSetupDescriptionsIcon: MessageIcon,
-  SettingsRecommendationStatusIcon: TrendingUpIcon,
+  // Operations — traced from Figma
+  SettingsTradeSkillsIcon,
+  SettingsWorkOrderBookingIcon,
+  SettingsJobTypeIcon,
+  SettingsBillingCategoryIcon,
+  SettingsTimeslotsIcon,
+  SettingsZoneIcon,
+  SettingsResolutionCodesIcon,
+  SettingsTagsIcon,
+  SettingsSetupDescriptionsIcon,
+  SettingsRecommendationStatusIcon,
 
-  // Sales
-  SettingsLeadIcon: LeadIcon,
-  SettingsSalesPipelineStatusIcon: DashboardIcon,
-  SettingsSalesActivitiesIcon: ProjectsIcon,
+  // Sales — partially traced from Figma (18/39 icons complete)
+  SettingsLeadIcon,
+  SettingsSalesPipelineStatusIcon,
+  SettingsSalesActivitiesIcon,
   SettingsSalesActivityOutcomeIcon: CheckIcon,
   SettingsSalesDispositionReasonIcon: MessageIcon,
-  SettingsEstimateSettingsIcon: EstimateIcon,
+  SettingsEstimateSettingsIcon,
 
-  // Billing & Finance
+  // Billing & Finance — fallback icons (Figma designs pending)
   SettingsPaymentMethodsIcon: PaymentIcon,
   SettingsPaymentTermsIcon: ScheduleIcon,
   SettingsInvoiceSettingsIcon: InvoiceIcon,
   SettingsPricingMatrixIcon: ColumnsIcon,
   SettingsUniversalPricingIcon: TrendingUpIcon,
 
-  // Service Agreements
+  // Service Agreements — fallback icons (Figma designs pending)
   SettingsAgreementPricingComponentsIcon: AgreementIcon,
   SettingsAgreementTemplatesIcon: AgreementIcon,
   SettingsTemplateCoverageIcon: ReportIcon,
   SettingsTemplatePricingComponentsIcon: ColumnsIcon,
 
-  // Assets & Inventory
+  // Assets & Inventory — fallback icons (Figma designs pending)
   SettingsAssetSetupIcon: BriefcaseIcon,
   SettingsInventoryCategoriesIcon: ColumnsIcon,
   SettingsBusinessTypeInventoryMappingIcon: SettingsBusinessTypeIcon,
   SettingsInventorySetupIcon: SettingsIcon,
 
-  // System
+  // System — fallback icons (Figma designs pending)
   SettingsEmailSmsTemplatesIcon: MailIcon,
   SettingsNotificationsIcon: BellIcon,
   SettingsIntegrationsIcon: OrganizationIcon,

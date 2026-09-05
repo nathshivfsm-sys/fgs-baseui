@@ -19,6 +19,7 @@ export function AppShell({
   tenantId,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [iconOnly, setIconOnly] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -28,13 +29,16 @@ export function AppShell({
         onOpenMobileSidebar={() => setMobileOpen(true)}
         tenantId={tenantId}
         onLogout={onLogout}
+        collapsed={collapsed}
       />
 
       <div className="flex min-h-0 flex-1">
         <div className="hidden lg:block!">
           <Sidebar
             collapsed={collapsed}
+            iconOnly={iconOnly}
             onToggleCollapse={() => setCollapsed((value) => !value)}
+            onToggleIconOnly={() => setIconOnly((value) => !value)}
           />
         </div>
 

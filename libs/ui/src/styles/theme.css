@@ -26,9 +26,6 @@
   --tracking-section: 0.05em;
 
   --breakpoint-xs: 20rem;
-  /* Point where the top bar no longer has room to show the tenant name
-     inline alongside search and the icon cluster; below this it relocates
-     into the account dropdown instead (see TopNav.tsx). */
   --breakpoint-nav: 77.5rem;
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 160rem;

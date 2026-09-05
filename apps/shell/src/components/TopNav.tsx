@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { UserDetails } from '@cms/platform-contract';
 import {
   Avatar,
@@ -29,7 +30,7 @@ import { TENANT_NAMES } from '../store/constants';
  * hover and `--ring` focus ring both disappear into the blue.
  */
 const TOPNAV_ICON_CLASSES =
-  'text-surface-inverse-foreground hover:bg-surface-inverse-hover hover:text-surface-inverse-foreground active:bg-surface-inverse-hover focus-visible:ring-surface-inverse-foreground/70';
+  'text-surface-inverse-foreground hover:bg-surface-inverse-hover hover:text-surface-inverse-foreground active:bg-surface-inverse-hover focus-visible:ring-surface-inverse-foreground/70 cursor-pointer';
 
 export interface TopNavProps {
   currentUser: UserDetails;
@@ -37,6 +38,7 @@ export interface TopNavProps {
   onLogout: () => void;
   onOpenMobileSidebar: () => void;
   tenantId: string;
+  collapsed: boolean;
 }
 
 /** Persistent brand bar: identity, global search, utilities, and the account menu. */
@@ -46,7 +48,9 @@ export function TopNav({
   onLogout,
   onOpenMobileSidebar,
   tenantId,
+  collapsed
 }: TopNavProps) {
+  const navigate = useNavigate();
   const tenantName = TENANT_NAMES[tenantId] ?? tenantId;
   const initials = getInitials(currentUser.displayName) || '?';
 
@@ -61,8 +65,8 @@ export function TopNav({
       />
 
       <div className="flex w-47 shrink-0 items-center gap-2">
-        <FieldProLogoIcon aria-hidden="true" className="size-7 shrink-0" />
-        <span className="text-body font-bold sm:block">FieldPro</span>
+        <FieldProLogoIcon aria-hidden="true" className={`size-7 shrink-0 ${collapsed && 'pl-2 size-9'}`} />
+        {!collapsed && <span className="text-body font-bold sm:block">FieldPro</span>}
       </div>
 
       {/* FR-4: never wraps, never squeezes the search field. Below `nav`
@@ -131,12 +135,13 @@ export function TopNav({
           label="Settings"
           size="lg"
           variant="ghost"
+          onClick={() => navigate('/settings')}
         />
 
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label={`Account menu for ${currentUser.displayName}`}
-            className="flex items-center gap-1 rounded-md px-1 py-0.5 outline-none focus-visible:ring-[3px] focus-visible:ring-surface-inverse-foreground/70"
+            className="flex items-center gap-1 rounded-md px-1 py-0.5 outline-none focus-visible:ring-[3px] focus-visible:ring-surface-inverse-foreground/70 cursor-pointer"
           >
             <Avatar className="size-8 after:border-surface-inverse-foreground/25">
               <AvatarImage
