@@ -46,3 +46,15 @@
     'tnum' var(--font-app-supports-tabular),
     'zero' var(--font-app-supports-slashed-zero);
 }
+
+@media (min-width: 77.5rem) {
+  .nav\:block {
+    display: block;
+  }
+}
+
+@media (max-width: 77.4375rem) {
+  .max-nav\:block {
+    display: block;
+  }
+}
