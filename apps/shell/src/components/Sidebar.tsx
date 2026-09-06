@@ -161,7 +161,7 @@ export function Sidebar({
               title={iconOnly ? 'Show text labels' : 'Hide text labels'}
               type="button"
             >
-              <span className="text-xs">{iconOnly ? 'A' : 'A'}</span>
+              <span className="text-xs">{iconOnly ? '' : ''}</span>
             </button>
           )}
           <button

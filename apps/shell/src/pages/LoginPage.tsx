@@ -39,7 +39,7 @@ export function LoginPage() {
 
   // Set by RequireAuth when it intercepted a protected URL; '/' otherwise.
   const from =
-    (location.state as LoginLocationState | null)?.from?.pathname ?? '/';
+    (location.state as LoginLocationState | null)?.from?.pathname ?? '/today';
 
   // Declarative redirect rather than an imperative navigate() after login: a successful
   // login re-renders this component with a session, and this branch does the rest.

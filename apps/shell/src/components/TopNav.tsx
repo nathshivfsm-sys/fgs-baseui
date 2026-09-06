@@ -65,7 +65,7 @@ export function TopNav({
       />
 
       <div className="flex w-47 shrink-0 items-center gap-2">
-        <FieldProLogoIcon aria-hidden="true" className={`size-7 shrink-0 ${collapsed && 'pl-2 size-9'}`} />
+        <FieldProLogoIcon aria-hidden="true" className={`size-7 shrink-0 ${collapsed && 'pl-2 size-9 ml-1'}`} />
         {!collapsed && <span className="text-body font-bold sm:block">FieldPro</span>}
       </div>
 
