@@ -1,4 +1,4 @@
-import type { SettingCategory, SettingsTabKey } from './types';
+import type { SettingCategory, SettingsTabKey } from '../types';
 
 export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
   usersAndPayroll: [

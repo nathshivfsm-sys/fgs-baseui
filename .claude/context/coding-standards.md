@@ -149,6 +149,64 @@ instructions instead.
 - Constants: SCREAMING_SNAKE_CASE
 - Types/Interfaces: PascalCase (no prefix)
 
+## Application Internal Structure
+
+The section above governs the boundaries *between* projects. This one governs the layout
+*inside* every application under `apps/`. It is not advisory — new folders that do not
+appear here need a reason in review, and the `remote-app` generator emits this skeleton so
+new remotes start compliant.
+
+```
+apps/<app>/src/
+  index.ts               MF indirection — dynamic import('./bootstrap') only
+  bootstrap.tsx          standalone React root
+  standalone-runtime.ts  standalone CmsRuntime + configureCustomFetch
+  error-boundary.tsx     RemoteErrorBoundary
+  styles.css             Tailwind entry
+  vite-env.d.ts
+
+  App.tsx                AppProps + route table + error boundary. Nothing else.
+
+  types/                 types used by two or more sibling folders
+  constants/             literal values only — no functions
+  lib/                   pure functions, no React, no JSX
+  hooks/                 custom hooks (create when the first one appears)
+  components/            presentational components
+  pages/                 route targets
+  store/                 zustand: store.ts / types.ts / constants.ts
+```
+
+**`App.tsx` holds no markup.** It declares `AppProps { runtime: CmsRuntime }`, wraps in
+`RemoteErrorBoundary`, and returns a `<Routes>` table. Screen markup belongs in `pages/`.
+A remote that renders a single screen still routes to it — `<Route index element={...} />`
+— rather than inlining it. This is the rule that keeps entry files from accreting a whole
+feature, and it is the one most likely to be violated by copying an older sibling app.
+
+**Every app accepts `runtime`.** The shell passes `runtime={mfeRuntime}` to every remote.
+A remote that declares no props still type-checks against `lazyProvider<{ runtime }>`,
+because a zero-prop component structurally satisfies it — so this will not fail the build,
+and it must be checked by eye. Stamp `data-tenant={runtime.tenantId}` as the visible proof
+it is wired.
+
+**Types placement.** A type used by two or more sibling folders goes in `src/types/`, one
+file per domain concept, re-exported from `src/types/index.ts`. A type used by exactly one
+folder stays in that folder's own `types.ts` — which is why the `store/types.ts` triple is
+correct where it appears. Do not declare an interface inline in a `constants/` file.
+
+**`constants/` holds data, `lib/` holds behaviour.** If it is a function, it is not a
+constant. A lookup map is a constant; the function that reads the map is not. Mock data
+that will later come from a `data-access` lib lives in `constants/` until that lib exists,
+not inline in the component that renders it.
+
+**Naming.** Files exporting a React component are PascalCase and match the export name
+(`SetupHeader.tsx`). Everything else is kebab-case (`resolve-setting-icon.ts`). Page
+components carry a `Page` suffix (`SetupPage.tsx`, `InvoiceListPage.tsx`). Use `.tsx` only
+when the file actually contains JSX — a file that merely references component identifiers
+in a map is `.ts`.
+
+**Stories are colocated** next to the component they cover
+(`components/TopNav.stories.tsx`), not gathered in a separate folder.
+
 ## Data Fetching Native Fetch Client Setup (`libs/shared/api`)
 
 - Do NOT use Axios, and do NOT call `fetch` directly from feature code. `customFetch` in
