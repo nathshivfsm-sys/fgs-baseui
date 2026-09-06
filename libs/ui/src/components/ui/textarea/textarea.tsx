@@ -3,6 +3,7 @@ import type { ChangeEvent, ComponentProps, ReactNode } from 'react';
 import { useId, useState } from 'react';
 import { cn } from '../../../lib/cn';
 import { Field } from '../field';
+import { BodySmall } from '../typography';
 
 const textareaVariants = cva(
   'w-full min-w-60 resize-y rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
@@ -117,15 +118,16 @@ export function Textarea({
         {...props}
       />
       {showCount && (
-        <p
+        <BodySmall
           aria-live="polite"
           // Figma specifies #9CA3AF here, which fails WCAG AA on the card
           // surface; using the slightly darker table-foreground token instead.
-          className="text-caption leading-4 text-foreground-subtle text-right"
+          className="text-right text-caption leading-4"
+          color="foreground-subtle"
           id={countId}
         >
           {maxLength == null ? length : `${length}/${maxLength}`}
-        </p>
+        </BodySmall>
       )}
     </Field>
   );

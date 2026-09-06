@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { ChevronRightIcon } from '../../../icons';
 import { cn } from '../../../lib/cn';
 import { cardSurfaceVariants } from '../card';
+import { Body, BodySmall } from '../typography';
 
 // 60px icon tile from Figma node 70:231. Previously `--spacing-setting-icon`;
 // spacing is now Tailwind's numeric scale, so 60px is `size-15`.
@@ -76,13 +77,16 @@ export function SettingCard({
           {icon}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-body font-bold leading-snug text-heading">
+          <Body bold className="leading-snug" color="heading" truncationEnabled>
             {title}
-          </p>
+          </Body>
           {description != null && (
-            <p className="mt-1 line-clamp-2 text-caption text-foreground-subtle">
+            <BodySmall
+              className="mt-1 line-clamp-2 text-caption"
+              color="foreground-subtle"
+            >
               {description}
-            </p>
+            </BodySmall>
           )}
         </div>
       </div>

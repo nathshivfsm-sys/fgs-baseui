@@ -1,4 +1,5 @@
 import { AuthProvider, DEMO_SESSION, type AuthSession } from '@cms/shared-auth';
+import { Body } from '@cms/ui';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { expect, within } from 'storybook/test';
@@ -23,7 +24,7 @@ function InvoiceRoutes({
       <AuthProvider initialSession={session}>
         <Routes>
           <Route path="/invoice/*" element={<InvoiceApp />} />
-          <Route path="/login" element={<p>Login screen (shell)</p>} />
+          <Route path="/login" element={<Body>Login screen (shell)</Body>} />
         </Routes>
       </AuthProvider>
     </MemoryRouter>

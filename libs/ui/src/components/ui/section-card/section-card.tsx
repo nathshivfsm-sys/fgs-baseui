@@ -2,6 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 import { cn } from '../../../lib/cn';
 import { cardSurfaceVariants } from '../card';
+import { Heading2, Heading3 } from '../typography';
 
 const sectionCardVariants = cva('', {
   variants: {
@@ -95,12 +96,16 @@ const sectionTitleVariants = cva('m-0 font-semibold text-surface-foreground', {
 });
 
 export interface SectionTitleProps
-  extends ComponentProps<'h2'>,
+  extends Omit<ComponentProps<'h2'>, 'color'>,
     VariantProps<typeof sectionTitleVariants> {}
 
 export function SectionTitle({ className, size, ...props }: SectionTitleProps) {
   return (
-    <h2 className={cn(sectionTitleVariants({ size }), className)} {...props} />
+    <Heading2
+      className={cn(sectionTitleVariants({ size }), className)}
+      color="surface-foreground"
+      {...props}
+    />
   );
 }
 
@@ -111,13 +116,14 @@ export function SectionTitle({ className, size, ...props }: SectionTitleProps) {
 export function SectionSubheading({
   className,
   ...props
-}: ComponentProps<'h3'>) {
+}: Omit<ComponentProps<'h3'>, 'color'>) {
   return (
-    <h3
+    <Heading3
       className={cn(
-        'm-0 text-caption font-medium uppercase leading-4 tracking-section text-heading',
+        'text-caption font-medium leading-4 tracking-section',
         className,
       )}
+      isUpperCase
       {...props}
     />
   );
