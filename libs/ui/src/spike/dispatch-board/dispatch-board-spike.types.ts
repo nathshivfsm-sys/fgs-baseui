@@ -12,11 +12,19 @@ export interface SpikeTechnician {
   readonly initials: string;
   readonly region: string;
   readonly trade: string;
+  readonly tone: SpikeCardTone;
   readonly scheduledHours: number;
   readonly availableHours: number;
 }
 
 export type SpikePriority = 'High' | 'Medium' | 'Low';
+export type SpikeCardTone =
+  | 'blue'
+  | 'green'
+  | 'amber'
+  | 'violet'
+  | 'cyan'
+  | 'rose';
 
 export interface SpikeWorkOrder {
   readonly id: string;
@@ -26,6 +34,8 @@ export interface SpikeWorkOrder {
   readonly trade: string;
   readonly priority: SpikePriority;
   readonly estimatedMinutes: number;
+  /** Human-readable requested window shown while the order is unassigned. */
+  readonly requestedWindow?: string;
   /** null means the work order sits in the unassigned queue. */
   readonly technicianId: string | null;
   /** Local ISO datetime, e.g. '2025-05-12T08:00:00'. null while unassigned. */

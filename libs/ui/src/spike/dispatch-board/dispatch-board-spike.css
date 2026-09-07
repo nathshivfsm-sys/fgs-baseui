@@ -7,6 +7,20 @@
  */
 
 .spike-board {
+  /* FullCalendar is plain CSS, so bridge FieldPro's raw semantic tokens here.
+     Tailwind's `--color-*` theme values are inlined and are not all emitted as
+     runtime custom properties. */
+  --color-card: var(--surface);
+  --color-card-foreground: var(--surface-foreground);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-component: var(--input);
+  --color-background: var(--background);
+  --color-heading: var(--heading);
+  --color-muted: var(--surface-sunken);
+  --color-muted-foreground: var(--foreground-muted);
+  --color-popover: var(--surface-raised);
+  --color-popover-foreground: var(--surface-raised-foreground);
   --fc-monarch-background: var(--color-card);
   --fc-monarch-foreground: var(--color-card-foreground);
   --fc-monarch-border: var(--color-border);
@@ -25,54 +39,426 @@
   --fc-monarch-ring-color: var(--color-ring);
   --fc-monarch-popover: var(--color-popover);
   --fc-monarch-popover-foreground: var(--color-popover-foreground);
+  --spike-blue: oklch(0.58 0.17 255);
+  --spike-green: oklch(0.58 0.14 150);
+  --spike-amber: oklch(0.68 0.15 75);
+  --spike-violet: oklch(0.59 0.17 300);
+  --spike-cyan: oklch(0.64 0.11 215);
+  --spike-rose: oklch(0.62 0.16 355);
+  padding: 16px;
+  background: var(--color-surface-subtle);
 }
 
-/* Work-order card inside an event block. Progressive disclosure by container
-   query, so no ResizeObserver runs during a drag. */
-.spike-event {
-  container-type: inline-size;
-  min-inline-size: 56px;
-  block-size: 100%;
+.spike-board__workspace {
+  display: grid;
+  grid-template-columns: 272px minmax(760px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.spike-queue,
+.spike-calendar {
   overflow: hidden;
-  padding: 2px 6px;
-  border-left: 3px solid var(--spike-tone, currentColor);
-  /* Text sits on FullCalendar's event fill, so it must use the event's own
-     contrast colour. Using a page foreground token here gives 1.6:1. */
-  color: var(--fc-event-contrast-color, var(--color-primary-foreground));
-  line-height: 1.25;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
 }
 
-.spike-event__id {
+.spike-queue {
+  padding: 12px 10px;
+}
+
+.spike-queue__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 2px 10px;
+}
+
+.spike-queue__heading h3 {
+  color: var(--color-heading);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.spike-queue__heading p {
+  margin-top: 2px;
+  color: var(--color-muted-foreground);
+  font-size: 10px;
+}
+
+.spike-queue__heading button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-foreground);
+  background: var(--color-card);
+}
+
+.spike-queue__heading button:hover {
+  background: var(--color-muted);
+}
+
+.spike-queue__chips,
+.spike-queue__tabs {
+  display: flex;
+  align-items: center;
+}
+
+.spike-queue__chips {
+  gap: 6px;
+  padding: 0 2px 9px;
+}
+
+.spike-queue__chips span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: var(--color-foreground);
+  background: var(--color-muted);
+  font-size: 9px;
   font-weight: 600;
   white-space: nowrap;
 }
 
+.spike-queue__chips b,
+.spike-queue__tabs b {
+  display: inline-grid;
+  min-width: 14px;
+  height: 14px;
+  margin-left: 2px;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-foreground) 9%, transparent);
+  font-size: 8px;
+}
+
+.spike-queue__tabs {
+  gap: 18px;
+  margin-bottom: 10px;
+  padding: 0 5px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-muted-foreground);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.spike-queue__tabs span {
+  position: relative;
+  padding: 2px 0 9px;
+}
+
+.spike-queue__tabs .is-active {
+  color: var(--color-link);
+}
+
+.spike-queue__tabs .is-active::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  content: '';
+}
+
+.spike-queue__list {
+  display: flex;
+  max-height: 482px;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 1px 2px 2px;
+}
+
+.spike-queue-card {
+  padding: 9px 10px;
+  cursor: grab;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  box-shadow: 0 1px 2px
+    color-mix(in oklab, var(--color-foreground) 6%, transparent);
+  color: var(--color-foreground);
+  font-size: 10px;
+}
+
+.spike-queue-card:hover {
+  border-color: var(--color-border-component);
+  box-shadow: 0 4px 12px
+    color-mix(in oklab, var(--color-foreground) 10%, transparent);
+}
+
+.spike-queue-card:active {
+  cursor: grabbing;
+}
+
+.spike-queue-card__top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.spike-queue-card__handle {
+  color: var(--color-muted-foreground);
+}
+
+.spike-queue-card__id {
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+.spike-queue-card__priority {
+  margin-left: 2px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.spike-queue-card[data-priority='high'] .spike-queue-card__priority {
+  color: var(--color-destructive-strong);
+  background: color-mix(
+    in oklab,
+    var(--color-destructive) 14%,
+    var(--color-card)
+  );
+}
+
+.spike-queue-card[data-priority='medium'] .spike-queue-card__priority {
+  color: var(--color-warning-foreground);
+  background: color-mix(in oklab, var(--color-warning) 18%, var(--color-card));
+}
+
+.spike-queue-card[data-priority='low'] .spike-queue-card__priority {
+  color: var(--color-success-strong);
+  background: color-mix(in oklab, var(--color-success) 14%, var(--color-card));
+}
+
+.spike-queue-card strong,
+.spike-queue-card__detail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spike-queue-card strong {
+  margin-bottom: 3px;
+  color: var(--color-heading);
+  font-size: 11px;
+}
+
+.spike-queue-card__detail {
+  margin-top: 2px;
+  color: var(--color-muted-foreground);
+}
+
+.spike-queue-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+
+.spike-calendar {
+  min-width: 0;
+}
+
+.spike-calendar .fc .fc-scrollgrid {
+  border: 0;
+}
+
+.spike-calendar .fc .fc-timeline-slot-cushion,
+.spike-calendar .fc .fc-datagrid-cell-main {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.spike-calendar .fc .fc-datagrid-cell-frame,
+.spike-calendar .fc .fc-timeline-lane-frame {
+  min-height: 66px;
+}
+
+.spike-calendar .fc .fc-timeline-header-row:last-child {
+  background: var(--color-surface-subtle);
+}
+
+.spike-technician {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 58px;
+  padding: 4px;
+}
+
+.spike-technician__avatar {
+  position: relative;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2px solid
+    color-mix(in oklab, var(--spike-tone) 22%, var(--color-card));
+  border-radius: 999px;
+  color: var(--spike-tone);
+  background: color-mix(in oklab, var(--spike-tone) 12%, var(--color-card));
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.spike-technician__status {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--color-card);
+  border-radius: 999px;
+  background: var(--color-success);
+}
+
+.spike-technician__details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+  color: var(--color-muted-foreground);
+  font-size: 9px;
+}
+
+.spike-technician__details strong {
+  overflow: hidden;
+  color: var(--color-heading);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spike-technician__details .is-over-capacity {
+  color: var(--color-destructive);
+}
+
+/* Work-order card inside an event block. Progressive disclosure stays based on
+   container width, so dragging does not require a ResizeObserver. */
+.spike-calendar .spike-event-shell {
+  min-height: 54px;
+  margin-block: 5px;
+  border-color: color-mix(
+    in oklab,
+    var(--spike-tone) 32%,
+    var(--color-border)
+  ) !important;
+  border-radius: 6px;
+  background-color: color-mix(
+    in oklab,
+    var(--spike-tone) 13%,
+    var(--color-card)
+  ) !important;
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--spike-tone) 12%, transparent);
+  color: var(--color-foreground) !important;
+}
+
+.spike-event-shell--blue,
+[data-tone='blue'] {
+  --spike-tone: var(--spike-blue);
+}
+
+.spike-event-shell--green,
+[data-tone='green'] {
+  --spike-tone: var(--spike-green);
+}
+
+.spike-event-shell--amber,
+[data-tone='amber'] {
+  --spike-tone: var(--spike-amber);
+}
+
+.spike-event-shell--violet,
+[data-tone='violet'] {
+  --spike-tone: var(--spike-violet);
+}
+
+.spike-event-shell--cyan,
+[data-tone='cyan'] {
+  --spike-tone: var(--spike-cyan);
+}
+
+.spike-event-shell--rose,
+[data-tone='rose'] {
+  --spike-tone: var(--spike-rose);
+}
+
+.spike-event {
+  container-type: inline-size;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: 100%;
+  flex: 1;
+  overflow: hidden;
+  padding: 6px 8px;
+  border-left: 3px solid var(--spike-tone);
+  color: var(--color-foreground);
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.spike-event__top,
+.spike-event__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.spike-event__top {
+  color: color-mix(in oklab, var(--spike-tone) 78%, var(--color-heading));
+  font-size: 9px;
+  font-weight: 700;
+}
+
 .spike-event__title,
+.spike-event__customer,
 .spike-event__street,
-.spike-event__times {
+.spike-event__bottom {
   display: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-@container (min-width: 120px) {
-  .spike-event__times {
-    display: flex;
-    justify-content: space-between;
-    gap: 4px;
-  }
-}
-
-@container (min-width: 200px) {
+@container (min-width: 92px) {
   .spike-event__title {
     display: block;
+    margin-top: 3px;
+    color: var(--color-heading);
+    font-size: 10px;
+    font-weight: 700;
   }
 }
 
-@container (min-width: 320px) {
-  .spike-event__street {
+@container (min-width: 138px) {
+  .spike-event__bottom {
+    display: flex;
+    margin-top: 3px;
+    color: var(--color-muted-foreground);
+  }
+}
+
+@container (min-width: 225px) {
+  .spike-event__customer {
     display: block;
+    margin-top: 2px;
+    color: var(--color-muted-foreground);
   }
 }
 
@@ -82,10 +468,12 @@
   outline-offset: -2px;
 }
 
-.spike-queue-card {
-  cursor: grab;
-}
+@media (max-width: 900px) {
+  .spike-board {
+    padding: 10px;
+  }
 
-.spike-queue-card:active {
-  cursor: grabbing;
+  .spike-board__workspace {
+    grid-template-columns: 248px minmax(720px, 1fr);
+  }
 }

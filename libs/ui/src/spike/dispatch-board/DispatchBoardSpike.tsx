@@ -15,7 +15,6 @@
  * off the screen instead of inferred.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
 import 'temporal-polyfill/global';
 import FullCalendar from '@fullcalendar/react';
 import themePlugin from '@fullcalendar/react/themes/monarch';
@@ -41,12 +40,6 @@ import type {
 /** Evaluation key published by FullCalendar for non-commercial trial use. */
 const EVALUATION_LICENSE_KEY = 'CC-Attribution-NonCommercial-NoDerivatives';
 
-const TRADE_TONE: Record<string, string> = {
-  HVAC: 'var(--color-metric-blue)',
-  Electrical: 'var(--color-warning)',
-  Plumbing: 'var(--color-success)',
-};
-
 export interface DispatchBoardSpikeProps {
   readonly technicians?: readonly SpikeTechnician[];
   readonly workOrders?: readonly SpikeWorkOrder[];
@@ -63,6 +56,14 @@ const timeLabel = (iso: string | null): string =>
         hour: 'numeric',
         minute: '2-digit',
       });
+
+const durationLabel = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  if (hours === 0) return `${remainder}m`;
+  if (remainder === 0) return `${hours}h`;
+  return `${hours}h ${remainder}m`;
+};
 
 export function DispatchBoardSpike({
   technicians = SPIKE_TECHNICIANS,
@@ -199,43 +200,76 @@ export function DispatchBoardSpike({
         </p>
       </header>
 
-      <div className="flex gap-3">
+      <div className="spike-board__workspace">
         {/* ---- unassigned queue: drag source ---- */}
         <aside
           ref={queueRef}
           aria-label="Unassigned work orders"
-          className="w-60 shrink-0 rounded-card border border-border bg-card p-2"
+          className="spike-queue"
         >
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Unassigned ({queue.length})
-          </h3>
-          <ul className="flex flex-col gap-2">
+          <div className="spike-queue__heading">
+            <div>
+              <h3>Unassigned Work Orders</h3>
+              <p>{queue.length} orders waiting for assignment</p>
+            </div>
+            <button type="button" aria-label="Filter unassigned work orders">
+              <span aria-hidden="true">⌄</span>
+            </button>
+          </div>
+
+          <div className="spike-queue__chips" aria-label="Work order types">
+            <span>
+              PO Req. <b>4</b>
+            </span>
+            <span>
+              PO Rec. <b>2</b>
+            </span>
+            <span>
+              Lead <b>3</b>
+            </span>
+          </div>
+
+          <div className="spike-queue__tabs" aria-label="Requested date">
+            <span>
+              Past <b>2</b>
+            </span>
+            <span className="is-active">
+              Today <b>3</b>
+            </span>
+            <span>
+              Future <b>1</b>
+            </span>
+          </div>
+
+          <ul className="spike-queue__list">
             {queue.map((o) => (
               <li key={o.id}>
-                <div
+                <article
                   data-spike-wo={o.id}
-                  className="spike-queue-card rounded-md border border-border-soft bg-background p-2 text-xs"
-                  style={{
-                    borderLeft: `3px solid ${TRADE_TONE[o.trade] ?? 'var(--color-border)'}`,
-                  }}
+                  data-priority={o.priority.toLowerCase()}
+                  data-trade={o.trade.toLowerCase()}
+                  className="spike-queue-card"
                 >
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="font-semibold text-link">{o.id}</span>
-                    <span className="rounded-xs bg-muted px-1 text-[10px] text-foreground">
+                  <div className="spike-queue-card__top">
+                    <span
+                      className="spike-queue-card__handle"
+                      aria-hidden="true"
+                    >
+                      ⠿
+                    </span>
+                    <span className="spike-queue-card__id">{o.id}</span>
+                    <span className="spike-queue-card__priority">
                       {o.priority}
                     </span>
                   </div>
-                  <div className="truncate text-foreground">{o.title}</div>
-                  <div className="truncate text-muted-foreground">
-                    {o.customer}
+                  <strong>{o.customer}</strong>
+                  <span className="spike-queue-card__detail">{o.street}</span>
+                  <span className="spike-queue-card__detail">{o.title}</span>
+                  <div className="spike-queue-card__footer">
+                    <span>{o.requestedWindow ?? 'Schedule pending'}</span>
+                    <span>{durationLabel(o.estimatedMinutes)}</span>
                   </div>
-                  <div className="truncate text-muted-foreground">
-                    {o.street}
-                  </div>
-                  <div className="mt-1 text-[11px] text-foreground">
-                    {o.trade} · {o.estimatedMinutes / 60}h
-                  </div>
-                </div>
+                </article>
               </li>
             ))}
             {queue.length === 0 && (
@@ -247,7 +281,7 @@ export function DispatchBoardSpike({
         </aside>
 
         {/* ---- the board ---- */}
-        <div className="min-w-0 flex-1 rounded-card border border-border bg-card">
+        <div className="spike-calendar">
           <FullCalendar
             schedulerLicenseKey={EVALUATION_LICENSE_KEY}
             plugins={[themePlugin, resourceTimelinePlugin, interactionPlugin]}
@@ -268,7 +302,7 @@ export function DispatchBoardSpike({
             droppable
             resources={resources}
             events={events}
-            resourceColumnsWidth={220}
+            resourceColumnsWidth={190}
             resourceColumns={[
               {
                 field: 'title',
@@ -280,23 +314,21 @@ export function DispatchBoardSpike({
                   if (t === undefined) return null;
                   const over = t.scheduledHours > t.availableHours;
                   return (
-                    <div className="flex items-center gap-2 py-1">
+                    <div className="spike-technician" data-tone={t.tone}>
                       <span
+                        className="spike-technician__avatar"
                         aria-hidden="true"
-                        className="grid size-7 shrink-0 place-items-center rounded-full bg-avatar-fallback text-[10px] font-semibold text-avatar-fallback-foreground"
                       >
                         {t.initials}
+                        <span className="spike-technician__status" />
                       </span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-xs font-medium text-foreground">
-                          {t.name}
+                      <span className="spike-technician__details">
+                        <strong>{t.name}</strong>
+                        <span>
+                          {t.region} · {t.trade}
                         </span>
-                        <span className="block truncate text-[10px] text-muted-foreground">
-                          {t.region} | {t.trade}
-                        </span>
-                        <span className="block text-[10px] text-muted-foreground">
+                        <span className={over ? 'is-over-capacity' : undefined}>
                           {t.scheduledHours} / {t.availableHours} hrs
-                          {over ? ' · over capacity' : ''}
                         </span>
                       </span>
                     </div>
@@ -304,6 +336,16 @@ export function DispatchBoardSpike({
                 },
               },
             ]}
+            eventClass={(arg: {
+              event: { extendedProps: { order?: SpikeWorkOrder } };
+            }) => {
+              const technicianId = arg.event.extendedProps.order?.technicianId;
+              const tone =
+                technicianId === null || technicianId === undefined
+                  ? 'blue'
+                  : (techById.get(technicianId)?.tone ?? 'blue');
+              return `spike-event-shell spike-event-shell--${tone}`;
+            }}
             eventContent={(arg: {
               event: {
                 id: string;
@@ -322,34 +364,27 @@ export function DispatchBoardSpike({
                 hour: 'numeric',
                 minute: '2-digit',
               });
+              const tone =
+                o?.technicianId === null || o?.technicianId === undefined
+                  ? 'blue'
+                  : (techById.get(o.technicianId)?.tone ?? 'blue');
               return (
-                <div
-                  className="spike-event text-[11px]"
-                  style={
-                    {
-                      '--spike-tone':
-                        TRADE_TONE[o?.trade ?? ''] ?? 'currentColor',
-                    } as CSSProperties
-                  }
-                >
+                <article className="spike-event" data-tone={tone}>
                   <span className="sr-only">
                     {arg.event.id} {o?.title} for {o?.customer} at {o?.street},{' '}
                     {start} to {end}
                   </span>
-                  <span className="spike-event__id block">
-                    {arg.event.id}
-                  </span>
-                  <span className="spike-event__title">
-                    {o?.title}
-                  </span>
-                  <span className="spike-event__street opacity-80">
-                    {o?.street}
-                  </span>
-                  <span className="spike-event__times opacity-80">
+                  <div className="spike-event__top">
+                    <strong>{arg.event.id}</strong>
                     <span>{start}</span>
+                  </div>
+                  <span className="spike-event__title">{o?.title}</span>
+                  <span className="spike-event__customer">{o?.customer}</span>
+                  <div className="spike-event__bottom">
+                    <span>{o?.street}</span>
                     <span>{end}</span>
-                  </span>
-                </div>
+                  </div>
+                </article>
               );
             }}
             eventAllow={eventAllow}

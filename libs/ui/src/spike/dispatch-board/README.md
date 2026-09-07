@@ -25,19 +25,19 @@ pnpm run storybook # then open Spikes/Dispatch Board
 
 ## What it proves (or disproves)
 
-| Question | Where to look |
-| --- | --- |
-| Technicians as rows on an hour axis | `Default` story |
-| Drag between rows → reassign | drag an event vertically; read the gesture log |
-| Drag along the axis → reschedule | drag an event horizontally |
-| Resize → duration change | drag an event edge |
-| Drag in from an outside list → assign | drag a queue card onto a row |
-| Synchronous pre-drop veto | `Default` refuses a trade mismatch; `WithoutTradeMatching` allows it |
-| Custom event card rendering | multi-line card, fields appear by container width |
-| Custom row header rendering | avatar, name, `Region \| Trade`, hours |
-| Theming from FieldPro tokens | `dispatch-board-spike.css` maps `--fc-monarch-*`; toggle Storybook's light/dark |
-| Row volume | `Volume50/100/200Technicians` |
-| Accessibility baseline | a11y panel; `test` is `todo` here, not `error` |
+| Question                              | Where to look                                                                                             |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Technicians as rows on an hour axis   | `Default` story                                                                                           |
+| Drag between rows → reassign          | drag an event vertically; read the gesture log                                                            |
+| Drag along the axis → reschedule      | drag an event horizontally                                                                                |
+| Resize → duration change              | drag an event edge                                                                                        |
+| Drag in from an outside list → assign | drag a queue card onto a row                                                                              |
+| Synchronous pre-drop veto             | `Default` refuses a trade mismatch; `WithoutTradeMatching` allows it                                      |
+| Custom event card rendering           | responsive ID, service, address, customer, and start/end details                                          |
+| Custom row header rendering           | tone-matched avatar, availability status, name, `Region \| Trade`, hours                                  |
+| Theming from FieldPro tokens          | pastel row color families bridge the raw semantic tokens into FullCalendar; toggle Storybook's light/dark |
+| Row volume                            | `Volume50/100/200Technicians`                                                                             |
+| Accessibility baseline                | a11y panel; `test` is `todo` here, not `error`                                                            |
 
 ## Licence
 
