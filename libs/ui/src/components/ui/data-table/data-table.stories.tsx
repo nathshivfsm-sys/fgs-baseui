@@ -3,6 +3,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { LocationPinIcon, PhoneIcon } from '../../../icons';
 import { Button } from '../button';
+import { Body, BodySmall, Heading1, Heading2 } from '../typography';
 import {
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -284,13 +285,19 @@ function FullPageFrame({ children }: { children: ReactNode }) {
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-5">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-caption font-semibold tracking-wide text-primary uppercase">
+            <BodySmall
+              className="text-caption font-semibold tracking-wide"
+              color="primary"
+              isUpperCase
+            >
               Operations
-            </p>
-            <h1 className="text-2xl font-bold text-heading">Locations</h1>
-            <p className="mt-1 text-control text-foreground-muted">
+            </BodySmall>
+            <Heading1 bold className="text-2xl">
+              Locations
+            </Heading1>
+            <BodySmall className="mt-1" color="foreground-muted">
               Manage service locations and their assigned business units.
-            </p>
+            </BodySmall>
           </div>
           <Button>Add location</Button>
         </header>
@@ -343,10 +350,10 @@ export const EmbeddedLayout: Story = {
   render: (args) => (
     <section className="mx-auto flex max-w-5xl flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold text-heading">Recent locations</h2>
-        <p className="text-foreground-muted">
+        <Heading2 className="text-lg">Recent locations</Heading2>
+        <Body color="foreground-muted">
           The six most recently updated locations.
-        </p>
+        </Body>
       </div>
       <LocationsTable {...args} />
     </section>
@@ -407,10 +414,12 @@ export const ErrorLayout: Story = {
     errorState: (
       <div className="flex flex-col items-center gap-3">
         <div>
-          <p className="font-semibold text-heading">Locations unavailable</p>
-          <p className="mt-1 text-foreground-muted">
+          <Body className="font-semibold" color="heading">
+            Locations unavailable
+          </Body>
+          <Body className="mt-1" color="foreground-muted">
             Check your connection and try again.
-          </p>
+          </Body>
         </div>
         <Button size="sm" variant="outline">
           Try again

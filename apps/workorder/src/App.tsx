@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
-import { BriefcaseIcon, Button, SectionCard } from '@cms/ui';
+import {
+  BodySmall,
+  BriefcaseIcon,
+  Button,
+  Heading2,
+  SectionCard,
+} from '@cms/ui';
 import {
   loadWorkorders,
   workorderKeys,
@@ -42,15 +48,15 @@ export function App({
       <section className="space-y-4" data-testid="workorder">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-foreground-muted">Maintenance</p>
-            <h2 className="flex items-center gap-2 text-2xl font-bold">
+            <BodySmall color="foreground-muted">Maintenance</BodySmall>
+            <Heading2 bold className="flex items-center gap-2 text-2xl">
               <BriefcaseIcon className="size-6 text-primary" /> Work orders
-            </h2>
-            <p className="text-xs text-foreground-muted">
+            </Heading2>
+            <BodySmall className="text-caption" color="foreground-muted">
               Global tenant: {runtime.tenantId} · User:{' '}
               {runtime.currentUser.displayName} ({runtime.currentUser.role}) ·
               Work-order-local view: {viewDensity}
-            </p>
+            </BodySmall>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Button
@@ -78,15 +84,15 @@ export function App({
         </div>
         <div className="grid gap-3">
           {query.isPending ? (
-            <p role="status">Loading work orders…</p>
+            <BodySmall role="status">Loading work orders…</BodySmall>
           ) : query.isError ? (
-            <p className="text-sm text-destructive" role="alert">
+            <BodySmall color="destructive" role="alert">
               Unable to load work orders: {query.error.message}
-            </p>
+            </BodySmall>
           ) : query.data.length === 0 ? (
-            <p className="text-sm text-foreground-muted">
+            <BodySmall color="foreground-muted">
               No work orders found.
-            </p>
+            </BodySmall>
           ) : (
             query.data.map((item: Workorder) => (
               <SectionCard className={cardPadding} key={item.id}>
@@ -94,9 +100,9 @@ export function App({
                   <strong>{item.id}</strong>
                   <span className="text-sm text-primary">{item.status}</span>
                 </div>
-                <p className="mt-2 text-sm text-foreground-muted">
+                <BodySmall className="mt-2" color="foreground-muted">
                   {item.title}
-                </p>
+                </BodySmall>
               </SectionCard>
             ))
           )}

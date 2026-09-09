@@ -23,7 +23,18 @@ export default defineConfig({
           storybookTest({ configDir: path.join(dirname, '.storybook') }),
         ],
         optimizeDeps: {
-          include: ['@tanstack/react-query', 'zustand', 'zustand/vanilla'],
+          include: [
+            '@tanstack/react-query',
+            'zustand',
+            'zustand/vanilla',
+            // dispatch-board spike (libs/ui/src/spike) — pre-bundle so the
+            // optimizer does not reload mid-run and fail the story tests
+            '@fullcalendar/react',
+            '@fullcalendar/react/interaction',
+            '@fullcalendar/react/themes/monarch',
+            '@fullcalendar/react-scheduler/resource-timeline',
+            'temporal-polyfill/global',
+          ],
         },
         test: {
           name: 'storybook',

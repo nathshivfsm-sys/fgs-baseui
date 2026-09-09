@@ -1,7 +1,15 @@
+import type { UserDetails } from '@cms/platform-contract';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
-import { MOCK_CURRENT_USER } from '../store/constants';
 import { TopNav } from './TopNav';
+
+/** Story-only identity. `avatarUrl` is omitted so the initials ("AM") show by default. */
+const MOCK_CURRENT_USER: UserDetails = {
+  id: 'user-1',
+  displayName: 'Alex Morgan',
+  email: 'alex.morgan@northwind.example',
+  role: 'Dispatcher',
+};
 
 /** Inline so the story never depends on the network for its avatar. */
 const AVATAR_DATA_URI =
@@ -14,8 +22,10 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   args: {
     currentUser: MOCK_CURRENT_USER,
+    onLogout: fn(),
     onOpenMobileSidebar: fn(),
     tenantId: 'northwind',
+    collapsed: false,
   },
 } satisfies Meta<typeof TopNav>;
 export default meta;

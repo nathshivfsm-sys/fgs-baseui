@@ -1,5 +1,5 @@
 import { useAuth } from '@cms/shared-auth';
-import { SectionCard } from '@cms/ui';
+import { BodySmall, Heading1, SectionCard } from '@cms/ui';
 import { Link } from 'react-router-dom';
 
 // Links are route-relative on purpose: the same table resolves to /invoice/... under the
@@ -17,10 +17,10 @@ export function InvoiceListPage() {
   // supplies them, so this remote stays aligned with every other one.
   return (
     <SectionCard>
-      <h1 className="text-title font-bold text-heading">Invoices</h1>
-      <p className="mt-1 text-control text-foreground-muted">
+      <Heading1 bold>Invoices</Heading1>
+      <BodySmall className="mt-1" color="foreground-muted">
         Signed in as {user?.displayName}
-      </p>
+      </BodySmall>
 
       <ul className="mt-4 flex flex-col divide-y divide-divider">
         {INVOICES.map((invoice) => (

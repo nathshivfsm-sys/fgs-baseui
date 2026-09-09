@@ -1,4 +1,4 @@
-import { Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
+import { BodySmall, Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
 import { NavLink, useMatch } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from './nav-config';
 import styles from './Sidebar.module.css';
@@ -48,7 +48,9 @@ function SidebarNavLink({
           isActive ? 'text-primary' : 'text-foreground-subtle',
         )}
       />
-      {showText && <span className={!collapsed ? 'truncate' : ''}>{item.label}</span>}
+      {showText && (
+        <span className={!collapsed ? 'truncate' : ''}>{item.label}</span>
+      )}
     </NavLink>
   );
 }
@@ -129,9 +131,13 @@ export function Sidebar({
             key={section.label}
           >
             {!collapsed && (
-              <p className="px-3 py-1.5 text-caption font-semibold uppercase tracking-section text-foreground-subtle">
+              <BodySmall
+                className="px-3 py-1.5 text-caption font-semibold tracking-section"
+                color="foreground-subtle"
+                isUpperCase
+              >
                 {section.label}
-              </p>
+              </BodySmall>
             )}
             {section.items.map((item) => (
               <SidebarNavLink
@@ -161,7 +167,7 @@ export function Sidebar({
               title={iconOnly ? 'Show text labels' : 'Hide text labels'}
               type="button"
             >
-              <span className="text-xs">{iconOnly ? '' : ''}</span>
+              <span className="text-xs">{iconOnly ? 'A' : 'A'}</span>
             </button>
           )}
           <button

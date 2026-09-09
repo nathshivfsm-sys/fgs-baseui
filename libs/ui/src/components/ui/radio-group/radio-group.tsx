@@ -4,6 +4,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useId } from 'react';
 import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
+import { BodySmall } from '../typography';
 
 export interface RadioGroupProps
   extends Omit<
@@ -111,7 +112,7 @@ export function RadioGroupField({
         </div>
       )}
       {description != null && (
-        <p className="text-control text-input-foreground">{description}</p>
+        <BodySmall color="input-foreground">{description}</BodySmall>
       )}
       <RadioGroup
         aria-describedby={describedBy}
@@ -151,18 +152,14 @@ export function RadioGroupField({
         })}
       </RadioGroup>
       {error != null ? (
-        <p
-          className="text-control text-destructive"
-          id={messageId}
-          role="alert"
-        >
+        <BodySmall color="destructive" id={messageId} role="alert">
           {error}
-        </p>
+        </BodySmall>
       ) : (
         helperText != null && (
-          <p className="text-control text-input-foreground" id={messageId}>
+          <BodySmall color="input-foreground" id={messageId}>
             {helperText}
-          </p>
+          </BodySmall>
         )
       )}
     </div>

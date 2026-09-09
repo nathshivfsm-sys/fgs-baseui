@@ -4,6 +4,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { useId } from 'react';
 import type { StringClassName } from '../../../lib/class-name';
 import { cn } from '../../../lib/cn';
+import { BodySmall } from '../typography';
 
 // The checked fill uses `success-strong`, not `success`. WCAG 1.4.11 wants 3:1
 // for a control's boundary and for the fill that conveys its state, and the
@@ -112,18 +113,14 @@ export function SwitchField({
         )}
       </div>
       {error != null ? (
-        <p
-          className="text-control text-destructive"
-          id={messageId}
-          role="alert"
-        >
+        <BodySmall color="destructive" id={messageId} role="alert">
           {error}
-        </p>
+        </BodySmall>
       ) : (
         (helperText ?? description) != null && (
-          <p className="text-control text-input-foreground" id={messageId}>
+          <BodySmall color="input-foreground" id={messageId}>
             {helperText ?? description}
-          </p>
+          </BodySmall>
         )
       )}
     </div>
