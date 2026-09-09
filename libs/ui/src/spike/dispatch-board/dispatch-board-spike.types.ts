@@ -43,6 +43,18 @@ export interface SpikeWorkOrder {
   readonly end: string | null;
 }
 
+export interface SpikeWorkerDaySummary {
+  readonly technicianId: string;
+  readonly date: string;
+  readonly totalCalls: number;
+  readonly serviceCalls: number;
+  readonly maintenanceCalls: number;
+  readonly warrantyCalls: number;
+  readonly installationCalls: number;
+  /** Call counts for 8–12, 12–4, and 4–8 promised windows. */
+  readonly promisedWindowCalls: readonly [number, number, number];
+}
+
 /** The five gestures the real spec normalises to. The spike proves four of them. */
 export type SpikeGestureKind = 'assign' | 'reassign' | 'reschedule' | 'resize';
 

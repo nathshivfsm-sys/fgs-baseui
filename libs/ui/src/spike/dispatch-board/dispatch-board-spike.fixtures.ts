@@ -2,12 +2,14 @@
 import type {
   SpikeTechnician,
   SpikeWorkOrder,
+  SpikeWorkerDaySummary,
 } from './dispatch-board-spike.types';
 
 /** Fixed so stories are deterministic. Monday, matching the reference design. */
 export const SPIKE_BASE_DATE = '2025-05-12';
 
-const at = (time: string): string => `${SPIKE_BASE_DATE}T${time}:00`;
+const at = (day: number, time: string): string =>
+  `2025-05-${String(day).padStart(2, '0')}T${time}:00`;
 
 export const SPIKE_TECHNICIANS: readonly SpikeTechnician[] = [
   {
@@ -92,8 +94,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-aaron',
-    start: at('08:00'),
-    end: at('10:00'),
+    start: at(12, '08:00'),
+    end: at(12, '10:00'),
   },
   {
     id: 'WO-1204',
@@ -104,8 +106,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'High',
     estimatedMinutes: 120,
     technicianId: 't-aaron',
-    start: at('11:00'),
-    end: at('13:00'),
+    start: at(14, '11:00'),
+    end: at(14, '13:00'),
   },
   {
     id: 'WO-1205',
@@ -116,8 +118,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-aaron',
-    start: at('14:00'),
-    end: at('16:00'),
+    start: at(20, '14:00'),
+    end: at(20, '16:00'),
   },
   {
     id: 'WO-1198',
@@ -128,8 +130,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Low',
     estimatedMinutes: 120,
     technicianId: 't-brad',
-    start: at('08:00'),
-    end: at('10:00'),
+    start: at(12, '08:00'),
+    end: at(12, '10:00'),
   },
   {
     id: 'WO-1199',
@@ -140,8 +142,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 90,
     technicianId: 't-brad',
-    start: at('11:00'),
-    end: at('12:30'),
+    start: at(16, '11:00'),
+    end: at(16, '12:30'),
   },
   {
     id: 'WO-1200',
@@ -152,8 +154,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-brad',
-    start: at('13:30'),
-    end: at('15:30'),
+    start: at(23, '13:30'),
+    end: at(23, '15:30'),
   },
   {
     id: 'WO-1186',
@@ -164,8 +166,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'High',
     estimatedMinutes: 120,
     technicianId: 't-carlos',
-    start: at('08:00'),
-    end: at('10:00'),
+    start: at(12, '08:00'),
+    end: at(12, '10:00'),
   },
   {
     id: 'WO-1187',
@@ -176,8 +178,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-carlos',
-    start: at('10:30'),
-    end: at('12:30'),
+    start: at(7, '10:30'),
+    end: at(7, '12:30'),
   },
   {
     id: 'WO-1188',
@@ -188,8 +190,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 180,
     technicianId: 't-carlos',
-    start: at('13:00'),
-    end: at('16:00'),
+    start: at(26, '13:00'),
+    end: at(26, '16:00'),
   },
   {
     id: 'WO-1210',
@@ -200,8 +202,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 180,
     technicianId: 't-david',
-    start: at('08:00'),
-    end: at('11:00'),
+    start: at(12, '08:00'),
+    end: at(12, '11:00'),
   },
   {
     id: 'WO-1211',
@@ -212,8 +214,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'High',
     estimatedMinutes: 120,
     technicianId: 't-david',
-    start: at('12:00'),
-    end: at('14:00'),
+    start: at(18, '12:00'),
+    end: at(18, '14:00'),
   },
   {
     id: 'WO-1212',
@@ -224,8 +226,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Low',
     estimatedMinutes: 150,
     technicianId: 't-david',
-    start: at('14:30'),
-    end: at('17:00'),
+    start: at(29, '14:30'),
+    end: at(29, '17:00'),
   },
   {
     id: 'WO-1175',
@@ -236,8 +238,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Low',
     estimatedMinutes: 60,
     technicianId: 't-emily',
-    start: at('08:30'),
-    end: at('09:30'),
+    start: at(12, '08:30'),
+    end: at(12, '09:30'),
   },
   {
     id: 'WO-1176',
@@ -248,8 +250,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-emily',
-    start: at('10:00'),
-    end: at('12:00'),
+    start: at(5, '10:00'),
+    end: at(5, '12:00'),
   },
   {
     id: 'WO-1177',
@@ -260,8 +262,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-emily',
-    start: at('13:00'),
-    end: at('15:00'),
+    start: at(21, '13:00'),
+    end: at(21, '15:00'),
   },
   {
     id: 'WO-1165',
@@ -272,8 +274,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'High',
     estimatedMinutes: 180,
     technicianId: 't-james',
-    start: at('08:00'),
-    end: at('11:00'),
+    start: at(12, '08:00'),
+    end: at(12, '11:00'),
   },
   {
     id: 'WO-1166',
@@ -284,8 +286,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-james',
-    start: at('12:00'),
-    end: at('14:00'),
+    start: at(9, '12:00'),
+    end: at(9, '14:00'),
   },
   {
     id: 'WO-1167',
@@ -296,8 +298,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'High',
     estimatedMinutes: 120,
     technicianId: 't-james',
-    start: at('14:30'),
-    end: at('16:30'),
+    start: at(27, '14:30'),
+    end: at(27, '16:30'),
   },
   {
     id: 'WO-1151',
@@ -308,8 +310,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Medium',
     estimatedMinutes: 120,
     technicianId: 't-sarah',
-    start: at('08:00'),
-    end: at('10:00'),
+    start: at(12, '08:00'),
+    end: at(12, '10:00'),
   },
   {
     id: 'WO-1152',
@@ -320,8 +322,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Low',
     estimatedMinutes: 120,
     technicianId: 't-sarah',
-    start: at('11:00'),
-    end: at('13:00'),
+    start: at(15, '11:00'),
+    end: at(15, '13:00'),
   },
   {
     id: 'WO-1153',
@@ -332,8 +334,8 @@ export const SPIKE_SCHEDULED: readonly SpikeWorkOrder[] = [
     priority: 'Low',
     estimatedMinutes: 120,
     technicianId: 't-sarah',
-    start: at('13:30'),
-    end: at('15:30'),
+    start: at(30, '13:30'),
+    end: at(30, '15:30'),
   },
 ];
 
@@ -393,10 +395,87 @@ export const SPIKE_UNASSIGNED: readonly SpikeWorkOrder[] = [
   },
 ];
 
+const COVERED_MONTH_DAYS = new Set(
+  SPIKE_SCHEDULED.map((order) => new Date(order.start as string).getDate()),
+);
+
+const MONTH_PRIORITY = ['Low', 'Medium', 'High'] as const;
+
+/** Fills dates not represented by the screenshot-derived fixtures. */
+export const SPIKE_MONTH_COVERAGE: readonly SpikeWorkOrder[] = Array.from(
+  { length: 31 },
+  (_, index) => index + 1,
+)
+  .filter((day) => !COVERED_MONTH_DAYS.has(day))
+  .map((day, index) => {
+    const technician = SPIKE_TECHNICIANS[index % SPIKE_TECHNICIANS.length];
+    const startHour = 9 + (index % 6);
+    const endHour = startHour + 1;
+    return {
+      id: `WO-13${String(day).padStart(2, '0')}`,
+      title: `${technician.trade} Service`,
+      customer: `May ${day} Customer`,
+      street: `${100 + day} Market St`,
+      trade: technician.trade,
+      priority: MONTH_PRIORITY[index % MONTH_PRIORITY.length],
+      estimatedMinutes: 60,
+      technicianId: technician.id,
+      start: at(day, `${String(startHour).padStart(2, '0')}:00`),
+      end: at(day, `${String(endHour).padStart(2, '0')}:00`),
+    };
+  });
+
 export const SPIKE_WORK_ORDERS: readonly SpikeWorkOrder[] = [
   ...SPIKE_SCHEDULED,
+  ...SPIKE_MONTH_COVERAGE,
   ...SPIKE_UNASSIGNED,
 ];
+
+/** Deterministic capacity-style summaries for the worker-based Week view. */
+export function makeWorkerWeekSummaries(
+  technicians: readonly SpikeTechnician[],
+  weekStartDate: string,
+): readonly SpikeWorkerDaySummary[] {
+  const weekDates = Array.from({ length: 7 }, (_, dayIndex) => {
+    const date = new Date(`${weekStartDate}T00:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + dayIndex);
+    return date;
+  });
+
+  return technicians.flatMap((technician, technicianIndex) =>
+    weekDates.map((date, dayIndex) => {
+      const isWeekend = date.getUTCDay() === 0 || date.getUTCDay() === 6;
+      const totalCalls = isWeekend
+        ? 0
+        : 6 + ((technicianIndex * 3 + dayIndex * 2 + date.getUTCDate()) % 9);
+      const serviceCalls =
+        totalCalls === 0 ? 0 : Math.max(1, Math.round(totalCalls * 0.35));
+      const maintenanceCalls =
+        totalCalls === 0 ? 0 : Math.max(1, Math.round(totalCalls * 0.3));
+      const warrantyCalls =
+        totalCalls === 0 ? 0 : Math.max(1, Math.round(totalCalls * 0.2));
+      const installationCalls =
+        totalCalls - serviceCalls - maintenanceCalls - warrantyCalls;
+      const morningCalls = Math.ceil(totalCalls * 0.4);
+      const afternoonCalls = Math.ceil((totalCalls - morningCalls) * 0.6);
+
+      return {
+        technicianId: technician.id,
+        date: date.toISOString().slice(0, 10),
+        totalCalls,
+        serviceCalls,
+        maintenanceCalls,
+        warrantyCalls,
+        installationCalls,
+        promisedWindowCalls: [
+          morningCalls,
+          afternoonCalls,
+          totalCalls - morningCalls - afternoonCalls,
+        ],
+      };
+    }),
+  );
+}
 
 /** Clones the roster up to `count` rows for the volume story. */
 export function makeTechnicians(count: number): readonly SpikeTechnician[] {

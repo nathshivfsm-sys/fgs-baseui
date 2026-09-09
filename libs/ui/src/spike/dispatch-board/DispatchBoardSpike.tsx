@@ -17,6 +17,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'temporal-polyfill/global';
 import FullCalendar from '@fullcalendar/react';
+import type { CalendarRef, SlotHeaderInfo } from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/react/daygrid';
 import themePlugin from '@fullcalendar/react/themes/monarch';
 import interactionPlugin, { Draggable } from '@fullcalendar/react/interaction';
 import resourceTimelinePlugin from '@fullcalendar/react-scheduler/resource-timeline';
@@ -26,6 +28,7 @@ import '@fullcalendar/react/themes/monarch/theme.css';
 import '@fullcalendar/react/themes/monarch/palettes/blue.css';
 import './dispatch-board-spike.css';
 import {
+  makeWorkerWeekSummaries,
   SPIKE_BASE_DATE,
   SPIKE_TECHNICIANS,
   SPIKE_WORK_ORDERS,
@@ -35,10 +38,12 @@ import type {
   SpikeGestureLogEntry,
   SpikeTechnician,
   SpikeWorkOrder,
+  SpikeWorkerDaySummary,
 } from './dispatch-board-spike.types';
 
 /** Evaluation key published by FullCalendar for non-commercial trial use. */
 const EVALUATION_LICENSE_KEY = 'CC-Attribution-NonCommercial-NoDerivatives';
+const SELECTED_WEEK_DATE = '2025-05-14';
 
 export interface DispatchBoardSpikeProps {
   readonly technicians?: readonly SpikeTechnician[];
@@ -65,6 +70,23 @@ const durationLabel = (minutes: number): string => {
   return `${hours}h ${remainder}m`;
 };
 
+const weekTitle = (start: Date, endExclusive: Date): string => {
+  const end = new Date(endExclusive);
+  end.setDate(end.getDate() - 1);
+  return new Intl.DateTimeFormat([], {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).formatRange(start, end);
+};
+
+const dateKey = (date: Date): string =>
+  [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-');
+
 export function DispatchBoardSpike({
   technicians = SPIKE_TECHNICIANS,
   workOrders = SPIKE_WORK_ORDERS,
@@ -74,6 +96,15 @@ export function DispatchBoardSpike({
 }: DispatchBoardSpikeProps) {
   const [orders, setOrders] = useState<readonly SpikeWorkOrder[]>(workOrders);
   const [log, setLog] = useState<readonly SpikeGestureLogEntry[]>([]);
+  const [activeView, setActiveView] = useState('resourceTimelineDay');
+  const [weekStartDate, setWeekStartDate] = useState(initialDate);
+  const [calendarTitle, setCalendarTitle] = useState(() =>
+    new Date(`${initialDate}T12:00:00`).toLocaleDateString([], {
+      month: 'long',
+      year: 'numeric',
+    }),
+  );
+  const calendarRef = useRef<CalendarRef | null>(null);
   const queueRef = useRef<HTMLDivElement | null>(null);
   const seqRef = useRef(0);
 
@@ -121,7 +152,7 @@ export function DispatchBoardSpike({
     [technicians],
   );
 
-  const events = useMemo(
+  const scheduledEvents = useMemo(
     () =>
       orders
         .filter((o) => o.technicianId !== null && o.start !== null)
@@ -135,6 +166,29 @@ export function DispatchBoardSpike({
         })),
     [orders],
   );
+
+  const weekSummaries = useMemo(
+    () => makeWorkerWeekSummaries(technicians, weekStartDate),
+    [technicians, weekStartDate],
+  );
+
+  const events = useMemo(() => {
+    if (activeView !== 'resourceTimelineWeek') return scheduledEvents;
+
+    return weekSummaries.map((summary) => {
+      const end = new Date(`${summary.date}T00:00:00Z`);
+      end.setUTCDate(end.getUTCDate() + 1);
+      return {
+        id: `summary-${summary.technicianId}-${summary.date}`,
+        resourceId: summary.technicianId,
+        title: `${summary.totalCalls} total calls`,
+        start: summary.date,
+        end: end.toISOString().slice(0, 10),
+        allDay: true,
+        extendedProps: { summary },
+      };
+    });
+  }, [activeView, scheduledEvents, weekSummaries]);
 
   // ---- external drag source: the unassigned queue -------------------------
   useEffect(() => {
@@ -188,15 +242,15 @@ export function DispatchBoardSpike({
             Dispatch Board — FullCalendar v7 resourceTimeline spike
           </h2>
           <p className="text-xs text-muted-foreground">
-            {technicians.length} technicians · {events.length} scheduled ·{' '}
-            {queue.length} unassigned ·{' '}
+            {technicians.length} technicians · {scheduledEvents.length}{' '}
+            scheduled · {queue.length} unassigned ·{' '}
             {enforceTradeMatch
               ? 'trade match enforced on drop'
               : 'trade match off'}
           </p>
         </div>
         <p className="text-xs text-muted-foreground">
-          Monday {initialDate} · 7 AM – 7 PM · 15-minute snap
+          Day, week, and month views · 15-minute day-view snap
         </p>
       </header>
 
@@ -282,12 +336,133 @@ export function DispatchBoardSpike({
 
         {/* ---- the board ---- */}
         <div className="spike-calendar">
+          <div className="spike-calendar__toolbar">
+            <div
+              className="spike-calendar__navigation"
+              aria-label="Calendar navigation"
+            >
+              <button
+                type="button"
+                aria-label="Previous date range"
+                onClick={() => calendarRef.current?.getApi().prev()}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                onClick={() => calendarRef.current?.getApi().today()}
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                aria-label="Next date range"
+                onClick={() => calendarRef.current?.getApi().next()}
+              >
+                ›
+              </button>
+            </div>
+            <strong>{calendarTitle}</strong>
+            <div className="spike-calendar__views" aria-label="Calendar view">
+              <button
+                type="button"
+                aria-pressed={activeView === 'resourceTimelineDay'}
+                onClick={() =>
+                  calendarRef.current
+                    ?.getApi()
+                    .changeView('resourceTimelineDay')
+                }
+              >
+                Day
+              </button>
+              <button
+                type="button"
+                aria-pressed={activeView === 'resourceTimelineWeek'}
+                onClick={() =>
+                  calendarRef.current
+                    ?.getApi()
+                    .changeView('resourceTimelineWeek')
+                }
+              >
+                Week
+              </button>
+              <button
+                type="button"
+                aria-pressed={activeView === 'dayGridMonth'}
+                onClick={() =>
+                  calendarRef.current?.getApi().changeView('dayGridMonth')
+                }
+              >
+                Month
+              </button>
+            </div>
+          </div>
           <FullCalendar
+            ref={calendarRef}
             schedulerLicenseKey={EVALUATION_LICENSE_KEY}
-            plugins={[themePlugin, resourceTimelinePlugin, interactionPlugin]}
+            plugins={[
+              themePlugin,
+              dayGridPlugin,
+              resourceTimelinePlugin,
+              interactionPlugin,
+            ]}
             initialView="resourceTimelineDay"
             initialDate={initialDate}
+            firstDay={1}
             headerToolbar={false}
+            views={{
+              resourceTimelineWeek: {
+                slotDuration: '24:00:00',
+                snapDuration: '24:00:00',
+                slotMinTime: '00:00:00',
+                slotMaxTime: '24:00:00',
+                slotLabelFormat: {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                },
+              },
+            }}
+            datesSet={(arg: {
+              start: Date;
+              end: Date;
+              view: { title: string; type: string };
+            }) => {
+              setActiveView(arg.view.type);
+              if (arg.view.type === 'resourceTimelineWeek') {
+                setWeekStartDate(dateKey(arg.start));
+              }
+              setCalendarTitle(
+                arg.view.type === 'resourceTimelineWeek'
+                  ? weekTitle(arg.start, arg.end)
+                  : arg.view.title,
+              );
+            }}
+            slotHeaderClass={(arg: SlotHeaderInfo) => {
+              if (arg.view.type !== 'resourceTimelineWeek') return '';
+              if (arg.isTime) return 'spike-week-header-time';
+              return dateKey(arg.date) === SELECTED_WEEK_DATE
+                ? 'spike-week-header-date is-selected'
+                : 'spike-week-header-date';
+            }}
+            slotHeaderContent={(arg: SlotHeaderInfo) => {
+              if (arg.view.type !== 'resourceTimelineWeek') return arg.text;
+              if (arg.isTime) return null;
+
+              const selected = dateKey(arg.date) === SELECTED_WEEK_DATE;
+              return (
+                <div className="spike-week-header">
+                  <strong>
+                    {arg.date.toLocaleDateString([], { weekday: 'short' })}
+                  </strong>
+                  <span>
+                    {arg.date.toLocaleDateString('en-US', { month: 'short' })}{' '}
+                    {arg.date.getDate()}
+                  </span>
+                  {selected && <b aria-label="18 total calls">18</b>}
+                </div>
+              );
+            }}
             height={heightPx}
             timeZone="local"
             slotMinTime="07:00:00"
@@ -295,11 +470,12 @@ export function DispatchBoardSpike({
             slotDuration="00:30:00"
             snapDuration="00:15:00"
             nowIndicator
-            editable
-            eventStartEditable
-            eventDurationEditable
-            eventResourceEditable
-            droppable
+            dayMaxEvents={activeView === 'dayGridMonth' ? 4 : false}
+            editable={activeView === 'resourceTimelineDay'}
+            eventStartEditable={activeView === 'resourceTimelineDay'}
+            eventDurationEditable={activeView === 'resourceTimelineDay'}
+            eventResourceEditable={activeView === 'resourceTimelineDay'}
+            droppable={activeView === 'resourceTimelineDay'}
             resources={resources}
             events={events}
             resourceColumnsWidth={190}
@@ -337,14 +513,28 @@ export function DispatchBoardSpike({
               },
             ]}
             eventClass={(arg: {
-              event: { extendedProps: { order?: SpikeWorkOrder } };
+              event: {
+                extendedProps: {
+                  order?: SpikeWorkOrder;
+                  summary?: SpikeWorkerDaySummary;
+                };
+              };
             }) => {
-              const technicianId = arg.event.extendedProps.order?.technicianId;
+              const technicianId =
+                arg.event.extendedProps.order?.technicianId ??
+                arg.event.extendedProps.summary?.technicianId;
               const tone =
                 technicianId === null || technicianId === undefined
                   ? 'blue'
                   : (techById.get(technicianId)?.tone ?? 'blue');
-              return `spike-event-shell spike-event-shell--${tone}`;
+              if (activeView === 'resourceTimelineWeek') {
+                return `spike-event-shell spike-event-shell--${tone} spike-event-shell--week`;
+              }
+              const viewClass =
+                activeView === 'dayGridMonth'
+                  ? ' spike-event-shell--month'
+                  : '';
+              return `spike-event-shell spike-event-shell--${tone}${viewClass}`;
             }}
             eventContent={(arg: {
               event: {
@@ -352,10 +542,56 @@ export function DispatchBoardSpike({
                 title: string;
                 start: Date | null;
                 end: Date | null;
-                extendedProps: { order?: SpikeWorkOrder };
+                extendedProps: {
+                  order?: SpikeWorkOrder;
+                  summary?: SpikeWorkerDaySummary;
+                };
               };
             }) => {
               const o = arg.event.extendedProps.order;
+              const summary = arg.event.extendedProps.summary;
+              if (summary !== undefined) {
+                const [morning, afternoon, evening] =
+                  summary.promisedWindowCalls;
+                return (
+                  <article className="spike-week-summary">
+                    <strong>{summary.totalCalls} Total Calls</strong>
+                    <div
+                      className="spike-week-summary__breakdown"
+                      aria-label={`${summary.serviceCalls} service, ${summary.maintenanceCalls} maintenance, ${summary.warrantyCalls} warranty, ${summary.installationCalls} installation`}
+                    >
+                      <span data-kind="service">S {summary.serviceCalls}</span>
+                      <span data-kind="maintenance">
+                        M {summary.maintenanceCalls}
+                      </span>
+                      <span data-kind="warranty">
+                        W {summary.warrantyCalls}
+                      </span>
+                      <span data-kind="installation">
+                        I {summary.installationCalls}
+                      </span>
+                    </div>
+                    {summary.totalCalls === 0 ? (
+                      <p className="spike-week-summary__empty">
+                        No Calls Scheduled
+                      </p>
+                    ) : (
+                      <div className="spike-week-summary__windows">
+                        <b>By Time Promised</b>
+                        <span>
+                          8 AM – 12 PM <strong>{morning}</strong>
+                        </span>
+                        <span>
+                          12 PM – 4 PM <strong>{afternoon}</strong>
+                        </span>
+                        <span>
+                          4 PM – 8 PM <strong>{evening}</strong>
+                        </span>
+                      </div>
+                    )}
+                  </article>
+                );
+              }
               const start = arg.event.start?.toLocaleTimeString([], {
                 hour: 'numeric',
                 minute: '2-digit',

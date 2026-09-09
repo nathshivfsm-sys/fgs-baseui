@@ -33,6 +33,7 @@ pnpm run storybook # then open Spikes/Dispatch Board
 | Resize → duration change              | drag an event edge                                                                                        |
 | Drag in from an outside list → assign | drag a queue card onto a row                                                                              |
 | Synchronous pre-drop veto             | `Default` refuses a trade mismatch; `WithoutTradeMatching` allows it                                      |
+| Day, worker-week, and month views     | use the `Day` / `Week` / `Month` switch above the calendar                                                |
 | Custom event card rendering           | responsive ID, service, address, customer, and start/end details                                          |
 | Custom row header rendering           | tone-matched avatar, availability status, name, `Region \| Trade`, hours                                  |
 | Theming from FieldPro tokens          | pastel row color families bridge the raw semantic tokens into FullCalendar; toggle Storybook's light/dark |
