@@ -2,11 +2,13 @@ import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { viteBase } from '../../tools/module-federation/base';
 import { sharedDependencies } from '../../tools/module-federation/shared';
 
 // No `resolve.alias` for `@cms/*`: an alias rewrites the bare specifier before Module
 // Federation can share it. See tools/module-federation/shared.ts.
 export default defineConfig({
+  base: viteBase('<%= name %>'),
   server: {
     port: <%= port %>,
     strictPort: true,

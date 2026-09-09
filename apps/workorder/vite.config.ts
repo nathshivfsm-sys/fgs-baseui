@@ -2,9 +2,11 @@ import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { viteBase } from '../../tools/module-federation/base';
 import { sharedDependencies } from '../../tools/module-federation/shared';
 
 export default defineConfig({
+  base: viteBase('workorder'),
   server: {
     port: 5101,
     strictPort: true,
