@@ -15,7 +15,9 @@ createRoot(container).render(
       {/* Standalone dev has no login screen, so the session is seeded: protected routes
           render directly at /, and /payment/:invoiceId still exercises the public path. */}
       <AuthProvider initialSession={DEMO_SESSION}>
-        <BrowserRouter>
+        <BrowserRouter
+          basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}
+        >
           {/* Stands in for the shell's PageContainer: the pages render flush and
               rely on whoever hosts them for the gutters. */}
           <div className="mx-auto max-w-content p-4 sm:p-6">

@@ -3,6 +3,7 @@
 # compiled output
 /dist
 **/dist
+/dist-pages
 /tmp
 /out-tsc
 *.tsbuildinfo
