@@ -50,7 +50,7 @@ export function TopNav({
   onLogout,
   onOpenMobileSidebar,
   tenantId,
-  collapsed
+  collapsed,
 }: TopNavProps) {
   const navigate = useNavigate();
   const tenantName = TENANT_NAMES[tenantId] ?? tenantId;
@@ -67,8 +67,13 @@ export function TopNav({
       />
 
       <div className="flex w-47 shrink-0 items-center gap-2">
-        <FieldProLogoIcon aria-hidden="true" className={`size-7 shrink-0 ${collapsed && 'pl-2 size-9 ml-1'}`} />
-        {!collapsed && <span className="text-body font-bold sm:block">FieldPro</span>}
+        <FieldProLogoIcon
+          aria-hidden="true"
+          className={`size-7 shrink-0 ${collapsed && 'pl-2 size-9 ml-1'}`}
+        />
+        {!collapsed && (
+          <span className="text-body font-bold sm:block">FieldPro</span>
+        )}
       </div>
 
       {/* FR-4: never wraps, never squeezes the search field. Below `nav`
@@ -195,7 +200,9 @@ export function TopNav({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              Settings
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -63,7 +63,7 @@ const tabsTriggerVariants = cva(
         sm: 'border-b border-transparent px-3 py-1.5 text-caption font-medium capitalize leading-4 data-active:-mb-px',
         /** Pairs with `TabsList variant="segmented"` — the Login identifier tabs. */
         segmented:
-          'flex-1 justify-center gap-2 rounded-md px-4 py-2.5 text-control leading-5',
+          'inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2.5 text-control leading-5',
       },
       tone: {
         default:
