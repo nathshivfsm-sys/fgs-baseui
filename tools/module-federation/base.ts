@@ -2,7 +2,7 @@
  * Vite `base` for GitHub Pages project-site deploys.
  *
  * Locally this is `/`. In CI, `VITE_BASE_PATH` is the Pages path from
- * `actions/configure-pages` (e.g. `/fgs-baseui/`). Remotes nest under
+ * the GitHub Actions workflow (e.g. `/fgs-baseui/`). Remotes nest under
  * `mf/<name>/` so their assets do not collide with shell routes such as
  * `/settings` or `/invoice`.
  */
