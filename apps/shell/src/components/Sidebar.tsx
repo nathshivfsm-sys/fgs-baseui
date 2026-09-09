@@ -48,7 +48,9 @@ function SidebarNavLink({
           isActive ? 'text-primary' : 'text-foreground-subtle',
         )}
       />
-      {showText && <span className={!collapsed ? 'truncate' : ''}>{item.label}</span>}
+      {showText && (
+        <span className={!collapsed ? 'truncate' : ''}>{item.label}</span>
+      )}
     </NavLink>
   );
 }
@@ -165,7 +167,7 @@ export function Sidebar({
               title={iconOnly ? 'Show text labels' : 'Hide text labels'}
               type="button"
             >
-              <span className="text-xs">{iconOnly ? '' : ''}</span>
+              <span className="text-xs">{iconOnly ? 'A' : 'A'}</span>
             </button>
           )}
           <button
