@@ -6,11 +6,21 @@ typed `ApiError` on non-OK responses.
 
 ## Status: provisional
 
-No real backend exists in this workspace yet — `workorder-data-access`,
-`lead-data-access`, and `settings-data-access` currently return static mock data
-without going through `customFetch` at all. This library exists so the fetch
-layer is ready before the next domain needs a real endpoint, per
+One real caller so far. `@cms/auth-data-access` calls a live endpoint
+(`POST /auth/refresh`, see `context/features/api-login-access-token.md`), while
+`workorder-data-access`, `lead-data-access`, and `settings-data-access` still return
+static mock data without going through `customFetch` at all. This library existed
+ahead of that first caller so the fetch layer would be ready, per
 `context/features/monorepo-architecture-remediation-prd.md`.
+
+Two things that first real caller established:
+
+- `baseUrl` may be **relative** (`/api/v1`), not just an origin. The dev server proxies
+  it to dodge CORS, and `customFetch` concatenating `baseUrl + endpoint` is what makes
+  that switch invisible to callers.
+- A call made before a session exists is normal: `getAuthToken` returning `undefined`
+  omits the header rather than sending an empty one, which is what lets the login
+  request itself go through this wrapper.
 
 Because of that, `ApiError`'s shape and the error-body message extraction in
 `custom-fetch.ts` are guesses at a reasonable REST error convention (`{ message:

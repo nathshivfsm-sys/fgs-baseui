@@ -72,8 +72,13 @@ layout concern only and does not grant or deny access.
 Two pieces are deliberate placeholders, both isolated so a real backend replaces rather
 than edits them:
 
-- **`demo-credentials.ts`** compares a password in the browser. Replace it by passing a
-  real `Authenticate` to `AuthProvider`; the provider, guard, and consumers are unaffected.
+- **`demo-credentials.ts`** compares a password in the browser. The running shell no
+  longer uses it — `apps/shell/src/bootstrap.tsx` passes a real `Authenticate` that calls
+  `@cms/auth-data-access` (see `context/features/api-login-access-token.md`), and nothing
+  in this library changed to accommodate that, which was the point of the seam. It stays
+  as the `authenticate` **default** so Storybook stories and standalone remotes render a
+  working login with no network access. Delete it once a real credential exchange exists
+  and the stories stub their own adapter.
 - **`session.ts`** persists the token in `sessionStorage` — per-tab and cleared when the
   tab closes, which is narrower than `localStorage` but still readable by any injected
   script. Production auth should keep no token in JavaScript-reachable storage at all:

@@ -2,7 +2,7 @@
 
 ## Status
 
-**Real login: fetch `accessToken` from `/auth/refresh`** — implemented and **committed on
+**[Real login: fetch `accessToken` from `/auth/refresh`](features/api-login-access-token.md)** — implemented and **committed on
 `feature/api-login-access-token`, not yet merged or reviewed**. Branched from
 `feature/edit-company-settings` at `fb8a387`. Local development only.
 
@@ -43,6 +43,9 @@ later request carries `Authorization: Bearer <accessToken>`.
 - **CORS blocks the direct call** (confirmed in the browser), so `vite.config.ts` proxies
   `/api/v1` and `VITE_API_URL` is the relative `/api/v1`. `customFetch` only concatenates
   `baseUrl + endpoint`, so no application code knows the difference.
+
+Full write-up, including the response mapping and the two leak-prevention gates, is in
+[features/api-login-access-token.md](features/api-login-access-token.md).
 
 ### Keeping local-only wiring out of other environments
 
