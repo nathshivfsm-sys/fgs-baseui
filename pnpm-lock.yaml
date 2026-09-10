@@ -255,6 +255,9 @@ importers:
 
   apps/shell:
     dependencies:
+      '@cms/auth-data-access':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth-data-access
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
@@ -369,6 +372,21 @@ importers:
       tslib:
         specifier: 2.8.1
         version: 2.8.1
+
+  libs/shared/auth-data-access:
+    dependencies:
+      '@cms/platform-contract':
+        specifier: workspace:*
+        version: link:../../platform-contract
+      '@cms/shared-api':
+        specifier: workspace:*
+        version: link:../api
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
   libs/ui:
     dependencies:
