@@ -14,7 +14,7 @@ export default defineConfig({
         test: {
           name: 'query',
           environment: 'node',
-          include: ['tools/integration/src/query-runtime.integration.test.ts'],
+          include: ['tools/integration/src/**/*.integration.test.ts'],
         },
       },
       {

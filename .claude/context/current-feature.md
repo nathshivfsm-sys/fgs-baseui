@@ -2,7 +2,21 @@
 
 ## Status
 
-**Replace native HTML typography with `@cms/ui` Typography** — in progress on
+**Edit company settings (General Info form)** — in progress on
+`feature/edit-company-settings`.
+
+Implements the React Hook Form + Zod settings form from
+`forms-implementation-guide.md`, adapted to this repo: a `@cms/settings-data-access`
+library (mock GET/PATCH, no backend yet) and the edit screen in the `settings`
+remote, not the shell. Opened from the Setup grid's General Info card.
+
+Figma nodes (Login file `7p0XZMKlDyqp3F59bXA9Aj`) were not readable without a
+Figma login, so layout follows existing Service Location form patterns
+(`SectionCard` soft/panel, `TextInput`/`PhoneInput`/`Textarea` `soft` variant).
+
+## History
+
+- [Replace native HTML typography with `@cms/ui` Typography] — in progress on
 `feature/typography-component-migration`.
 
 Settings already consumes `Heading1` / `BodySmall`. This pass replaces remaining
