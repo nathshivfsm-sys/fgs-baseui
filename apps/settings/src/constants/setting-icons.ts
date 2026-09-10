@@ -46,7 +46,7 @@ import type { ComponentType } from 'react';
  * Figma-traced icon mappings for Settings categories (18 icons from Figma).
  * Remaining icons fall back to closest existing `@cms/ui` icons until their Figma designs are traced.
  */
-const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
+export const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   // Company — traced from Figma node 70:231
   SettingsGeneralInfoIcon,
   SettingsBusinessUnitIcon,
@@ -108,15 +108,8 @@ const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   SettingsAuditLogsIcon: ReportIcon,
 };
 
-/** Resolves a `settings.ts` `icon` name to its `@cms/ui` component, falling back to `SettingsIcon`. */
-export function resolveSettingIcon(
-  iconName: string,
-): ComponentType<FigmaIconProps> {
-  return SETTING_ICON_MAP[iconName] ?? SettingsIcon;
-}
-
 /** Exact tile tones from Figma node 70:231, the only tab with a designed tone per category. */
-const COMPANY_TONE_MAP: Record<string, SettingCardTone> = {
+export const COMPANY_TONE_MAP: Record<string, SettingCardTone> = {
   SettingsGeneralInfoIcon: 'blue',
   SettingsBusinessUnitIcon: 'green',
   SettingsTaxStatesIcon: 'purple',
@@ -125,18 +118,10 @@ const COMPANY_TONE_MAP: Record<string, SettingCardTone> = {
 };
 
 /** No Figma tone spec exists outside the Company tab, so tones cycle by card position. */
-const TONE_CYCLE: readonly SettingCardTone[] = [
+export const TONE_CYCLE: readonly SettingCardTone[] = [
   'blue',
   'green',
   'purple',
   'orange',
   'neutral',
 ];
-
-/** Resolves a card's icon-tile tone: the exact Company-tab value, or a positional cycle. */
-export function resolveSettingTone(
-  iconName: string,
-  index: number,
-): SettingCardTone {
-  return COMPANY_TONE_MAP[iconName] ?? TONE_CYCLE[index % TONE_CYCLE.length];
-}

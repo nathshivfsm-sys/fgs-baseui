@@ -1,11 +1,4 @@
-import type { SettingsTabKey } from './types';
-
-export interface SettingTab {
-  key: SettingsTabKey;
-  label: string;
-  /** Visual grouping gap before this tab (Figma node 70:257) — not a semantic boundary. */
-  spacerBefore?: boolean;
-}
+import type { SettingTab } from '../types';
 
 /**
  * Tab order and labels from Figma node 70:231 — deliberately not `settings.ts`'s

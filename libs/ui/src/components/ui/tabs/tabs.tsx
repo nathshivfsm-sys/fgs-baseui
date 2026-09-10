@@ -50,7 +50,7 @@ export function TabsList({
 }
 
 const tabsTriggerVariants = cva(
-  'shrink-0 rounded-t-sm outline-none transition-[color,border-color,background-color,box-shadow] hover:bg-primary-subtle/50 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 data-active:font-semibold',
+  'shrink-0 cursor-pointer rounded-t-sm outline-none transition-[color,border-color,background-color,box-shadow] hover:bg-primary-subtle/50 focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 data-active:font-semibold',
   {
     variants: {
       size: {

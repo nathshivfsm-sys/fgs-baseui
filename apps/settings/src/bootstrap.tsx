@@ -11,7 +11,7 @@ createRoot(container).render(
   <StrictMode>
     <QueryClientProvider client={standaloneRuntime.queryClient}>
       <div className="mx-auto max-w-content p-4 sm:p-6">
-        <App />
+        <App runtime={standaloneRuntime} />
       </div>
     </QueryClientProvider>
   </StrictMode>,
