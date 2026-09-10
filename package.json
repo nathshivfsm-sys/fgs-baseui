@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "nx run-many -t serve --projects=shell,workorder,lead,invoice,settings --parallel=5",
     "build": "nx run-many -t build --projects=platform-contract,ui,workorder,lead,invoice,settings,shell",
+    "pages:build": "node tools/pages/build.mjs",
+    "pages:assemble": "node tools/pages/assemble.mjs",
+    "pages:preview": "node tools/pages/preview-server.mjs",
     "test:query": "nx run integration:test-query",
     "graph": "nx graph",
     "storybook": "nx run ui:storybook",
