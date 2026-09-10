@@ -9,6 +9,7 @@
     "preview": "vite preview --port 4200 --strictPort"
   },
   "dependencies": {
+    "@cms/auth-data-access": "workspace:*",
     "@cms/platform-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
