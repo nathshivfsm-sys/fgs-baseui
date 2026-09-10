@@ -6,10 +6,10 @@ typed `ApiError` on non-OK responses.
 
 ## Status: provisional
 
-No real backend exists in this workspace yet — `workorder-data-access` and
-`lead-data-access` currently return static mock data without going through
-`customFetch` at all. This library exists so the fetch layer is ready before the
-next domain needs a real endpoint, per
+No real backend exists in this workspace yet — `workorder-data-access`,
+`lead-data-access`, and `settings-data-access` currently return static mock data
+without going through `customFetch` at all. This library exists so the fetch
+layer is ready before the next domain needs a real endpoint, per
 `context/features/monorepo-architecture-remediation-prd.md`.
 
 Because of that, `ApiError`'s shape and the error-body message extraction in

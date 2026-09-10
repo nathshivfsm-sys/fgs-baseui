@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hookform/resolvers':
+        specifier: 5.2.2
+        version: 5.2.2(react-hook-form@7.66.1(react@19.2.8))
       '@module-federation/runtime':
         specifier: 2.8.2
         version: 2.8.2
@@ -26,6 +29,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      react-hook-form:
+        specifier: 7.66.1
+        version: 7.66.1(react@19.2.8)
       react-router-dom:
         specifier: 7.18.2
         version: 7.18.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -216,12 +222,18 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
+      '@cms/settings-data-access':
+        specifier: workspace:*
+        version: link:../../libs/settings/data-access
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
+      '@hookform/resolvers':
+        specifier: 5.2.2
+        version: 5.2.2(react-hook-form@7.66.1(react@19.2.8))
       '@tanstack/react-query':
         specifier: 5.101.4
         version: 5.101.4(react@19.2.8)
@@ -231,6 +243,15 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      react-hook-form:
+        specifier: 7.66.1
+        version: 7.66.1(react@19.2.8)
+      react-router-dom:
+        specifier: 7.18.2
+        version: 7.18.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
   apps/shell:
     dependencies:
@@ -313,6 +334,21 @@ importers:
         specifier: 2.8.1
         version: 2.8.1
 
+  libs/settings/data-access:
+    dependencies:
+      '@cms/platform-contract':
+        specifier: workspace:*
+        version: link:../../platform-contract
+      '@tanstack/react-query':
+        specifier: 5.101.4
+        version: 5.101.4(react@19.2.8)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+
   libs/shared/api:
     dependencies:
       tslib:
@@ -390,6 +426,9 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
+      '@cms/settings-data-access':
+        specifier: workspace:*
+        version: link:../../libs/settings/data-access
       '@cms/workorder-data-access':
         specifier: workspace:*
         version: link:../../libs/workorder/data-access
@@ -1283,6 +1322,11 @@ packages:
       react: ^17 || ^18 || ^19
       react-dom: ^17 || ^18 || ^19
       temporal-polyfill: ^1.0.1
+
+  '@hookform/resolvers@5.2.2':
+    resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2249,6 +2293,9 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
   '@storybook/addon-a11y@10.5.7':
     resolution: {integrity: sha512-I30rsNz6aA3xg3811MEry40uJDHP3l5SOkfqtmNkp7y4NdqTDdKhmbhhDAZQX1WWEk6GeMBGr3AJ3TCz7r7JmQ==}
@@ -5007,6 +5054,12 @@ packages:
     peerDependencies:
       react: ^19.2.8
 
+  react-hook-form@7.66.1:
+    resolution: {integrity: sha512-2KnjpgG2Rhbi+CIiIBQQ9Df6sMGH5ExNyFl4Hw9qO7pIqMBR8Bvu9RQyjl3JM4vehzCh9soiNUM/xYMswb2EiA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
 
@@ -6897,7 +6950,7 @@ snapshots:
   '@floating-ui/utils@0.2.12': {}
 
   '@fontsource-variable/inter@5.3.0': {}
-  
+
   '@full-ui/headless-calendar@7.0.2(temporal-polyfill@1.0.4)':
     dependencies:
       temporal-polyfill: 1.0.4
@@ -6926,6 +6979,11 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       temporal-polyfill: 1.0.4
+
+  '@hookform/resolvers@5.2.2(react-hook-form@7.66.1(react@19.2.8))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.66.1(react@19.2.8)
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -7845,6 +7903,8 @@ snapshots:
   '@sindresorhus/is@4.6.0': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@standard-schema/utils@0.3.0': {}
 
   '@storybook/addon-a11y@10.5.7(storybook@10.5.7(@types/react@19.2.18)(prettier@3.6.2)(react@19.2.8))':
     dependencies:
@@ -10922,6 +10982,10 @@ snapshots:
     dependencies:
       react: 19.2.8
       scheduler: 0.27.0
+
+  react-hook-form@7.66.1(react@19.2.8):
+    dependencies:
+      react: 19.2.8
 
   react-is@17.0.2: {}
 

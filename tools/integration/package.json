@@ -6,6 +6,7 @@
   "dependencies": {
     "@cms/lead-data-access": "workspace:*",
     "@cms/platform-contract": "workspace:*",
+    "@cms/settings-data-access": "workspace:*",
     "@cms/workorder-data-access": "workspace:*"
   }
 }

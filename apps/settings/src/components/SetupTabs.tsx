@@ -8,6 +8,7 @@ import { SettingsEmptyState } from './SettingsEmptyState';
 export interface SetupTabsProps {
   activeTab: SettingsTabKey;
   allSettings: Record<SettingsTabKey, SettingCategory[]>;
+  onCategorySelect?: (category: SettingCategory) => void;
   onTabChange: (tab: SettingsTabKey) => void;
   query: string;
 }
@@ -15,6 +16,7 @@ export interface SetupTabsProps {
 export function SetupTabs({
   activeTab,
   allSettings,
+  onCategorySelect,
   onTabChange,
   query,
 }: SetupTabsProps) {
@@ -46,7 +48,10 @@ export function SetupTabs({
             {filteredCategories.length === 0 ? (
               <SettingsEmptyState query={query} />
             ) : (
-              <SettingCategoryGrid categories={filteredCategories} />
+              <SettingCategoryGrid
+                categories={filteredCategories}
+                onCategorySelect={onCategorySelect}
+              />
             )}
           </TabsContent>
         );
