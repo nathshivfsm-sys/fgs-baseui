@@ -65,7 +65,6 @@ Thumbs.db
 # Local AI tool state
 .claude/worktrees
 .claude/settings.local.json
-.claude/context/features/
 .claude/context/screenshots/
 .vscode/
 .verdaccio/
