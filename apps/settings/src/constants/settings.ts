@@ -38,6 +38,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Configure company details, branding, contact information, and business preferences.',
       icon: 'SettingsGeneralInfoIcon',
       totalSettings: { count: 12, label: 'Settings' },
+      href: 'company/general-info',
     },
     {
       title: 'Business Unit',

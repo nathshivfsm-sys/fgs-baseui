@@ -1,4 +1,5 @@
 import type { Lead } from '@cms/lead-data-access';
+import type { CompanySettings } from '@cms/settings-data-access';
 import type { Workorder } from '@cms/workorder-data-access';
 
 export const leadFixtures = [
@@ -14,6 +15,23 @@ export const workorderFixtures = [
     status: 'Scheduled',
   },
 ] satisfies readonly Workorder[];
+
+export const companySettingsFixture = {
+  companyId: 'northwind',
+  companyName: 'Graceful Cleaning',
+  contactEmail: 'ops@gracefulcleaning.example',
+  phone: '(555) 014-2200',
+  address: '1200 Market Street, Suite 400',
+  ptos: [
+    { id: 'pto-vac', code: 'VAC', label: 'Vacation', annualAllowance: 15 },
+  ],
+  taxCodes: [
+    { id: 'tax-ca', code: 'CA', description: 'State tax', rate: 7.25 },
+  ],
+  businessUnits: [
+    { id: 'bu-res', name: 'Residential', code: 'RES', active: true },
+  ],
+} satisfies CompanySettings;
 
 export const resolvedLoader =
   <Item>(items: readonly Item[]) =>

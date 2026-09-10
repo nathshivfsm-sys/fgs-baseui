@@ -47,5 +47,27 @@ export function storybookAliases(workspaceRoot: string) {
       find: '@cms/shared-auth',
       replacement: join(workspaceRoot, 'libs/shared/auth/src/index.ts'),
     },
+    {
+      find: '@cms/auth-data-access',
+      replacement: join(
+        workspaceRoot,
+        'libs/shared/auth-data-access/src/index.ts',
+      ),
+    },
+    {
+      find: '@cms/lead-data-access',
+      replacement: join(workspaceRoot, 'libs/lead/data-access/src/index.ts'),
+    },
+    {
+      find: '@cms/workorder-data-access',
+      replacement: join(workspaceRoot, 'libs/workorder/data-access/src/index.ts'),
+    },
+    {
+      find: '@cms/settings-data-access',
+      replacement: join(
+        workspaceRoot,
+        'libs/settings/data-access/src/index.ts',
+      ),
+    },
   ];
 }

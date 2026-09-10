@@ -2,7 +2,108 @@
 
 ## Status
 
-**Replace native HTML typography with `@cms/ui` Typography** — in progress on
+**[Real login: fetch `accessToken` from `/auth/refresh`](features/api-login-access-token.md)** — implemented and **committed on
+`feature/api-login-access-token`, not yet merged or reviewed**. Branched from
+`feature/edit-company-settings` at `fb8a387`. Local development only.
+
+| Commit | Scope |
+| --------- | ------------------------------------------------------------------- |
+| `c529d44` | `feat(auth-data-access)` — the new lib, Zod schema, `refreshAccessToken()` |
+| `7c62ecd` | `feat(shell)` — Authenticate adapter, bootstrap wiring, env-gated dev proxy |
+
+Replaces the browser-side `authenticateDemoUser` placeholder with a real network call.
+Clicking **Next** on the login screen POSTs a fixed refresh token to
+`https://api-dev.fieldwhizey.com/api/v1/auth/refresh`; the response's `accessToken` and
+`user` block become the session, so the signed-in name/email come from the API and every
+later request carries `Authorization: Bearer <accessToken>`.
+
+| Piece | Where |
+| ------------------------------------- | ------------------------------------------------- |
+| Zod schema + `refreshAccessToken()`    | new lib `libs/shared/auth-data-access` (`@cms/auth-data-access`) |
+| `Authenticate` adapter (DTO → session) | `apps/shell/src/lib/authenticate-with-api.ts` |
+| Wiring                                 | `<AuthProvider authenticate={authenticateWithApi}>` in `bootstrap.tsx` |
+| Credentials + dev proxy target         | `apps/shell/.env.local` (gitignored); template in `.env.example` |
+
+### Notes
+
+- **Token propagation needed no new code.** `runtime.ts` already calls
+  `configureCustomFetch({ getAuthToken: getSessionToken })`, `getSessionToken` re-reads
+  storage on every request, and `@cms/shared-api` is a Module Federation singleton — so
+  one call covers the host and all four remotes. Confirmed in the dev server's
+  transformed output: the adapter imports `ApiError` through `loadShare`, not an alias.
+- The endpoint takes only `refreshToken`, so the email typed on the login screen is never
+  sent — the identity is whoever the token belongs to. `LoginPage.tsx` is unchanged.
+- The fixed refresh token is sent on every login by decision; the rotated `refreshToken`
+  in the response is deliberately discarded, as are `idToken` and `expiresIn`. There is
+  no refresh-on-expiry yet, so a stale token surfaces as a 401 message on the login card.
+- `tenantId` (52 in the response) is **not** wired in — the shell's tenant drives a
+  `TENANT_NAMES` lookup in `store/constants.ts` and that is a separate decision.
+- `demo-credentials.ts` is intentionally kept: `AuthProvider`'s `authenticate` prop still
+  defaults to it, which is what lets every Storybook story run without a network call.
+- **CORS blocks the direct call** (confirmed in the browser), so `vite.config.ts` proxies
+  `/api/v1` and `VITE_API_URL` is the relative `/api/v1`. `customFetch` only concatenates
+  `baseUrl + endpoint`, so no application code knows the difference.
+
+Full write-up, including the response mapping and the two leak-prevention gates, is in
+[features/api-login-access-token.md](features/api-login-access-token.md).
+
+### Keeping local-only wiring out of other environments
+
+Both mechanisms below are gated so nothing local can reach `develop` or a deployment.
+
+- **The proxy target is not hardcoded.** `vite.config.ts` reads
+  `VITE_DEV_API_PROXY_TARGET` via `loadEnv` and configures a proxy only when it is set,
+  so no API hostname is committed and any environment that does not set it gets no proxy.
+  It is also a `server` option, which Vite applies only to the dev server. Both branches
+  verified against a running server: with the variable set, a GET through `/api/v1`
+  returns the API's own nginx 401; with it empty, the same URL returns Vite's HTML
+  fallback.
+- **The refresh token cannot ship in a bundle.** This was a real leak, caught by grepping
+  `dist/`: Vite inlines every `import.meta.env.VITE_*` reference as a string literal at
+  build time, so `vite build` on any machine holding a `.env.local` baked the credential
+  into `bootstrap-*.js`. `authenticateWithApi` now early-returns behind
+  `if (!import.meta.env.DEV)`, which is `false` in a build, so the token read is dead code
+  the minifier drops. Re-verified: the token and the hostname are both absent from a
+  fresh `vite build`, while the guard's message is present — proving the retained branch.
+
+### Verification
+
+- `typecheck` clean; `lint` clean (including the new lib and `shell`); `test:query` 8/8;
+  shell production build clean via `vite build`.
+- `storybook:test`: 227/237, **identical to the baseline measured at `fb8a387`** — the
+  same 10 failures in the same 3 files (`TopNav.stories.tsx` ×6,
+  `settings/App.stories.tsx` ×3, `LoginPage.stories.tsx > Successful Login` ×1). All
+  pre-existing; this change adds none. The LoginPage one is a route mismatch in the
+  story: `LoginPage` redirects to `/today`, which the story's `MemoryRouter` does not
+  declare.
+- `nx build shell` cannot complete through Nx because its dependency `ui:build` fails at
+  `HEAD` on an unrelated pre-existing TS error —
+  `libs/ui/src/spike/dispatch-board/DispatchBoardSpike.tsx:419`, `slotLabelFormat` not in
+  `ViewOptions` (last touched by `5a3fc37`). The shell's own Vite build is clean.
+- Browser check was run by the user, not scripted here. It surfaced the CORS failure that
+  produced the proxy above; the post-fix confirmation was the user's and is not captured
+  in this repo. Worth a scripted Playwright pass later, as the login redesign had.
+
+### Follow-ups
+
+- The refresh token in `.env.local` is a live dev-tenant credential; rotate it on the IdP.
+- The four remotes' `standalone-runtime.ts` still call `configureCustomFetch` without
+  `getAuthToken`, so standalone dev servers send no bearer token. Harmless today (all
+  data-access libs return mocks) but worth parity when a real endpoint is consumed.
+
+## History
+
+- **Edit company settings (General Info form)** — in progress on
+  `feature/edit-company-settings`. Implements the React Hook Form + Zod settings form
+  from `forms-implementation-guide.md`, adapted to this repo: a
+  `@cms/settings-data-access` library (mock GET/PATCH, no backend yet) and the edit
+  screen in the `settings` remote, not the shell. Opened from the Setup grid's General
+  Info card. Figma nodes (Login file `7p0XZMKlDyqp3F59bXA9Aj`) were not readable without
+  a Figma login, so layout follows existing Service Location form patterns
+  (`SectionCard` soft/panel, `TextInput`/`PhoneInput`/`Textarea` `soft` variant).
+## History
+
+- [Replace native HTML typography with `@cms/ui` Typography] — in progress on
 `feature/typography-component-migration`.
 
 Settings already consumes `Heading1` / `BodySmall`. This pass replaces remaining

@@ -7,6 +7,10 @@ import {
   type QueryRequestContext,
 } from '@cms/platform-contract';
 import { leadKeys, leadListQueryOptions } from '@cms/lead-data-access';
+import {
+  companySettingsKeys,
+  companySettingsQueryOptions,
+} from '@cms/settings-data-access';
 import { workorderKeys } from '@cms/workorder-data-access';
 import { standaloneRuntime as leadRuntime } from '../../../apps/lead/src/standalone-runtime';
 import { standaloneRuntime as workorderRuntime } from '../../../apps/workorder/src/standalone-runtime';
@@ -82,6 +86,30 @@ describe('MFE query client ownership', () => {
     expect(client.getQueryState(northwindKey)?.isInvalidated).toBe(true);
     expect(client.getQueryState(contosoKey)?.isInvalidated).toBe(false);
     expect(client.getQueryState(workordersKey)?.isInvalidated).toBe(false);
+  });
+
+  it('loads company settings through the shared query contract', async () => {
+    const client = createCmsQueryClient();
+    const loader = vi.fn(async (companyId: string) => ({
+      companyId,
+      companyName: 'Test Inc',
+      contactEmail: 'test@example.com',
+      ptos: [],
+      taxCodes: [],
+      businessUnits: [],
+    }));
+    const options = companySettingsQueryOptions('northwind', loader);
+
+    await client.fetchQuery(options);
+
+    expect(loader).toHaveBeenCalledWith(
+      'northwind',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(client.getQueryData(companySettingsKeys.detail('northwind'))).toEqual(
+      expect.objectContaining({ companyName: 'Test Inc' }),
+    );
+    disposeCmsQueryClient(client);
   });
 
   it('supports default overrides and global query/mutation errors', async () => {

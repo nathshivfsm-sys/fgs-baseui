@@ -1,0 +1,30 @@
+{
+  "name": "settings-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/settings/data-access/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:settings"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/settings/data-access",
+        "main": "libs/settings/data-access/src/index.ts",
+        "tsConfig": "libs/settings/data-access/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/settings/data-access/tsconfig.json"
+      }
+    }
+  }
+}

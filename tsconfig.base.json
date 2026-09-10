@@ -20,10 +20,14 @@
       "@cms/ui/*": ["./libs/ui/src/*"],
       "@cms/shared-api": ["./libs/shared/api/src/index.ts"],
       "@cms/shared-auth": ["./libs/shared/auth/src/index.ts"],
+      "@cms/auth-data-access": ["./libs/shared/auth-data-access/src/index.ts"],
       "@cms/workorder-data-access": [
         "./libs/workorder/data-access/src/index.ts"
       ],
       "@cms/lead-data-access": ["./libs/lead/data-access/src/index.ts"],
+      "@cms/settings-data-access": [
+        "./libs/settings/data-access/src/index.ts"
+      ],
       "@cms/module-federation-shared": ["./tools/module-federation/shared.ts"]
     }
   },
