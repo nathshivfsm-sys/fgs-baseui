@@ -5,6 +5,11 @@ export interface CustomFetchConfig {
   baseUrl: string;
   /** Called on every request; return `undefined` when there is no token to attach. */
   getAuthToken?: () => string | undefined;
+  /**
+   * Called on every request; sent as `X-Tenant-Id`, which the API requires on tenant-scoped
+   * endpoints. Return `undefined` when there is no tenant (e.g. before sign-in).
+   */
+  getTenantId?: () => string | undefined;
 }
 
 let currentConfig: CustomFetchConfig = { baseUrl: '' };
@@ -20,14 +25,20 @@ export function configureCustomFetch(config: CustomFetchConfig) {
   currentConfig = config;
 }
 
+/**
+ * Prefers `message`; falls back to the API envelope's `errors: string[]`
+ * (e.g. `{ success: false, errors: ["Tenant context is required. ..."] }`).
+ */
 function extractErrorMessage(body: unknown, status: number): string {
-  if (
-    typeof body === 'object' &&
-    body !== null &&
-    'message' in body &&
-    typeof (body as { message: unknown }).message === 'string'
-  ) {
-    return (body as { message: string }).message;
+  if (typeof body === 'object' && body !== null) {
+    const { message, errors } = body as { message?: unknown; errors?: unknown };
+    if (typeof message === 'string' && message) return message;
+    if (Array.isArray(errors)) {
+      const texts = errors.filter(
+        (entry): entry is string => typeof entry === 'string' && entry !== '',
+      );
+      if (texts.length) return texts.join(' ');
+    }
   }
   return `API request failed with HTTP ${status}`;
 }
@@ -43,9 +54,11 @@ export async function customFetch<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const token = currentConfig.getAuthToken?.();
+  const tenantId = currentConfig.getTenantId?.();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(tenantId ? { 'X-Tenant-Id': tenantId } : {}),
     ...options.headers,
   };
 
@@ -62,5 +75,8 @@ export async function customFetch<T>(
     );
   }
 
-  return response.json() as Promise<T>;
+  // A successful write may carry no body (204, or an empty 200). Parsing that as JSON
+  // would throw and turn a completed save into a reported failure.
+  const text = await response.text();
+  return (text ? JSON.parse(text) : undefined) as T;
 }

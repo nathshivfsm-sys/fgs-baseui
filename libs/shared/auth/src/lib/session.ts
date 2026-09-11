@@ -3,10 +3,16 @@ import type { UserDetails } from '@cms/platform-contract';
 export interface AuthSession {
   token: string;
   user: UserDetails;
+  /**
+   * The API's tenant id from the login response, sent as `X-Tenant-Id` on every request.
+   * Distinct from `CmsRuntime.tenantId`, which is the shell's display tenant.
+   */
+  tenantId?: string;
 }
 
 const TOKEN_KEY = 'fgs.auth.token';
 const USER_KEY = 'fgs.auth.user';
+const TENANT_KEY = 'fgs.auth.tenant';
 
 /**
  * `sessionStorage`, deliberately — NOT `localStorage`. A token in web storage is
@@ -47,7 +53,9 @@ export function readStoredSession(): AuthSession | null {
     const rawUser = store.getItem(USER_KEY);
     if (!token || !rawUser) return null;
     const user: unknown = JSON.parse(rawUser);
-    return isUserDetails(user) ? { token, user } : null;
+    if (!isUserDetails(user)) return null;
+    const tenantId = store.getItem(TENANT_KEY);
+    return tenantId ? { token, user, tenantId } : { token, user };
   } catch {
     return null;
   }
@@ -59,6 +67,11 @@ export function writeStoredSession(session: AuthSession): void {
   try {
     store.setItem(TOKEN_KEY, session.token);
     store.setItem(USER_KEY, JSON.stringify(session.user));
+    if (session.tenantId) {
+      store.setItem(TENANT_KEY, session.tenantId);
+    } else {
+      store.removeItem(TENANT_KEY);
+    }
   } catch {
     // Quota or private-mode failure: the in-memory session still works for this tab.
   }
@@ -70,6 +83,7 @@ export function clearStoredSession(): void {
   try {
     store.removeItem(TOKEN_KEY);
     store.removeItem(USER_KEY);
+    store.removeItem(TENANT_KEY);
   } catch {
     // Nothing to clean up if storage is unavailable.
   }
@@ -83,4 +97,9 @@ export function clearStoredSession(): void {
  */
 export function getSessionToken(): string | undefined {
   return readStoredSession()?.token;
+}
+
+/** Non-React accessor for `configureCustomFetch({ getTenantId })`, read per request. */
+export function getSessionTenantId(): string | undefined {
+  return readStoredSession()?.tenantId;
 }

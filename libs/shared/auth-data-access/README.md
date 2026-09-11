@@ -34,10 +34,18 @@ const session = await refreshAccessToken(refreshToken);
 the type parameter, establish the shape — `customFetch` returns `Promise<T>` on trust, so
 a type argument there would be an assertion, not a guarantee.
 
-The schema models only the fields something actually renders. Zod strips unknown keys, so
-`refreshToken`, `idToken`, `expiresIn`, `tenantId`, `companyId`, `permissions`,
-`dataAccess` and `publicEndpoints` all come back from the API and are dropped without
-being listed. Add them here when a consumer appears — not before.
+The schema models only the fields something actually consumes. Zod strips unknown keys,
+so `refreshToken`, `idToken`, `expiresIn`, `permissions`, `dataAccess` and
+`publicEndpoints` all come back from the API and are dropped without being listed. Add
+them here when a consumer appears — not before.
+
+Two ids are consumed. Both arrive as numbers and are coerced to strings:
+
+- `user.tenantId` → `AuthSession.tenantId` → sent as `X-Tenant-Id` on every request via
+  `configureCustomFetch({ getTenantId: getSessionTenantId })` in the shell. The API
+  answers `400 "Tenant context is required. Include the X-Tenant-Id header."` without it.
+- `user.companyId` → `UserDetails.companyId` → the path key for `/company/{companyId}`
+  (the Settings › General Info screen).
 
 ## Status: local development only
 

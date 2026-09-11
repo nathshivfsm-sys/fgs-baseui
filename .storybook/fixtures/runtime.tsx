@@ -7,6 +7,8 @@ import {
   type UserDetails,
 } from '@cms/platform-contract';
 
+export const STORY_COMPANY_ID = 'story-company';
+
 const storyUser = {
   id: 'storybook-user',
   displayName: 'Storybook User',
@@ -14,10 +16,14 @@ const storyUser = {
   role: 'Designer',
 } satisfies UserDetails;
 
-export function createStoryRuntime(tenantId = 'northwind'): CmsRuntime {
+/** `companyId: null` simulates a session stored before the login captured one. */
+export function createStoryRuntime(
+  tenantId = 'northwind',
+  companyId: string | null = STORY_COMPANY_ID,
+): CmsRuntime {
   return {
     tenantId,
-    currentUser: storyUser,
+    currentUser: companyId ? { ...storyUser, companyId } : storyUser,
     queryClient: createCmsQueryClient({
       defaultOptions: {
         queries: { staleTime: 0, gcTime: 0, retry: false },
@@ -29,6 +35,7 @@ export function createStoryRuntime(tenantId = 'northwind'): CmsRuntime {
 
 type RuntimeProps = { runtime: CmsRuntime };
 type RuntimeStoryProps<Props extends RuntimeProps> = Omit<Props, 'runtime'> & {
+  storyCompanyId?: string | null;
   storyTenantId?: string;
 };
 
@@ -36,12 +43,13 @@ export function withCmsRuntime<Props extends RuntimeProps>(
   Component: ComponentType<Props>,
 ) {
   return function RuntimeStory({
+    storyCompanyId = STORY_COMPANY_ID,
     storyTenantId = 'northwind',
     ...props
   }: RuntimeStoryProps<Props>) {
     const runtime = useMemo(
-      () => createStoryRuntime(storyTenantId),
-      [storyTenantId],
+      () => createStoryRuntime(storyTenantId, storyCompanyId),
+      [storyTenantId, storyCompanyId],
     );
     useEffect(
       () => () => disposeCmsQueryClient(runtime.queryClient),

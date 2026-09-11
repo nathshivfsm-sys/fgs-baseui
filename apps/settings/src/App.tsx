@@ -28,7 +28,7 @@ export function App({
           <Route
             element={
               <CompanySettingsPage
-                companyId={runtime.tenantId}
+                companyId={runtime.currentUser.companyId}
                 loadCompanySettings={loadCompanySettings}
                 queryClient={runtime.queryClient}
                 saveCompanySettings={saveCompanySettings}

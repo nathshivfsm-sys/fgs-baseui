@@ -2,6 +2,92 @@
 
 ## Status
 
+**[Company General Info — API-backed edit form](features/company-general-info-api-prd.md)**
+— spec and [implementation plan](features/company-general-info-api-plan.md) written;
+**implemented and verified locally, not yet committed, not browser-tested against the
+live API**. Branch `feature/company-general-info-api`, cut from
+`feature/api-login-access-token` at `147e29f`.
+
+Rebuilds the Settings › Company › General Info screen to the Figma design (node
+`75-6519`), loads it from `GET /api/v1/company/{companyId}` and saves with
+`PATCH /api/v1/company/{companyId}` (dirty fields only). `companyId` comes from the
+`/auth/refresh` login response via `UserDetails.companyId`. Branding / Logo and
+Non-Working Days are UI only; addresses are read-only. The old PTO / tax-code /
+business-unit sections and the in-memory mock store are removed.
+
+The schema is built from a real `GET /company/1` response (redacted fixture in
+`tools/integration/src/fixtures/company-response.ts`). `companyId` is
+`data.user.companyId` (number `1`), which equals the company's `companyNumber`, not
+its `id` (`52`). Code and Company Number are read-only by decision.
+
+### Verification
+
+- `test:query` 16/16 (11 new: mapping, phone round-trip, dirty-only PATCH, URL, bearer,
+  abort signal, `ApiError` propagation).
+- `typecheck` and `lint` clean on all 14 real projects. The only failure is the
+  pre-existing phantom `<%= name %>` generator-template project.
+- `storybook:typecheck`: only the pre-existing `DispatchBoardSpike.tsx:419` error.
+- `storybook:test` 231/239. The 7 failures are all pre-existing (`TopNav` ×6,
+  `LoginPage > Successful Login` ×1). The 3 old `settings/App.stories.tsx` failures are
+  gone, and all 10 settings stories pass. One run also flaked `drawer.stories > Default`,
+  which passed 4/4 twice in isolation.
+- The storybook a11y check caught a contrast failure on the logo placeholder (4.39:1).
+  Fixed with existing tokens (`surface-sunken` / `foreground-muted`).
+- `vite build` is clean for `settings` and `shell`, and a grep of both `dist/`
+  directories finds no token and no API hostname.
+- **Browser pass (Playwright script against the running dev servers):**
+  - The first live run found that the API rejects every company call without
+    `X-Tenant-Id`. Fixed globally, per user decision: `user.tenantId` is captured at
+    login into `AuthSession.tenantId` (`sessionStorage` key `fgs.auth.tenant`), and
+    `configureCustomFetch({ getTenantId: getSessionTenantId })` in the shell sends it on
+    every request. With the header added, the live GET returned 200 and the screen
+    rendered real data matching the Figma layout.
+  - The dev API then went unreachable (TCP connect times out, even direct to the host;
+    general internet is fine). The **live save is still untested**.
+  - Everything else ran against a stateful mock seeded from the captured real
+    response: **32/32 checks, no page errors**. Coverage: grid navigation, bearer and
+    `X-Tenant-Id` on GET and PATCH, field population, read-only fields, select labels,
+    status switch, addresses, UI-only panels, validation (no PATCH sent, focus on the
+    first invalid field), Cancel, dirty-only PATCH, re-seed after save, persistence
+    across reload, GET 401/403/404/500/400-tenant/malformed/network/slow (skeleton),
+    PATCH 204/409/400/403/network, double-click (one PATCH), no-`companyId` session,
+    and a 390px viewport.
+  - Five defects found and fixed during the pass:
+    1. Missing `X-Tenant-Id` (above).
+    2. `customFetch` ignored the API's `errors: string[]` envelope and showed
+       "API request failed with HTTP 400". It now falls back to `errors[]`.
+    3. `customFetch` threw on a `204` or an empty body, turning a completed save into
+       "Could not save". It now resolves `undefined`.
+    4. Cancel and the "Setup" breadcrumb went to `/workorders`. Both used `'../..'`,
+       which is route-relative and climbs out of `/settings/*`; they now use `'..'`.
+       This bug came from `feature/edit-company-settings`.
+    5. The save result callout rendered off-screen above a long form (now scrolled into
+       view), section titles had no gap (Tailwind v4 `space-y` loses to `m-0`, so
+       `gap` is used instead), and on mobile the card overflowed its column (the grid
+       had no base `grid-cols-1`).
+- After the fixes: `test:query` 23/23, `typecheck` and `lint` clean (phantom project
+  aside), `storybook:test` 233/240 (the same 7 pre-existing failures; all 11 settings
+  stories pass, including a new Cancel story).
+- Dev-server note: adding an export to an MF-shared lib (`getSessionTenantId` in
+  `@cms/shared-auth`) needs a shell dev-server restart, because the MF plugin caches
+  the shared module's export list at startup. Touching `apps/shell/vite.config.ts`
+  triggers the restart.
+
+### Deviations from the plan
+
+- The test fixture lives in `tools/integration/src/fixtures/` (next to its only
+  consumer), not in the lib.
+- The standalone runtime gets a fixed `companyId` with no `VITE_DEV_COMPANY_ID` env var.
+  Standalone can't reach the API anyway (see plan Notes for Review).
+- "Upload / Change" is text-only. `ExportIcon` has a tray the design's bare arrow lacks,
+  and Figma is still inaccessible for a trace.
+- Phone uses a plain `TextInput` (`type="tel"`) rather than `PhoneInput`: the design
+  shows no country selector.
+- `@cms/shared-api` was added as a `workspace:*` dependency of both
+  `settings-data-access` and `tools/integration`; `pnpm-lock.yaml` changed by 6 lines.
+
+## History
+
 **[Real login: fetch `accessToken` from `/auth/refresh`](features/api-login-access-token.md)** — implemented and **committed on
 `feature/api-login-access-token`, not yet merged or reviewed**. Branched from
 `feature/edit-company-settings` at `fb8a387`. Local development only.

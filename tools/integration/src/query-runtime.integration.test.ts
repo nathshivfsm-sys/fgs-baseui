@@ -91,12 +91,21 @@ describe('MFE query client ownership', () => {
   it('loads company settings through the shared query contract', async () => {
     const client = createCmsQueryClient();
     const loader = vi.fn(async (companyId: string) => ({
-      companyId,
-      companyName: 'Test Inc',
-      contactEmail: 'test@example.com',
-      ptos: [],
-      taxCodes: [],
-      businessUnits: [],
+      companyNumber: companyId,
+      code: 'test-inc',
+      generalInfo: {
+        name: 'Test Inc',
+        legalName: 'Test Inc',
+        companySize: '',
+        taxId: '',
+        email: 'test@example.com',
+        phoneNumber: '15551234567',
+        website: '',
+        timeZone: 'America/Chicago',
+        isActive: true,
+      },
+      physicalAddress: null,
+      billingAddress: null,
     }));
     const options = companySettingsQueryOptions('northwind', loader);
 
@@ -106,9 +115,9 @@ describe('MFE query client ownership', () => {
       'northwind',
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
-    expect(client.getQueryData(companySettingsKeys.detail('northwind'))).toEqual(
-      expect.objectContaining({ companyName: 'Test Inc' }),
-    );
+    expect(
+      client.getQueryData(companySettingsKeys.detail('northwind')),
+    ).toEqual(expect.objectContaining({ code: 'test-inc' }));
     disposeCmsQueryClient(client);
   });
 
