@@ -1,0 +1,14 @@
+export interface SettingCount {
+  count: number;
+  label: string;
+}
+
+export interface SettingCategory {
+  title: string;
+  description: string;
+  /** Resolved to a `@cms/ui` icon component by `util/resolve-setting-icon.ts`. */
+  icon: string;
+  totalSettings: SettingCount;
+  /** Relative path under the settings remote, e.g. `company/general-info`. */
+  href?: string;
+}

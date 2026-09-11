@@ -6,6 +6,7 @@ import {
 import {
   companyResponseSchema,
   companySettingsKeys,
+  companySettingsMutationOptions,
   companySettingsQueryOptions,
   formatPhoneNumber,
   normalizePhoneNumber,
@@ -172,5 +173,22 @@ describe('company settings through customFetch', () => {
     expect(JSON.parse(String(init?.body))).toEqual({
       website: 'www.acme.example.com',
     });
+  });
+
+  it('invalidates the cached detail after a successful save', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+    const client = createCmsQueryClient();
+    client.setQueryData(companySettingsKeys.detail('1'), { code: 'stale' });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, companySettingsMutationOptions('1', client));
+    await mutation.execute({ website: 'www.acme.example.com' });
+
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('PATCH');
+    expect(
+      client.getQueryState(companySettingsKeys.detail('1'))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
   });
 });

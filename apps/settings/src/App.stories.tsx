@@ -1,12 +1,14 @@
-import type {
-  LoadCompanySettings,
-  SaveCompanySettings,
-} from '@cms/settings-data-access';
-import { ApiError } from '@cms/shared-api';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { expect, fn, userEvent, within } from 'storybook/test';
-import { companyProfileFixture } from '../../../.storybook/fixtures/feature-data';
+import { expect, userEvent, within } from 'storybook/test';
+import {
+  createStoryApi,
+  jsonResponse,
+  pendingResponse,
+  STORY_API_TOKEN,
+  type ApiHandlers,
+} from '../../../.storybook/fixtures/api';
+import { companyResponseFixture } from '../../../.storybook/fixtures/feature-data';
 import {
   STORY_COMPANY_ID,
   withCmsRuntime,
@@ -15,32 +17,29 @@ import { App } from './App';
 
 const SettingsApp = withCmsRuntime(App);
 
-const resolvedSettingsLoader: LoadCompanySettings = async () =>
-  companyProfileFixture;
+/**
+ * Stories drive the screen through `customFetch`, not through injected loader props —
+ * so the Zod parse, the mappers and the PATCH body are all part of what is asserted.
+ * The handler keys mirror `companyEndpoint()`.
+ */
+const api = createStoryApi();
+const COMPANY_ENDPOINT = `/company/${STORY_COMPANY_ID}`;
 
-const pendingSettingsLoader: LoadCompanySettings = () =>
-  new Promise(() => undefined);
-
-const forbiddenSettingsLoader: LoadCompanySettings = async () => {
-  throw new ApiError(403, 'Forbidden');
+const loadsCompany: ApiHandlers = {
+  [`GET ${COMPANY_ENDPOINT}`]: () => jsonResponse(companyResponseFixture),
 };
 
-const saveSpy = fn<SaveCompanySettings>(async () => undefined);
-
-const conflictSaveSpy = fn<SaveCompanySettings>(async () => {
-  throw new ApiError(409, 'Conflict');
-});
+const savesCompany: ApiHandlers = {
+  ...loadsCompany,
+  [`PATCH ${COMPANY_ENDPOINT}`]: () => new Response(null, { status: 204 }),
+};
 
 function SettingsRoutes({
   initialPath = '/settings',
-  loadCompanySettings,
-  saveCompanySettings,
   storyCompanyId,
   storyTenantId,
 }: {
   initialPath?: string;
-  loadCompanySettings?: LoadCompanySettings;
-  saveCompanySettings?: SaveCompanySettings;
   storyCompanyId?: string | null;
   storyTenantId?: string;
 }) {
@@ -50,8 +49,6 @@ function SettingsRoutes({
         <Route
           element={
             <SettingsApp
-              loadCompanySettings={loadCompanySettings}
-              saveCompanySettings={saveCompanySettings}
               storyCompanyId={storyCompanyId}
               storyTenantId={storyTenantId}
             />
@@ -71,10 +68,11 @@ const meta = {
   args: { initialPath: '/settings' },
   argTypes: {
     initialPath: { table: { disable: true } },
-    loadCompanySettings: { table: { disable: true } },
-    saveCompanySettings: { table: { disable: true } },
     storyCompanyId: { table: { disable: true } },
   },
+  // No handlers by default: a story that reaches the network without declaring one
+  // fails with the endpoint it asked for instead of escaping to a real host.
+  beforeEach: () => api.install({}),
 } satisfies Meta<typeof SettingsRoutes>;
 
 export default meta;
@@ -132,11 +130,8 @@ export const SearchNoResults: Story = {
 };
 
 export const GeneralInfo: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
-    saveCompanySettings: saveSpy,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(loadsCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
@@ -151,15 +146,17 @@ export const GeneralInfo: Story = {
     await expect(canvas.getByText('Austin, TX 78701')).toBeVisible();
     await expect(canvas.getByText('No address on file')).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Save' })).toBeDisabled();
+    // The session token reaches the API through customFetch, not through the screen.
+    const get = api.requests.find((request) => request.method === 'GET');
+    await expect(get?.headers.get('Authorization')).toBe(
+      `Bearer ${STORY_API_TOKEN}`,
+    );
   },
 };
 
 export const GeneralInfoSave: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
-    saveCompanySettings: saveSpy,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const website = await canvas.findByRole('textbox', { name: 'Website' });
@@ -170,18 +167,17 @@ export const GeneralInfoSave: Story = {
       await canvas.findByText('Company details updated'),
     ).toBeVisible();
     // Dirty fields only: nothing but the edited Website reaches the PATCH body.
-    await expect(saveSpy).toHaveBeenCalledWith(STORY_COMPANY_ID, {
-      website: 'www.acme.example.com',
-    });
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.endpoint).toBe(COMPANY_ENDPOINT);
+    await expect(patch?.body).toEqual({ website: 'www.acme.example.com' });
+    // A successful save re-seeds the form: the invalidation refetches the detail query.
+    await expect(api.requests.at(-1)?.method).toBe('GET');
   },
 };
 
 export const GeneralInfoCancel: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
-    saveCompanySettings: saveSpy,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await canvas.findByRole('textbox', { name: 'Name' });
@@ -190,12 +186,14 @@ export const GeneralInfoCancel: Story = {
     await expect(
       await canvas.findByRole('heading', { name: 'Setup' }),
     ).toBeVisible();
-    await expect(saveSpy).not.toHaveBeenCalled();
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
   },
 };
 
 export const GeneralInfoFromGrid: Story = {
-  args: { loadCompanySettings: resolvedSettingsLoader },
+  beforeEach: () => api.install(loadsCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(
@@ -208,10 +206,8 @@ export const GeneralInfoFromGrid: Story = {
 };
 
 export const GeneralInfoValidation: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const name = await canvas.findByRole('textbox', { name: 'Name' });
@@ -226,14 +222,18 @@ export const GeneralInfoValidation: Story = {
     await expect(
       await canvas.findByText('Enter a valid email address'),
     ).toBeVisible();
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
   },
 };
 
 export const GeneralInfoLoading: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: pendingSettingsLoader,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () =>
+    api.install({ [`GET ${COMPANY_ENDPOINT}`]: pendingResponse }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
@@ -243,10 +243,12 @@ export const GeneralInfoLoading: Story = {
 };
 
 export const GeneralInfoError: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: forbiddenSettingsLoader,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () =>
+    api.install({
+      [`GET ${COMPANY_ENDPOINT}`]: () =>
+        jsonResponse({ success: false, errors: ['Forbidden'] }, 403),
+    }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
@@ -260,7 +262,6 @@ export const GeneralInfoError: Story = {
 export const GeneralInfoMissingCompany: Story = {
   args: {
     initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
     storyCompanyId: null,
   },
   play: async ({ canvasElement }) => {
@@ -273,15 +274,19 @@ export const GeneralInfoMissingCompany: Story = {
     await expect(
       canvas.queryByTestId('company-settings-form'),
     ).not.toBeInTheDocument();
+    // No companyId means the query is never mounted, let alone fired.
+    await expect(api.requests).toHaveLength(0);
   },
 };
 
 export const GeneralInfoSaveConflict: Story = {
-  args: {
-    initialPath: '/settings/company/general-info',
-    loadCompanySettings: resolvedSettingsLoader,
-    saveCompanySettings: conflictSaveSpy,
-  },
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () =>
+    api.install({
+      ...loadsCompany,
+      [`PATCH ${COMPANY_ENDPOINT}`]: () =>
+        jsonResponse({ success: false, errors: ['Conflict'] }, 409),
+    }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const legalName = await canvas.findByRole('textbox', {

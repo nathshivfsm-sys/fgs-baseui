@@ -1,25 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
-import type {
-  LoadCompanySettings,
-  SaveCompanySettings,
-} from '@cms/settings-data-access';
 import { RemoteErrorBoundary } from './error-boundary';
-import { CompanySettingsPage } from './pages/CompanySettingsPage';
-import { SetupPage } from './pages/SetupPage';
+import { CompanySettingsPage, SetupPage } from './pages';
 import './styles.css';
 
 export interface AppProps {
-  loadCompanySettings?: LoadCompanySettings;
   runtime: CmsRuntime;
-  saveCompanySettings?: SaveCompanySettings;
 }
 
-export function App({
-  loadCompanySettings,
-  runtime,
-  saveCompanySettings,
-}: AppProps) {
+export function App({ runtime }: AppProps) {
   return (
     <RemoteErrorBoundary>
       <div data-tenant={runtime.tenantId}>
@@ -29,9 +18,7 @@ export function App({
             element={
               <CompanySettingsPage
                 companyId={runtime.currentUser.companyId}
-                loadCompanySettings={loadCompanySettings}
                 queryClient={runtime.queryClient}
-                saveCompanySettings={saveCompanySettings}
               />
             }
             path="company/general-info"

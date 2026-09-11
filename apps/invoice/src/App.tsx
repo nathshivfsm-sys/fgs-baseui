@@ -2,9 +2,11 @@ import type { CmsRuntime } from '@cms/platform-contract';
 import { RequireAuth } from '@cms/shared-auth';
 import { Route, Routes } from 'react-router-dom';
 import { RemoteErrorBoundary } from './error-boundary';
-import { InvoiceDetailPage } from './pages/detail';
-import { InvoiceListPage } from './pages/list';
-import { InvoicePaymentPage } from './pages/payment';
+import {
+  InvoiceDetailPage,
+  InvoiceListPage,
+  InvoicePaymentPage,
+} from './pages';
 import './styles.css';
 
 export interface AppProps {
