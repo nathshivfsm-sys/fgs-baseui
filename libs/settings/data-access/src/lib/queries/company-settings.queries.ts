@@ -1,28 +1,30 @@
 import { queryOptions } from '@tanstack/react-query';
 import type { QueryRequestContext } from '@cms/platform-contract';
-import {
-  defaultCompanySettings,
-  readCompanySettingsStore,
-  writeCompanySettingsStore,
-} from '../mocks/company-settings.mock';
+import { customFetch } from '@cms/shared-api';
+import { companyEndpoint } from '../company.endpoints';
+import { toCompanyProfile } from '../mappers/company-settings.mappers';
+import { companyResponseSchema } from '../schemas/company-settings.schema';
+import type { CompanyProfile } from '../types/company-profile';
 import { companySettingsKeys } from './query-keys';
-import type { CompanySettings } from '../schemas/company-settings.schema';
 
 export type LoadCompanySettings = (
   companyId: string,
   context: QueryRequestContext,
-) => Promise<CompanySettings>;
+) => Promise<CompanyProfile>;
 
 /**
- * No real backend exists yet (see libs/shared/api/README.md) — this returns
- * static mock data rather than calling customFetch. Zod parse still runs in
- * the mock store so a response-shape mismatch is caught the same way it would
- * be once this calls a real endpoint.
+ * `GET /company/{companyId}`. Typed `unknown` on the way in so the Zod parse, not the
+ * type parameter, establishes the shape. A failed request throws `ApiError` and is left
+ * to propagate out of the query function.
  */
-export const loadCompanySettings: LoadCompanySettings = async (companyId) => {
-  const existing = readCompanySettingsStore(companyId);
-  if (existing) return existing;
-  return writeCompanySettingsStore(companyId, defaultCompanySettings(companyId));
+export const loadCompanySettings: LoadCompanySettings = async (
+  companyId,
+  { signal },
+) => {
+  const body = await customFetch<unknown>(companyEndpoint(companyId), {
+    signal,
+  });
+  return toCompanyProfile(companyResponseSchema.parse(body).data);
 };
 
 export const companySettingsQueryOptions = (

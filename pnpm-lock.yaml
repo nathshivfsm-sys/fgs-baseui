@@ -342,6 +342,9 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../platform-contract
+      '@cms/shared-api':
+        specifier: workspace:*
+        version: link:../../shared/api
       '@tanstack/react-query':
         specifier: 5.101.4
         version: 5.101.4(react@19.2.8)
@@ -447,6 +450,9 @@ importers:
       '@cms/settings-data-access':
         specifier: workspace:*
         version: link:../../libs/settings/data-access
+      '@cms/shared-api':
+        specifier: workspace:*
+        version: link:../../libs/shared/api
       '@cms/workorder-data-access':
         specifier: workspace:*
         version: link:../../libs/workorder/data-access

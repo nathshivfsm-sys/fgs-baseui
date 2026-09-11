@@ -21,6 +21,7 @@ function toUserDetails(user: AuthSessionDto['user']): UserDetails {
     displayName: displayName || user.email,
     email: user.email,
     role: formatRole(user.roles[0]),
+    ...(user.companyId ? { companyId: user.companyId } : {}),
   };
 }
 
@@ -71,6 +72,7 @@ export const authenticateWithApi: Authenticate =
         session: {
           token: session.accessToken,
           user: toUserDetails(session.user),
+          ...(session.user.tenantId ? { tenantId: session.user.tenantId } : {}),
         },
       };
     } catch (error) {

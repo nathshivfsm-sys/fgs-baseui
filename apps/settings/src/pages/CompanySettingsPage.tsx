@@ -1,13 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import type { QueryClient } from '@tanstack/react-query';
-import { ApiError } from '@cms/shared-api';
 import {
   companySettingsKeys,
   companySettingsQueryOptions,
   loadCompanySettings as defaultLoad,
   saveCompanySettings as defaultSave,
-  type CompanySettings,
+  type CompanyPatch,
   type LoadCompanySettings,
   type SaveCompanySettings,
 } from '@cms/settings-data-access';
@@ -21,11 +20,20 @@ import {
   Callout,
   Heading1,
 } from '@cms/ui';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CompanySettingsForm } from '../components/CompanySettingsForm';
+import { GeneralInfoSkeleton } from '../components/general-info/GeneralInfoSkeleton';
+import { describeCompanyError } from '../lib/describe-company-error';
+
+/**
+ * Route-relative, not URL-relative: `company/general-info` is a single route, so one
+ * `..` reaches the Setup index. `../..` would climb out of `/settings/*` to the root.
+ */
+const SETUP_PATH = '..';
 
 export interface CompanySettingsPageProps {
-  companyId: string;
+  /** From the login response; absent for sessions stored before it was captured. */
+  companyId: string | undefined;
   loadCompanySettings?: LoadCompanySettings;
   queryClient: QueryClient;
   saveCompanySettings?: SaveCompanySettings;
@@ -40,34 +48,76 @@ export function CompanySettingsPage({
   const navigate = useNavigate();
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const feedbackRef = useRef<HTMLDivElement>(null);
+
+  // Save sits at the bottom of a long form; bring the result above it into view.
+  useEffect(() => {
+    if (saveMessage != null || saveError != null) {
+      feedbackRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [saveMessage, saveError]);
 
   const query = useQuery(
-    companySettingsQueryOptions(companyId, loadCompanySettings),
+    {
+      ...companySettingsQueryOptions(companyId ?? '', loadCompanySettings),
+      enabled: Boolean(companyId),
+    },
     queryClient,
   );
   const mutation = useMutation(
     {
-      mutationFn: (settings: CompanySettings) =>
-        saveCompanySettings(companyId, settings),
+      mutationFn: (patch: CompanyPatch) =>
+        saveCompanySettings(companyId ?? '', patch),
       meta: { feature: 'company-settings', operation: 'update' },
-      onSuccess: (data) => {
-        queryClient.setQueryData(companySettingsKeys.detail(companyId), data);
+      onSuccess: async () => {
         setSaveError(null);
-        setSaveMessage('Settings updated successfully');
+        setSaveMessage('Company details updated');
+        await queryClient.invalidateQueries({
+          queryKey: companySettingsKeys.detail(companyId ?? ''),
+        });
       },
       onError: (error: unknown) => {
         setSaveMessage(null);
-        if (error instanceof ApiError && error.status === 409) {
-          setSaveError('Settings already updated by another user');
-          return;
-        }
-        setSaveError(
-          error instanceof Error ? error.message : 'Failed to update settings',
-        );
+        setSaveError(describeCompanyError(error));
       },
     },
     queryClient,
   );
+
+  function renderBody() {
+    if (!companyId) {
+      return (
+        <Callout title="No company on this session" variant="error">
+          Your session isn't linked to a company. Sign out and sign in again.
+        </Callout>
+      );
+    }
+    if (query.isPending) return <GeneralInfoSkeleton />;
+    if (query.isError) {
+      return (
+        <Callout title="Unable to load company details" variant="error">
+          {describeCompanyError(query.error)}
+        </Callout>
+      );
+    }
+    return (
+      <CompanySettingsForm
+        isPending={mutation.isPending}
+        onCancel={() => {
+          navigate(SETUP_PATH);
+        }}
+        onSubmit={(patch) => {
+          setSaveMessage(null);
+          setSaveError(null);
+          mutation.mutate(patch);
+        }}
+        profile={query.data}
+      />
+    );
+  }
 
   return (
     <section className="space-y-6" data-testid="company-settings">
@@ -76,7 +126,7 @@ export function CompanySettingsPage({
           <BreadcrumbItem>
             <Link
               className="rounded-sm outline-none transition-colors hover:text-action focus-visible:ring-[3px] focus-visible:ring-ring/30"
-              to="../.."
+              to={SETUP_PATH}
             >
               Setup
             </Link>
@@ -95,42 +145,24 @@ export function CompanySettingsPage({
       <header>
         <Heading1>General Info</Heading1>
         <BodySmall color="foreground-subtle">
-          Configure company details, contact information, PTO types, tax codes,
-          and business units.
+          Manage your company details, address, logo and non working days.
         </BodySmall>
       </header>
 
-      {saveMessage != null && (
-        <Callout title="Saved" variant="success">
-          {saveMessage}
-        </Callout>
-      )}
-      {saveError != null && (
-        <Callout title="Could not save" variant="error">
-          {saveError}
-        </Callout>
-      )}
+      <div className="scroll-mt-4 empty:hidden" ref={feedbackRef}>
+        {saveMessage != null && (
+          <Callout title="Saved" variant="success">
+            {saveMessage}
+          </Callout>
+        )}
+        {saveError != null && (
+          <Callout title="Could not save" variant="error">
+            {saveError}
+          </Callout>
+        )}
+      </div>
 
-      {query.isPending ? (
-        <BodySmall role="status">Loading company settings…</BodySmall>
-      ) : query.isError ? (
-        <Callout title="Unable to load settings" variant="error">
-          {query.error.message}
-        </Callout>
-      ) : (
-        <CompanySettingsForm
-          isPending={mutation.isPending}
-          onCancel={() => {
-            navigate('../..');
-          }}
-          onSubmit={(data) => {
-            setSaveMessage(null);
-            setSaveError(null);
-            mutation.mutate(data);
-          }}
-          settings={query.data}
-        />
-      )}
+      {renderBody()}
     </section>
   );
 }

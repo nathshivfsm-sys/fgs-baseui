@@ -15,6 +15,9 @@ const standaloneUser = {
   displayName: 'Standalone User',
   email: 'standalone.user@example.com',
   role: 'Developer',
+  // Lets General Info render standalone. It cannot load real data here: this origin
+  // has no session token and no /api/v1 proxy, so API work goes through the shell.
+  companyId: 'standalone-company',
 } satisfies UserDetails;
 
 export const standaloneRuntime: CmsRuntime = {

@@ -1,133 +1,98 @@
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  companySettingsSchema,
-  type CompanySettings,
+  companyGeneralInfoSchema,
+  toCompanyPatch,
+  type CompanyGeneralInfo,
+  type CompanyPatch,
+  type CompanyProfile,
 } from '@cms/settings-data-access';
-import {
-  Button,
-  PhoneInput,
-  SectionCard,
-  SectionContent,
-  SectionHeader,
-  SectionTitle,
-  Textarea,
-  TextInput,
-} from '@cms/ui';
-import { BusinessUnitsFieldArray } from './sections/BusinessUnitsFieldArray';
-import { PtosFieldArray } from './sections/PtosFieldArray';
-import { TaxCodesFieldArray } from './sections/TaxCodesFieldArray';
+import { Button, SectionCard } from '@cms/ui';
+import { AddressesSection } from './general-info/AddressesSection';
+import { BrandingSection } from './general-info/BrandingSection';
+import { CompanyDefaultsSection } from './general-info/CompanyDefaultsSection';
+import { CompanyInformationSection } from './general-info/CompanyInformationSection';
+import { ContactInformationSection } from './general-info/ContactInformationSection';
+import { NonWorkingDaysPanel } from './general-info/NonWorkingDaysPanel';
 
 export interface CompanySettingsFormProps {
   isPending: boolean;
   onCancel: () => void;
-  onSubmit: (data: CompanySettings) => void;
-  settings: CompanySettings;
+  onSubmit: (patch: CompanyPatch) => void;
+  profile: CompanyProfile;
 }
 
 export function CompanySettingsForm({
   isPending,
   onCancel,
   onSubmit,
-  settings,
+  profile,
 }: CompanySettingsFormProps) {
-  const form = useForm<CompanySettings>({
+  const form = useForm<CompanyGeneralInfo>({
     mode: 'onBlur',
     resolver: zodResolver(
-      companySettingsSchema,
-    ) as Resolver<CompanySettings>,
-    values: settings,
+      companyGeneralInfoSchema,
+    ) as Resolver<CompanyGeneralInfo>,
+    // Re-seeds (and clears dirty state) whenever the detail query refetches after a save.
+    values: profile.generalInfo,
   });
+  // Read during render: RHF's formState proxy only tracks what a component subscribes to.
+  const { dirtyFields, isDirty } = form.formState;
 
   return (
     <FormProvider {...form}>
       <form
         className="space-y-6"
         data-testid="company-settings-form"
-        onSubmit={form.handleSubmit(onSubmit)}
+        // Zod owns validation and its messages; native constraint bubbles would pre-empt it.
+        noValidate
+        onSubmit={form.handleSubmit((values) =>
+          onSubmit(toCompanyPatch(values, dirtyFields)),
+        )}
       >
-        <SectionCard padding="comfortable" radius="panel" tone="soft">
-          <SectionHeader bordered>
-            <SectionTitle size="sm">Company information</SectionTitle>
-          </SectionHeader>
-          <SectionContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <TextInput
-              error={form.formState.errors.companyName?.message}
-              label="Company name"
-              placeholder="Enter company name"
-              required
-              variant="soft"
-              {...form.register('companyName')}
+        <SectionCard
+          className="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+          padding="none"
+          radius="panel"
+          tone="soft"
+        >
+          <div className="space-y-6 p-5 lg:border-r lg:border-border-subtle">
+            <CompanyInformationSection
+              code={profile.code}
+              companyNumber={profile.companyNumber}
             />
-            <TextInput
-              error={form.formState.errors.contactEmail?.message}
-              label="Contact email"
-              placeholder="Enter contact email"
-              required
-              type="email"
-              variant="soft"
-              {...form.register('contactEmail')}
+            <ContactInformationSection />
+            <AddressesSection
+              billingAddress={profile.billingAddress}
+              physicalAddress={profile.physicalAddress}
             />
-            <PhoneInput
-              error={form.formState.errors.phone?.message}
-              label="Phone"
-              variant="soft"
-              {...form.register('phone')}
-            />
-            <Textarea
-              className="sm:col-span-2"
-              error={form.formState.errors.address?.message}
-              label="Address"
-              placeholder="Enter address"
-              variant="soft"
-              {...form.register('address')}
-            />
-          </SectionContent>
+            <BrandingSection />
+            <CompanyDefaultsSection />
+          </div>
+          <div className="border-t border-border-subtle p-5 lg:border-t-0">
+            <NonWorkingDaysPanel />
+          </div>
         </SectionCard>
 
-        <SectionCard padding="comfortable" radius="panel" tone="soft">
-          <SectionHeader bordered>
-            <SectionTitle size="sm">PTO types</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <PtosFieldArray />
-          </SectionContent>
-        </SectionCard>
-
-        <SectionCard padding="comfortable" radius="panel" tone="soft">
-          <SectionHeader bordered>
-            <SectionTitle size="sm">Tax codes</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <TaxCodesFieldArray />
-          </SectionContent>
-        </SectionCard>
-
-        <SectionCard padding="comfortable" radius="panel" tone="soft">
-          <SectionHeader bordered>
-            <SectionTitle size="sm">Business units</SectionTitle>
-          </SectionHeader>
-          <SectionContent>
-            <BusinessUnitsFieldArray />
-          </SectionContent>
-        </SectionCard>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-border-subtle pt-4 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             disabled={isPending}
             onClick={onCancel}
+            size="comfortable"
             type="button"
             variant="surface"
           >
             Cancel
           </Button>
           <Button
-            disabled={isPending}
+            disabled={isPending || !isDirty}
             loading={isPending}
             loadingText="Saving…"
+            size="comfortable"
             type="submit"
+            variant="action"
           >
-            Save settings
+            Save
           </Button>
         </div>
       </form>
