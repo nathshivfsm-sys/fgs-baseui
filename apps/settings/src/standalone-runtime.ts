@@ -15,8 +15,9 @@ const standaloneUser = {
   displayName: 'Standalone User',
   email: 'standalone.user@example.com',
   role: 'Developer',
-  // Lets General Info render standalone. It cannot load real data here: this origin
-  // has no session token and no /api/v1 proxy, so API work goes through the shell.
+  // Lets General Info render standalone. Real API calls still go through the
+  // shell (this origin has no session token and no /api/v1 proxy). With
+  // VITE_USE_MOCK_API=true, MSW serves GET/PATCH /company/standalone-company.
   companyId: 'standalone-company',
 } satisfies UserDetails;
 

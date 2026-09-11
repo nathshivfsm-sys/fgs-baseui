@@ -48,6 +48,7 @@
     "core-js": "3.50.0",
     "eslint-config-prettier": "10.1.8",
     "jsonc-eslint-parser": "3.3.0",
+    "msw": "2.11.6",
     "nx": "23.1.1",
     "playwright": "1.62.1",
     "prettier": "3.6.2",
@@ -77,5 +78,11 @@
   },
   "nx": {
     "includedScripts": []
+  },
+  "msw": {
+    "workerDirectory": [
+      "apps/shell/public",
+      "apps/settings/public"
+    ]
   }
 }

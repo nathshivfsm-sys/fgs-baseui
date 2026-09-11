@@ -2,6 +2,16 @@
 
 ## Status
 
+**MSW mock APIs (login + Settings)** — implemented and browser-verified
+on `refactor/settings-data-flow`. Shared handlers in `@cms/shared-mocks`
+(`libs/shared/mocks`), started from app bootstrap when
+`VITE_USE_MOCK_API=true`. Query functions and `customFetch` are unchanged.
+
+Verified: mock login returns Jordan Reed / companyId 1; Settings General Info
+loads and saves against the in-memory company mock. With the flag `false`,
+login hits the real `/api/v1/auth/refresh` (404 from Vite with no proxy) and
+the leftover service worker is unregistered.
+
 **Page-owned app structure** — implemented and verified locally, **not yet
 committed**. Colocates page-only components, constants, types, and utils under
 `pages/<PageName>/`, imports folders through `index.ts`, and uses `util/` instead

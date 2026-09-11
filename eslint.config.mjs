@@ -27,6 +27,7 @@ function externalPackageAllowPatterns() {
     'package.json',
     'libs/ui/package.json',
     'libs/platform-contract/package.json',
+    'libs/shared/mocks/package.json',
   ];
   const names = new Set();
   for (const file of files) {
@@ -53,6 +54,7 @@ export default tseslint.config(
       '**/coverage',
       '**/node_modules',
       '**/*.d.ts',
+      '**/mockServiceWorker.js',
       // EJS-templated source used by `nx g ./tools/generators/remote-app` —
       // contains `<%= %>` placeholders that aren't valid TS/JSON syntax.
       'tools/generators/**/files/**',

@@ -7,11 +7,9 @@ export function getStoredTheme(): Theme {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
   } catch {
-    // localStorage unavailable (e.g. private browsing) — fall through to system preference.
+    // localStorage unavailable (e.g. private browsing) — fall through to light.
   }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return 'light';
 }
 
 export function applyTheme(theme: Theme): void {

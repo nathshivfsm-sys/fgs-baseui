@@ -10,6 +10,16 @@ import { cmsRuntime } from './runtime';
 import './styles.css';
 
 async function bootstrap() {
+  // Dynamic import so `msw/browser` stays out of the production bundle. The
+  // flag is the only switch: query functions and `customFetch` are unchanged.
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true') {
+    const { startMockWorker } = await import('@cms/shared-mocks');
+    await startMockWorker();
+  } else if (import.meta.env.DEV) {
+    const { stopMockWorker } = await import('@cms/shared-mocks');
+    await stopMockWorker();
+  }
+
   const config = await loadRuntimeConfig();
   registerProviders(config.remotes);
   const { App } = await import('./App');

@@ -21,6 +21,10 @@ export default defineConfig(({ mode }) => {
   // output contains no proxy, so this cannot reach a deployed bundle even if set.
   const devApiProxyTarget = env['VITE_DEV_API_PROXY_TARGET'];
 
+  if (env['VITE_USE_MOCK_API'] === 'true') {
+    console.log('[shell] VITE_USE_MOCK_API=true — MSW will intercept /api/v1');
+  }
+
   return {
     base: viteBase(),
     server: {
