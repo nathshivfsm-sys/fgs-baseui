@@ -1,5 +1,5 @@
 import type { Lead } from '@cms/lead-data-access';
-import type { CompanyProfile } from '@cms/settings-data-access';
+import type { CompanyDto } from '@cms/settings-data-access';
 import type { Workorder } from '@cms/workorder-data-access';
 
 export const leadFixtures = [
@@ -16,30 +16,38 @@ export const workorderFixtures = [
   },
 ] satisfies readonly Workorder[];
 
-/** Mirrors the mapped shape of a real `GET /company/1` response (dev tenant). */
-export const companyProfileFixture = {
-  companyNumber: '1',
-  code: 'acme-field-services-ae23b1',
-  generalInfo: {
+/**
+ * Wire shape of `GET /company/{companyId}`, so stories drive the same path the app
+ * does: `customFetch` → `companyResponseSchema` → `toCompanyProfile`. Values match the
+ * redacted capture in `tools/integration/src/fixtures/company-response.ts`, which keeps
+ * every key the schema strips; this one carries only what the screen reads.
+ */
+export const companyResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    companyNumber: 1,
+    code: 'acme-field-services-ae23b1',
     name: 'Acme Field Services',
     legalName: 'Acme Field Services',
-    companySize: '11-50',
-    taxId: '',
     email: 'owner@acme.example.com',
-    phoneNumber: '+1 (555) 123-4567',
+    phoneNumber: '15551234567',
     website: 'https://acme.example.com',
+    taxId: null,
+    companySize: '11-50',
     timeZone: 'America/Chicago',
     isActive: true,
+    physicalAddress: {
+      addressLine1: '100 Main St',
+      addressLine2: null,
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    },
+    billingAddress: null,
   },
-  physicalAddress: {
-    lines: ['100 Main St'],
-    city: 'Austin',
-    state: 'TX',
-    postalCode: '78701',
-    country: 'US',
-  },
-  billingAddress: null,
-} satisfies CompanyProfile;
+} satisfies { success: boolean; statusCode: number; data: CompanyDto };
 
 export const resolvedLoader =
   <Item>(items: readonly Item[]) =>

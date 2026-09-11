@@ -8,6 +8,7 @@ Read the following to get the full context of the project:
 
 - @.claude/context/project-overview.md
 - @.claude/context/coding-standards.md
+- @.claude/context/forms-implementation-guide.md
 - @.claude/context/ai-interaction.md
 - @.claude/context/current-feature.md
 

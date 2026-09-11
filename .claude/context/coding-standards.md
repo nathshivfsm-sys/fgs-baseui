@@ -167,20 +167,32 @@ apps/<app>/src/
 
   App.tsx                AppProps + route table + error boundary. Nothing else.
 
-  types/                 types used by two or more sibling folders
-  constants/             literal values only — no functions
-  lib/                   pure functions, no React, no JSX
-  hooks/                 custom hooks (create when the first one appears)
-  components/            presentational components
-  pages/                 route targets
-  store/                 zustand: store.ts / types.ts / constants.ts
+  pages/
+    index.ts             page entry-point exports
+    <PageName>/
+      <PageName>.tsx     route target
+      index.ts           public page entry point
+      component/         components owned by this page
+      constant/          page-owned literal values
+      types/             page-owned domain types
+      util/              page-owned pure functions
+      store/             page-owned state, when needed
+
+  shared/                only concerns with proven cross-page consumers
+    component/
+    constant/
+    types/
+    util/
+
+  store/                 app-wide state shared by multiple pages
+  util/                  app-owned helpers used by bootstrap or store
 ```
 
-**`App.tsx` holds no markup.** It declares `AppProps { runtime: CmsRuntime }`, wraps in
-`RemoteErrorBoundary`, and returns a `<Routes>` table. Screen markup belongs in `pages/`.
-A remote that renders a single screen still routes to it — `<Route index element={...} />`
-— rather than inlining it. This is the rule that keeps entry files from accreting a whole
-feature, and it is the one most likely to be violated by copying an older sibling app.
+**`App.tsx` holds no screen markup.** It declares `AppProps { runtime: CmsRuntime }`, owns
+the remote error boundary, and composes page entry points. A multi-route app returns a
+`<Routes>` table. A single-page remote may render its page entry directly when introducing
+a router would otherwise change its runtime contract. Screen markup belongs in
+`pages/<PageName>/<PageName>.tsx`.
 
 **Every app accepts `runtime`.** The shell passes `runtime={mfeRuntime}` to every remote.
 A remote that declares no props still type-checks against `lazyProvider<{ runtime }>`,
@@ -188,15 +200,27 @@ because a zero-prop component structurally satisfies it — so this will not fai
 and it must be checked by eye. Stamp `data-tenant={runtime.tenantId}` as the visible proof
 it is wired.
 
-**Types placement.** A type used by two or more sibling folders goes in `src/types/`, one
-file per domain concept, re-exported from `src/types/index.ts`. A type used by exactly one
-folder stays in that folder's own `types.ts` — which is why the `store/types.ts` triple is
-correct where it appears. Do not declare an interface inline in a `constants/` file.
+**Ownership comes before reuse.** If a component, constant, type, helper, or store is used
+by one page only, it belongs under that page. Do not move code to `shared/` because it may
+be reused later; promote it only after a real second page consumer appears. App bootstrap,
+runtime, routing, and Module Federation wiring remain at `src/` because no page owns them.
 
-**`constants/` holds data, `lib/` holds behaviour.** If it is a function, it is not a
+**Types placement.** Page-domain types belong in the page's `types/` folder and are
+re-exported from `types/index.ts` when several page files consume them. Component props and
+other single-file types may stay beside their implementation. Types genuinely consumed by
+multiple pages go in `src/shared/types/`. Store implementation types stay with their
+owning page or app-wide store. Do not declare an interface in a `constant/` file.
+
+**`constant/` holds data, `util/` holds behaviour.** If it is a function, it is not a
 constant. A lookup map is a constant; the function that reads the map is not. Mock data
-that will later come from a `data-access` lib lives in `constants/` until that lib exists,
-not inline in the component that renders it.
+that will later come from a `data-access` lib lives in the owning page's `constant/` until
+that lib exists, not inline in the component that renders it. Do not name an app folder
+`lib/` — that word is reserved for Nx libraries under `libs/`.
+
+**Every folder has an `index.ts`.** Import a folder by its folder name, never a file
+inside it: `from './component'`, not `from './component/CompanySettingsForm'`. The
+folder's `index.ts` is the only file that imports sibling implementation files. Files
+inside a folder may import sibling files when a barrel import would cycle.
 
 **Naming.** Files exporting a React component are PascalCase and match the export name
 (`SetupHeader.tsx`). Everything else is kebab-case (`resolve-setting-icon.ts`). Page
@@ -205,7 +229,8 @@ when the file actually contains JSX — a file that merely references component 
 in a map is `.ts`.
 
 **Stories are colocated** next to the component they cover
-(`components/TopNav.stories.tsx`), not gathered in a separate folder.
+(`pages/SetupPage/component/SetupHeader.stories.tsx`), not gathered in a separate folder.
+An `App.stories.tsx` that exercises multiple routes remains beside `App.tsx`.
 
 ## Data Fetching Native Fetch Client Setup (`libs/shared/api`)
 
@@ -236,6 +261,32 @@ in a map is `.ts`.
   `Promise<T>` on trust — the type parameter is an assertion, not a runtime guarantee.
 - `baseUrl` is currently `''` because no backend exists yet, and the data-access libs return
   static mocks. See `libs/shared/api/README.md`.
+
+## Queries, Mutations & Forms
+
+A data-access lib exports **options factories, not hooks** — `<feature>QueryOptions` and
+`<feature>MutationOptions` — and the screen passes the `queryClient` it was given:
+
+```typescript
+const query = useQuery(companySettingsQueryOptions(companyId), queryClient);
+const mutation = useMutation(
+  companySettingsMutationOptions(companyId, queryClient),
+  queryClient,
+);
+```
+
+The explicit second argument is deliberate and must not be "fixed" into provider-only
+usage: a hosted remote uses the client from `runtime`, never one of its own
+(`libs/platform-contract/README.md`). The mutation factory owns the invalidation that
+follows its own write, so the cache rule lives next to the key factory.
+
+A remote's `AppProps` is `{ runtime: CmsRuntime }` and stays that way however many
+endpoints its screens grow. Do **not** add per-endpoint loader/saver props for tests —
+both test tiers stub global `fetch` instead (`.storybook/fixtures/api.ts`,
+`tools/integration`).
+
+The full recipe, including the two-schema rule and dirty-field patching, is in
+@context/forms-implementation-guide.md.
 
 ## Error Handling
 

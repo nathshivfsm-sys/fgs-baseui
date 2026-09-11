@@ -57,7 +57,7 @@ function phoneDigitCount(value: string): number {
  * body needs no renaming. `code` and `companyNumber` are read-only and deliberately
  * absent — they can never become dirty, so they can never be sent.
  */
-export const companyGeneralInfoSchema = z.object({
+export const companyGeneralInfoFormSchema = z.object({
   name: z
     .string()
     .trim()
@@ -93,4 +93,4 @@ export const companyGeneralInfoSchema = z.object({
   isActive: z.boolean(),
 });
 
-export type CompanyGeneralInfo = z.infer<typeof companyGeneralInfoSchema>;
+export type CompanyGeneralInfo = z.infer<typeof companyGeneralInfoFormSchema>;

@@ -1,4 +1,4 @@
-import type { Theme } from '../lib/theme';
+import type { Theme } from '../util';
 
 export interface ShellState {
   tenantId: string;

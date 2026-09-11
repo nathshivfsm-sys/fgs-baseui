@@ -234,7 +234,7 @@ export default async function remoteAppGenerator(
         `One manual step remains — the sidebar has no entry for "${displayName}" yet\n` +
         `because that's a design decision (icon, section, label), not a mechanical one.\n` +
         `Route "/${name}" already works if you type the URL directly. To add it to the\n` +
-        `sidebar, add an entry to apps/shell/src/components/nav-config.tsx, e.g.:\n` +
+        `sidebar, add an entry to apps/shell/src/shared/constant, e.g.:\n` +
         `  { icon: SomeIcon, label: '${displayName}', path: '/${name}' }\n` +
         `(pick an existing icon from libs/ui/src/icons, or hand-trace a new one\n` +
         `following the createFigmaIcon pattern — see coding-standards.md).\n`,

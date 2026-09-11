@@ -3,6 +3,3 @@ export const companySettingsKeys = {
   detail: (companyId: string) =>
     [...companySettingsKeys.all, companyId] as const,
 } as const;
-
-/** Guide name — same factory as `companySettingsKeys`. */
-export const SETTINGS_QUERY_KEYS = companySettingsKeys;

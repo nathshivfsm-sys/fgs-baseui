@@ -27,13 +27,10 @@ export const loadCompanySettings: LoadCompanySettings = async (
   return toCompanyProfile(companyResponseSchema.parse(body).data);
 };
 
-export const companySettingsQueryOptions = (
-  companyId: string,
-  load: LoadCompanySettings = loadCompanySettings,
-) =>
+export const companySettingsQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: companySettingsKeys.detail(companyId),
-    queryFn: ({ signal }) => load(companyId, { signal }),
+    queryFn: ({ signal }) => loadCompanySettings(companyId, { signal }),
     staleTime: 5 * 60 * 1000,
     meta: { feature: 'company-settings', operation: 'detail' },
   });

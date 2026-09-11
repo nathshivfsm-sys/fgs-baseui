@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { applyTheme, getStoredTheme } from '../lib/theme';
+import { applyTheme, getStoredTheme } from '../util';
 import { DEFAULT_TENANT_ID } from './constants';
 import type { ShellState } from './types';
 

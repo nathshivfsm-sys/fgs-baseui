@@ -2,6 +2,53 @@
 
 ## Status
 
+**Page-owned app structure** — implemented and verified locally, **not yet
+committed**. Colocates page-only components, constants, types, and utils under
+`pages/<PageName>/`, imports folders through `index.ts`, and uses `util/` instead
+of app-local `lib/`. A Cursor rule lives at `.cursor/rules/page-folder-structure.mdc`.
+No behaviour change.
+
+### Verification
+
+- `typecheck` and `lint` clean for `settings`, `invoice`, `shell`, `lead`, `workorder`.
+- `test:query` 24/24.
+- Vite production builds clean for `settings`, `invoice`, `lead`, `workorder`, `shell`.
+- `ui:build` still fails on the pre-existing `DispatchBoardSpike.tsx:419` error.
+
+**Settings data-flow refactor (scalability review follow-up)** — implemented and verified
+locally, **not yet committed**. Branch `refactor/settings-data-flow`, cut from
+`feature/company-general-info-api` at `3703ba9`.
+
+No behaviour change. It removes the patterns that would not survive the next ten settings
+forms, and makes the `UI → Form → Validation → Mutation → Cache → UI` path readable in one
+pass by a person or an agent.
+
+| Change | Why |
+| ------------------------------------------------------------- | ------------------------------------------------------- |
+| `AppProps` back to `{ runtime }`; `loadCompanySettings` / `saveCompanySettings` props and the `load` parameter on the query factory deleted | Per-endpoint DI props grew the remote's public interface with every endpoint, and made "does this call the network?" unanswerable from the screen |
+| Stories drive `globalThis.fetch` via `createStoryApi()` in `.storybook/fixtures/api.ts` | One seam for every endpoint, at the same place `tools/integration` already stubs; stories now cover `customFetch` → Zod → mappers and assert the real PATCH body |
+| New `companySettingsMutationOptions(companyId, queryClient)` | The write path and its invalidation now sit next to the key factory instead of being re-derived in the page |
+| Save feedback derived from `mutation.isSuccess` / `mutation.error` | Two mirrored `useState`s plus six setter calls were one fact with two sources of truth |
+| `CompanySettingsEditor` mounted only when `companyId` exists | Removes three `companyId ?? ''` fallbacks, the `enabled` flag, and a phantom `['company-settings', '']` cache entry |
+| `SETTINGS_QUERY_KEYS` alias deleted | Two public names for one key factory |
+| `companyGeneralInfoSchema` → `companyGeneralInfoFormSchema` | Makes the wire/form schema split obvious from the import list |
+| `as Resolver<CompanyGeneralInfo>` cast deleted | Unnecessary (verified), and it would hide a real input/output mismatch the first time a schema uses `.default()` or `z.coerce` |
+| `resetOptions: { keepDirtyValues: true }` | A background refetch of a changed record would otherwise discard in-progress edits |
+| New `components/form/FormTextInput.tsx` + `FormSelectField.tsx` | Cuts the per-field `register` / `Controller` boilerplate to one line; the bespoke `isActive` switch stays a bare `Controller` |
+| `forms-implementation-guide.md` rewritten (758 → ~150 lines) | The old guide described hooks, PTO/tax/BU schemas and file paths that no longer exist, so any agent following it would have built a second, wrong pattern. Now listed in `CLAUDE.md` and summarised in `coding-standards.md` |
+
+### Verification
+
+- `test:query` 24/24 (one new: the mutation factory invalidates the detail key).
+- `typecheck` and `lint` clean for `settings`, `settings-data-access`, `integration`, `shell`.
+- `storybook:typecheck`: only the pre-existing `DispatchBoardSpike.tsx:419` error.
+- `storybook:test` 233/240 — the same 7 pre-existing failures (`TopNav` ×6,
+  `LoginPage > Successful Login`). All 13 settings stories pass.
+- `settings:build` and `shell:build` clean. `ui:build` fails on the pre-existing
+  `DispatchBoardSpike.tsx:419` FullCalendar typing error, untouched here.
+- Not re-run in a real browser against the live API; the save path is covered by the
+  story assertions on the recorded PATCH body.
+
 **[Company General Info — API-backed edit form](features/company-general-info-api-prd.md)**
 — spec and [implementation plan](features/company-general-info-api-plan.md) written;
 **implemented and verified locally, not yet committed, not browser-tested against the

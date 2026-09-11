@@ -11,10 +11,12 @@ import {
   companySettingsKeys,
   companySettingsQueryOptions,
 } from '@cms/settings-data-access';
+import { configureCustomFetch } from '@cms/shared-api';
 import { workorderKeys } from '@cms/workorder-data-access';
 import { standaloneRuntime as leadRuntime } from '../../../apps/lead/src/standalone-runtime';
 import { standaloneRuntime as workorderRuntime } from '../../../apps/workorder/src/standalone-runtime';
 import { cmsRuntime } from '../../../apps/shell/src/runtime';
+import { companyResponseFixture } from './fixtures/company-response';
 
 const ownedClients = [
   cmsRuntime.queryClient,
@@ -24,6 +26,8 @@ const ownedClients = [
 
 afterEach(() => {
   ownedClients.forEach(disposeCmsQueryClient);
+  vi.unstubAllGlobals();
+  configureCustomFetch({ baseUrl: '' });
 });
 
 describe('MFE query client ownership', () => {
@@ -90,34 +94,24 @@ describe('MFE query client ownership', () => {
 
   it('loads company settings through the shared query contract', async () => {
     const client = createCmsQueryClient();
-    const loader = vi.fn(async (companyId: string) => ({
-      companyNumber: companyId,
-      code: 'test-inc',
-      generalInfo: {
-        name: 'Test Inc',
-        legalName: 'Test Inc',
-        companySize: '',
-        taxId: '',
-        email: 'test@example.com',
-        phoneNumber: '15551234567',
-        website: '',
-        timeZone: 'America/Chicago',
-        isActive: true,
-      },
-      physicalAddress: null,
-      billingAddress: null,
-    }));
-    const options = companySettingsQueryOptions('northwind', loader);
-
-    await client.fetchQuery(options);
-
-    expect(loader).toHaveBeenCalledWith(
-      'northwind',
-      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify(companyResponseFixture), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
     );
-    expect(
-      client.getQueryData(companySettingsKeys.detail('northwind')),
-    ).toEqual(expect.objectContaining({ code: 'test-inc' }));
+    vi.stubGlobal('fetch', fetchMock);
+    configureCustomFetch({ baseUrl: '/api/v1' });
+
+    await client.fetchQuery(companySettingsQueryOptions('1'));
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/company/1');
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      signal: expect.any(AbortSignal),
+    });
+    expect(client.getQueryData(companySettingsKeys.detail('1'))).toEqual(
+      expect.objectContaining({ code: 'acme-field-services-ae23b1' }),
+    );
     disposeCmsQueryClient(client);
   });
 

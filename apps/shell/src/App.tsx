@@ -1,4 +1,4 @@
-import { Component, Suspense, useMemo, type ReactNode } from 'react';
+import { useMemo } from 'react';
 import {
   matchPath,
   Navigate,
@@ -9,49 +9,18 @@ import {
 import { useStore } from 'zustand';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { RequireAuth, useAuth } from '@cms/shared-auth';
-import { BodySmall } from '@cms/ui';
-import { AppShell } from './components/AppShell';
-import { ALL_NAV_ROUTES } from './components/nav-config';
-import { PublicShell } from './components/PublicShell';
-import { RoutePlaceholder } from './components/RoutePlaceholder';
+import {
+  ALL_NAV_ROUTES,
+  AppShell,
+  ProviderBoundary,
+  PublicShell,
+  RoutePlaceholder,
+} from './shared';
 import { lazyProvider } from './mf';
-import { LoginPage } from './pages/LoginPage';
+import { LoginPage } from './pages';
 import { PUBLIC_ROUTE_PATTERNS } from './routes';
 import { cmsRuntime } from './runtime';
-import { GUEST_USER } from './store/constants';
-import { shellStore } from './store/store';
-
-class ProviderBoundary extends Component<
-  { children: ReactNode; name: string },
-  { error: Error | null }
-> {
-  state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-  render() {
-    if (this.state.error) {
-      return (
-        <div
-          className="rounded-md border border-destructive/30 bg-destructive/5 p-6"
-          role="alert"
-        >
-          <strong>{this.props.name} is unavailable.</strong>
-          <BodySmall color="destructive">{this.state.error.message}</BodySmall>
-        </div>
-      );
-    }
-    return (
-      <Suspense
-        fallback={
-          <BodySmall role="status">Loading {this.props.name}…</BodySmall>
-        }
-      >
-        {this.props.children}
-      </Suspense>
-    );
-  }
-}
+import { GUEST_USER, shellStore } from './store';
 
 const Workorder = lazyProvider<{ runtime: CmsRuntime }>('workorder', 'App');
 const Lead = lazyProvider<{ runtime: CmsRuntime }>('lead', 'App');
