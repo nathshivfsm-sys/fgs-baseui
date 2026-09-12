@@ -1,6 +1,7 @@
-# Company Branding — reusable entity image upload (UI only)
+# Company Branding — reusable entity image upload
 
-**Status:** Spec, not started. **Branch (proposed):** `feature/company-branding-image-upload`.
+**Status:** Spec + plan; API wiring in implementation. **Branch:** continue
+`feature/company-general-info-settings-implementation` (branding is on General Info).
 
 **Design:** pasted screenshot of the existing General Info **Branding / Logo** section
 (Full Logo + Compact Logo cards). Durable copy:
@@ -33,10 +34,11 @@ Company branding this pass is hard-wired to:
 | Full Logo     | `slot: "full-logo"`     |
 | Compact Logo  | `slot: "compact-logo"`  |
 
-Reads, writes, and deletes go through a **pluggable store**. The default store is
-in-memory (session-scoped object URLs). Swapping in `@cms/shared-data-access`
-`/attachment` later is a new store implementation plus a one-line prop on the consumer —
-the UI module does not import `customFetch`, TanStack Query, or attachment DTOs.
+Reads, writes, and deletes go through a **pluggable store**. `@cms/ui` ships a memory
+store for Storybook. Settings General Info passes `createAttachmentEntityImageStore()`
+from `@cms/shared-data-access`, which calls existing File Service factories
+(`GET /attachment`, `POST /attachment`, `DELETE /attachment/{id}`, download blob).
+The UI module does not import `customFetch`, TanStack Query, or attachment DTOs.
 
 ## 2. Problem Statement
 
@@ -57,10 +59,10 @@ the UI module does not import `customFetch`, TanStack Query, or attachment DTOs.
 2. Parameterize every instance by `entityType`, `entityId`, and `slot`. Optional
    `category` / `logoVariant` ride along on the identity object so an API store can use
    them later without a component API break.
-3. Default persistence is a memory store keyed by
+3. Default Storybook persistence is a memory store keyed by
    `${entityType}:${entityId}:${slot}`. Full Logo and Compact Logo are independent.
 4. Wire **Branding / Logo** on General Info to two instances with
-   `entityType="company"` and `entityId="1"`.
+   `entityType="company"` and `entityId="1"`, using the File Service attachment store.
 5. Keep logo changes off the company PATCH / Save footer. Upload and remove happen on
    the card, immediately in the store. They must not dirty `CompanySettingsForm`.
 6. Storybook covers empty, preview, change, remove, validation, independent slots, and a
@@ -68,9 +70,9 @@ the UI module does not import `customFetch`, TanStack Query, or attachment DTOs.
 
 ### Non-Goals
 
-- **No File Service / network this pass.** Do not call `createAttachment`,
-  `deleteAttachment`, list/download/thumbnail queries, or MSW `/attachment`. Do not add
-  `@cms/shared-data-access` (or `@cms/shared-api`) as a dependency of `@cms/ui`.
+- New swagger fields, a second DTO, or a new endpoint. Use the existing `/attachment`
+  factories. Do not add `@cms/shared-data-access` or `@cms/shared-api` as a dependency of
+  `@cms/ui`.
 - Crop, rotate, drag-and-drop, multi-file, PDF/non-image types, progress bars, and a
   delete confirmation dialog (the screenshot has none).
 - Binding `entityId` to the signed-in `user.companyId`. This pass uses `"1"` as specified.
@@ -122,9 +124,11 @@ an accessible `alt`.
 ### 6.1 Reusable module (the reuse seam)
 
 - **FR-1** Add `EntityImageUpload` to `@cms/ui` (`libs/ui/src/components/ui/entity-image-upload/`).
-  Hand-author it: there is no shadcn registry equivalent. Record it in the provenance
-  table as bespoke. Export from the `@cms/ui` barrel so remotes import
-  `import { EntityImageUpload } from '@cms/ui'` — same as `Button`.
+  Hand-author it: there is no shadcn registry equivalent (in-file comment). Record it in
+  the provenance table as bespoke. Export from the `@cms/ui` barrel so remotes import
+  `import { EntityImageUpload } from '@cms/ui'` — same as `Button`. Split store I/O into
+  a colocated kebab-case hook (`use-entity-image-upload.ts`); the `.tsx` only renders.
+  Components, the hook, and handlers are `const` arrows, not `function` declarations.
 - **FR-2** Required props: `entityType: string`, `entityId: string`, `slot: string`.
   Optional: `title`, `emptyLabel` (default `"Logo"`), `accept`, `maxSizeBytes`,
   `disabled`, `store`, `category`, `logoVariant`, `onChange`.
@@ -160,18 +164,30 @@ an accessible `alt`.
   };
   ```
 
-  Default: exported `createMemoryEntityImageStore()` (and a shared module singleton
-  `memoryEntityImageStore` so remounting the same identity still **gets** the file).
-  The component must not fetch, mutate, or know about `/attachment`.
-- **FR-5** A later File Service adapter is specified only as a contract: it will
-  implement `EntityImageStore` and be passed as `store={attachmentStore}`. That adapter
-  is **out of this pass**. Mapping expected then (not implemented now):
+  Default in `@cms/ui`: exported `createMemoryEntityImageStore()` (and a module
+  singleton `memoryEntityImageStore` so remounting the same identity still **gets**
+  the file in Storybook). The component must not fetch or know about `/attachment`.
+- **FR-5** `@cms/shared-data-access` exports `createAttachmentEntityImageStore()` that
+  implements the same `get` / `put` / `remove` shape (structural typing — data-access
+  does not import `@cms/ui`):
 
-  | UI prop                         | Attachment field      |
-  | ------------------------------- | --------------------- |
-  | `entityType` `"company"`        | swagger `Company`     |
-  | `entityId` `"1"`                | number `1`            |
-  | `slot` + `category` / `logoVariant` | `category`, `logoVariant` |
+  | UI prop                    | File Service                                      |
+  | -------------------------- | ------------------------------------------------- |
+  | `entityType` `"company"`   | list/create `entityType` (exact string)           |
+  | `entityId` `"1"`           | number `1`                                        |
+  | `category` (default `slot`)| list/create `category` — unique per card          |
+  | `logoVariant`              | create multipart field only                       |
+
+  **Get:** `GET /attachment?entityType&entityId&category`, then download the latest
+  item’s bytes (`GET /attachment/{entityType}/{id}`) into an object URL (img `src`
+  cannot send the bearer token).
+  **Put (upload or change):** `POST /attachment` multipart; if a row already exists
+  for that category, `DELETE /attachment/{id}` the previous id after a successful
+  create.
+  **Remove:** list, then `DELETE /attachment/{id}`.
+
+  Branding this pass: `store={createAttachmentEntityImageStore()}`. Another screen
+  reuses the module by changing `entityType` / `entityId` / `slot` / `category`.
 
 - **FR-6** `@cms/ui` must not import `@cms/shared-data-access`, `@cms/shared-contract`,
   or `@cms/shared-api`. The store interface is declared next to the component.
@@ -202,8 +218,9 @@ an accessible `alt`.
   Message is inline under the buttons on that card only (other slot unaffected). Copy:
   - type: “Use a PNG, JPEG, WEBP, or SVG image.”
   - size: “Image must be 2 MB or smaller.”
-- **FR-12** Named handlers only (no inline function bodies in JSX), matching
-  `.cursor/rules/named-event-handlers.mdc`.
+- **FR-12** Named **arrow** handlers only (no inline function bodies in JSX), matching
+  `.cursor/rules/named-event-handlers.mdc`. `const handleFileChange = (event) => { … }`,
+  not `function handleFileChange`.
 
 ### 6.4 Delete
 
@@ -218,14 +235,16 @@ an accessible `alt`.
 - **FR-15** `BrandingSection` renders two `EntityImageUpload` instances. It does not
   reimplement preview/buttons. Values this pass:
 
-  | Card          | `entityType` | `entityId` | `slot`          | `category` | `logoVariant` |
-  | ------------- | ------------ | ---------- | --------------- | ---------- | ------------- |
-  | Full Logo     | `"company"`  | `"1"`      | `"full-logo"`   | `"logo"`   | `"full"`      |
-  | Compact Logo  | `"company"`  | `"1"`      | `"compact-logo"`| `"logo"`   | `"compact"`   |
+  | Card          | `entityType` | `entityId` | `slot`          | `category`     | `logoVariant` |
+  | ------------- | ------------ | ---------- | --------------- | -------------- | ------------- |
+  | Full Logo     | `"company"`  | `"1"`      | `"full-logo"`   | `"full-logo"`  | `"full"`      |
+  | Compact Logo  | `"company"`  | `"1"`      | `"compact-logo"`| `"compact-logo"` | `"compact"` |
 
-  `title` matches the card titles. Those four identity strings live in a page-owned
-  constant (`apps/settings/.../constant/company-branding.ts`), not hardcoded twice in
-  JSX, so a future “use session `companyId`” change is one constant.
+  `title` matches the card titles. Slot **data** lives in
+  `constant/company-branding.ts`; the slot **type** lives in
+  `types/company-branding.types.ts` (page `types/` rule — no `export interface` in a
+  `.tsx` or in `constant/`). `BrandingSection` stays a prop-less `const` arrow and
+  maps that constant. A future “use session `companyId`” change is one constant.
 - **FR-16** Logo actions must not set React Hook Form dirty state and must not be
   included in `toCompanyPatch`. Cancel / Save behaviour is unchanged.
 - **FR-17** Full and Compact must not share a preview. Putting a file in one slot leaves
@@ -264,8 +283,8 @@ an accessible `alt`.
   `slot` and get the same behaviour with no edits inside the module.
 - Storybook interaction tests cover get (pre-seeded store), put, change, remove, and
   validation. `storybook:test` a11y checks pass on the new stories.
-- No `/attachment` or `/company` extra calls appear in the network panel from these
-  buttons.
+- Branding buttons produce `/attachment` list, create, download, and delete calls — not
+  company PATCH. Save stays dirty only for company fields.
 
 ## 9. Open Questions / Assumptions
 
@@ -274,7 +293,7 @@ an accessible `alt`.
 | OQ-1 | Confirm vs immediate Remove?                                             | Immediate (no dialog). Screenshot has none.                 |
 | OQ-2 | Max size and allowed types?                                              | 2 MB; PNG/JPEG/WEBP/SVG.                                    |
 | OQ-3 | Should `entityId` come from session `companyId`?                         | No this pass — always `"1"` as requested.                   |
-| OQ-4 | File Service casing is `Company` not `"company"`.                        | UI keeps `"company"`. Adapter (later) maps the swagger name.|
+| OQ-4 | File Service examples use `Company` not `"company"`.                     | Send `"company"` as specified. Distinct category per slot.  |
 | OQ-5 | Show filename under the preview?                                         | No — not in the screenshot. `alt` is enough.                |
 | OQ-6 | Drag-and-drop onto the preview?                                          | Out of scope.                                               |
 | OQ-7 | Should Remove stay enabled when empty (pixel match)?                     | Disabled when empty (FR-14).                                |
@@ -284,14 +303,18 @@ an accessible `alt`.
 
 | Layer        | Path                                                                 |
 | ------------ | -------------------------------------------------------------------- |
-| UI module    | `libs/ui/src/components/ui/entity-image-upload/`                     |
+| UI module    | `libs/ui/src/components/ui/entity-image-upload/` (memory store, types, hook, tsx, stories) |
 | Stories      | `…/entity-image-upload/entity-image-upload.stories.tsx`              |
 | UI barrel    | `libs/ui/src/components/ui/index.ts`, provenance in `libs/ui/README.md` |
+| API store    | `libs/shared/data-access/src/lib/attachment/attachment.entity-image.ts` |
+| MSW bytes    | `libs/shared/mocks/src/handlers/attachment.ts`                       |
 | Branding     | `apps/settings/src/pages/CompanySettingsPage/component/general-info/BrandingSection.tsx` |
-| Identity     | `apps/settings/src/pages/CompanySettingsPage/constant/company-branding.ts` |
+| Slot data    | `apps/settings/src/pages/CompanySettingsPage/constant/company-branding.ts` |
+| Slot type    | `apps/settings/src/pages/CompanySettingsPage/types/company-branding.types.ts` |
 | Screenshot   | `.claude/context/screenshots/company-branding-logo.png`              |
 
-No new page `types/` DTO. No settings-contract change. No data-access change.
+No wire DTO in page `types/`. No new swagger resource. Reuse `@cms/shared-contract`
+attachment schemas.
 
 ## 11. Verification
 
