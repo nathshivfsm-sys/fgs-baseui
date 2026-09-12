@@ -4,8 +4,13 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
+  createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
   createZoneMutationOptions,
+  nonWorkingDateDetailQueryOptions,
+  nonWorkingDateKeys,
+  nonWorkingDateListQueryOptions,
+  nonWorkingDateLookupQueryOptions,
   patchTaxAuthorityMutationOptions,
   taxAuthorityKeys,
   taxAuthorityListQueryOptions,
@@ -19,6 +24,9 @@ import {
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import {
+  nonWorkingDateDetailResponseFixture,
+  nonWorkingDateListResponseFixture,
+  nonWorkingDateLookupResponseFixture,
   taxAuthorityDetailResponseFixture,
   taxAuthorityListResponseFixture,
   taxDetailResponseFixture,
@@ -183,6 +191,70 @@ describe('tax authority through customFetch', () => {
     expect(client.getQueryState(taxAuthorityKeys.detail(21))?.isInvalidated).toBe(
       true,
     );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('non-working date through customFetch', () => {
+  it('GETs the paged list, detail, and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(nonWorkingDateListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(nonWorkingDateDetailResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(nonWorkingDateLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      nonWorkingDateListQueryOptions({
+        page: 1,
+        name: 'Year',
+        nonWorkingDate: '2025-01-01',
+        isActive: true,
+      }),
+    );
+    const detail = await client.fetchQuery(
+      nonWorkingDateDetailQueryOptions(41),
+    );
+    const lookup = await client.fetchQuery(
+      nonWorkingDateLookupQueryOptions(true),
+    );
+
+    expect(page.items[0]?.name).toBe("New Year's Day");
+    expect(detail.nonWorkingDate).toBe('2025-01-01');
+    expect(lookup).toHaveLength(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/nonworkingdate?page=1&name=Year&nonWorkingDate=2025-01-01&isActive=true',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/v1/nonworkingdate/41');
+    expect(fetchMock.mock.calls[2]?.[0]).toBe(
+      '/api/v1/nonworkingdate/lookup?activeOnly=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates non-working date queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(nonWorkingDateDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(nonWorkingDateKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createNonWorkingDateMutationOptions(client));
+    const created = await mutation.execute({
+      nonWorkingDate: '2025-01-01',
+      name: "New Year's Day",
+    });
+
+    expect(created.id).toBe(41);
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(url).toBe('/api/v1/nonworkingdate');
+    expect(init?.method).toBe('POST');
+    expect(
+      client.getQueryState(nonWorkingDateKeys.list({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });

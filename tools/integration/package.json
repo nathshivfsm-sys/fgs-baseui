@@ -9,6 +9,7 @@
     "@cms/settings-data-access": "workspace:*",
     "@cms/settings-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
+    "@cms/shared-data-access": "workspace:*",
     "@cms/workorder-data-access": "workspace:*"
   }
 }

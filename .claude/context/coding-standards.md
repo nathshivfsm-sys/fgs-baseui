@@ -193,6 +193,8 @@ live here, not in a library:
 | `libs/shared/auth-data-access` | `@cms/auth-data-access` | Login/refresh fetch + Zod (shared, not an MFE catalog) |
 | `libs/shared/mocks` | `@cms/shared-mocks` | MSW handlers. Import DTOs from MFE contracts, never from data-access. |
 | `libs/platform-contract` | `@cms/platform-contract` | Shared `QueryClient` factory and runtime contract (shell ↔ remotes). Not an API DTO lib. |
+| `libs/shared/contract` | `@cms/shared-contract` | Cross-remote wire DTOs (File Service Attachment) |
+| `libs/shared/data-access` | `@cms/shared-data-access` | Cross-remote query/mutation factories (Attachment) |
 | `libs/settings/contract` | `@cms/settings-contract` | Settings catalog wire DTOs (Tax, TaxAuthority, Zone) |
 | `libs/settings/data-access` | `@cms/settings-data-access` | Settings query/mutation factories, form schemas, mappers |
 | `libs/lead/data-access` | `@cms/lead-data-access` | Lead fetch factories. Add `libs/lead/contract` when wire DTOs are shared with UI/MSW. |

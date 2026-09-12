@@ -1,4 +1,6 @@
+import { attachmentHandlers } from './attachment';
 import { authHandlers } from './auth';
+import { nonWorkingDateHandlers } from './non-working-date';
 import { settingsHandlers } from './settings';
 import { taxHandlers } from './tax';
 import { taxAuthorityHandlers } from './tax-authority';
@@ -10,5 +12,7 @@ export const handlers = [
   ...settingsHandlers,
   ...taxHandlers,
   ...taxAuthorityHandlers,
+  ...nonWorkingDateHandlers,
   ...zoneHandlers,
+  ...attachmentHandlers,
 ];

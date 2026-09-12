@@ -1,0 +1,30 @@
+{
+  "name": "shared-contract",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/contract/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:shared", "type:contract"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/contract",
+        "main": "libs/shared/contract/src/index.ts",
+        "tsConfig": "libs/shared/contract/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/shared/contract/tsconfig.json"
+      }
+    }
+  }
+}

@@ -12,6 +12,11 @@ export interface CustomFetchConfig {
   getTenantId?: () => string | undefined;
 }
 
+export type CustomFetchOptions = RequestInit & {
+  /** Default `json`. Use `blob` for File Service download/thumbnail bytes. */
+  responseType?: 'json' | 'blob';
+};
+
 let currentConfig: CustomFetchConfig = { baseUrl: '' };
 
 /**
@@ -23,6 +28,10 @@ let currentConfig: CustomFetchConfig = { baseUrl: '' };
  */
 export function configureCustomFetch(config: CustomFetchConfig) {
   currentConfig = config;
+}
+
+function isFormDataBody(body: BodyInit | null | undefined): boolean {
+  return typeof FormData !== 'undefined' && body instanceof FormData;
 }
 
 /**
@@ -51,19 +60,23 @@ function extractErrorMessage(body: unknown, status: number): string {
  */
 export async function customFetch<T>(
   endpoint: string,
-  options: RequestInit = {},
+  options: CustomFetchOptions = {},
 ): Promise<T> {
+  const { responseType = 'json', headers: optionHeaders, ...requestInit } =
+    options;
   const token = currentConfig.getAuthToken?.();
   const tenantId = currentConfig.getTenantId?.();
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(isFormDataBody(requestInit.body)
+      ? {}
+      : { 'Content-Type': 'application/json' }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(tenantId ? { 'X-Tenant-Id': tenantId } : {}),
-    ...options.headers,
+    ...optionHeaders,
   };
 
   const response = await fetch(`${currentConfig.baseUrl}${endpoint}`, {
-    ...options,
+    ...requestInit,
     headers,
   });
 
@@ -73,6 +86,10 @@ export async function customFetch<T>(
       response.status,
       extractErrorMessage(errorBody, response.status),
     );
+  }
+
+  if (responseType === 'blob') {
+    return (await response.blob()) as T;
   }
 
   // A successful write may carry no body (204, or an empty 200). Parsing that as JSON

@@ -67,3 +67,4 @@ Keep your chat reply brief — a one-line summary of what the spec covers and an
 - If the user explicitly wants something lighter than a full PRD (a quick ticket, a short summary), skip the Word doc and just write it inline in chat or as a lightweight markdown artifact instead — don't force every request into the full md workflow.
 - If the user asks for an implementation plan or actual code in addition to the spec, that's a separate follow-on step — finish the spec first, then ask whether they want to move into implementation planning.
 - For API-backed features in this repo, specs should assume wire DTOs live in `libs/<mfe>/contract` (`@cms/<mfe>-contract`) and fetch factories in `libs/<mfe>/data-access`. Do not spec a shared types package for catalog DTOs.
+- If the request is only adding swagger catalog endpoints (contract DTOs, data-access factories, MSW, integration tests — no screen), use `catalog-endpoint-spec-writer` instead of this skill.

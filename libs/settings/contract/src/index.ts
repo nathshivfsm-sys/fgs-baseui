@@ -48,6 +48,24 @@ export {
   type TaxAuthorityUpdateDto,
 } from './lib/tax-authority.schema';
 export {
+  nonWorkingDateCreateDtoSchema,
+  nonWorkingDateDetailDtoSchema,
+  nonWorkingDateDetailResponseSchema,
+  nonWorkingDateListResponseSchema,
+  nonWorkingDateLookupDtoSchema,
+  nonWorkingDateLookupResponseSchema,
+  nonWorkingDatePatchDtoSchema,
+  nonWorkingDateSummaryDtoSchema,
+  nonWorkingDateUpdateDtoSchema,
+  type NonWorkingDateCreateDto,
+  type NonWorkingDateDetailDto,
+  type NonWorkingDateListParams,
+  type NonWorkingDateLookupDto,
+  type NonWorkingDatePatchDto,
+  type NonWorkingDateSummaryDto,
+  type NonWorkingDateUpdateDto,
+} from './lib/non-working-date.schema';
+export {
   zoneCreateDtoSchema,
   zoneDetailDtoSchema,
   zoneDetailResponseSchema,
