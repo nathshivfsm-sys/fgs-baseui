@@ -72,4 +72,5 @@ Thumbs.db
 .nvmrc
 .storybook/dist
 **/.mf
+**/@mf-types
 .kiro/

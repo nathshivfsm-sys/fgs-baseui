@@ -49,6 +49,9 @@ We will create a new branch for every feature/fix. Name branch **feature/[featur
 - Don't add "nice to have" features
 - Preserve existing patterns in the codebase
 - For new APIs, put wire DTOs in `libs/<mfe>/contract` and fetch factories in `libs/<mfe>/data-access`. Never a second copy in mocks or page `types/`.
+- Never write inline function bodies in JSX props. Declare named functions at
+  the top of the component and pass them (`onOpenChange={handleDialogOpenChange}`).
+  See the React section of @context/coding-standards.md.
 
 ## Code Review
 
