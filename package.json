@@ -15,6 +15,7 @@
     "storybook:test": "nx run ui:test-storybook",
     "storybook:typecheck": "nx run ui:typecheck-storybook",
     "lint": "nx run-many -t lint",
+    "check:paths": "node tools/scripts/check-portable-paths.mjs",
     "typecheck": "nx run-many -t typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\" --ignore-path .prettierignore"

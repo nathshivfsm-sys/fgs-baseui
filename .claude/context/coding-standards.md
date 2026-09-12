@@ -179,6 +179,30 @@ instructions instead.
 - Constants: SCREAMING_SNAKE_CASE
 - Types/Interfaces: PascalCase (no prefix)
 
+### Portable file names (cross-platform)
+
+The team is split across macOS and Windows, so a tracked path must be checkable-out
+on both. Never use `< > : " | ? *` or a backslash in a file or folder name, never end
+a segment with a dot or a space, never use a reserved Windows device name (`con`,
+`nul`, `com1`…), and never add two paths that differ only in letter case.
+
+A path that is legal on macOS but not on Windows blocks `git pull` for every Windows
+teammate with `error: invalid path`, and there is nothing they can do locally about it
+— Git validates path names while building index entries, so even sparse-checkout
+cannot skip the file. Only a rename commit fixes it.
+
+`pnpm run check:paths` enforces this and runs on every PR
+(`.github/workflows/verify.yml`). It reads the path strings Git recorded rather than
+the local filesystem, so it behaves identically on every OS.
+
+**In Nx generator templates** (`tools/generators/*/files/`) put a variable in a file
+name as `__className__Page.tsx`, never `<%= className %>Page.tsx`. `generateFiles`
+substitutes `__variable__` in paths and runs EJS over file *contents* only — it never
+evaluates an EJS tag in a file name, so the `<%= %>` form is broken on macOS too, not
+just unusable on Windows. Every variable used in a path must also appear in the
+substitutions object passed to `generateFiles`. See
+`.cursor/rules/portable-file-paths.mdc`.
+
 ## Application Internal Structure
 
 The section above governs the boundaries *between* projects. This one governs the layout
@@ -360,6 +384,7 @@ Use `pnpm`. The root scripts cover the common cases:
 - **Serve everything**: `pnpm run dev` (shell + remotes)
 - **Build all**: `pnpm run build`
 - **Lint / Typecheck all**: `pnpm run lint`, `pnpm run typecheck`
+- **Cross-platform path check**: `pnpm run check:paths` (also runs on every PR)
 - **Format**: `pnpm run format`, `pnpm run format:check`
 - **Storybook**: `pnpm run storybook` (dev), `pnpm run storybook:build`, `pnpm run storybook:typecheck`
 
