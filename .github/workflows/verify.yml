@@ -1,0 +1,30 @@
+# Cross-platform hygiene checks that must pass before code reaches `develop`.
+#
+# Deliberately dependency-free: no pnpm install, no Nx. It exists to catch
+# problems that are invisible on the author's machine but break a teammate's
+# checkout, so it has to run on every PR and stay fast enough that nobody is
+# tempted to skip it.
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+jobs:
+  portable-paths:
+    name: Portable file paths
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      # A path that is legal on macOS/Linux can be impossible to check out on
+      # Windows, and Git gives the affected developer no way to work around it.
+      - name: Check tracked paths are checkout-safe on every platform
+        run: node tools/scripts/check-portable-paths.mjs

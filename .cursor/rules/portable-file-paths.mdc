@@ -1,0 +1,63 @@
+---
+description: File and folder names must be checkout-safe on Windows, macOS and Linux
+globs: **/*
+alwaysApply: true
+---
+
+# Portable file and folder names
+
+This team works across macOS and Windows. Git stores whatever path the author's
+filesystem accepted, so a name that is fine on macOS can make `git pull` fail for
+every Windows colleague with:
+
+```text
+error: invalid path 'some/<%= thing %>/file.tsx'
+```
+
+There is **no local workaround** for the person on the receiving end. Git validates
+path names while building index entries, before sparse-checkout rules are consulted,
+so even `git sparse-checkout` cannot skip the offending file. The only fix is a new
+commit that renames it — which means the bad name has already blocked everyone.
+
+## Never use in a tracked path
+
+- The characters `< > : " | ? *` or a backslash
+- A segment ending in a dot or a space (`build.` / `notes `) — Windows strips these silently
+- The reserved Windows device names, with or without an extension: `con`, `prn`,
+  `aux`, `nul`, `com0`–`com9`, `lpt0`–`lpt9`
+- Two paths that differ only in letter case — they collide on Windows and on a
+  default macOS volume
+
+Enforced by `pnpm run check:paths` (`tools/scripts/check-portable-paths.mjs`), which
+runs on every PR via `.github/workflows/verify.yml`. It inspects the path strings Git
+has recorded, never the local filesystem, so it gives the same answer on every OS.
+
+## Nx generator templates
+
+This rule is easy to trip over in `tools/generators/*/files/`, because template
+contents use EJS. **Put the variable in a file name as `__variable__`, never `<%= variable %>`:**
+
+```text
+files/src/pages/__className__Page/__className__Page.tsx   ✅
+files/src/pages/<%= className %>Page/<%= className %>Page.tsx   ❌
+```
+
+This is not only a Windows concern. Nx's `generateFiles` substitutes `__variable__`
+in *paths* and runs EJS over file *contents* — it never evaluates an EJS tag in a file
+name. A `<%= className %>` directory is emitted with that literal name on macOS too, so
+the generator is broken everywhere; Windows just fails louder and earlier.
+
+Every substitution used in a path must also be passed to `generateFiles`:
+
+```ts
+const { name, className } = names(options.name);
+
+generateFiles(tree, joinPathFragments(currentDir, 'files'), `apps/${name}`, {
+  name,
+  className, // required by __className__ paths *and* by <%= className %> in contents
+  displayName,
+});
+```
+
+A name missing from that object throws `className is not defined` when EJS renders the
+template body.
