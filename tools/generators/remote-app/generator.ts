@@ -209,6 +209,7 @@ export default async function remoteAppGenerator(
 
   generateFiles(tree, joinPathFragments(currentDir, 'files'), `apps/${name}`, {
     name,
+    className,
     displayName,
     port,
     reactVersion: rootPkg.dependencies.react,
