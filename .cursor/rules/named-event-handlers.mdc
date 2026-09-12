@@ -1,0 +1,48 @@
+---
+description: Named event handlers at the top of components — no inline function bodies in JSX props
+globs: "**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# Named event handlers
+
+Do not put function bodies in JSX props. Declare a named function in the
+component body (above `return`) and pass it.
+
+```tsx
+// ❌ BAD
+onOpenChange={(open) => {
+  setDialogOpen(open);
+  if (!open) setEditingZone(null);
+}}
+onSubmit={(body) => {
+  if (editingZone) {
+    updateMutation.mutate({ id: editingZone.id, body });
+    return;
+  }
+  createMutation.mutate(body);
+}}
+
+// ✅ GOOD
+function handleDialogOpenChange(open: boolean) {
+  setDialogOpen(open);
+  if (!open) setEditingZone(null);
+}
+
+function handleZoneSubmit(body: ZoneCreateDto) {
+  if (editingZone) {
+    updateMutation.mutate({ id: editingZone.id, body });
+    return;
+  }
+  createMutation.mutate(body);
+}
+
+<ZoneFormDialog
+  onOpenChange={handleDialogOpenChange}
+  onSubmit={handleZoneSubmit}
+/>
+```
+
+Passing an already-named function is fine (`onClick={onCancel}`). Wrappers that
+only forward an argument (`() => onCatalogChange('zones')`) still belong as
+named functions at the top of the component.

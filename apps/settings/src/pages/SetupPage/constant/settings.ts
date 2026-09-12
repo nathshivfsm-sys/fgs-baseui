@@ -60,6 +60,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Manage postal codes used for service zones and automated territory assignment.',
       icon: 'SettingsPostalCodesIcon',
       totalSettings: { count: 1842, label: 'Codes' },
+      href: 'company/zone-postal-code?catalog=postal',
     },
     {
       title: 'Business Type',
@@ -108,6 +109,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Define service territories used for scheduling and dispatch.',
       icon: 'SettingsZoneIcon',
       totalSettings: { count: 24, label: 'Zones' },
+      href: 'company/zone-postal-code',
     },
     {
       title: 'Resolution Codes',

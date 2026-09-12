@@ -8,7 +8,10 @@ import {
   STORY_API_TOKEN,
   type ApiHandlers,
 } from '../../../.storybook/fixtures/api';
-import { companyResponseFixture } from '../../../.storybook/fixtures/feature-data';
+import {
+  companyResponseFixture,
+  zoneListItemsFixture,
+} from '../../../.storybook/fixtures/feature-data';
 import {
   STORY_COMPANY_ID,
   withCmsRuntime,
@@ -276,6 +279,151 @@ export const GeneralInfoMissingCompany: Story = {
     ).not.toBeInTheDocument();
     // No companyId means the query is never mounted, let alone fired.
     await expect(api.requests).toHaveLength(0);
+  },
+};
+
+function setupEnvelope(data: unknown) {
+  return { success: true, statusCode: 200, data, errors: [] as string[] };
+}
+
+function zoneHandlers(): ApiHandlers {
+  return {
+    ['GET /zone']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = zoneListItemsFixture.filter((zone) =>
+        isActive === undefined ? true : zone.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /zone/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          zoneListItemsFixture
+            .filter((zone) => (activeOnly ? zone.isActive : true))
+            .map(({ id, code, name }) => ({ id, code, name })),
+        ),
+      );
+    },
+    ['POST /zone']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string;
+        name?: string;
+        description?: string | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          code: body.code ?? null,
+          name: body.name ?? null,
+          description: body.description ?? null,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+  };
+}
+
+const loadsZones = zoneHandlers();
+
+export const ZonePostalCode: Story = {
+  args: { initialPath: '/settings/company/zone-postal-code' },
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('NORTH'),
+    ).toBeVisible();
+    await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
+    ).toBeVisible();
+  },
+};
+
+export const ZonePostalCodeInactive: Story = {
+  args: { initialPath: '/settings/company/zone-postal-code' },
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('NORTH');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
+    await expect(await canvas.findByText('OUTER')).toBeVisible();
+    await expect(canvas.queryByText('NORTH')).not.toBeInTheDocument();
+  },
+};
+
+export const ZonePostalCodeCatalog: Story = {
+  args: {
+    initialPath: '/settings/company/zone-postal-code?catalog=postal',
+  },
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByText(/postal code catalog is not connected/i),
+    ).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Add Zone' })).toBeDisabled();
+  },
+};
+
+export const ZonePostalCodeAdd: Story = {
+  args: { initialPath: '/settings/company/zone-postal-code' },
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('NORTH');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Zone' }));
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await userEvent.type(withinDialog.getByRole('textbox', { name: /code/i }), 'MID');
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /zone name/i }),
+      'Mid Zone',
+    );
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Create Zone' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await expect(await canvas.findByText('Zone created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/zone');
+    await expect(post?.body).toEqual({
+      code: 'MID',
+      name: 'Mid Zone',
+      description: null,
+    });
+  },
+};
+
+export const ZoneFromGrid: Story = {
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('tab', { name: 'Operations' }));
+    await userEvent.click(canvas.getByRole('button', { name: /^Zone/ }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+    ).toBeVisible();
   },
 };
 

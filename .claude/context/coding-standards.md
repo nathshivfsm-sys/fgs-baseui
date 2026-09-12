@@ -26,6 +26,50 @@
 - Use hooks for state and side effects
 - Keep components focused - one job per component
 - Extract reusable logic into custom hooks
+- **Named handlers, not inline functions in JSX.** Declare event handlers as
+  named functions in the component body (above the `return`), then pass them.
+  Do not put function bodies in JSX props.
+
+  ```tsx
+  // ❌ BAD
+  <ZoneFormDialog
+    onOpenChange={(open) => {
+      setDialogOpen(open);
+      if (!open) setEditingZone(null);
+    }}
+    onSubmit={(body) => {
+      if (editingZone) {
+        updateMutation.mutate({ id: editingZone.id, body });
+        return;
+      }
+      createMutation.mutate(body);
+    }}
+  />
+
+  // ✅ GOOD
+  function handleDialogOpenChange(open: boolean) {
+    setDialogOpen(open);
+    if (!open) setEditingZone(null);
+  }
+
+  function handleZoneSubmit(body: ZoneCreateDto) {
+    if (editingZone) {
+      updateMutation.mutate({ id: editingZone.id, body });
+      return;
+    }
+    createMutation.mutate(body);
+  }
+
+  <ZoneFormDialog
+    onOpenChange={handleDialogOpenChange}
+    onSubmit={handleZoneSubmit}
+  />
+  ```
+
+  Passing an existing function (`onClick={onCancel}`, `onEdit={openEdit}`) is
+  fine. Thin wrappers that only forward an argument (`onSelect={() =>
+  onCatalogChange('zones')}`) should still be named functions at the top of
+  the component.
 
 ## Styling (use Tailwind CSS v4)
 

@@ -2,13 +2,24 @@
 
 ## Status
 
+**Zone & Postal Code page** — implemented and browser-verified on
+`feature/setup-tax-zone-api`. Settings route `company/zone-postal-code`
+lists zones from `@cms/settings-data-access` against the Figma Zone &
+Postal Code frame (node `127:915`). Setup cards for Zone and Postal
+Codes navigate here. Postal codes have no API yet; that pane shows an
+empty-state callout. Create Zone uses the Figma dialog (node `127:1176`):
+two-column Code / Zone Name, description textarea, Cancel/Save. Edit
+reuses the same layout.
+
+## History
+
 **Setup catalog APIs (Tax, TaxAuthority, Zone)** — implemented and verified
-locally, **not yet committed**, on `feature/setup-tax-zone-api`. Adds TanStack
+locally on `feature/setup-tax-zone-api`. Adds TanStack
 Query options factories in `@cms/settings-data-access` from the FGS Setup
 Service swagger (`/swagger/setup/v1/swagger.json`). One module folder per
 resource (endpoints, keys, queries, mutations). Wire request/response DTOs live
 in `@cms/settings-contract` (`libs/settings/contract`) so data-access, MSW, and
-UI share one type. No UI screens in this pass.
+UI share one type.
 
 Wire operations per module: list, detail, lookup, create (POST), update (PUT),
 patch (PATCH). Responses are parsed with Zod; mutations invalidate their own
@@ -19,12 +30,9 @@ catalogs and cover list, detail, lookup, POST, PUT, and PATCH. Writes persist
 for the session and parse request bodies with the same contract schemas.
 
 Verified: `typecheck` and `lint` clean for `settings-contract`, `settings-data-access`,
-and `shared-mocks`; `test:query` 33/33. No browser pass — no screen consumes
-these factories yet.
+and `shared-mocks`; `test:query` 33/33.
 
 The Cursor rule for this layout is `.cursor/rules/mfe-lib-folder-structure.mdc`.
-
-## History
 
 **MSW mock APIs (login + Settings)** — implemented and browser-verified
 on `refactor/settings-data-flow`. Shared handlers in `@cms/shared-mocks`

@@ -49,6 +49,59 @@ export const companyResponseFixture = {
   },
 } satisfies { success: boolean; statusCode: number; data: CompanyDto };
 
+export const zoneListItemsFixture = [
+  {
+    id: 31,
+    code: 'NORTH',
+    name: 'North Zone',
+    description: 'Harris County -North',
+    isActive: true,
+  },
+  {
+    id: 32,
+    code: 'SOUTH',
+    name: 'South Zone',
+    description: 'Harris County -South',
+    isActive: true,
+  },
+  {
+    id: 34,
+    code: 'EAST',
+    name: 'East Zone',
+    description: 'Harris County -East',
+    isActive: true,
+  },
+  {
+    id: 35,
+    code: 'WEST',
+    name: 'West Zone',
+    description: 'Harris County -West',
+    isActive: true,
+  },
+  {
+    id: 33,
+    code: 'CENTRAL',
+    name: 'Central Zone',
+    description: 'Harris County -Central',
+    isActive: true,
+  },
+  {
+    id: 36,
+    code: 'OUTER',
+    name: 'Outer Zone',
+    description: 'Outer-ring coverage',
+    isActive: false,
+  },
+  {
+    id: 37,
+    code: 'RURAL',
+    name: 'Rural Zone',
+    description: 'Rural coverage',
+    isActive: false,
+  },
+] as const;
+
+
 export const resolvedLoader =
   <Item>(items: readonly Item[]) =>
   async () =>
