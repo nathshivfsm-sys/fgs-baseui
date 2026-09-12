@@ -5,6 +5,11 @@ description: Monorepo architecture — when to use a monorepo, directory structu
 
 # Monorepo Architecture — One Repo, Many Apps, Fast Builds
 
+**This workspace:** Nx integrated repo. Each remote owns `libs/<mfe>/contract`
+(`@cms/<mfe>-contract`, wire DTOs) and `libs/<mfe>/data-access` (query/mutation
+factories). Do not put catalog DTOs in a shared types package. See
+`.cursor/rules/mfe-lib-folder-structure.mdc` and `context/coding-standards.md`.
+
 A monorepo puts multiple apps and shared packages in a single Git repository. Changes to a shared UI component, a types package, or an API client are reflected in all consuming apps in one PR — no version bumps, no cross-repo coordination. The tooling (Turborepo, Nx) makes builds fast by caching outputs and only rebuilding what changed.
 
 **When a monorepo makes sense (63% of 50+ dev teams use one, 2025):**

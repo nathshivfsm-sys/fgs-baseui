@@ -8,11 +8,14 @@ Minimal Nx 23 + React 19 CMS using Vite Module Federation.
 - `workorder` (port 5101): independently built federated provider
 - `lead` (port 5102): independently built federated provider
 - `invoice` (port 5103): independently built federated provider
+- `settings` (port 5104): independently built federated provider
 - `@cms/ui`: publishable shadcn-style React library with Tailwind v4
-- `@cms/platform-contract`: publishable runtime contract library
+- `@cms/platform-contract`: shell ↔ remote runtime and QueryClient factory (not API DTOs)
 - `@cms/shared-api`: `customFetch` wrapper and typed `ApiError`
-- `@cms/workorder-data-access`, `@cms/lead-data-access`: fetch functions, query hooks,
-  key factories, and Zod schemas for their domain
+- `@cms/settings-contract`: settings catalog wire DTOs. Other remotes follow
+  `libs/<mfe>/contract` → `@cms/<mfe>-contract`
+- `@cms/settings-data-access`, `@cms/workorder-data-access`, `@cms/lead-data-access`:
+  query/mutation factories for their domain. Wire types come from that MFE's contract.
 
 Add a new remote with `pnpm exec nx g ./tools/generators/remote-app:remote-app <name>`;
 it prints the sidebar wiring for you to apply by hand.
@@ -78,10 +81,11 @@ components remain responsible for user-facing errors. Endpoint-specific behavior
 belongs in a feature-local `queryOptions` factory rather than another QueryClient.
 
 Query keys must start with a unique feature scope and include every variable that
-changes the response. Keep key factories and query option factories inside the owning
-MFE. Invalidate the narrowest key possible; cross-feature prefix invalidation requires
-an explicit product reason. Query functions receive TanStack Query's `AbortSignal` and
-must pass it to network clients that support cancellation.
+changes the response. Keep key factories and query option factories in the owning MFE's
+`data-access` lib. Wire request/response types live in that MFE's `contract` lib so UI
+and MSW share them. Invalidate the narrowest key possible; cross-feature prefix
+invalidation requires an explicit product reason. Query functions receive TanStack
+Query's `AbortSignal` and must pass it to network clients that support cancellation.
 
 **SSR is planned, not implemented.** There is no server entry, `renderToString` call, or
 dehydrate/hydrate boundary anywhere in this repo yet; every QueryClient described above
@@ -156,7 +160,7 @@ Each app builds and deploys to its own `dist` directory, but `@cms/ui` and
 `@cms/platform-contract` are not yet consumed as published packages: each library's
 `package.json` `exports` points at its own `libs/*/src` source, which the apps reach
 through the pnpm workspace symlink, so each app's build compiles its own copy from
-source. Changing either library currently requires rebuilding all four apps, not just
+source. Changing either library currently requires rebuilding the apps, not just
 the ones with a version bump to pick up — `nx release` and the Verdaccio
 `local-registry` target exist for closing this gap but are not yet wired into a script
 or CI job. Module Federation's `shared` config deduplicates the _runtime_ singleton

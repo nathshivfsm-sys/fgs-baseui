@@ -55,6 +55,14 @@ export function storybookAliases(workspaceRoot: string) {
       ),
     },
     {
+      // Per-MFE contract libs. Add `@cms/<mfe>-contract` here when a remote grows one.
+      find: '@cms/settings-contract',
+      replacement: join(
+        workspaceRoot,
+        'libs/settings/contract/src/index.ts',
+      ),
+    },
+    {
       find: '@cms/lead-data-access',
       replacement: join(workspaceRoot, 'libs/lead/data-access/src/index.ts'),
     },

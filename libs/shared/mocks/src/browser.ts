@@ -13,5 +13,5 @@ export async function startMockWorker(): Promise<void> {
     onUnhandledRequest: 'bypass',
     serviceWorker: { url: '/mockServiceWorker.js' },
   });
-  console.info('[MSW] Mocking /api/v1 (auth + settings)');
+  console.info('[MSW] Mocking /api/v1 (auth + settings catalog)');
 }

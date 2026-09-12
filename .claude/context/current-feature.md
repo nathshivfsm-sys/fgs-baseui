@@ -2,6 +2,30 @@
 
 ## Status
 
+**Setup catalog APIs (Tax, TaxAuthority, Zone)** — implemented and verified
+locally, **not yet committed**, on `feature/setup-tax-zone-api`. Adds TanStack
+Query options factories in `@cms/settings-data-access` from the FGS Setup
+Service swagger (`/swagger/setup/v1/swagger.json`). One module folder per
+resource (endpoints, keys, queries, mutations). Wire request/response DTOs live
+in `@cms/settings-contract` (`libs/settings/contract`) so data-access, MSW, and
+UI share one type. No UI screens in this pass.
+
+Wire operations per module: list, detail, lookup, create (POST), update (PUT),
+patch (PATCH). Responses are parsed with Zod; mutations invalidate their own
+keys.
+
+MSW handlers (one file per module) seed in-memory Tax / TaxAuthority / Zone
+catalogs and cover list, detail, lookup, POST, PUT, and PATCH. Writes persist
+for the session and parse request bodies with the same contract schemas.
+
+Verified: `typecheck` and `lint` clean for `settings-contract`, `settings-data-access`,
+and `shared-mocks`; `test:query` 33/33. No browser pass — no screen consumes
+these factories yet.
+
+The Cursor rule for this layout is `.cursor/rules/mfe-lib-folder-structure.mdc`.
+
+## History
+
 **MSW mock APIs (login + Settings)** — implemented and browser-verified
 on `refactor/settings-data-flow`. Shared handlers in `@cms/shared-mocks`
 (`libs/shared/mocks`), started from app bootstrap when

@@ -6,7 +6,7 @@
 - **Core Framework**: React 19+ with TypeScript (Strict Mode Enforced)
 - **Routing**: React Router v6+ (Data Routers)
 - **Server State & Data Fetching**: TanStack Query v5 (`@tanstack/react-query`) using native `fetch`
-- **Schema Validation**: Zod (declared by the `data-access` libs that use it, not at the root)
+- **Schema Validation**: Zod — wire schemas in that MFE's `contract` lib, form schemas in its `data-access` lib. Not a root dependency.
 - **Styling & UI**: Tailwind CSS v4, shadcn/ui composition patterns over Base UI (`@base-ui/react`) primitives
 - **Build Tool**: Vite (with Module Federation). This is **not** a Next.js workspace — there is no
   server runtime, no Server Actions, and no `process.env`; browser-side env vars come from
@@ -17,7 +17,7 @@
 
 - Strict mode enabled
 - No `any` types - use proper typing or `unknown`
-- Define interfaces for all props, API responses, and data models
+- Define interfaces for component props. Infer API request/response types from the MFE `contract` Zod schemas (`z.infer<typeof …>`). Do not hand-write a parallel DTO.
 - Use type inference where obvious, explicit types where helpful
 
 ## React
@@ -101,11 +101,34 @@ iteration.
 ## Monorepo Architecture & Type Boundaries
 
 Every project carries Nx tags in its `project.json`. The vocabulary is
-`type:app | type:lib | type:integration` plus `scope:shell | workorder | lead | invoice | shared`.
+`type:app | type:lib | type:integration | type:contract` plus
+`scope:shell | workorder | lead | invoice | settings | shared`.
 The rules are enforced by `@nx/enforce-module-boundaries` in `eslint.config.mjs` — an app may
-only depend on `type:lib`, and a scope may only depend on itself and `scope:shared`.
+only depend on `type:lib`, and a scope may only depend on itself, `scope:shared`, and
+`type:contract` (that MFE's wire DTOs, e.g. `@cms/settings-contract`).
 
-**Applications** (`apps/`) — a Module Federation host plus three remotes. Feature/page views
+**Per-MFE libraries** — every remote that talks to an API owns two libs under `libs/<mfe>/`.
+This is the layout to follow for every new resource. Do not put catalog DTOs in `libs/shared/`.
+
+```text
+libs/<mfe>/
+  contract/       @cms/<mfe>-contract      wire request/response Zod DTOs + inferred types
+  data-access/    @cms/<mfe>-data-access   endpoints, keys, query/mutation factories, form schemas, mappers
+```
+
+| Piece | Tag | Who imports it |
+| --- | --- | --- |
+| `libs/<mfe>/contract` | `type:lib`, `scope:<mfe>`, `type:contract` | that MFE's UI, its data-access lib, and MSW |
+| `libs/<mfe>/data-access` | `type:lib`, `scope:<mfe>` | that MFE's UI only |
+
+Settings is the reference: `libs/settings/contract` + `libs/settings/data-access`. Lead would
+be `libs/lead/contract` (`@cms/lead-contract`) plus the existing data-access lib. Same for
+workorder and invoice. UI imports `import type { TaxSummaryDto } from '@cms/settings-contract'`;
+MSW uses the same schemas. Neither duplicates the DTO.
+
+The Cursor rule is `.cursor/rules/mfe-lib-folder-structure.mdc`.
+
+**Applications** (`apps/`) — a Module Federation host plus remotes. Feature/page views
 live here, not in a library:
 
 | App | Port | Role |
@@ -114,23 +137,30 @@ live here, not in a library:
 | `workorder` | 5101 | Federated remote |
 | `lead` | 5102 | Federated remote |
 | `invoice` | 5103 | Federated remote |
+| `settings` | 5104 | Federated remote |
 
-**Libraries** — every one is `type:lib`:
+**Libraries** — `type:lib` unless noted:
 
 | Path | Import alias | Contents |
 | ------------------------------ | ----------------------------- | ------------------------------------------------------ |
 | `libs/ui` | `@cms/ui` | Presentational primitives + icons. NO network or state logic. |
 | `libs/shared/api` | `@cms/shared-api` | `customFetch` wrapper and `ApiError` |
-| `libs/platform-contract` | `@cms/platform-contract` | Shared `QueryClient` factory and runtime contract |
-| `libs/lead/data-access` | `@cms/lead-data-access` | Fetch functions, query hooks, key factories, Zod schemas |
-| `libs/workorder/data-access` | `@cms/workorder-data-access` | Same, for work orders |
+| `libs/shared/auth` | `@cms/shared-auth` | Auth session helpers used by the shell |
+| `libs/shared/auth-data-access` | `@cms/auth-data-access` | Login/refresh fetch + Zod (shared, not an MFE catalog) |
+| `libs/shared/mocks` | `@cms/shared-mocks` | MSW handlers. Import DTOs from MFE contracts, never from data-access. |
+| `libs/platform-contract` | `@cms/platform-contract` | Shared `QueryClient` factory and runtime contract (shell ↔ remotes). Not an API DTO lib. |
+| `libs/settings/contract` | `@cms/settings-contract` | Settings catalog wire DTOs (Tax, TaxAuthority, Zone) |
+| `libs/settings/data-access` | `@cms/settings-data-access` | Settings query/mutation factories, form schemas, mappers |
+| `libs/lead/data-access` | `@cms/lead-data-access` | Lead fetch factories. Add `libs/lead/contract` when wire DTOs are shared with UI/MSW. |
+| `libs/workorder/data-access` | `@cms/workorder-data-access` | Same pattern as lead |
 | `tools/module-federation` | `@cms/module-federation-shared` | Shared MF/Vite config helpers |
 | `tools/integration` | — (`type:integration`) | Cross-project integration tests |
 
 > **Type Safety Rule**: Never perform cross-boundary deep imports (`../../../libs`). Always use
-> the path aliases mapped in `tsconfig.base.json` — the prefix is `@cms/`, and data-access
-> aliases are flat, e.g. `@cms/lead-data-access` (not `@cms/lead/data-access`). `@cms/ui`
-> additionally allows subpath imports via the `@cms/ui/*` wildcard.
+> the path aliases mapped in `tsconfig.base.json` — the prefix is `@cms/`, and MFE lib
+> aliases are flat, e.g. `@cms/settings-contract` and `@cms/lead-data-access` (not
+> `@cms/lead/data-access`). `@cms/ui` additionally allows subpath imports via the `@cms/ui/*`
+> wildcard.
 
 To add a new remote app, use the workspace generator rather than wiring one by hand:
 
@@ -205,17 +235,21 @@ by one page only, it belongs under that page. Do not move code to `shared/` beca
 be reused later; promote it only after a real second page consumer appears. App bootstrap,
 runtime, routing, and Module Federation wiring remain at `src/` because no page owns them.
 
-**Types placement.** Page-domain types belong in the page's `types/` folder and are
-re-exported from `types/index.ts` when several page files consume them. Component props and
-other single-file types may stay beside their implementation. Types genuinely consumed by
-multiple pages go in `src/shared/types/`. Store implementation types stay with their
-owning page or app-wide store. Do not declare an interface in a `constant/` file.
+**Types placement.** API request/response types come from that MFE's contract
+(`@cms/<mfe>-contract`), not from a page `types/` folder and not from a second copy in
+data-access. Page-domain types that are not wire DTOs belong in the page's `types/` folder
+and are re-exported from `types/index.ts` when several page files consume them. Component
+props and other single-file types may stay beside their implementation. Types genuinely
+consumed by multiple pages (still not wire DTOs) go in `src/shared/types/`. Store
+implementation types stay with their owning page or app-wide store. Do not declare an
+interface in a `constant/` file.
 
 **`constant/` holds data, `util/` holds behaviour.** If it is a function, it is not a
 constant. A lookup map is a constant; the function that reads the map is not. Mock data
-that will later come from a `data-access` lib lives in the owning page's `constant/` until
-that lib exists, not inline in the component that renders it. Do not name an app folder
-`lib/` — that word is reserved for Nx libraries under `libs/`.
+that will later come from an API lives in the owning page's `constant/` until the MFE
+contract and data-access libs exist, not inline in the component that renders it. Once an
+API exists, MSW seed data lives in `@cms/shared-mocks` and uses the MFE contract types.
+Do not name an app folder `lib/` — that word is reserved for Nx libraries under `libs/`.
 
 **Every folder has an `index.ts`.** Import a folder by its folder name, never a file
 inside it: `from './component'`, not `from './component/CompanySettingsForm'`. The
@@ -250,17 +284,19 @@ An `App.stories.tsx` that exercises multiple routes remains beside `App.tsx`.
   });
   ```
 
-- Call it from a data-access lib, never from a component:
+- Call it from a data-access lib, never from a component. Parse with the owning MFE
+  contract schema:
 
   ```typescript
-  const dto = await customFetch<LeadDto>(`/leads/${id}`);
-  return leadSchema.parse(dto); // validation is the caller's job, not customFetch's
+  const dto = await customFetch<unknown>(`/tax/${id}`, { signal });
+  return taxDetailResponseSchema.parse(dto);
   ```
 
-- Validate every response with Zod in the owning `data-access` lib. `customFetch` returns
-  `Promise<T>` on trust — the type parameter is an assertion, not a runtime guarantee.
-- `baseUrl` is currently `''` because no backend exists yet, and the data-access libs return
-  static mocks. See `libs/shared/api/README.md`.
+- Validate every response with Zod using schemas from `@cms/<mfe>-contract`. Parse in the
+  `data-access` lib after `customFetch`. `customFetch` returns `Promise<T>` on trust — the
+  type parameter is an assertion, not a runtime guarantee.
+- Local `baseUrl` is `/api/v1`. MSW intercepts when `VITE_USE_MOCK_API=true`. See
+  `libs/shared/api/README.md`.
 
 ## Queries, Mutations & Forms
 
@@ -321,7 +357,7 @@ functions as the default way to cover interaction behavior.
 
 Use `pnpm`. The root scripts cover the common cases:
 
-- **Serve everything**: `pnpm run dev` (shell + all three remotes)
+- **Serve everything**: `pnpm run dev` (shell + remotes)
 - **Build all**: `pnpm run build`
 - **Lint / Typecheck all**: `pnpm run lint`, `pnpm run typecheck`
 - **Format**: `pnpm run format`, `pnpm run format:check`
@@ -334,9 +370,11 @@ Drop to Nx directly for a single project or for affected-only runs (which is wha
 - **Lint & fix one project**: `pnpm exec nx lint <project> --fix`
 - **Affected only**: `pnpm exec nx affected -t lint`, `-t typecheck`, `-t build`
 - **Dependency graph**: `pnpm run graph`
-- **Generate a library**: `pnpm exec nx g @nx/react:lib <name> --directory=libs/<domain>/<name> --buildable`
-  (then add `tags` to its `project.json` and a `@cms/*` alias to `tsconfig.base.json` — neither
-  is generated for you)
+- **Generate a library**: `pnpm exec nx g @nx/react:lib <name> --directory=libs/<mfe>/<name> --buildable`
+  For a remote's APIs, create both `libs/<mfe>/contract` (`@cms/<mfe>-contract`, tags
+  `type:lib`, `scope:<mfe>`, `type:contract`) and `libs/<mfe>/data-access`. Then add `tags`
+  and a `@cms/*` alias to `tsconfig.base.json` — neither is generated for you. Also add the
+  package to Module Federation `shared` if UI remotes import it at runtime.
 
 ## Code Quality
 

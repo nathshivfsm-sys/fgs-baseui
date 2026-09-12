@@ -1,7 +1,7 @@
 # Implementation Plan — [Feature Name]
 
 **Source spec:** [PRD file/name]
-**Codebase context:** [framework, key existing patterns matched]
+**Codebase context:** [framework, key existing patterns matched. For APIs: `libs/<mfe>/contract` + `libs/<mfe>/data-access`.]
 
 ## Resolved Assumptions
 (Only what was actually needed to proceed — carried over from the PRD's Open Questions, plus any newly decided here.)
