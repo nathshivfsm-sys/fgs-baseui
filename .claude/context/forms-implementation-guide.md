@@ -1,8 +1,11 @@
 # Forms & Data Flow
 
-How an API-backed form is built in this workspace. This describes the code as it is —
-`libs/settings/data-access` + `apps/settings` General Info is the reference
-implementation, so read those files if anything here is ambiguous.
+How an API-backed form is built in this workspace.
+
+Wire request/response DTOs always live in `libs/<mfe>/contract` (`@cms/<mfe>-contract`).
+Queries, mutations, form schemas, and mappers live in `libs/<mfe>/data-access`. Settings
+catalog (`@cms/settings-contract` + `@cms/settings-data-access`) is the reference for that
+split. General Info in `apps/settings` is the reference for the form wiring itself.
 
 Keep this document short. A long guide drifts out of date, and a guide that disagrees
 with the code is worse than no guide: both people and agents follow it into a second,
@@ -25,15 +28,19 @@ UI (section components)
 
 Where each step lives:
 
-| Step | File in `libs/<feature>/data-access/src/lib/` | Owns |
+| Step | Where | Owns |
 | ------------ | ----------------------------------- | ------------------------------------------ |
-| Wire shape | `schemas/<feature>.schema.ts` | `<feature>DtoSchema`, `<feature>ResponseSchema` |
-| Form shape | `schemas/<feature>.schema.ts` | `<feature>FormSchema` + its inferred type |
-| Translation | `mappers/<feature>.mappers.ts` | `to<Feature>Profile`, `to<Feature>Patch` |
-| Cache keys | `queries/query-keys.ts` | `<feature>Keys` |
-| Read | `queries/<feature>.queries.ts` | `load…`, `<feature>QueryOptions` |
-| Write | `mutations/<feature>.mutations.ts` | `save…`, `<feature>MutationOptions` |
-| Endpoint | `<feature>.endpoints.ts` | the URL, in one place |
+| Wire shape | `libs/<mfe>/contract` (`@cms/<mfe>-contract`) | request/response DTOs, envelopes, list params |
+| Form shape | `libs/<mfe>/data-access` `schemas/` | `<feature>FormSchema` + its inferred type |
+| Translation | `libs/<mfe>/data-access` `mappers/` | `to<Feature>Profile`, `to<Feature>Patch` |
+| Cache keys | `libs/<mfe>/data-access` `queries/` or `<module>/` | `<feature>Keys` |
+| Read | data-access queries | `load…`, `<feature>QueryOptions` |
+| Write | data-access mutations | `save…`, `<feature>MutationOptions` |
+| Endpoint | data-access `<feature>.endpoints.ts` | the URL, in one place |
+
+UI and MSW import wire types from the contract. Do not copy DTOs into page `types/`,
+data-access, or mocks. Form schemas stay in data-access because they are a screen
+concern, not a transport concern.
 
 Screens live in `apps/<app>/src/pages/<PageName>/`: the page route target wires the query
 and mutation, `component/<Feature>Form.tsx` owns `useForm`, and its page-owned section
@@ -43,10 +50,10 @@ components read the form off context.
 
 ## Rules that are not obvious
 
-**Two schemas, not one.** The wire schema is lenient (`nullish` on every display
-string) so one missing field cannot blank a screen; the form schema is strict because
-required-ness is a form concern, not a transport concern. They are different types with
-different jobs — do not reuse one for both.
+**Two schemas, not one.** The wire schema (in the contract lib) is lenient (`nullish` on
+every display string) so one missing field cannot blank a screen; the form schema (in
+data-access) is strict because required-ness is a form concern, not a transport concern.
+They are different types with different jobs — do not reuse one for both.
 
 **Options factories, not hooks.** A data-access lib exports `queryOptions` and
 `mutationOptions` objects, never `useThing()` hooks. Hooks would hide the `queryClient`,
@@ -76,20 +83,28 @@ error you get when a schema's input and output types diverge (`.default()`, `z.c
 ## Adding a form
 
 ```ts
-// 1. libs/<feature>/data-access — schema (form half)
+// 1. libs/<mfe>/contract — wire DTO (shared with MSW and UI)
+export const ptoSummaryDtoSchema = z.object({
+  id: z.number(),
+  code: z.string(),
+  annualAllowance: z.number(),
+});
+export type PtoSummaryDto = z.infer<typeof ptoSummaryDtoSchema>;
+
+// 2. libs/<mfe>/data-access — form schema (screen-only)
 export const ptoFormSchema = z.object({
   code: z.string().trim().min(1, 'Code is required').max(10),
   annualAllowance: z.number().positive('Must be greater than 0'),
 });
 export type PtoForm = z.infer<typeof ptoFormSchema>;
 
-// 2. queries/query-keys.ts
+// 3. queries/query-keys.ts
 export const ptoKeys = {
   all: ['ptos'] as const,
   list: (companyId: string) => [...ptoKeys.all, companyId] as const,
 } as const;
 
-// 3. queries/pto.queries.ts
+// 4. queries/pto.queries.ts
 export const ptoListQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: ptoKeys.list(companyId),
@@ -97,7 +112,7 @@ export const ptoListQueryOptions = (companyId: string) =>
     meta: { feature: 'ptos', operation: 'list' },
   });
 
-// 4. mutations/pto.mutations.ts
+// 5. mutations/pto.mutations.ts
 export const savePtoMutationOptions = (
   companyId: string,
   queryClient: QueryClient,
@@ -111,11 +126,11 @@ export const savePtoMutationOptions = (
 ```
 
 ```tsx
-// 5. apps/<app>/src/pages/<PageName> — the screen reads one line per direction
+// 6. apps/<app>/src/pages/<PageName> — the screen reads one line per direction
 const query = useQuery(ptoListQueryOptions(companyId), queryClient);
 const mutation = useMutation(savePtoMutationOptions(companyId, queryClient), queryClient);
 
-// 6. apps/<app>/src/pages/<PageName>/component — the form
+// 7. apps/<app>/src/pages/<PageName>/component — the form
 const form = useForm({
   mode: 'onBlur',
   resolver: zodResolver(ptoFormSchema),
@@ -125,13 +140,19 @@ const form = useForm({
 ```
 
 ```tsx
-// 7. Sections list fields; wrappers in the page's component/form/ do the binding
+// 8. Sections list fields; wrappers in the page's component/form/ do the binding
 <FormTextInput<PtoForm> label="Code" name="code" required />
 <FormSelectField<PtoForm> label="Type" name="type" options={PTO_TYPE_OPTIONS} />
 ```
 
 Errors: let `ApiError` propagate out of the query function and map status to copy in one
 `describe<Feature>Error` function in the owning page's `util/` folder.
+
+UI types for list rows and lookups come from the contract:
+
+```ts
+import type { PtoSummaryDto } from '@cms/<mfe>-contract';
+```
 
 ---
 

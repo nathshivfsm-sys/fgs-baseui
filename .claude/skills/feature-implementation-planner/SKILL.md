@@ -24,6 +24,7 @@ Most PRDs (especially from `feature-spec-writer`) end with an "Open Questions / 
 Before planning any file changes, get real context on what already exists — don't guess at conventions:
 - If working inside a project directory (e.g. Claude Code), use `view`/`bash` to inspect the directory structure, identify the framework/language, and look at a couple of existing components similar in kind to what's being built (e.g. an existing nav/layout component if building nav).
 - Note existing patterns worth matching: component structure, styling approach (CSS modules, Tailwind, styled-components, etc.), state management, naming conventions, file organization.
+- For API-backed work in this repo, wire request/response DTOs go in `libs/<mfe>/contract` (`@cms/<mfe>-contract`); query/mutation factories go in `libs/<mfe>/data-access`. Do not put catalog DTOs in `libs/shared/` or duplicate them in MSW. See `.cursor/rules/mfe-lib-folder-structure.mdc` and `context/forms-implementation-guide.md`.
 - If no project context is available (e.g. a fresh chat with no uploaded code), ask the user for it — either point Claude at the project directory, or upload/paste the relevant existing files — rather than inventing a stack. This is the one point in the flow worth pausing for, since generated code that doesn't match the real codebase is often worse than no code.
 
 ### Step 4: Build the implementation plan

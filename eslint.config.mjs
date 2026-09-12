@@ -88,29 +88,51 @@ export default tseslint.config(
               sourceTag: 'type:integration',
               onlyDependOnLibsWithTags: ['type:app', 'type:lib'],
             },
+            // Scopes may depend on type:contract so MSW and other remotes can import
+            // per-MFE wire DTOs (`libs/<mfe>/contract`) without importing data-access.
             {
               sourceTag: 'scope:shell',
-              onlyDependOnLibsWithTags: ['scope:shell', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:shell',
+                'scope:shared',
+                'type:contract',
+              ],
             },
             {
               sourceTag: 'scope:workorder',
-              onlyDependOnLibsWithTags: ['scope:workorder', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:workorder',
+                'scope:shared',
+                'type:contract',
+              ],
             },
             {
               sourceTag: 'scope:lead',
-              onlyDependOnLibsWithTags: ['scope:lead', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:lead',
+                'scope:shared',
+                'type:contract',
+              ],
             },
             {
               sourceTag: 'scope:invoice',
-              onlyDependOnLibsWithTags: ['scope:invoice', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:invoice',
+                'scope:shared',
+                'type:contract',
+              ],
             },
             {
               sourceTag: 'scope:settings',
-              onlyDependOnLibsWithTags: ['scope:settings', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:settings',
+                'scope:shared',
+                'type:contract',
+              ],
             },
             {
               sourceTag: 'scope:shared',
-              onlyDependOnLibsWithTags: ['scope:shared'],
+              onlyDependOnLibsWithTags: ['scope:shared', 'type:contract'],
             },
           ],
         },

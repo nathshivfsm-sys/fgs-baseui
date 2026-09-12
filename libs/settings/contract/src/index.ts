@@ -1,0 +1,67 @@
+/**
+ * Wire request/response contracts for the settings MFE catalog resources.
+ * Data-access, MSW, and UI all import from here — do not duplicate DTOs.
+ */
+export {
+  pagedResultSchema,
+  setupResponseSchema,
+  type PagedResult,
+  type SetupListParams,
+  type SortDirection,
+} from './lib/envelope.schema';
+export {
+  taxCreateDtoSchema,
+  taxDetailDtoSchema,
+  taxDetailResponseSchema,
+  taxLineDetailDtoSchema,
+  taxListResponseSchema,
+  taxLookupDtoSchema,
+  taxLookupResponseSchema,
+  taxPatchDtoSchema,
+  taxSummaryDtoSchema,
+  taxUpdateDtoSchema,
+  type TaxCreateDto,
+  type TaxDetailDto,
+  type TaxLineDetailDto,
+  type TaxListParams,
+  type TaxLookupDto,
+  type TaxPatchDto,
+  type TaxSummaryDto,
+  type TaxUpdateDto,
+} from './lib/tax.schema';
+export {
+  taxAuthorityCreateDtoSchema,
+  taxAuthorityDetailDtoSchema,
+  taxAuthorityDetailResponseSchema,
+  taxAuthorityListResponseSchema,
+  taxAuthorityLookupDtoSchema,
+  taxAuthorityLookupResponseSchema,
+  taxAuthorityPatchDtoSchema,
+  taxAuthoritySummaryDtoSchema,
+  taxAuthorityUpdateDtoSchema,
+  type TaxAuthorityCreateDto,
+  type TaxAuthorityDetailDto,
+  type TaxAuthorityListParams,
+  type TaxAuthorityLookupDto,
+  type TaxAuthorityPatchDto,
+  type TaxAuthoritySummaryDto,
+  type TaxAuthorityUpdateDto,
+} from './lib/tax-authority.schema';
+export {
+  zoneCreateDtoSchema,
+  zoneDetailDtoSchema,
+  zoneDetailResponseSchema,
+  zoneListResponseSchema,
+  zoneLookupDtoSchema,
+  zoneLookupResponseSchema,
+  zonePatchDtoSchema,
+  zoneSummaryDtoSchema,
+  zoneUpdateDtoSchema,
+  type ZoneCreateDto,
+  type ZoneDetailDto,
+  type ZoneListParams,
+  type ZoneLookupDto,
+  type ZonePatchDto,
+  type ZoneSummaryDto,
+  type ZoneUpdateDto,
+} from './lib/zone.schema';

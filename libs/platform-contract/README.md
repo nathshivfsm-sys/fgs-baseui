@@ -38,7 +38,8 @@ no refetch on window focus.
 
 - Pass `onError` for telemetry. User-facing error messages stay the feature's job.
 - Endpoint-specific behavior belongs in a feature-local `queryOptions` factory in the owning
-  data-access lib — not in a second QueryClient.
+  MFE's data-access lib — not in a second QueryClient. Wire request/response types belong
+  in that MFE's `contract` lib (`@cms/<mfe>-contract`), not here.
 - Storybook and tests create isolated clients and call `disposeCmsQueryClient` during teardown.
 
 Query keys must start with a unique feature scope and include every variable that changes the

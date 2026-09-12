@@ -7,9 +7,10 @@ typed `ApiError` on non-OK responses.
 ## Status: provisional
 
 One real caller so far. `@cms/auth-data-access` calls a live endpoint
-(`POST /auth/refresh`, see `context/features/api-login-access-token.md`), while
-`workorder-data-access`, `lead-data-access`, and `settings-data-access` still return
-static mock data without going through `customFetch` at all. This library existed
+(`POST /auth/refresh`, see `context/features/api-login-access-token.md`). Settings catalog
+APIs in `@cms/settings-data-access` also go through `customFetch` and parse with
+`@cms/settings-contract`. `workorder-data-access` and `lead-data-access` still return
+static mock data without going through `customFetch`. This library existed
 ahead of that first caller so the fetch layer would be ready, per
 `context/features/monorepo-architecture-remediation-prd.md`.
 
@@ -43,5 +44,6 @@ configureCustomFetch({
 ```
 
 Then call `customFetch<T>(endpoint, options)` from a `data-access` library's query
-functions. This library does not validate response shapes — colocate a Zod schema
-in the owning `data-access` library and parse the result there.
+functions. This library does not validate response shapes — colocate a Zod schema in
+the owning MFE's `contract` library (`@cms/<mfe>-contract`) and parse the result in
+that MFE's data-access lib.

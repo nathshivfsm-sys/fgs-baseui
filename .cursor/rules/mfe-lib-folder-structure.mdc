@@ -1,0 +1,38 @@
+---
+description: Per-MFE libs — contract vs data-access folder ownership
+globs: libs/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Per-MFE library folders
+
+Each remote owns its libraries under `libs/<mfe>/`. Do not put that MFE's wire types in `libs/shared/`.
+
+```text
+libs/<mfe>/
+  contract/       @cms/<mfe>-contract      wire request/response Zod DTOs + inferred types
+  data-access/    @cms/<mfe>-data-access   endpoints, query keys, query/mutation factories, form schemas, mappers
+```
+
+Settings is the reference:
+
+```text
+libs/settings/contract        → @cms/settings-contract
+libs/settings/data-access     → @cms/settings-data-access
+```
+
+Lead would be `libs/lead/contract` (`@cms/lead-contract`) plus `libs/lead/data-access`. Same for every other remote.
+
+## What goes where
+
+- **Contract** — API request and response shapes (list/detail/lookup/create/update/patch DTOs, envelopes, list params). UI, MSW, and data-access all import these. Tag `type:lib`, `scope:<mfe>`, and `type:contract`.
+- **Data-access** — `customFetch`, TanStack Query options factories, cache keys, endpoints, form Zod schemas, mappers. Tag `type:lib`, `scope:<mfe>`. Import wire types from that MFE's contract; do not declare a second DTO.
+- **UI** — `import type { TaxSummaryDto } from '@cms/settings-contract'` (or that MFE's contract). Do not copy interfaces into page `types/`.
+- **MSW** — handlers stay in `@cms/shared-mocks` (the shell starts the worker). Seed data and request bodies use the MFE contract schemas. One handler file per module.
+
+## Do not
+
+- Put MFE catalog DTOs in `libs/shared/` or in `platform-contract`.
+- Duplicate a DTO in data-access, mocks, and UI.
+- Add per-endpoint types inside a page folder when a contract type already exists.
+- Create a new `data-access` schema file for a swagger resource that UI or MSW will also consume — it belongs in `contract/`.

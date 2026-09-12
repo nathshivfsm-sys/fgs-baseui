@@ -7,6 +7,7 @@
     "@cms/lead-data-access": "workspace:*",
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-data-access": "workspace:*",
+    "@cms/settings-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/workorder-data-access": "workspace:*"
   }

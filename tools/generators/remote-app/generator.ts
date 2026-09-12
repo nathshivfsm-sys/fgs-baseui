@@ -136,12 +136,12 @@ function wireIntoEslintBoundaries(tree: Tree, name: string): void {
   replaceOnce(
     tree,
     eslintPath,
-    `            {\n              sourceTag: 'scope:shared',\n              onlyDependOnLibsWithTags: ['scope:shared'],\n            },`,
+    `            {\n              sourceTag: 'scope:shared',\n              onlyDependOnLibsWithTags: ['scope:shared', 'type:contract'],\n            },`,
     `            {\n` +
       `              sourceTag: 'scope:${name}',\n` +
-      `              onlyDependOnLibsWithTags: ['scope:${name}', 'scope:shared'],\n` +
+      `              onlyDependOnLibsWithTags: ['scope:${name}', 'scope:shared', 'type:contract'],\n` +
       `            },\n` +
-      `            {\n              sourceTag: 'scope:shared',\n              onlyDependOnLibsWithTags: ['scope:shared'],\n            },`,
+      `            {\n              sourceTag: 'scope:shared',\n              onlyDependOnLibsWithTags: ['scope:shared', 'type:contract'],\n            },`,
   );
 }
 
@@ -237,7 +237,11 @@ export default async function remoteAppGenerator(
         `sidebar, add an entry to apps/shell/src/shared/constant, e.g.:\n` +
         `  { icon: SomeIcon, label: '${displayName}', path: '/${name}' }\n` +
         `(pick an existing icon from libs/ui/src/icons, or hand-trace a new one\n` +
-        `following the createFigmaIcon pattern — see coding-standards.md).\n`,
+        `following the createFigmaIcon pattern — see coding-standards.md).\n\n` +
+        `When this remote talks to an API, add libs/${name}/contract (@cms/${name}-contract,\n` +
+        `tags type:lib + scope:${name} + type:contract) for wire DTOs and\n` +
+        `libs/${name}/data-access for query/mutation factories. Do not put catalog DTOs\n` +
+        `in libs/shared/. See .cursor/rules/mfe-lib-folder-structure.mdc.\n`,
     );
   };
 }

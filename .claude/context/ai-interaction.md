@@ -48,6 +48,7 @@ We will create a new branch for every feature/fix. Name branch **feature/[featur
 - Don't refactor unrelated code unless asked
 - Don't add "nice to have" features
 - Preserve existing patterns in the codebase
+- For new APIs, put wire DTOs in `libs/<mfe>/contract` and fetch factories in `libs/<mfe>/data-access`. Never a second copy in mocks or page `types/`.
 
 ## Code Review
 
