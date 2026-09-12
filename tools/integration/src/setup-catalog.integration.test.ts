@@ -7,6 +7,7 @@ import {
   createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
   createZoneMutationOptions,
+  deleteNonWorkingDateMutationOptions,
   nonWorkingDateDetailQueryOptions,
   nonWorkingDateKeys,
   nonWorkingDateListQueryOptions,
@@ -233,12 +234,18 @@ describe('non-working date through customFetch', () => {
     disposeCmsQueryClient(client);
   });
 
-  it('POSTs a create body and invalidates non-working date queries', async () => {
+  it('POSTs a create body and upserts the list cache without invalidating', async () => {
     fetchMock.mockResolvedValue(
       jsonResponse(nonWorkingDateDetailResponseFixture, 201),
     );
     const client = createCmsQueryClient();
-    client.setQueryData(nonWorkingDateKeys.list({}), { items: [], page: 1 });
+    const listKey = nonWorkingDateKeys.list({});
+    client.setQueryData(listKey, {
+      items: [],
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+    });
 
     const mutation = client
       .getMutationCache()
@@ -252,9 +259,45 @@ describe('non-working date through customFetch', () => {
     const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe('/api/v1/nonworkingdate');
     expect(init?.method).toBe('POST');
-    expect(
-      client.getQueryState(nonWorkingDateKeys.list({}))?.isInvalidated,
-    ).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(client.getQueryState(listKey)?.isInvalidated).toBe(false);
+    expect(client.getQueryData(listKey)).toEqual({
+      items: [created],
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+    });
+    disposeCmsQueryClient(client);
+  });
+
+  it('DELETEs by id and removes the row from the list cache', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+    const client = createCmsQueryClient();
+    const listKey = nonWorkingDateKeys.list({});
+    const existing = nonWorkingDateDetailResponseFixture.data;
+    client.setQueryData(listKey, {
+      items: [existing],
+      page: 1,
+      pageSize: 10,
+      totalCount: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, deleteNonWorkingDateMutationOptions(client));
+    await mutation.execute(existing.id);
+
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(url).toBe('/api/v1/nonworkingdate/41');
+    expect(init?.method).toBe('DELETE');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(client.getQueryState(listKey)?.isInvalidated).toBe(false);
+    expect(client.getQueryData(listKey)).toEqual({
+      items: [],
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+    });
     disposeCmsQueryClient(client);
   });
 });

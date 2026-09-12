@@ -195,7 +195,7 @@ live here, not in a library:
 | `libs/platform-contract` | `@cms/platform-contract` | Shared `QueryClient` factory and runtime contract (shell ↔ remotes). Not an API DTO lib. |
 | `libs/shared/contract` | `@cms/shared-contract` | Cross-remote wire DTOs (File Service Attachment) |
 | `libs/shared/data-access` | `@cms/shared-data-access` | Cross-remote query/mutation factories (Attachment) |
-| `libs/settings/contract` | `@cms/settings-contract` | Settings catalog wire DTOs (Tax, TaxAuthority, Zone) |
+| `libs/settings/contract` | `@cms/settings-contract` | Settings wire DTOs (Company, Tax, TaxAuthority, Zone) |
 | `libs/settings/data-access` | `@cms/settings-data-access` | Settings query/mutation factories, form schemas, mappers |
 | `libs/lead/data-access` | `@cms/lead-data-access` | Lead fetch factories. Add `libs/lead/contract` when wire DTOs are shared with UI/MSW. |
 | `libs/workorder/data-access` | `@cms/workorder-data-access` | Same pattern as lead |
@@ -374,9 +374,9 @@ A data-access lib exports **options factories, not hooks** — `<feature>QueryOp
 `<feature>MutationOptions` — and the screen passes the `queryClient` it was given:
 
 ```typescript
-const query = useQuery(companySettingsQueryOptions(companyId), queryClient);
+const query = useQuery(companyDetailQueryOptions(companyId), queryClient);
 const mutation = useMutation(
-  companySettingsMutationOptions(companyId, queryClient),
+  patchCompanyMutationOptions(companyId, queryClient),
   queryClient,
 );
 ```

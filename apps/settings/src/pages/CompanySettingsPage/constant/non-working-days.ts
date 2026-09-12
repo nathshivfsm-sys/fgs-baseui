@@ -1,14 +1,12 @@
-import type { NonWorkingDay } from '../types';
+export const PAGE_SIZE = 10;
 
-/**
- * Static preview rows for the UI-only Non-Working Days panel, copied from the Figma
- * frame. Replace with a `data-access` query when the panel gets real behaviour.
- */
-export const NON_WORKING_DAYS_PREVIEW: readonly NonWorkingDay[] = [
-  { date: '01/01/2025', day: 'Wednesday', description: "New Year's Day" },
-  { date: '05/26/2025', day: 'Monday', description: 'Memorial Day' },
-  { date: '07/04/2025', day: 'Friday', description: 'Independence Day' },
-  { date: '09/01/2025', day: 'Monday', description: 'Labor Day' },
-  { date: '11/27/2025', day: 'Thursday', description: 'Thanksgiving Day' },
-  { date: '12/25/2025', day: 'Thursday', description: 'Christmas Day' },
-];
+export const CREATE_TITLE = 'Create Non-Working Day';
+export const CREATE_DESCRIPTION =
+  'Add a company holiday or non-working day.';
+export const EDIT_TITLE = 'Edit Non-Working Day';
+export const EDIT_DESCRIPTION =
+  'Update this company holiday or non-working day.';
+export const DESCRIPTION_PLACEHOLDER = 'Enter description';
+export const SAVE_LABEL = 'Save Non-Working Day';
+export const EMPTY_COPY = 'No non-working days yet.';
+export const DELETE_TITLE = 'Delete Non-Working Day';

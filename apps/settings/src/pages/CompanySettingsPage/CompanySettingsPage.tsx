@@ -2,8 +2,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import type { QueryClient } from '@tanstack/react-query';
 import {
-  companySettingsMutationOptions,
-  companySettingsQueryOptions,
+  patchCompanyMutationOptions,
+  companyDetailQueryOptions,
 } from '@cms/settings-data-access';
 import {
   BodySmall,
@@ -36,7 +36,10 @@ export function CompanySettingsPage({
   queryClient,
 }: CompanySettingsPageProps) {
   return (
-    <section className="space-y-6" data-testid="company-settings">
+    <section
+      className="flex min-h-0 flex-1 flex-col gap-6 overflow-hidden"
+      data-testid="company-settings"
+    >
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -97,9 +100,9 @@ function CompanySettingsEditor({
 }: CompanySettingsEditorProps) {
   const navigate = useNavigate();
   const feedbackRef = useRef<HTMLDivElement>(null);
-  const query = useQuery(companySettingsQueryOptions(companyId), queryClient);
+  const query = useQuery(companyDetailQueryOptions(companyId), queryClient);
   const mutation = useMutation(
-    companySettingsMutationOptions(companyId, queryClient),
+    patchCompanyMutationOptions(companyId, queryClient),
     queryClient,
   );
 
@@ -113,6 +116,10 @@ function CompanySettingsEditor({
     }
   }, [mutation.isError, mutation.isSuccess, mutation.submittedAt]);
 
+  function handleCancel() {
+    navigate(SETUP_PATH);
+  }
+
   function renderBody() {
     if (query.isPending) return <GeneralInfoSkeleton />;
     if (query.isError) {
@@ -125,17 +132,16 @@ function CompanySettingsEditor({
     return (
       <CompanySettingsForm
         isPending={mutation.isPending}
-        onCancel={() => {
-          navigate(SETUP_PATH);
-        }}
+        onCancel={handleCancel}
         onSubmit={mutation.mutate}
         profile={query.data}
+        queryClient={queryClient}
       />
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-hidden">
       <div className="scroll-mt-4 empty:hidden" ref={feedbackRef}>
         {mutation.isSuccess && (
           <Callout title="Saved" variant="success">

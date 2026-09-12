@@ -2,6 +2,33 @@
 
 ## Status
 
+**Company Non-Working Days (API-backed CRUD)** — spec, plan, and implementation on
+this branch. Wires the General Info panel to `GET/POST/PUT/DELETE /nonworkingdate`.
+Writes update the list cache (`setQueriesData`) and do **not** refetch the list.
+Delete uses a confirmation dialog. Live DELETE may 405 if swagger never had the
+verb; MSW covers it.
+
+- Spec: [features/company-non-working-days-api-prd.md](features/company-non-working-days-api-prd.md)
+- Plan: [features/company-non-working-days-api-plan.md](features/company-non-working-days-api-plan.md)
+
+Verified locally: `test:query` 40/40; lint and typecheck clean for `settings`,
+`settings-data-access`, `shared-mocks`, `integration`. Storybook interaction tests
+could not run here (Playwright browser missing in this environment).
+
+## History
+
+**Company Branding image upload (UI only)** — spec and implementation plan written, **not
+started**. Proposed branch `feature/company-branding-image-upload`.
+
+Reusable `@cms/ui` `EntityImageUpload` (get / upload-or-change / remove) with a pluggable
+in-memory store. First consumer is General Info Branding / Logo with `entityType`
+`"company"` and `entityId` `"1"`. No File Service wiring this pass.
+
+- Spec: [features/company-branding-image-upload-prd.md](features/company-branding-image-upload-prd.md)
+- Plan: [features/company-branding-image-upload-plan.md](features/company-branding-image-upload-plan.md)
+
+## History
+
 **Zone & Postal Code page** — implemented and browser-verified on
 `feature/setup-tax-zone-api`. Settings route `company/zone-postal-code`
 lists zones from `@cms/settings-data-access` against the Figma Zone &

@@ -3,6 +3,13 @@
 @source "../../../libs/ui/src";
 @source "./";
 
+/* The shell is `h-screen overflow-hidden`. Inner `overflow-y-auto` panes
+   (form cards, the main column) still leak into the document's scrollHeight
+   while html/body are `overflow: visible`, which draws a second scrollbar.
+   Lock the document so only those inner panes scroll. */
+html,
+body,
 #root {
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 }

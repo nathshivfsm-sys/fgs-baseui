@@ -1,2 +1,12 @@
 export { COMPANY_SIZE_OPTIONS, TIME_ZONE_OPTIONS } from './company-options';
-export { NON_WORKING_DAYS_PREVIEW } from './non-working-days';
+export {
+  CREATE_DESCRIPTION,
+  CREATE_TITLE,
+  DELETE_TITLE,
+  DESCRIPTION_PLACEHOLDER,
+  EDIT_DESCRIPTION,
+  EDIT_TITLE,
+  EMPTY_COPY,
+  PAGE_SIZE,
+  SAVE_LABEL,
+} from './non-working-days';

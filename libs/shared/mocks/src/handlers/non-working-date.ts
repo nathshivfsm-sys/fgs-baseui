@@ -1,4 +1,4 @@
-import { http } from 'msw';
+import { http, HttpResponse } from 'msw';
 import {
   nonWorkingDateCreateDtoSchema,
   nonWorkingDatePatchDtoSchema,
@@ -161,5 +161,13 @@ export const nonWorkingDateHandlers = [
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
+  }),
+
+  http.delete('/api/v1/nonworkingdate/:id', ({ params }) => {
+    const id = parseRouteId(params['id']);
+    const index = nonWorkingDates.findIndex((record) => record.id === id);
+    if (index < 0) return setupError(404, 'Non-working date not found.');
+    nonWorkingDates.splice(index, 1);
+    return new HttpResponse<null>(null, { status: 204 });
   }),
 ];

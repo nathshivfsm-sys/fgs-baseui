@@ -10,6 +10,15 @@ export {
   type SortDirection,
 } from './lib/envelope.schema';
 export {
+  companyAddressDtoSchema,
+  companyDetailResponseSchema,
+  companyDtoSchema,
+  companyPatchDtoSchema,
+  type CompanyAddressDto,
+  type CompanyDto,
+  type CompanyPatchDto,
+} from './lib/company.schema';
+export {
   taxCreateDtoSchema,
   taxDetailDtoSchema,
   taxDetailResponseSchema,

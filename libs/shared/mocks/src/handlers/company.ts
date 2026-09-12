@@ -1,14 +1,19 @@
 import { http, HttpResponse } from 'msw';
+import { companyPatchDtoSchema } from '@cms/settings-contract';
+import {
+  assignDefined,
+  firstIssueMessage,
+  readJsonObject,
+  setupError,
+  setupOk,
+} from './util';
 
 /**
  * Seeded from the redacted live `GET /company/1` capture
  * (`tools/integration/src/fixtures/company-response.ts`). Extra keys the Zod
  * schema strips are kept so the mock envelope matches the real contract.
- *
- * Not imported from `@cms/settings-data-access`: that lib is `scope:settings`,
- * and this one is `scope:shared`.
  */
-function createCompanyRecord() {
+function seedCompany() {
   return {
     id: 52,
     tenantId: 52,
@@ -61,67 +66,39 @@ function createCompanyRecord() {
   };
 }
 
-type CompanyRecord = ReturnType<typeof createCompanyRecord>;
+type CompanyRecord = ReturnType<typeof seedCompany>;
 
 const companies = new Map<string, CompanyRecord>();
 
 function getOrCreateCompany(companyId: string): CompanyRecord {
   const existing = companies.get(companyId);
   if (existing) return existing;
-  const created = createCompanyRecord();
+  const created = seedCompany();
   companies.set(companyId, created);
   return created;
 }
 
-function companyResponse(data: CompanyRecord) {
-  return {
-    success: true,
-    statusCode: 200,
-    data,
-    errors: [] as string[],
-  };
-}
-
 /**
- * Intercepts `GET` / `PATCH /company/{companyId}`. PATCH is kept in memory so
- * the mutation's follow-up GET (cache invalidation) shows the saved values.
+ * In-memory `/company/{companyId}`. PATCH persists for the session so the
+ * mutation's follow-up GET shows the saved values. Request/response shapes
+ * come from `@cms/settings-contract`.
  */
-export const settingsHandlers = [
+export const companyHandlers = [
   http.get('/api/v1/company/:companyId', ({ params }) => {
     const companyId = String(params['companyId'] ?? '');
-    return HttpResponse.json(companyResponse(getOrCreateCompany(companyId)));
+    if (!companyId) return setupError(404, 'Company not found.');
+    return setupOk(getOrCreateCompany(companyId));
   }),
 
   http.patch('/api/v1/company/:companyId', async ({ params, request }) => {
     const companyId = String(params['companyId'] ?? '');
+    if (!companyId) return setupError(404, 'Company not found.');
     const record = getOrCreateCompany(companyId);
-
-    let patch: unknown;
-    try {
-      patch = await request.json();
-    } catch {
-      return HttpResponse.json(
-        {
-          success: false,
-          statusCode: 400,
-          errors: ['Request body must be JSON.'],
-        },
-        { status: 400 },
-      );
-    }
-
-    if (typeof patch !== 'object' || patch === null || Array.isArray(patch)) {
-      return HttpResponse.json(
-        {
-          success: false,
-          statusCode: 400,
-          errors: ['Request body must be a JSON object.'],
-        },
-        { status: 400 },
-      );
-    }
-
-    Object.assign(record, patch);
-    return new HttpResponse(null, { status: 204 });
+    const body = await readJsonObject(request);
+    if (!body.ok) return body.response;
+    const parsed = companyPatchDtoSchema.safeParse(body.value);
+    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    assignDefined(record, parsed.data);
+    return new HttpResponse<null>(null, { status: 204 });
   }),
 ];
