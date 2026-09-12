@@ -1,17 +1,12 @@
-import type { CompanyAddress } from '@cms/settings-data-access';
 import { BodySmall, Button, Heading3, LocationPinIcon } from '@cms/ui';
+import type { AddressCardProps } from '../../types';
 import { formatAddress } from '../../util';
-
-export interface AddressCardProps {
-  address: CompanyAddress | null;
-  title: string;
-}
 
 /**
  * Read-only address display. `Edit` is rendered to match the design but does nothing
  * yet — there is no address-edit design, and addresses are never sent in PATCH.
  */
-export function AddressCard({ address, title }: AddressCardProps) {
+export const AddressCard = ({ address, title }: AddressCardProps) => {
   const lines = address ? formatAddress(address) : [];
   return (
     <div className="rounded-lg border border-border-subtle p-4">
@@ -42,4 +37,4 @@ export function AddressCard({ address, title }: AddressCardProps) {
       )}
     </div>
   );
-}
+};

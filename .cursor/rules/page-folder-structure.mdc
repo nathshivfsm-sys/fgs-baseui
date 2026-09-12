@@ -48,3 +48,4 @@ import { describeCompanyError } from './util';
 - App bootstrap/store helpers that no page owns go in `src/util/` or `src/store/`.
 - `App.tsx` stays a route table (or a thin page mount). Screen markup belongs in the page file.
 - API request/response types come from `libs/<mfe>/contract` (`@cms/<mfe>-contract`), not from page `types/`. See `.cursor/rules/mfe-lib-folder-structure.mdc`.
+- Component props and other page UI types go in `pages/<PageName>/types/` (`*.types.ts`, re-exported from `types/index.ts`). Do not declare `export interface` in a `.tsx` component file. The page barrel re-exports public page props from `types/`, not from the page component.

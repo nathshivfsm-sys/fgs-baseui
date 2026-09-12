@@ -6,4 +6,4 @@ export { CompanyInformationSection } from './CompanyInformationSection';
 export { ContactInformationSection } from './ContactInformationSection';
 export { FormSection } from './FormSection';
 export { GeneralInfoSkeleton } from './GeneralInfoSkeleton';
-export { NonWorkingDaysPanel } from './NonWorkingDaysPanel';
+export { NonWorkingDaysPanel } from './non-working-day';

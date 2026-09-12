@@ -2,7 +2,7 @@ import { ApiError } from '@cms/shared-api';
 import { ZodError } from 'zod';
 
 /** User-facing copy for a failed non-working-day load or write. */
-export function describeNonWorkingDateError(error: unknown): string {
+export const describeNonWorkingDateError = (error: unknown): string => {
   if (error instanceof ApiError) {
     switch (error.status) {
       case 401:
@@ -21,4 +21,4 @@ export function describeNonWorkingDateError(error: unknown): string {
     return 'Non-working days came back in an unexpected format.';
   }
   return 'The non-working day service is unreachable. Check your connection and try again.';
-}
+};

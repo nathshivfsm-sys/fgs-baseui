@@ -1,14 +1,9 @@
-import type { ReactNode } from 'react';
 import { useId } from 'react';
 import { SectionTitle } from '@cms/ui';
-
-export interface FormSectionProps {
-  children: ReactNode;
-  title: string;
-}
+import type { FormSectionProps } from '../../types';
 
 /** A titled two-column group inside the General Info card. */
-export function FormSection({ children, title }: FormSectionProps) {
+export const FormSection = ({ children, title }: FormSectionProps) => {
   const titleId = useId();
   return (
     // `gap`, not `space-y`: Tailwind v4's `space-y` margin sits in a zero-specificity
@@ -22,4 +17,4 @@ export function FormSection({ children, title }: FormSectionProps) {
       </div>
     </section>
   );
-}
+};

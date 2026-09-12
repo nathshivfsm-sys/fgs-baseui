@@ -1,14 +1,12 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { QueryClient } from '@tanstack/react-query';
 import {
   companyGeneralInfoFormSchema,
   toCompanyPatch,
   type CompanyGeneralInfo,
-  type CompanyPatchDto,
-  type CompanyProfile,
 } from '@cms/settings-data-access';
 import { Button, SectionCard } from '@cms/ui';
+import type { CompanySettingsFormProps } from '../types';
 import {
   AddressesSection,
   BrandingSection,
@@ -20,21 +18,13 @@ import {
 
 const COMPANY_FORM_ID = 'company-general-info';
 
-export interface CompanySettingsFormProps {
-  isPending: boolean;
-  onCancel: () => void;
-  onSubmit: (patch: CompanyPatchDto) => void;
-  profile: CompanyProfile;
-  queryClient: QueryClient;
-}
-
-export function CompanySettingsForm({
+export const CompanySettingsForm = ({
   isPending,
   onCancel,
   onSubmit,
   profile,
   queryClient,
-}: CompanySettingsFormProps) {
+}: CompanySettingsFormProps) => {
   const form = useForm({
     mode: 'onBlur',
     resolver: zodResolver(companyGeneralInfoFormSchema),
@@ -46,9 +36,9 @@ export function CompanySettingsForm({
   // Read during render: RHF's formState proxy only tracks what a component subscribes to.
   const { dirtyFields, isDirty } = form.formState;
 
-  function handleFormSubmit(values: CompanyGeneralInfo) {
+  const handleFormSubmit = (values: CompanyGeneralInfo) => {
     onSubmit(toCompanyPatch(values, dirtyFields));
-  }
+  };
 
   return (
     <FormProvider {...form}>
@@ -114,4 +104,4 @@ export function CompanySettingsForm({
       </div>
     </FormProvider>
   );
-}
+};

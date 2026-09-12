@@ -39,12 +39,17 @@ Where each step lives:
 | Endpoint | `<module>.endpoints.ts` | the URL, in one place |
 
 UI and MSW import wire types from the contract. Do not copy DTOs into page `types/`,
-data-access, or mocks. Form schemas stay in data-access because they are a screen
-concern, not a transport concern.
+data-access, or mocks — page `types/` is for component props and other UI types, not
+wire shapes. Form schemas stay in data-access because they are a screen concern, not a
+transport concern.
 
-Screens live in `apps/<app>/src/pages/<PageName>/`: the page route target wires the query
-and mutation, `component/<Feature>Form.tsx` owns `useForm`, and its page-owned section
-components read the form off context.
+Screens live in `apps/<app>/src/pages/<PageName>/`. The page file is a thin arrow
+orchestrator; props interfaces live in `types/` and are re-exported from `types/index.ts`.
+`component/<Feature>Form.tsx` owns `useForm`. Split section, table, dialog, and action
+markup into small sibling components (a nested folder when a panel grows). Query and
+mutation state that would bloat the parent belongs in a colocated `use-*.ts` hook.
+Section components read the form off context. See the React and Types placement
+sections of `coding-standards.md`.
 
 ---
 

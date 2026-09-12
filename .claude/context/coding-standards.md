@@ -17,18 +17,51 @@
 
 - Strict mode enabled
 - No `any` types - use proper typing or `unknown`
-- Define interfaces for component props. Infer API request/response types from the MFE `contract` Zod schemas (`z.infer<typeof …>`). Do not hand-write a parallel DTO.
+- Define interfaces for component props in the page `types/` folder, not in the
+  `.tsx` file. Infer API request/response types from the MFE `contract` Zod schemas
+  (`z.infer<typeof …>`). Do not hand-write a parallel DTO.
 - Use type inference where obvious, explicit types where helpful
 
 ## React
 
 - Functional components only (no class components)
-- Use hooks for state and side effects
-- Keep components focused - one job per component
-- Extract reusable logic into custom hooks
-- **Named handlers, not inline functions in JSX.** Declare event handlers as
-  named functions in the component body (above the `return`), then pass them.
-  Do not put function bodies in JSX props.
+- **Arrow functions, not `function` declarations.** Components, event handlers, and
+  page-owned utils are `const` arrows. Company Settings (`apps/settings` General Info)
+  is the reference.
+
+  ```tsx
+  export const CompanySettingsPage = ({
+    companyId,
+    queryClient,
+  }: CompanySettingsPageProps) => (
+    <CompanySettingsEditor companyId={companyId} queryClient={queryClient} />
+  );
+
+  const handleFormSubmit = (values: CompanyGeneralInfo) => {
+    onSubmit(toCompanyPatch(values, dirtyFields));
+  };
+  ```
+
+  Generic components keep the type parameter on the arrow:
+
+  ```tsx
+  export const FormTextInput = <Values extends FieldValues>({
+    name,
+    ...inputProps
+  }: FormTextInputProps<Values>) => { /* ... */ };
+  ```
+
+- Use hooks for state and side effects. Extract a colocated kebab-case hook
+  (`use-non-working-days-panel.ts`) when a component would otherwise mix
+  query/mutation state with markup.
+- Keep components focused — one job per component. Split a growing screen into
+  header, status, table, row, pager, dialog, and footer-action pieces rather than
+  rendering that JSX in the parent. An orchestrator composes children; it does not
+  hide markup behind `renderX()` helpers in the same file. A nested folder under
+  `component/` is fine when a panel grows (`component/general-info/non-working-day/`).
+- **Named handlers, not inline functions in JSX.** Declare event handlers as named
+  arrows in the component body (above the `return`), then pass them. Do not put
+  function bodies in JSX props.
 
   ```tsx
   // ❌ BAD
@@ -47,18 +80,18 @@
   />
 
   // ✅ GOOD
-  function handleDialogOpenChange(open: boolean) {
+  const handleDialogOpenChange = (open: boolean) => {
     setDialogOpen(open);
     if (!open) setEditingZone(null);
-  }
+  };
 
-  function handleZoneSubmit(body: ZoneCreateDto) {
+  const handleZoneSubmit = (body: ZoneCreateDto) => {
     if (editingZone) {
       updateMutation.mutate({ id: editingZone.id, body });
       return;
     }
     createMutation.mutate(body);
-  }
+  };
 
   <ZoneFormDialog
     onOpenChange={handleDialogOpenChange}
@@ -68,7 +101,7 @@
 
   Passing an existing function (`onClick={onCancel}`, `onEdit={openEdit}`) is
   fine. Thin wrappers that only forward an argument (`onSelect={() =>
-  onCatalogChange('zones')}`) should still be named functions at the top of
+  onCatalogChange('zones')}`) should still be named arrows at the top of
   the component.
 
 ## Styling (use Tailwind CSS v4)
@@ -307,12 +340,16 @@ runtime, routing, and Module Federation wiring remain at `src/` because no page 
 
 **Types placement.** API request/response types come from that MFE's contract
 (`@cms/<mfe>-contract`), not from a page `types/` folder and not from a second copy in
-data-access. Page-domain types that are not wire DTOs belong in the page's `types/` folder
-and are re-exported from `types/index.ts` when several page files consume them. Component
-props and other single-file types may stay beside their implementation. Types genuinely
-consumed by multiple pages (still not wire DTOs) go in `src/shared/types/`. Store
-implementation types stay with their owning page or app-wide store. Do not declare an
-interface in a `constant/` file.
+data-access. Page-owned types that are not wire DTOs — including **component props** —
+belong in the page's `types/` folder (`*.types.ts`), grouped by feature
+(`company-settings.types.ts`, `non-working-day.types.ts`, `form.types.ts`) and
+re-exported from `types/index.ts`. Components import props from that folder
+(`import type { CompanySettingsPageProps } from './types'`). Do not declare
+`export interface` in a `.tsx` component file. The page barrel re-exports public page
+props from `types/`, not from the page component file. Types genuinely consumed by
+multiple pages (still not wire DTOs) go in `src/shared/types/`. Store implementation
+types stay with their owning page or app-wide store. Do not declare an interface in a
+`constant/` file.
 
 **`constant/` holds data, `util/` holds behaviour.** If it is a function, it is not a
 constant. A lookup map is a constant; the function that reads the map is not. Mock data
