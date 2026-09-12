@@ -8,7 +8,7 @@ import { cn } from '../../../lib/cn';
 import { Field } from '../field';
 
 const selectTriggerVariants = cva(
-  'flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-4 text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-input-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-4 text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] data-placeholder:text-input-foreground disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 aria-invalid:border-destructive',
   {
     variants: {
       size: {
@@ -25,6 +25,15 @@ const selectTriggerVariants = cva(
     compoundVariants: [
       { variant: 'soft', size: 'default', class: 'px-3' },
       { variant: 'soft', size: 'lg', class: 'px-3' },
+      {
+        variant: 'default',
+        class:
+          'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 aria-invalid:ring-destructive/20',
+      },
+      {
+        variant: 'soft',
+        class: 'focus-visible:border-ring focus-visible:ring-0',
+      },
     ],
     defaultVariants: { size: 'default', variant: 'default' },
   },
