@@ -65,6 +65,34 @@ describe('customFetch bodies', () => {
 
     await expect(customFetch('/x')).resolves.toEqual({ ok: 1 });
   });
+
+  it('omits JSON Content-Type when the body is FormData', async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ ok: true }, 201));
+    const form = new FormData();
+    form.append('file', new Blob(['x']));
+
+    await customFetch('/attachment', { method: 'POST', body: form });
+
+    expect(fetchMock.mock.calls[0]?.[1]?.headers).not.toMatchObject({
+      'Content-Type': 'application/json',
+    });
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(form);
+  });
+
+  it('returns a Blob when responseType is blob', async () => {
+    fetchMock.mockResolvedValue(
+      new Response(new Uint8Array([1, 2, 3]), {
+        status: 200,
+        headers: { 'Content-Type': 'image/png' },
+      }),
+    );
+
+    const body = await customFetch<Blob>('/attachment/Company/501', {
+      responseType: 'blob',
+    });
+
+    expect(body).toBeInstanceOf(Blob);
+  });
 });
 
 describe('customFetch error messages', () => {

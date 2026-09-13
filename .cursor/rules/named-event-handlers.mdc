@@ -6,8 +6,10 @@ alwaysApply: true
 
 # Named event handlers
 
-Do not put function bodies in JSX props. Declare a named function in the
-component body (above `return`) and pass it.
+Do not put function bodies in JSX props. Declare a named arrow in the
+component body (above `return`) and pass it. Use `const` arrows, not
+`function` declarations — same rule for components and page-owned utils.
+See `.claude/context/coding-standards.md`.
 
 ```tsx
 // ❌ BAD
@@ -24,18 +26,18 @@ onSubmit={(body) => {
 }}
 
 // ✅ GOOD
-function handleDialogOpenChange(open: boolean) {
+const handleDialogOpenChange = (open: boolean) => {
   setDialogOpen(open);
   if (!open) setEditingZone(null);
-}
+};
 
-function handleZoneSubmit(body: ZoneCreateDto) {
+const handleZoneSubmit = (body: ZoneCreateDto) => {
   if (editingZone) {
     updateMutation.mutate({ id: editingZone.id, body });
     return;
   }
   createMutation.mutate(body);
-}
+};
 
 <ZoneFormDialog
   onOpenChange={handleDialogOpenChange}
@@ -45,4 +47,4 @@ function handleZoneSubmit(body: ZoneCreateDto) {
 
 Passing an already-named function is fine (`onClick={onCancel}`). Wrappers that
 only forward an argument (`() => onCatalogChange('zones')`) still belong as
-named functions at the top of the component.
+named arrows at the top of the component.

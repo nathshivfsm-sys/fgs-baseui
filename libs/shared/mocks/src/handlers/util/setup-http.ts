@@ -27,7 +27,7 @@ export async function readJsonObject(
   request: Request,
 ): Promise<
   | { ok: true; value: Record<string, unknown> }
-  | { ok: false; response: HttpResponse }
+  | { ok: false; response: ReturnType<typeof setupError> }
 > {
   let body: unknown;
   try {

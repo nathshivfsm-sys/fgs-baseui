@@ -1,3 +1,4 @@
+export { CompanySettingsEditor } from './CompanySettingsEditor';
 export { CompanySettingsForm } from './CompanySettingsForm';
 export { FormSelectField, FormTextInput } from './form';
 export {

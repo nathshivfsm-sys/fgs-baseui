@@ -10,6 +10,15 @@ export {
   type SortDirection,
 } from './lib/envelope.schema';
 export {
+  companyAddressDtoSchema,
+  companyDetailResponseSchema,
+  companyDtoSchema,
+  companyPatchDtoSchema,
+  type CompanyAddressDto,
+  type CompanyDto,
+  type CompanyPatchDto,
+} from './lib/company.schema';
+export {
   taxCreateDtoSchema,
   taxDetailDtoSchema,
   taxDetailResponseSchema,
@@ -47,6 +56,24 @@ export {
   type TaxAuthoritySummaryDto,
   type TaxAuthorityUpdateDto,
 } from './lib/tax-authority.schema';
+export {
+  nonWorkingDateCreateDtoSchema,
+  nonWorkingDateDetailDtoSchema,
+  nonWorkingDateDetailResponseSchema,
+  nonWorkingDateListResponseSchema,
+  nonWorkingDateLookupDtoSchema,
+  nonWorkingDateLookupResponseSchema,
+  nonWorkingDatePatchDtoSchema,
+  nonWorkingDateSummaryDtoSchema,
+  nonWorkingDateUpdateDtoSchema,
+  type NonWorkingDateCreateDto,
+  type NonWorkingDateDetailDto,
+  type NonWorkingDateListParams,
+  type NonWorkingDateLookupDto,
+  type NonWorkingDatePatchDto,
+  type NonWorkingDateSummaryDto,
+  type NonWorkingDateUpdateDto,
+} from './lib/non-working-date.schema';
 export {
   zoneCreateDtoSchema,
   zoneDetailDtoSchema,

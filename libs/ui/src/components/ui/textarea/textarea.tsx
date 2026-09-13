@@ -6,7 +6,7 @@ import { Field } from '../field';
 import { BodySmall } from '../typography';
 
 const textareaVariants = cva(
-  'w-full min-w-60 resize-y rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'w-full min-w-60 resize-y rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-placeholder disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive',
   {
     variants: {
       size: {
@@ -20,6 +20,17 @@ const textareaVariants = cva(
         soft: 'border-border-subtle px-3 py-2',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'default',
+        class:
+          'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 aria-invalid:ring-destructive/20',
+      },
+      {
+        variant: 'soft',
+        class: 'focus-visible:border-ring focus-visible:ring-0',
+      },
+    ],
     defaultVariants: { size: 'default', variant: 'default' },
   },
 );

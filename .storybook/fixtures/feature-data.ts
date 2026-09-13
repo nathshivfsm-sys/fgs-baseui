@@ -18,7 +18,7 @@ export const workorderFixtures = [
 
 /**
  * Wire shape of `GET /company/{companyId}`, so stories drive the same path the app
- * does: `customFetch` → `companyResponseSchema` → `toCompanyProfile`. Values match the
+ * does: `customFetch` → `companyDetailResponseSchema` → `toCompanyProfile`. Values match the
  * redacted capture in `tools/integration/src/fixtures/company-response.ts`, which keeps
  * every key the schema strips; this one carries only what the screen reads.
  */
@@ -97,6 +97,45 @@ export const zoneListItemsFixture = [
     code: 'RURAL',
     name: 'Rural Zone',
     description: 'Rural coverage',
+    isActive: false,
+  },
+] as const;
+
+export const nonWorkingDateListItemsFixture = [
+  {
+    id: 41,
+    nonWorkingDate: '2025-01-01',
+    name: "New Year's Day",
+    isActive: true,
+  },
+  {
+    id: 42,
+    nonWorkingDate: '2025-05-26',
+    name: 'Memorial Day',
+    isActive: true,
+  },
+  {
+    id: 43,
+    nonWorkingDate: '2025-07-04',
+    name: 'Independence Day',
+    isActive: true,
+  },
+  {
+    id: 44,
+    nonWorkingDate: '2025-09-01',
+    name: 'Labor Day',
+    isActive: true,
+  },
+  {
+    id: 45,
+    nonWorkingDate: '2025-11-27',
+    name: 'Thanksgiving Day',
+    isActive: true,
+  },
+  {
+    id: 46,
+    nonWorkingDate: '2025-12-25',
+    name: 'Christmas Day',
     isActive: false,
   },
 ] as const;

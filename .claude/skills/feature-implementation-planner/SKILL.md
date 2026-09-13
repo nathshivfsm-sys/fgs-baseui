@@ -9,6 +9,8 @@ Takes a PRD/spec plus the user's real codebase and produces (1) an ordered imple
 
 This is the deliberate second step after `feature-spec-writer` (or any other requirements doc) — spec and implementation stay separate so the user can review/approve the spec before code gets written.
 
+If the spec is a catalog API resource (contract + data-access + MSW + `test:query` only), use `catalog-endpoint-implementation-planner` instead. That skill clones Tax and does not build a UI.
+
 ## Workflow
 
 ### Step 1: Locate and read the spec

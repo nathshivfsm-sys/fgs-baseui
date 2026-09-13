@@ -27,10 +27,21 @@ const softPadding = [
 ] as const;
 
 const textInputVariants = cva(
-  'w-full min-w-0 rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-input-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+  'w-full min-w-0 rounded-md border bg-surface text-control leading-[1.4] text-surface-foreground outline-none transition-[border-color,box-shadow] placeholder:text-input-foreground disabled:cursor-not-allowed disabled:bg-secondary disabled:opacity-60 read-only:bg-secondary/60 aria-invalid:border-destructive',
   {
     variants: controlVariants,
-    compoundVariants: [...softPadding],
+    compoundVariants: [
+      ...softPadding,
+      {
+        variant: 'default',
+        class:
+          'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 aria-invalid:ring-destructive/20',
+      },
+      {
+        variant: 'soft',
+        class: 'focus-visible:border-ring focus-visible:ring-0',
+      },
+    ],
     defaultVariants: { size: 'default', variant: 'default' },
   },
 );
@@ -41,7 +52,7 @@ const textInputVariants = cva(
  * as they do in Figma.
  */
 const inputShellVariants = cva(
-  'flex w-full min-w-0 items-center gap-2 rounded-md border bg-surface text-control text-surface-foreground transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 data-disabled:cursor-not-allowed data-disabled:bg-secondary data-disabled:opacity-60 data-invalid:border-destructive data-invalid:ring-[3px] data-invalid:ring-destructive/20',
+  'flex w-full min-w-0 items-center gap-2 rounded-md border bg-surface text-control text-surface-foreground transition-[border-color,box-shadow] data-disabled:cursor-not-allowed data-disabled:bg-secondary data-disabled:opacity-60 data-invalid:border-destructive',
   {
     variants: {
       // Padding only: the height is emitted by compoundVariants so exactly one
@@ -63,6 +74,15 @@ const inputShellVariants = cva(
       { multiline: true, size: 'default', class: 'min-h-9' },
       { multiline: true, size: 'lg', class: 'min-h-10' },
       ...softPadding,
+      {
+        variant: 'default',
+        class:
+          'focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 data-invalid:ring-[3px] data-invalid:ring-destructive/20',
+      },
+      {
+        variant: 'soft',
+        class: 'focus-within:border-ring focus-within:ring-0',
+      },
     ],
     defaultVariants: { size: 'default', variant: 'default', multiline: false },
   },

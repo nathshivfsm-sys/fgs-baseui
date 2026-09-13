@@ -121,6 +121,45 @@ export const zoneDetailResponseFixture = {
   errors: [] as string[],
 };
 
+export const nonWorkingDateListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 41,
+        nonWorkingDate: '2025-01-01',
+        name: "New Year's Day",
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const nonWorkingDateDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: nonWorkingDateListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const nonWorkingDateLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 41,
+      nonWorkingDate: '2025-01-01',
+      name: "New Year's Day",
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const zoneLookupResponseFixture = {
   success: true,
   statusCode: 200,

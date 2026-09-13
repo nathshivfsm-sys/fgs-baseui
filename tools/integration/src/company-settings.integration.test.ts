@@ -4,16 +4,18 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
-  companyResponseSchema,
-  companySettingsKeys,
-  companySettingsMutationOptions,
-  companySettingsQueryOptions,
+  companyDetailQueryOptions,
+  companyDetailResponseSchema,
+  companyKeys,
   formatPhoneNumber,
   normalizePhoneNumber,
-  saveCompanySettings,
+  patchCompany,
+  patchCompanyMutationOptions,
+  toCompanyAddressDto,
+  toCompanyAddressForm,
   toCompanyPatch,
   toCompanyProfile,
-  type CompanyGeneralInfo,
+  type CompanySettingsFormValues,
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import { companyResponseFixture } from './fixtures/company-response';
@@ -43,7 +45,7 @@ afterEach(() => {
 
 describe('company response mapping', () => {
   it('parses the captured API response and maps it to the screen model', () => {
-    const dto = companyResponseSchema.parse(companyResponseFixture).data;
+    const dto = companyDetailResponseSchema.parse(companyResponseFixture).data;
     const profile = toCompanyProfile(dto);
 
     expect(profile.companyNumber).toBe('1');
@@ -69,7 +71,7 @@ describe('company response mapping', () => {
   });
 
   it('tolerates a missing address and nullable text', () => {
-    const dto = companyResponseSchema.parse({
+    const dto = companyDetailResponseSchema.parse({
       ...companyResponseFixture,
       data: {
         ...companyResponseFixture.data,
@@ -100,7 +102,7 @@ describe('phone formatting', () => {
 });
 
 describe('toCompanyPatch', () => {
-  const values: CompanyGeneralInfo = {
+  const values: CompanySettingsFormValues = {
     name: 'Acme Field Services',
     legalName: 'Acme Field Services LLC',
     companySize: '11-50',
@@ -110,6 +112,14 @@ describe('toCompanyPatch', () => {
     website: '',
     timeZone: 'America/Chicago',
     isActive: true,
+    physicalAddress: {
+      lines: ['100 Main St'],
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    },
+    billingAddress: null,
   };
 
   it('sends only dirty fields', () => {
@@ -127,6 +137,51 @@ describe('toCompanyPatch', () => {
   it('sends nothing when nothing is dirty', () => {
     expect(toCompanyPatch(values, {})).toEqual({});
   });
+
+  it('sends a dirty address as a wire DTO', () => {
+    expect(toCompanyPatch(values, { physicalAddress: true })).toEqual({
+      physicalAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Austin',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
+  });
+});
+
+describe('company address form mapping', () => {
+  const physical = {
+    lines: ['100 Main St'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  };
+
+  it('maps display lines into the form and back to a wire DTO', () => {
+    const form = toCompanyAddressForm(physical, true);
+
+    expect(form).toEqual({
+      addressLine1: '100 Main St',
+      addressLine2: '',
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+      sameAsPhysical: true,
+    });
+    expect(toCompanyAddressDto(form)).toEqual({
+      addressLine1: '100 Main St',
+      addressLine2: null,
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    });
+  });
 });
 
 describe('company settings through customFetch', () => {
@@ -136,10 +191,10 @@ describe('company settings through customFetch', () => {
       defaultOptions: { queries: { retry: false } },
     });
 
-    const profile = await client.fetchQuery(companySettingsQueryOptions('1'));
+    const profile = await client.fetchQuery(companyDetailQueryOptions('1'));
 
     expect(profile.generalInfo.name).toBe('Acme Field Services');
-    expect(client.getQueryData(companySettingsKeys.detail('1'))).toBe(profile);
+    expect(client.getQueryData(companyKeys.detail('1'))).toBe(profile);
     const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe('/api/v1/company/1');
     expect(init?.signal).toBeInstanceOf(AbortSignal);
@@ -153,7 +208,7 @@ describe('company settings through customFetch', () => {
       defaultOptions: { queries: { retry: false } },
     });
 
-    const failure = client.fetchQuery(companySettingsQueryOptions('1'));
+    const failure = client.fetchQuery(companyDetailQueryOptions('1'));
 
     await expect(failure).rejects.toBeInstanceOf(ApiError);
     await expect(failure).rejects.toMatchObject({ status: 403 });
@@ -165,7 +220,7 @@ describe('company settings through customFetch', () => {
       jsonResponse({ success: true, statusCode: 200 }),
     );
 
-    await saveCompanySettings('1', { website: 'www.acme.example.com' });
+    await patchCompany('1', { website: 'www.acme.example.com' });
 
     const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe('/api/v1/company/1');
@@ -178,16 +233,16 @@ describe('company settings through customFetch', () => {
   it('invalidates the cached detail after a successful save', async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
     const client = createCmsQueryClient();
-    client.setQueryData(companySettingsKeys.detail('1'), { code: 'stale' });
+    client.setQueryData(companyKeys.detail('1'), { code: 'stale' });
 
     const mutation = client
       .getMutationCache()
-      .build(client, companySettingsMutationOptions('1', client));
+      .build(client, patchCompanyMutationOptions('1', client));
     await mutation.execute({ website: 'www.acme.example.com' });
 
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('PATCH');
     expect(
-      client.getQueryState(companySettingsKeys.detail('1'))?.isInvalidated,
+      client.getQueryState(companyKeys.detail('1'))?.isInvalidated,
     ).toBe(true);
     disposeCmsQueryClient(client);
   });
