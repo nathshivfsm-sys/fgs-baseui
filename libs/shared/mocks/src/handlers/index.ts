@@ -1,4 +1,5 @@
 import { authHandlers } from './auth';
+import { postalCodeHandlers } from './postal-code';
 import { settingsHandlers } from './settings';
 import { taxHandlers } from './tax';
 import { taxAuthorityHandlers } from './tax-authority';
@@ -10,5 +11,6 @@ export const handlers = [
   ...settingsHandlers,
   ...taxHandlers,
   ...taxAuthorityHandlers,
+  ...postalCodeHandlers,
   ...zoneHandlers,
 ];

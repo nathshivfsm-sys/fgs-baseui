@@ -48,6 +48,24 @@ export {
   type TaxAuthorityUpdateDto,
 } from './lib/tax-authority.schema';
 export {
+  postalCodeCreateDtoSchema,
+  postalCodeDetailDtoSchema,
+  postalCodeDetailResponseSchema,
+  postalCodeListResponseSchema,
+  postalCodeLookupDtoSchema,
+  postalCodeLookupResponseSchema,
+  postalCodePatchDtoSchema,
+  postalCodeSummaryDtoSchema,
+  postalCodeUpdateDtoSchema,
+  type PostalCodeCreateDto,
+  type PostalCodeDetailDto,
+  type PostalCodeListParams,
+  type PostalCodeLookupDto,
+  type PostalCodePatchDto,
+  type PostalCodeSummaryDto,
+  type PostalCodeUpdateDto,
+} from './lib/postal-code.schema';
+export {
   zoneCreateDtoSchema,
   zoneDetailDtoSchema,
   zoneDetailResponseSchema,

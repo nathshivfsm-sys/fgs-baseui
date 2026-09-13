@@ -1,23 +1,37 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import type { QueryClient } from '@tanstack/react-query';
-import type { ZoneCreateDto, ZoneSummaryDto } from '@cms/settings-contract';
+import type {
+  PostalCodeCreateDto,
+  PostalCodeSummaryDto,
+  ZoneCreateDto,
+  ZoneSummaryDto,
+} from '@cms/settings-contract';
 import {
+  createPostalCodeMutationOptions,
   createZoneMutationOptions,
+  postalCodeLookupQueryOptions,
+  taxLookupQueryOptions,
+  updatePostalCodeMutationOptions,
   updateZoneMutationOptions,
   zoneLookupQueryOptions,
 } from '@cms/settings-data-access';
-import { Callout } from '@cms/ui';
+import { Callout, type SelectOption } from '@cms/ui';
 import {
   CatalogNavPanel,
-  PostalCodePanel,
+  PostalCodeFormDialog,
+  PostalCodeTablePanel,
   ZoneFormDialog,
   ZonePostalCodeHeader,
   ZoneTablePanel,
 } from './component';
 import type { ZoneCatalog } from './types';
-import { catalogFromSearch, describeZoneError } from './util';
+import {
+  catalogFromSearch,
+  describePostalCodeError,
+  describeZoneError,
+} from './util';
 
 export interface ZonePostalCodePageProps {
   queryClient: QueryClient;
@@ -26,45 +40,113 @@ export interface ZonePostalCodePageProps {
 export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const catalog = catalogFromSearch(searchParams.get('catalog'));
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [zoneDialogOpen, setZoneDialogOpen] = useState(false);
+  const [postalDialogOpen, setPostalDialogOpen] = useState(false);
   const [editingZone, setEditingZone] = useState<ZoneSummaryDto | null>(null);
+  const [editingPostalCode, setEditingPostalCode] =
+    useState<PostalCodeSummaryDto | null>(null);
 
-  const activeLookup = useQuery(zoneLookupQueryOptions(true), queryClient);
-  const allLookup = useQuery(zoneLookupQueryOptions(false), queryClient);
-  const createMutation = useMutation(
+  const activeZoneLookup = useQuery(zoneLookupQueryOptions(true), queryClient);
+  const allZoneLookup = useQuery(zoneLookupQueryOptions(false), queryClient);
+  const activePostalLookup = useQuery(
+    postalCodeLookupQueryOptions(true),
+    queryClient,
+  );
+  const allPostalLookup = useQuery(
+    postalCodeLookupQueryOptions(false),
+    queryClient,
+  );
+  const taxLookup = useQuery(taxLookupQueryOptions(true), queryClient);
+  const createZoneMutation = useMutation(
     createZoneMutationOptions(queryClient),
     queryClient,
   );
-  const updateMutation = useMutation(
+  const updateZoneMutation = useMutation(
     updateZoneMutationOptions(queryClient),
     queryClient,
   );
-
-  const activeCount = activeLookup.data?.length ?? 0;
-  const inactiveCount = Math.max(
-    0,
-    (allLookup.data?.length ?? 0) - activeCount,
+  const createPostalMutation = useMutation(
+    createPostalCodeMutationOptions(queryClient),
+    queryClient,
   );
-  const saveMessage = updateMutation.isSuccess
-    ? 'Zone updated'
-    : createMutation.isSuccess
-      ? 'Zone created'
-      : null;
-  const writeError = createMutation.error ?? updateMutation.error;
-  const writePending = createMutation.isPending || updateMutation.isPending;
+  const updatePostalMutation = useMutation(
+    updatePostalCodeMutationOptions(queryClient),
+    queryClient,
+  );
+
+  const activeZoneCount = activeZoneLookup.data?.length ?? 0;
+  const inactiveZoneCount = Math.max(
+    0,
+    (allZoneLookup.data?.length ?? 0) - activeZoneCount,
+  );
+  const activePostalCount = activePostalLookup.data?.length ?? 0;
+  const inactivePostalCount = Math.max(
+    0,
+    (allPostalLookup.data?.length ?? 0) - activePostalCount,
+  );
+  const saveMessage = updatePostalMutation.isSuccess
+    ? 'Postal code updated'
+    : createPostalMutation.isSuccess
+      ? 'Postal code created'
+      : updateZoneMutation.isSuccess
+        ? 'Zone updated'
+        : createZoneMutation.isSuccess
+          ? 'Zone created'
+          : null;
+  const writeError =
+    createPostalMutation.error ??
+    updatePostalMutation.error ??
+    createZoneMutation.error ??
+    updateZoneMutation.error;
+  const writeErrorCopy = writeError
+    ? createPostalMutation.error || updatePostalMutation.error
+      ? describePostalCodeError(writeError)
+      : describeZoneError(writeError)
+    : null;
+
+  const zoneOptions = useMemo<SelectOption[]>(
+    () =>
+      (activeZoneLookup.data ?? []).map((zone) => ({
+        value: String(zone.id),
+        label: zone.name ?? zone.code ?? String(zone.id),
+      })),
+    [activeZoneLookup.data],
+  );
+  const taxOptions = useMemo<SelectOption[]>(
+    () =>
+      (taxLookup.data ?? []).map((tax) => ({
+        value: String(tax.id),
+        label: tax.taxCode ?? tax.name ?? String(tax.id),
+      })),
+    [taxLookup.data],
+  );
 
   function openCreate() {
+    if (catalog === 'postal') {
+      setEditingPostalCode(null);
+      setPostalDialogOpen(true);
+      return;
+    }
     setEditingZone(null);
-    setDialogOpen(true);
+    setZoneDialogOpen(true);
   }
 
-  function openEdit(zone: ZoneSummaryDto) {
+  function openEditZone(zone: ZoneSummaryDto) {
     setEditingZone(zone);
-    setDialogOpen(true);
+    setZoneDialogOpen(true);
   }
 
-  function closeDialog() {
-    setDialogOpen(false);
+  function openEditPostal(postalCode: PostalCodeSummaryDto) {
+    setEditingPostalCode(postalCode);
+    setPostalDialogOpen(true);
+  }
+
+  function closeZoneDialog() {
+    setZoneDialogOpen(false);
+  }
+
+  function closePostalDialog() {
+    setPostalDialogOpen(false);
   }
 
   function handleCatalogChange(next: ZoneCatalog) {
@@ -73,20 +155,36 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
     });
   }
 
-  function handleDialogOpenChange(open: boolean) {
-    setDialogOpen(open);
+  function handleZoneDialogOpenChange(open: boolean) {
+    setZoneDialogOpen(open);
     if (!open) setEditingZone(null);
+  }
+
+  function handlePostalDialogOpenChange(open: boolean) {
+    setPostalDialogOpen(open);
+    if (!open) setEditingPostalCode(null);
   }
 
   function handleZoneSubmit(body: ZoneCreateDto) {
     if (editingZone) {
-      updateMutation.mutate(
+      updateZoneMutation.mutate(
         { id: editingZone.id, body },
-        { onSuccess: closeDialog },
+        { onSuccess: closeZoneDialog },
       );
       return;
     }
-    createMutation.mutate(body, { onSuccess: closeDialog });
+    createZoneMutation.mutate(body, { onSuccess: closeZoneDialog });
+  }
+
+  function handlePostalSubmit(body: PostalCodeCreateDto) {
+    if (editingPostalCode) {
+      updatePostalMutation.mutate(
+        { id: editingPostalCode.id, body },
+        { onSuccess: closePostalDialog },
+      );
+      return;
+    }
+    createPostalMutation.mutate(body, { onSuccess: closePostalDialog });
   }
 
   return (
@@ -94,43 +192,66 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
       className="flex min-h-0 flex-1 flex-col gap-4"
       data-testid="zone-postal-code"
     >
-      <ZonePostalCodeHeader catalog={catalog} onAddZone={openCreate} />
+      <ZonePostalCodeHeader catalog={catalog} onAdd={openCreate} />
 
       {saveMessage ? (
         <Callout title="Saved" variant="success">
           {saveMessage}
         </Callout>
       ) : null}
-      {writeError ? (
+      {writeErrorCopy ? (
         <Callout title="Could not save" variant="error">
-          {describeZoneError(writeError)}
+          {writeErrorCopy}
         </Callout>
       ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <CatalogNavPanel
-          activeZoneCount={activeLookup.isSuccess ? activeCount : undefined}
+          activePostalCount={
+            activePostalLookup.isSuccess ? activePostalCount : undefined
+          }
+          activeZoneCount={
+            activeZoneLookup.isSuccess ? activeZoneCount : undefined
+          }
           catalog={catalog}
           onCatalogChange={handleCatalogChange}
         />
         {catalog === 'postal' ? (
-          <PostalCodePanel />
+          <PostalCodeTablePanel
+            activeCount={activePostalCount}
+            inactiveCount={inactivePostalCount}
+            onEdit={openEditPostal}
+            queryClient={queryClient}
+          />
         ) : (
           <ZoneTablePanel
-            activeCount={activeCount}
-            inactiveCount={inactiveCount}
-            onEdit={openEdit}
+            activeCount={activeZoneCount}
+            inactiveCount={inactiveZoneCount}
+            onEdit={openEditZone}
             queryClient={queryClient}
           />
         )}
       </div>
 
       <ZoneFormDialog
-        isPending={writePending}
-        onOpenChange={handleDialogOpenChange}
+        isPending={
+          createZoneMutation.isPending || updateZoneMutation.isPending
+        }
+        onOpenChange={handleZoneDialogOpenChange}
         onSubmit={handleZoneSubmit}
-        open={dialogOpen}
+        open={zoneDialogOpen}
         zone={editingZone}
+      />
+      <PostalCodeFormDialog
+        isPending={
+          createPostalMutation.isPending || updatePostalMutation.isPending
+        }
+        onOpenChange={handlePostalDialogOpenChange}
+        onSubmit={handlePostalSubmit}
+        open={postalDialogOpen}
+        postalCode={editingPostalCode}
+        taxOptions={taxOptions}
+        zoneOptions={zoneOptions}
       />
     </section>
   );

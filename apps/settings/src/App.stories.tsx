@@ -10,6 +10,8 @@ import {
 } from '../../../.storybook/fixtures/api';
 import {
   companyResponseFixture,
+  postalCodeListItemsFixture,
+  taxLookupItemsFixture,
   zoneListItemsFixture,
 } from '../../../.storybook/fixtures/feature-data';
 import {
@@ -337,6 +339,72 @@ function zoneHandlers(): ApiHandlers {
         201,
       );
     },
+    ['GET /postalcode']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = postalCodeListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /postalcode/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          postalCodeListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, postalCode, city }) => ({ id, postalCode, city })),
+        ),
+      );
+    },
+    ['POST /postalcode']: async (request) => {
+      const body = (await request.json()) as {
+        postalCode?: string;
+        city?: string;
+        state?: string | null;
+        fgsSetupZoneId?: number | null;
+        fgsSetupTaxId?: number | null;
+        tripCharge?: number | null;
+      };
+      const zone = zoneListItemsFixture.find(
+        (item) => item.id === body.fgsSetupZoneId,
+      );
+      const tax = taxLookupItemsFixture.find(
+        (item) => item.id === body.fgsSetupTaxId,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          postalCode: body.postalCode ?? null,
+          city: body.city ?? null,
+          state: body.state ?? null,
+          fgsSetupZoneId: body.fgsSetupZoneId ?? null,
+          zoneCode: zone?.code ?? null,
+          zoneName: zone?.name ?? null,
+          fgsSetupTaxId: body.fgsSetupTaxId ?? null,
+          taxCode: tax?.taxCode ?? null,
+          taxRate: tax?.taxRate ?? null,
+          tripCharge: body.tripCharge ?? null,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['GET /tax/lookup']: () => jsonResponse(setupEnvelope(taxLookupItemsFixture)),
   };
 }
 
@@ -379,10 +447,15 @@ export const ZonePostalCodeCatalog: Story = {
   beforeEach: () => api.install(loadsZones),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    await expect(await canvas.findByText('NORTH')).toBeVisible();
+    await expect(canvas.getAllByText('Houston').length).toBeGreaterThan(0);
+    await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
     await expect(
-      await canvas.findByText(/postal code catalog is not connected/i),
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
     ).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Add Zone' })).toBeDisabled();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Postal Code' }),
+    ).toBeEnabled();
   },
 };
 
@@ -411,6 +484,53 @@ export const ZonePostalCodeAdd: Story = {
       code: 'MID',
       name: 'Mid Zone',
       description: null,
+    });
+  },
+};
+
+export const ZonePostalCodeAddPostal: Story = {
+  args: {
+    initialPath: '/settings/company/zone-postal-code?catalog=postal',
+  },
+  beforeEach: () => api.install(loadsZones),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('NORTH');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Add Postal Code' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /postal code/i }),
+      '77099',
+    );
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /city/i }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'Houston' }),
+    );
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /tax code/i }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'TX-STD' }),
+    );
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Postal Code' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await expect(await canvas.findByText('Postal code created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/postalcode');
+    await expect(post?.body).toEqual({
+      postalCode: '77099',
+      city: 'Houston',
+      state: null,
+      fgsSetupZoneId: null,
+      fgsSetupTaxId: 11,
+      tripCharge: null,
     });
   },
 };

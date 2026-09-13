@@ -133,3 +133,50 @@ export const zoneLookupResponseFixture = {
   ],
   errors: [] as string[],
 };
+
+export const postalCodeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 41,
+        postalCode: 'NORTH',
+        city: 'Houston',
+        state: 'TX',
+        fgsSetupZoneId: 31,
+        zoneCode: 'NORTH',
+        zoneName: 'Harris County -North',
+        fgsSetupTaxId: 11,
+        taxCode: 'TX-STD',
+        taxRate: 8.7,
+        tripCharge: 10,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const postalCodeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: postalCodeListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const postalCodeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 41,
+      postalCode: 'NORTH',
+      city: 'Houston',
+    },
+  ],
+  errors: [] as string[],
+};
