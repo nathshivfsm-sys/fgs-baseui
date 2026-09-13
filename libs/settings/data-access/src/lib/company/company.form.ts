@@ -54,6 +54,57 @@ export const companyGeneralInfoFormSchema = z.object({
 
 export type CompanyGeneralInfo = z.infer<typeof companyGeneralInfoFormSchema>;
 
+const companyAddressValueSchema = z
+  .object({
+    lines: z.array(z.string()),
+    city: z.string(),
+    state: z.string(),
+    postalCode: z.string(),
+    country: z.string(),
+  })
+  .nullable();
+
+/** Scalar General Info plus the two addresses the footer Save can PATCH. */
+export const companySettingsFormSchema = companyGeneralInfoFormSchema.extend({
+  billingAddress: companyAddressValueSchema,
+  physicalAddress: companyAddressValueSchema,
+});
+
+export type CompanySettingsFormValues = z.infer<
+  typeof companySettingsFormSchema
+>;
+
+export const companyAddressFormSchema = z.object({
+  addressLine1: z
+    .string()
+    .trim()
+    .min(1, 'Address line 1 is required')
+    .max(200, 'Address line 1 must be 200 characters or fewer'),
+  addressLine2: z
+    .string()
+    .trim()
+    .max(200, 'Address line 2 must be 200 characters or fewer'),
+  city: z
+    .string()
+    .trim()
+    .min(1, 'City is required')
+    .max(100, 'City must be 100 characters or fewer'),
+  state: z
+    .string()
+    .trim()
+    .min(1, 'State is required')
+    .max(100, 'State must be 100 characters or fewer'),
+  postalCode: z
+    .string()
+    .trim()
+    .min(1, 'Postal code is required')
+    .max(20, 'Postal code must be 20 characters or fewer'),
+  country: z.string().min(1, 'Country is required'),
+  sameAsPhysical: z.boolean(),
+});
+
+export type CompanyAddressForm = z.infer<typeof companyAddressFormSchema>;
+
 export interface CompanyAddress {
   /** Non-empty street lines, in order (`addressLine1`..`addressLine4`). */
   lines: string[];
@@ -75,10 +126,10 @@ export interface CompanyProfile {
   billingAddress: CompanyAddress | null;
 }
 
-/** React Hook Form's `dirtyFields` for the flat General Info form. */
-export type CompanyDirtyFields = Partial<
-  Readonly<Record<keyof CompanyGeneralInfo, boolean | undefined>>
->;
+/** React Hook Form's `dirtyFields` for the General Info screen, including addresses. */
+export type CompanyDirtyFields = Partial<{
+  [K in keyof CompanySettingsFormValues]?: unknown;
+}>;
 
 function text(value: string | null | undefined): string {
   return value ?? '';
@@ -146,15 +197,107 @@ export function toCompanyProfile(dto: CompanyDto): CompanyProfile {
   };
 }
 
+export function emptyCompanyAddressForm(
+  sameAsPhysical = false,
+): CompanyAddressForm {
+  return {
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
+    sameAsPhysical,
+  };
+}
+
+function addressFormFields(
+  address: CompanyAddress | null,
+): Omit<CompanyAddressForm, 'sameAsPhysical'> {
+  return {
+    addressLine1: address?.lines[0] ?? '',
+    addressLine2: address?.lines[1] ?? '',
+    city: address?.city ?? '',
+    state: address?.state ?? '',
+    postalCode: address?.postalCode ?? '',
+    country: address?.country ?? '',
+  };
+}
+
+export function toCompanyAddressForm(
+  address: CompanyAddress | null,
+  sameAsPhysical = false,
+): CompanyAddressForm {
+  return { ...addressFormFields(address), sameAsPhysical };
+}
+
+export function isSameCompanyAddress(
+  left: CompanyAddress | null,
+  right: CompanyAddress | null,
+): boolean {
+  if (left == null || right == null) return false;
+  return (
+    JSON.stringify(addressFormFields(left)) ===
+    JSON.stringify(addressFormFields(right))
+  );
+}
+
+export function toCompanyAddressValue(
+  values: CompanyAddressForm,
+): CompanyAddress {
+  return {
+    lines: [values.addressLine1, values.addressLine2].filter((line) =>
+      Boolean(line.trim()),
+    ),
+    city: values.city,
+    state: values.state,
+    postalCode: values.postalCode,
+    country: values.country,
+  };
+}
+
+export function toCompanyAddressDto(
+  values: CompanyAddressForm,
+): CompanyAddressDto {
+  return {
+    addressLine1: values.addressLine1,
+    addressLine2: emptyToNull(values.addressLine2),
+    city: values.city,
+    state: values.state,
+    postalCode: values.postalCode,
+    country: values.country,
+  };
+}
+
+function toStoredAddressDto(
+  address: CompanyAddress | null,
+): CompanyAddressDto | null {
+  if (!address) return null;
+  return {
+    addressLine1: address.lines[0] ?? '',
+    addressLine2: emptyToNull(address.lines[1] ?? ''),
+    city: address.city,
+    state: address.state,
+    postalCode: address.postalCode,
+    country: address.country,
+  };
+}
+
+type CompanyScalarPatch = Omit<
+  Required<CompanyPatchDto>,
+  'billingAddress' | 'physicalAddress'
+>;
+
 /**
  * Builds a PATCH body holding only the fields the user changed. A cleared optional
- * field is sent as `null`, never as `''`.
+ * field is sent as `null`, never as `''`. Addresses are included when the modal
+ * wrote them onto the form; they are not sent from the address dialog itself.
  */
 export function toCompanyPatch(
-  values: CompanyGeneralInfo,
+  values: CompanySettingsFormValues,
   dirtyFields: CompanyDirtyFields,
 ): CompanyPatchDto {
-  const wire: Required<CompanyPatchDto> = {
+  const wire: CompanyScalarPatch = {
     name: values.name,
     legalName: values.legalName,
     companySize: emptyToNull(values.companySize),
@@ -165,9 +308,16 @@ export function toCompanyPatch(
     timeZone: values.timeZone,
     isActive: values.isActive,
   };
-  return Object.fromEntries(
+  const patch = Object.fromEntries(
     Object.entries(wire).filter(
-      ([key]) => dirtyFields[key as keyof CompanyGeneralInfo],
+      ([key]) => dirtyFields[key as keyof CompanyScalarPatch],
     ),
   ) as CompanyPatchDto;
+  if (dirtyFields.physicalAddress) {
+    patch.physicalAddress = toStoredAddressDto(values.physicalAddress);
+  }
+  if (dirtyFields.billingAddress) {
+    patch.billingAddress = toStoredAddressDto(values.billingAddress);
+  }
+  return patch;
 }

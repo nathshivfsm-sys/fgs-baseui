@@ -1,12 +1,8 @@
 import { BodySmall, Button, Heading3, LocationPinIcon } from '@cms/ui';
-import type { AddressCardProps } from '../../types';
-import { formatAddress } from '../../util';
+import type { AddressCardProps } from '../../../types';
+import { formatAddress } from '../../../util';
 
-/**
- * Read-only address display. `Edit` is rendered to match the design but does nothing
- * yet — there is no address-edit design, and addresses are never sent in PATCH.
- */
-export const AddressCard = ({ address, title }: AddressCardProps) => {
+export const AddressCard = ({ address, onEdit, title }: AddressCardProps) => {
   const lines = address ? formatAddress(address) : [];
   return (
     <div className="rounded-lg border border-border-subtle p-4">
@@ -17,6 +13,7 @@ export const AddressCard = ({ address, title }: AddressCardProps) => {
         </div>
         <Button
           aria-label={`Edit ${title}`}
+          onClick={onEdit}
           size="sm"
           type="button"
           variant="outline"

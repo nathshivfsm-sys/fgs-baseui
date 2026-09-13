@@ -47,6 +47,8 @@ export const companyPatchDtoSchema = z.object({
   website: nullableText,
   timeZone: nullableText,
   isActive: z.boolean().nullish(),
+  physicalAddress: companyAddressDtoSchema.nullish(),
+  billingAddress: companyAddressDtoSchema.nullish(),
 });
 
 export const companyDetailResponseSchema = setupResponseSchema(companyDtoSchema);

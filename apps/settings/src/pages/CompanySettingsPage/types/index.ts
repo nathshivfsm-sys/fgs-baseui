@@ -1,6 +1,10 @@
 export type {
   AddressCardProps,
-  AddressesSectionProps,
+  AddressFormDialogProps,
+  AddressFormFieldsProps,
+  CompanyAddressKind,
+} from './address.types';
+export type {
   CompanyInformationSectionProps,
   CompanySettingsEditorProps,
   CompanySettingsFormProps,

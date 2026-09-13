@@ -11,9 +11,11 @@ import {
   normalizePhoneNumber,
   patchCompany,
   patchCompanyMutationOptions,
+  toCompanyAddressDto,
+  toCompanyAddressForm,
   toCompanyPatch,
   toCompanyProfile,
-  type CompanyGeneralInfo,
+  type CompanySettingsFormValues,
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import { companyResponseFixture } from './fixtures/company-response';
@@ -100,7 +102,7 @@ describe('phone formatting', () => {
 });
 
 describe('toCompanyPatch', () => {
-  const values: CompanyGeneralInfo = {
+  const values: CompanySettingsFormValues = {
     name: 'Acme Field Services',
     legalName: 'Acme Field Services LLC',
     companySize: '11-50',
@@ -110,6 +112,14 @@ describe('toCompanyPatch', () => {
     website: '',
     timeZone: 'America/Chicago',
     isActive: true,
+    physicalAddress: {
+      lines: ['100 Main St'],
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    },
+    billingAddress: null,
   };
 
   it('sends only dirty fields', () => {
@@ -126,6 +136,51 @@ describe('toCompanyPatch', () => {
 
   it('sends nothing when nothing is dirty', () => {
     expect(toCompanyPatch(values, {})).toEqual({});
+  });
+
+  it('sends a dirty address as a wire DTO', () => {
+    expect(toCompanyPatch(values, { physicalAddress: true })).toEqual({
+      physicalAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Austin',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
+  });
+});
+
+describe('company address form mapping', () => {
+  const physical = {
+    lines: ['100 Main St'],
+    city: 'Austin',
+    state: 'TX',
+    postalCode: '78701',
+    country: 'US',
+  };
+
+  it('maps display lines into the form and back to a wire DTO', () => {
+    const form = toCompanyAddressForm(physical, true);
+
+    expect(form).toEqual({
+      addressLine1: '100 Main St',
+      addressLine2: '',
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+      sameAsPhysical: true,
+    });
+    expect(toCompanyAddressDto(form)).toEqual({
+      addressLine1: '100 Main St',
+      addressLine2: null,
+      city: 'Austin',
+      state: 'TX',
+      postalCode: '78701',
+      country: 'US',
+    });
   });
 });
 

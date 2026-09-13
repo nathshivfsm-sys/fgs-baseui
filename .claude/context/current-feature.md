@@ -2,6 +2,15 @@
 
 ## Status
 
+**Company address edit modal** — in progress on `feature/company-general-info-settings-implementation`.
+General Info address cards open an edit dialog. Billing includes a
+"Same as physical address" checkbox: checking it copies the physical address and
+locks the fields until it is unchecked. Modal Save updates the cards only.
+The footer Save PATCHes `physicalAddress` / `billingAddress` with the rest of
+company details.
+
+## History
+
 **Company Non-Working Days (API-backed CRUD)** — spec, plan, and implementation on
 this branch. Wires the General Info panel to `GET/POST/PUT/DELETE /nonworkingdate`.
 Writes update the list cache (`setQueriesData`) and do **not** refetch the list.

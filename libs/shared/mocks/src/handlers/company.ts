@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { companyPatchDtoSchema } from '@cms/settings-contract';
+import { companyPatchDtoSchema, type CompanyAddressDto } from '@cms/settings-contract';
 import {
   assignDefined,
   firstIssueMessage,
@@ -67,8 +67,35 @@ function seedCompany() {
 }
 
 type CompanyRecord = ReturnType<typeof seedCompany>;
+type CompanyAddressRecord = CompanyRecord['physicalAddress'];
 
 const companies = new Map<string, CompanyRecord>();
+
+function mergeAddress(
+  existing: CompanyAddressRecord,
+  patch: CompanyAddressDto,
+): CompanyAddressRecord {
+  return {
+    ...existing,
+    addressLine1: patch.addressLine1 ?? existing.addressLine1,
+    addressLine2:
+      patch.addressLine2 === undefined
+        ? existing.addressLine2
+        : patch.addressLine2,
+    addressLine3:
+      patch.addressLine3 === undefined
+        ? existing.addressLine3
+        : patch.addressLine3,
+    addressLine4:
+      patch.addressLine4 === undefined
+        ? existing.addressLine4
+        : patch.addressLine4,
+    city: patch.city ?? existing.city,
+    state: patch.state ?? existing.state,
+    postalCode: patch.postalCode ?? existing.postalCode,
+    country: patch.country ?? existing.country,
+  };
+}
 
 function getOrCreateCompany(companyId: string): CompanyRecord {
   const existing = companies.get(companyId);
@@ -98,7 +125,20 @@ export const companyHandlers = [
     if (!body.ok) return body.response;
     const parsed = companyPatchDtoSchema.safeParse(body.value);
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
-    assignDefined(record, parsed.data);
+    const { billingAddress, physicalAddress, ...scalar } = parsed.data;
+    assignDefined(record, scalar);
+    if (physicalAddress != null) {
+      record.physicalAddress = mergeAddress(
+        record.physicalAddress,
+        physicalAddress,
+      );
+    }
+    if (billingAddress != null) {
+      record.billingAddress = mergeAddress(
+        record.billingAddress,
+        billingAddress,
+      );
+    }
     return new HttpResponse<null>(null, { status: 204 });
   }),
 ];

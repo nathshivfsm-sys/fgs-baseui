@@ -1,9 +1,9 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  companyGeneralInfoFormSchema,
+  companySettingsFormSchema,
   toCompanyPatch,
-  type CompanyGeneralInfo,
+  type CompanySettingsFormValues,
 } from '@cms/settings-data-access';
 import { Button, SectionCard } from '@cms/ui';
 import type { CompanySettingsFormProps } from '../types';
@@ -27,16 +27,20 @@ export const CompanySettingsForm = ({
 }: CompanySettingsFormProps) => {
   const form = useForm({
     mode: 'onBlur',
-    resolver: zodResolver(companyGeneralInfoFormSchema),
+    resolver: zodResolver(companySettingsFormSchema),
     // Re-seeds (and clears dirty state) whenever the detail query refetches after a save.
-    values: profile.generalInfo,
+    values: {
+      ...profile.generalInfo,
+      billingAddress: profile.billingAddress,
+      physicalAddress: profile.physicalAddress,
+    },
     // A background refetch must not overwrite what the user is part-way through typing.
     resetOptions: { keepDirtyValues: true },
   });
   // Read during render: RHF's formState proxy only tracks what a component subscribes to.
   const { dirtyFields, isDirty } = form.formState;
 
-  const handleFormSubmit = (values: CompanyGeneralInfo) => {
+  const handleFormSubmit = (values: CompanySettingsFormValues) => {
     onSubmit(toCompanyPatch(values, dirtyFields));
   };
 
@@ -65,10 +69,7 @@ export const CompanySettingsForm = ({
                   companyNumber={profile.companyNumber}
                 />
                 <ContactInformationSection />
-                <AddressesSection
-                  billingAddress={profile.billingAddress}
-                  physicalAddress={profile.physicalAddress}
-                />
+                <AddressesSection />
                 <BrandingSection />
                 <CompanyDefaultsSection />
               </form>

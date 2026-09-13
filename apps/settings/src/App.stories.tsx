@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import {
   createStoryApi,
   jsonResponse,
@@ -609,6 +609,113 @@ export const GeneralInfoDeleteNonWorkingDay: Story = {
     const del = api.requests.find((request) => request.method === 'DELETE');
     await expect(del?.endpoint).toBe(`${NON_WORKING_DATE_ENDPOINT}/41`);
     await expect(nonWorkingDateListGets()).toHaveLength(1);
+  },
+};
+
+export const GeneralInfoEditPhysicalAddress: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('Austin, TX 78701');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit Physical Address' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    await waitFor(() => expect(dialog).toBeVisible());
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Physical Address' }),
+    ).toBeVisible();
+    await expect(
+      withinDialog.queryByRole('checkbox', {
+        name: 'Same as physical address',
+      }),
+    ).not.toBeInTheDocument();
+    const city = withinDialog.getByRole('textbox', { name: 'City' });
+    await userEvent.clear(city);
+    await userEvent.type(city, 'Houston');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await expect(canvas.getByText('Houston, TX 78701')).toBeVisible();
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
+    await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
+    await expect(
+      await canvas.findByText('Company details updated'),
+    ).toBeVisible();
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.endpoint).toBe(COMPANY_ENDPOINT);
+    await expect(patch?.body).toEqual({
+      physicalAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Houston',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
+  },
+};
+
+export const GeneralInfoBillingSameAsPhysical: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('No address on file');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit Billing Address' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    await waitFor(() => expect(dialog).toBeVisible());
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Billing Address' }),
+    ).toBeVisible();
+    const line1 = withinDialog.getByRole('textbox', {
+      name: 'Address Line 1',
+    });
+    await expect(line1).toHaveValue('');
+    await expect(line1).not.toHaveAttribute('readonly');
+    await userEvent.click(
+      withinDialog.getByRole('checkbox', {
+        name: 'Same as physical address',
+      }),
+    );
+    await expect(line1).toHaveValue('100 Main St');
+    await expect(line1).toHaveAttribute('readonly');
+    await expect(
+      withinDialog.getByRole('textbox', { name: 'City' }),
+    ).toHaveValue('Austin');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await expect(canvas.queryByText('No address on file')).not.toBeInTheDocument();
+    await expect(canvas.getAllByText('100 Main St').length).toBeGreaterThan(1);
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
+    await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
+    await expect(
+      await canvas.findByText('Company details updated'),
+    ).toBeVisible();
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.body).toEqual({
+      billingAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Austin',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
   },
 };
 

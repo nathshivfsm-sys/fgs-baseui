@@ -1,5 +1,4 @@
-export { AddressCard } from './AddressCard';
-export { AddressesSection } from './AddressesSection';
+export { AddressCard, AddressesSection } from './address';
 export { BrandingSection } from './BrandingSection';
 export { CompanyDefaultsSection } from './CompanyDefaultsSection';
 export { CompanyInformationSection } from './CompanyInformationSection';
