@@ -13,12 +13,14 @@ import {
 import type { ZoneCatalog } from '../types';
 
 export interface CatalogNavPanelProps {
+  activePostalCount: number | undefined;
   activeZoneCount: number | undefined;
   catalog: ZoneCatalog;
   onCatalogChange: (catalog: ZoneCatalog) => void;
 }
 
 export function CatalogNavPanel({
+  activePostalCount,
   activeZoneCount,
   catalog,
   onCatalogChange,
@@ -43,6 +45,7 @@ export function CatalogNavPanel({
         title="Zones"
       />
       <CatalogNavCard
+        activeCount={activePostalCount}
         description={POSTAL_NAV_DESCRIPTION}
         icon={<SettingsPostalCodesIcon />}
         iconClassName="bg-data-4 text-data-4-foreground"

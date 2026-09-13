@@ -4,9 +4,13 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
+  createPostalCodeMutationOptions,
   createTaxMutationOptions,
   createZoneMutationOptions,
   patchTaxAuthorityMutationOptions,
+  postalCodeKeys,
+  postalCodeListQueryOptions,
+  postalCodeLookupQueryOptions,
   taxAuthorityKeys,
   taxAuthorityListQueryOptions,
   taxDetailQueryOptions,
@@ -19,6 +23,9 @@ import {
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import {
+  postalCodeDetailResponseFixture,
+  postalCodeListResponseFixture,
+  postalCodeLookupResponseFixture,
   taxAuthorityDetailResponseFixture,
   taxAuthorityListResponseFixture,
   taxDetailResponseFixture,
@@ -225,6 +232,57 @@ describe('zone through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/zone');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(client.getQueryState(zoneKeys.list({}))?.isInvalidated).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('postal code through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(postalCodeListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(postalCodeLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      postalCodeListQueryOptions({ city: 'Houston' }),
+    );
+    const lookup = await client.fetchQuery(postalCodeLookupQueryOptions(false));
+
+    expect(page.items[0]?.postalCode).toBe('NORTH');
+    expect(lookup[0]?.city).toBe('Houston');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode?city=Houston');
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/postalcode/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates postal code queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(postalCodeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(postalCodeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPostalCodeMutationOptions(client));
+    await mutation.execute({
+      postalCode: '77099',
+      city: 'Houston',
+      state: 'TX',
+      fgsSetupZoneId: 31,
+      fgsSetupTaxId: 11,
+      tripCharge: 10,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(postalCodeKeys.list({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
