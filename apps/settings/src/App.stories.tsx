@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import {
   createStoryApi,
   jsonResponse,
@@ -10,6 +10,7 @@ import {
 } from '../../../.storybook/fixtures/api';
 import {
   companyResponseFixture,
+  nonWorkingDateListItemsFixture,
   zoneListItemsFixture,
 } from '../../../.storybook/fixtures/feature-data';
 import {
@@ -20,16 +21,69 @@ import { App } from './App';
 
 const SettingsApp = withCmsRuntime(App);
 
+const api = createStoryApi();
+const COMPANY_ENDPOINT = `/company/${STORY_COMPANY_ID}`;
+const NON_WORKING_DATE_ENDPOINT = '/nonworkingdate';
+
+function setupEnvelope(data: unknown) {
+  return { success: true, statusCode: 200, data, errors: [] as string[] };
+}
+
+function nonWorkingDateHandlers(): ApiHandlers {
+  return {
+    [`GET ${NON_WORKING_DATE_ENDPOINT}`]: () =>
+      jsonResponse(
+        setupEnvelope({
+          items: nonWorkingDateListItemsFixture,
+          page: 1,
+          pageSize: 10,
+          totalCount: nonWorkingDateListItemsFixture.length,
+        }),
+      ),
+    [`POST ${NON_WORKING_DATE_ENDPOINT}`]: async (request) => {
+      const body = (await request.json()) as {
+        name?: string | null;
+        nonWorkingDate?: string;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          nonWorkingDate: body.nonWorkingDate ?? '2025-02-17',
+          name: body.name ?? null,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    [`PUT ${NON_WORKING_DATE_ENDPOINT}/41`]: async (request) => {
+      const body = (await request.json()) as {
+        name?: string | null;
+        nonWorkingDate?: string;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 41,
+          nonWorkingDate: body.nonWorkingDate ?? '2025-01-01',
+          name: body.name ?? "New Year's Day",
+          isActive: true,
+        }),
+      );
+    },
+    [`DELETE ${NON_WORKING_DATE_ENDPOINT}/41`]: () =>
+      new Response(null, { status: 204 }),
+  };
+}
+
 /**
  * Stories drive the screen through `customFetch`, not through injected loader props —
  * so the Zod parse, the mappers and the PATCH body are all part of what is asserted.
- * The handler keys mirror `companyEndpoint()`.
+ * The handler keys mirror `companyDetailEndpoint()`.
  */
-const api = createStoryApi();
-const COMPANY_ENDPOINT = `/company/${STORY_COMPANY_ID}`;
+const loadsNonWorkingDates = nonWorkingDateHandlers();
 
 const loadsCompany: ApiHandlers = {
   [`GET ${COMPANY_ENDPOINT}`]: () => jsonResponse(companyResponseFixture),
+  ...loadsNonWorkingDates,
 };
 
 const savesCompany: ApiHandlers = {
@@ -149,6 +203,8 @@ export const GeneralInfo: Story = {
     await expect(canvas.getByText('Austin, TX 78701')).toBeVisible();
     await expect(canvas.getByText('No address on file')).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Save' })).toBeDisabled();
+    await expect(await canvas.findByText("New Year's Day")).toBeVisible();
+    await expect(canvas.getByText('01/01/2025')).toBeVisible();
     // The session token reaches the API through customFetch, not through the screen.
     const get = api.requests.find((request) => request.method === 'GET');
     await expect(get?.headers.get('Authorization')).toBe(
@@ -281,10 +337,6 @@ export const GeneralInfoMissingCompany: Story = {
     await expect(api.requests).toHaveLength(0);
   },
 };
-
-function setupEnvelope(data: unknown) {
-  return { success: true, statusCode: 200, data, errors: [] as string[] };
-}
 
 function zoneHandlers(): ApiHandlers {
   return {
@@ -449,3 +501,221 @@ export const GeneralInfoSaveConflict: Story = {
     await expect(legalName).toHaveValue('Acme Field Services LLC');
   },
 };
+
+function nonWorkingDateListGets() {
+  return api.requests.filter(
+    (request) =>
+      request.method === 'GET' && request.endpoint === NON_WORKING_DATE_ENDPOINT,
+  );
+}
+
+export const GeneralInfoAddNonWorkingDay: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("New Year's Day");
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Add Non-Working Day' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Create Non-Working Day' }),
+    ).toBeVisible();
+    const date = withinDialog.getByLabelText('Date');
+    await userEvent.type(date, '2025-02-17');
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /description/i }),
+      "Presidents' Day",
+    );
+    await userEvent.click(
+      withinDialog.getByRole('button', { name: 'Save Non-Working Day' }),
+    );
+    await expect(
+      await canvas.findByText('Non-working day added'),
+    ).toBeVisible();
+    await expect(await canvas.findByText("Presidents' Day")).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe(NON_WORKING_DATE_ENDPOINT);
+    await expect(post?.body).toEqual({
+      nonWorkingDate: '2025-02-17',
+      name: "Presidents' Day",
+    });
+    await expect(nonWorkingDateListGets()).toHaveLength(1);
+  },
+};
+
+export const GeneralInfoEditNonWorkingDay: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("New Year's Day");
+    await userEvent.click(
+      canvas.getByRole('button', { name: "Edit New Year's Day" }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Non-Working Day' }),
+    ).toBeVisible();
+    await expect(withinDialog.getByLabelText('Date')).toHaveValue('2025-01-01');
+    const description = withinDialog.getByRole('textbox', {
+      name: /description/i,
+    });
+    await expect(description).toHaveValue("New Year's Day");
+    await userEvent.clear(description);
+    await userEvent.type(description, "New Year's Day Observed");
+    await userEvent.click(
+      withinDialog.getByRole('button', { name: 'Save Non-Working Day' }),
+    );
+    await expect(
+      await canvas.findByText('Non-working day updated'),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText("New Year's Day Observed"),
+    ).toBeVisible();
+    const put = api.requests.find((request) => request.method === 'PUT');
+    await expect(put?.endpoint).toBe(`${NON_WORKING_DATE_ENDPOINT}/41`);
+    await expect(put?.body).toEqual({
+      nonWorkingDate: '2025-01-01',
+      name: "New Year's Day Observed",
+    });
+    await expect(nonWorkingDateListGets()).toHaveLength(1);
+  },
+};
+
+export const GeneralInfoDeleteNonWorkingDay: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText("New Year's Day");
+    await userEvent.click(
+      canvas.getByRole('button', { name: "Delete New Year's Day" }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Delete Non-Working Day' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Delete' }));
+    await expect(
+      await canvas.findByText('Non-working day deleted'),
+    ).toBeVisible();
+    await expect(canvas.queryByText("New Year's Day")).not.toBeInTheDocument();
+    await expect(canvas.getByText('Memorial Day')).toBeVisible();
+    const del = api.requests.find((request) => request.method === 'DELETE');
+    await expect(del?.endpoint).toBe(`${NON_WORKING_DATE_ENDPOINT}/41`);
+    await expect(nonWorkingDateListGets()).toHaveLength(1);
+  },
+};
+
+export const GeneralInfoEditPhysicalAddress: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('Austin, TX 78701');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit Physical Address' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    await waitFor(() => expect(dialog).toBeVisible());
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Physical Address' }),
+    ).toBeVisible();
+    await expect(
+      withinDialog.queryByRole('checkbox', {
+        name: 'Same as physical address',
+      }),
+    ).not.toBeInTheDocument();
+    const city = withinDialog.getByRole('textbox', { name: 'City' });
+    await userEvent.clear(city);
+    await userEvent.type(city, 'Houston');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await expect(canvas.getByText('Houston, TX 78701')).toBeVisible();
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
+    await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
+    await expect(
+      await canvas.findByText('Company details updated'),
+    ).toBeVisible();
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.endpoint).toBe(COMPANY_ENDPOINT);
+    await expect(patch?.body).toEqual({
+      physicalAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Houston',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
+  },
+};
+
+export const GeneralInfoBillingSameAsPhysical: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(savesCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('No address on file');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit Billing Address' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    await waitFor(() => expect(dialog).toBeVisible());
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Billing Address' }),
+    ).toBeVisible();
+    const line1 = withinDialog.getByRole('textbox', {
+      name: 'Address Line 1',
+    });
+    await expect(line1).toHaveValue('');
+    await expect(line1).not.toHaveAttribute('readonly');
+    await userEvent.click(
+      withinDialog.getByRole('checkbox', {
+        name: 'Same as physical address',
+      }),
+    );
+    await expect(line1).toHaveValue('100 Main St');
+    await expect(line1).toHaveAttribute('readonly');
+    await expect(
+      withinDialog.getByRole('textbox', { name: 'City' }),
+    ).toHaveValue('Austin');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await expect(canvas.queryByText('No address on file')).not.toBeInTheDocument();
+    await expect(canvas.getAllByText('100 Main St').length).toBeGreaterThan(1);
+    await expect(
+      api.requests.some((request) => request.method === 'PATCH'),
+    ).toBe(false);
+    await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
+    await expect(
+      await canvas.findByText('Company details updated'),
+    ).toBeVisible();
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.body).toEqual({
+      billingAddress: {
+        addressLine1: '100 Main St',
+        addressLine2: null,
+        city: 'Austin',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
+      },
+    });
+  },
+};
+

@@ -11,7 +11,7 @@ export interface AppProps {
 export function App({ runtime }: AppProps) {
   return (
     <RemoteErrorBoundary>
-      <div data-tenant={runtime.tenantId}>
+      <div className="flex min-h-0 flex-1 flex-col" data-tenant={runtime.tenantId}>
         <Routes>
           <Route index element={<SetupPage />} />
           <Route

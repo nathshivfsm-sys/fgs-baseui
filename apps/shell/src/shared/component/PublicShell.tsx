@@ -95,7 +95,7 @@ export function PublicShell({ children }: PublicShellProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <BrandBanner />
-      <main className="min-w-0 flex-1 overflow-y-auto">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
         <PageContainer>{children}</PageContainer>
       </main>
       <PublicFooter />

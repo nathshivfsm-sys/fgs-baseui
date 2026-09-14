@@ -11,10 +11,12 @@ export interface PageContainerProps {
  * deliberately render flush and inherit these gutters; adding their own would
  * double up here and drift out of alignment with each other.
  *
- * `min-h-full` (with border-box sizing, so the padding is included rather than
- * added on top) makes the container fill the scroll area without overflowing
- * it, which lets a child claim the full height with `flex-1` — see LoginPage.
+ * `flex-1 min-h-0` fills the shell's main pane so a child can claim the leftover
+ * height with `flex-1` and scroll internally (LoginPage, CompanySettingsPage,
+ * ZonePostalCodePage). Pages that grow with content still overflow into main.
  */
 export function PageContainer({ children }: PageContainerProps) {
-  return <div className="flex min-h-full flex-col p-4 sm:p-6">{children}</div>;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-6">{children}</div>
+  );
 }

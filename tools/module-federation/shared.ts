@@ -68,6 +68,11 @@ export const sharedDependencies = {
   // Per-MFE wire DTOs (`libs/<mfe>/contract`). Share the singleton so UI and data-access
   // see one copy of the schema modules. Add `@cms/<mfe>-contract` here when a remote
   // grows a contract lib.
+  //
+  // Restart every `nx serve` after adding named exports to a shared contract barrel.
+  // `@module-federation/vite` snapshots those names into `loadShare` at boot; HMR
+  // updates the source module but not the generated re-export list, so a new DTO
+  // import fails with "does not provide an export named …".
   '@cms/settings-contract': {
     singleton: true,
     requiredVersion: settingsContractVersion,

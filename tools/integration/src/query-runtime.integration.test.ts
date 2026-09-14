@@ -8,8 +8,8 @@ import {
 } from '@cms/platform-contract';
 import { leadKeys, leadListQueryOptions } from '@cms/lead-data-access';
 import {
-  companySettingsKeys,
-  companySettingsQueryOptions,
+  companyKeys,
+  companyDetailQueryOptions,
 } from '@cms/settings-data-access';
 import { configureCustomFetch } from '@cms/shared-api';
 import { workorderKeys } from '@cms/workorder-data-access';
@@ -103,13 +103,13 @@ describe('MFE query client ownership', () => {
     vi.stubGlobal('fetch', fetchMock);
     configureCustomFetch({ baseUrl: '/api/v1' });
 
-    await client.fetchQuery(companySettingsQueryOptions('1'));
+    await client.fetchQuery(companyDetailQueryOptions('1'));
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/company/1');
     expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
       signal: expect.any(AbortSignal),
     });
-    expect(client.getQueryData(companySettingsKeys.detail('1'))).toEqual(
+    expect(client.getQueryData(companyKeys.detail('1'))).toEqual(
       expect.objectContaining({ code: 'acme-field-services-ae23b1' }),
     );
     disposeCmsQueryClient(client);

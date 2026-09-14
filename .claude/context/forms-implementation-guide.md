@@ -31,20 +31,25 @@ Where each step lives:
 | Step | Where | Owns |
 | ------------ | ----------------------------------- | ------------------------------------------ |
 | Wire shape | `libs/<mfe>/contract` (`@cms/<mfe>-contract`) | request/response DTOs, envelopes, list params |
-| Form shape | `libs/<mfe>/data-access` `schemas/` | `<feature>FormSchema` + its inferred type |
-| Translation | `libs/<mfe>/data-access` `mappers/` | `to<Feature>Profile`, `to<Feature>Patch` |
-| Cache keys | `libs/<mfe>/data-access` `queries/` or `<module>/` | `<feature>Keys` |
-| Read | data-access queries | `load…`, `<feature>QueryOptions` |
-| Write | data-access mutations | `save…`, `<feature>MutationOptions` |
-| Endpoint | data-access `<feature>.endpoints.ts` | the URL, in one place |
+| Form shape | `libs/<mfe>/data-access` `<module>/<module>.form.ts` | `<feature>FormSchema` + its inferred type |
+| Translation | same module file (or `<module>.mappers.ts` if it outgrows form) | `to<Feature>Profile`, `to<Feature>Patch` |
+| Cache keys | `libs/<mfe>/data-access` `<module>/<module>.keys.ts` | `<feature>Keys` |
+| Read | `<module>.queries.ts` | `load…`, `<feature>QueryOptions` |
+| Write | `<module>.mutations.ts` | `save…` / `patch…`, `<feature>MutationOptions` |
+| Endpoint | `<module>.endpoints.ts` | the URL, in one place |
 
 UI and MSW import wire types from the contract. Do not copy DTOs into page `types/`,
-data-access, or mocks. Form schemas stay in data-access because they are a screen
-concern, not a transport concern.
+data-access, or mocks — page `types/` is for component props and other UI types, not
+wire shapes. Form schemas stay in data-access because they are a screen concern, not a
+transport concern.
 
-Screens live in `apps/<app>/src/pages/<PageName>/`: the page route target wires the query
-and mutation, `component/<Feature>Form.tsx` owns `useForm`, and its page-owned section
-components read the form off context.
+Screens live in `apps/<app>/src/pages/<PageName>/`. The page file is a thin arrow
+orchestrator; props interfaces live in `types/` and are re-exported from `types/index.ts`.
+`component/<Feature>Form.tsx` owns `useForm`. Split section, table, dialog, and action
+markup into small sibling components (a nested folder when a panel grows). Query and
+mutation state that would bloat the parent belongs in a colocated `use-*.ts` hook.
+Section components read the form off context. See the React and Types placement
+sections of `coding-standards.md`.
 
 ---
 
@@ -98,28 +103,29 @@ export const ptoFormSchema = z.object({
 });
 export type PtoForm = z.infer<typeof ptoFormSchema>;
 
-// 3. queries/query-keys.ts
+// 3. libs/<mfe>/data-access/src/lib/pto/pto.keys.ts
 export const ptoKeys = {
-  all: ['ptos'] as const,
-  list: (companyId: string) => [...ptoKeys.all, companyId] as const,
+  all: ['pto'] as const,
+  lists: () => [...ptoKeys.all, 'list'] as const,
+  list: (companyId: string) => [...ptoKeys.lists(), companyId] as const,
 } as const;
 
-// 4. queries/pto.queries.ts
+// 4. pto.queries.ts
 export const ptoListQueryOptions = (companyId: string) =>
   queryOptions({
     queryKey: ptoKeys.list(companyId),
     queryFn: ({ signal }) => loadPtos(companyId, { signal }),
-    meta: { feature: 'ptos', operation: 'list' },
+    meta: { feature: 'pto', operation: 'list' },
   });
 
-// 5. mutations/pto.mutations.ts
+// 5. pto.mutations.ts
 export const savePtoMutationOptions = (
   companyId: string,
   queryClient: QueryClient,
 ) =>
   mutationOptions({
-    mutationFn: (patch: PtoPatch) => savePto(companyId, patch),
-    meta: { feature: 'ptos', operation: 'update' },
+    mutationFn: (patch: PtoPatchDto) => savePto(companyId, patch),
+    meta: { feature: 'pto', operation: 'update' },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ptoKeys.list(companyId) }),
   });

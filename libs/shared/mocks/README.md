@@ -20,7 +20,7 @@ a leftover `mockServiceWorker.js` so a previous mock session cannot keep
 intercepting. Restart the Vite dev server after changing the flag.
 
 Login still goes through `refreshAccessToken()`; Settings still goes through
-`loadCompanySettings` / `saveCompanySettings`. MSW intercepts those URLs in the
+`loadCompany` / `patchCompany`. MSW intercepts those URLs in the
 browser.
 
 ## Add a domain
