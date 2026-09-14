@@ -20,14 +20,14 @@ import type { ZoneCatalog } from '../types';
 
 export interface ZonePostalCodeHeaderProps {
   catalog: ZoneCatalog;
-  onAddZone: () => void;
+  onAdd: () => void;
 }
 
 export function ZonePostalCodeHeader({
   catalog,
-  onAddZone,
+  onAdd,
 }: ZonePostalCodeHeaderProps) {
-  const addDisabled = catalog === 'postal';
+  const addLabel = catalog === 'postal' ? 'Add Postal Code' : 'Add Zone';
 
   return (
     <header className="flex flex-col gap-4 border-b border-border px-0 pb-4 sm:flex-row sm:items-start sm:justify-between">
@@ -52,18 +52,9 @@ export function ZonePostalCodeHeader({
         <Heading1 className="mt-2">{PAGE_TITLE}</Heading1>
         <BodySmall color="foreground-subtle">{PAGE_DESCRIPTION}</BodySmall>
       </div>
-      <Button
-        disabled={addDisabled}
-        onClick={onAddZone}
-        title={
-          addDisabled
-            ? 'Postal code catalog is not connected yet'
-            : 'Add Zone'
-        }
-        type="button"
-      >
+      <Button onClick={onAdd} type="button">
         <PlusIcon className="size-3.5" />
-        Add Zone
+        {addLabel}
       </Button>
     </header>
   );

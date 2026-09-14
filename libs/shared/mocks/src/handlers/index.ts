@@ -1,5 +1,6 @@
 import { attachmentHandlers } from './attachment';
 import { authHandlers } from './auth';
+import { postalCodeHandlers } from './postal-code';
 import { companyHandlers } from './company';
 import { nonWorkingDateHandlers } from './non-working-date';
 import { taxHandlers } from './tax';
@@ -12,6 +13,7 @@ export const handlers = [
   ...companyHandlers,
   ...taxHandlers,
   ...taxAuthorityHandlers,
+  ...postalCodeHandlers,
   ...nonWorkingDateHandlers,
   ...zoneHandlers,
   ...attachmentHandlers,
