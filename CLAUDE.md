@@ -16,4 +16,10 @@ Each remote owns `libs/<mfe>/contract` (`@cms/<mfe>-contract`) for wire DTOs and
 `libs/<mfe>/data-access` for queries/mutations. Do not put catalog DTOs in `libs/shared/`.
 See `.cursor/rules/mfe-lib-folder-structure.mdc`.
 
+For a new swagger catalog resource (contract DTOs + data-access factories +
+MSW + `test:query`, no UI), use
+`.claude/skills/catalog-endpoint-spec-writer` then
+`.claude/skills/catalog-endpoint-implementation-planner`. Tax is the reference
+module (`libs/settings/data-access/src/lib/tax`).
+
 **IMPORTANT:** Do not add authored by Claude to any commit messages

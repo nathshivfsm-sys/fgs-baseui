@@ -44,6 +44,10 @@ configureCustomFetch({
 ```
 
 Then call `customFetch<T>(endpoint, options)` from a `data-access` library's query
-functions. This library does not validate response shapes — colocate a Zod schema in
-the owning MFE's `contract` library (`@cms/<mfe>-contract`) and parse the result in
-that MFE's data-access lib.
+functions. JSON is the default. Pass `body: FormData` for multipart uploads (the
+JSON `Content-Type` is omitted so the boundary can be set) and
+`responseType: 'blob'` for File Service download/thumbnail bytes. This library
+does not validate response shapes — colocate a Zod schema in
+the owning MFE's `contract` library (`@cms/<mfe>-contract`) or in
+`@cms/shared-contract` for platform services, and parse the result in
+that data-access lib.

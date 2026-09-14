@@ -1,31 +1,18 @@
-import {
-  Controller,
-  useFormContext,
-  type FieldPathByValue,
-  type FieldValues,
-} from 'react-hook-form';
-import { SelectField, type SelectFieldProps, type SelectOption } from '@cms/ui';
+import { Controller, useFormContext, type FieldValues } from 'react-hook-form';
+import { SelectField } from '@cms/ui';
+import type { FormSelectFieldProps } from '../../types';
 import { withCurrentOption } from '../../util';
-
-export interface FormSelectFieldProps<Values extends FieldValues>
-  extends Omit<
-    SelectFieldProps,
-    'defaultValue' | 'error' | 'name' | 'onValueChange' | 'options' | 'value'
-  > {
-  name: FieldPathByValue<Values, string>;
-  options: readonly SelectOption[];
-}
 
 /**
  * `SelectField` bound to the enclosing `FormProvider`. Keeps the value the API returned
  * selectable via `withCurrentOption`, and normalises the primitive's `null` clear to the
  * empty string the form schema expects.
  */
-export function FormSelectField<Values extends FieldValues>({
+export const FormSelectField = <Values extends FieldValues>({
   name,
   options,
   ...selectProps
-}: FormSelectFieldProps<Values>) {
+}: FormSelectFieldProps<Values>) => {
   const { control } = useFormContext<Values>();
 
   return (
@@ -45,4 +32,4 @@ export function FormSelectField<Values extends FieldValues>({
       )}
     />
   );
-}
+};

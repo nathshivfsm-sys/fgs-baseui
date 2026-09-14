@@ -22,6 +22,8 @@
       "@cms/shared-auth": ["./libs/shared/auth/src/index.ts"],
       "@cms/shared-mocks": ["./libs/shared/mocks/src/index.ts"],
       "@cms/auth-data-access": ["./libs/shared/auth-data-access/src/index.ts"],
+      "@cms/shared-contract": ["./libs/shared/contract/src/index.ts"],
+      "@cms/shared-data-access": ["./libs/shared/data-access/src/index.ts"],
       "@cms/settings-contract": ["./libs/settings/contract/src/index.ts"],
       "@cms/workorder-data-access": [
         "./libs/workorder/data-access/src/index.ts"

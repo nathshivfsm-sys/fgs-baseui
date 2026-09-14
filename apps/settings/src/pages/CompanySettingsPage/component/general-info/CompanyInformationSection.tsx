@@ -1,19 +1,15 @@
 import type { CompanyGeneralInfo } from '@cms/settings-data-access';
 import { TextInput } from '@cms/ui';
 import { COMPANY_SIZE_OPTIONS } from '../../constant';
+import type { CompanyInformationSectionProps } from '../../types';
 import { FormSelectField, FormTextInput } from '../form';
 import { FormSection } from './FormSection';
 
-export interface CompanyInformationSectionProps {
-  code: string;
-  companyNumber: string;
-}
-
 /** Code and Company Number are read-only: the number is the endpoint's path key. */
-export function CompanyInformationSection({
+export const CompanyInformationSection = ({
   code,
   companyNumber,
-}: CompanyInformationSectionProps) {
+}: CompanyInformationSectionProps) => {
   return (
     <FormSection title="Company Information">
       <FormTextInput<CompanyGeneralInfo>
@@ -48,4 +44,4 @@ export function CompanyInformationSection({
       />
     </FormSection>
   );
-}
+};

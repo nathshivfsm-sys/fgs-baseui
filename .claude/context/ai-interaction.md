@@ -49,9 +49,13 @@ We will create a new branch for every feature/fix. Name branch **feature/[featur
 - Don't add "nice to have" features
 - Preserve existing patterns in the codebase
 - For new APIs, put wire DTOs in `libs/<mfe>/contract` and fetch factories in `libs/<mfe>/data-access`. Never a second copy in mocks or page `types/`.
-- Never write inline function bodies in JSX props. Declare named functions at
+- Never write inline function bodies in JSX props. Declare named arrow handlers at
   the top of the component and pass them (`onOpenChange={handleDialogOpenChange}`).
-  See the React section of @context/coding-standards.md.
+  Components, handlers, and page-owned utils use `const` arrows, not `function`.
+  Component props live in the page `types/` folder, not in the `.tsx` file. Split
+  growing screens into small composed components (and a colocated hook when state
+  would bloat the parent). See the React and Types placement sections of
+  @context/coding-standards.md.
 
 ## Code Review
 

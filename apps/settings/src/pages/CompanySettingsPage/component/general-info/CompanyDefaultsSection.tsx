@@ -5,7 +5,7 @@ import { TIME_ZONE_OPTIONS } from '../../constant';
 import { FormSelectField } from '../form';
 import { FormSection } from './FormSection';
 
-export function CompanyDefaultsSection() {
+export const CompanyDefaultsSection = () => {
   const { control } = useFormContext<CompanyGeneralInfo>();
 
   return (
@@ -42,4 +42,4 @@ export function CompanyDefaultsSection() {
       />
     </FormSection>
   );
-}
+};
