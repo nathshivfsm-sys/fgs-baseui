@@ -56,10 +56,10 @@ export const glBreakSummaryDtoSchema = z.object({
   breakLevel: z.number(),
   logoFileId: nullableNumber,
   isActive: z.boolean(),
+  address: glBreakAddressDetailDtoSchema.nullish(),
 });
 
 export const glBreakDetailDtoSchema = glBreakSummaryDtoSchema.extend({
-  address: glBreakAddressDetailDtoSchema.nullish(),
   trades: z.array(glBreakTradeDtoSchema).nullish(),
 });
 

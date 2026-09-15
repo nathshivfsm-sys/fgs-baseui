@@ -1,19 +1,14 @@
 import {
   useFormContext,
-  type FieldPathByValue,
   type FieldValues,
 } from 'react-hook-form';
-import { Textarea, type TextareaProps } from '@cms/ui';
+import { Textarea } from '@cms/ui';
+import type { FormTextareaProps } from '../../types';
 
-export interface FormTextareaProps<Values extends FieldValues>
-  extends Omit<TextareaProps, 'defaultValue' | 'error' | 'name' | 'value'> {
-  name: FieldPathByValue<Values, string>;
-}
-
-export function FormTextarea<Values extends FieldValues>({
+export const FormTextarea = <Values extends FieldValues>({
   name,
   ...textareaProps
-}: FormTextareaProps<Values>) {
+}: FormTextareaProps<Values>) => {
   const { formState, getFieldState, register } = useFormContext<Values>();
   const { error } = getFieldState(name, formState);
 
@@ -25,4 +20,4 @@ export function FormTextarea<Values extends FieldValues>({
       {...register(name)}
     />
   );
-}
+};

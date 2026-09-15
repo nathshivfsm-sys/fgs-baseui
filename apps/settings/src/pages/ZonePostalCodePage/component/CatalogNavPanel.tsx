@@ -4,7 +4,7 @@ import {
   SettingsPostalCodesIcon,
   SettingsZoneIcon,
 } from '@cms/ui';
-import { CatalogNavCard } from './CatalogNavCard';
+import { CatalogNavCard } from '../../../shared/component';
 import {
   POSTAL_NAV_DESCRIPTION,
   RECOMMENDATIONS,

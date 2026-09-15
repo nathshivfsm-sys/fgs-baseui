@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { EditIcon, MoreVerticalIcon } from '../../../../icons';
+import { EditIcon, MoreVerticalIcon, TrashIcon } from '../../../../icons';
 import { cn } from '../../../../lib/cn';
 import { Button } from '../../button';
 import {
@@ -86,12 +86,14 @@ export function DataTableIconCell({
   );
 }
 
-/** Trailing pencil button plus overflow menu, matching the Actions column. */
+/** Trailing pencil, optional trash, and overflow menu for the Actions column. */
 export function DataTableRowActions({
   actions,
   className,
+  deleteLabel = 'Delete row',
   editLabel = 'Edit row',
   menuLabel = 'More actions',
+  onDelete,
   onEdit,
 }: DataTableRowActionsProps) {
   return (
@@ -105,6 +107,17 @@ export function DataTableRowActions({
           variant="outline"
         >
           <EditIcon className="size-3.5" />
+        </Button>
+      ) : null}
+      {onDelete ? (
+        <Button
+          aria-label={deleteLabel}
+          className="size-7 border-input bg-surface p-0 text-destructive"
+          onClick={onDelete}
+          title={deleteLabel}
+          variant="outline"
+        >
+          <TrashIcon className="size-3.5" />
         </Button>
       ) : null}
       {actions?.length ? (

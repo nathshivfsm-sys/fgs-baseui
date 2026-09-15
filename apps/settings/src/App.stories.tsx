@@ -15,6 +15,7 @@ import {
   nonWorkingDateListItemsFixture,
   zoneListItemsFixture,
 } from '../../../.storybook/fixtures/feature-data';
+import { glBreakListItemsFixture } from '../../../.storybook/fixtures/gl-break-data';
 import {
   STORY_COMPANY_ID,
   withCmsRuntime,
@@ -462,6 +463,82 @@ function zoneHandlers(): ApiHandlers {
 
 const loadsZones = zoneHandlers();
 
+function glBreakHandlers(): ApiHandlers {
+  return {
+    ['GET /glbreak']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const breakLevelRaw = url.searchParams.get('breakLevel');
+      const breakLevel =
+        breakLevelRaw === null || breakLevelRaw === ''
+          ? undefined
+          : Number(breakLevelRaw);
+      const items = glBreakListItemsFixture.filter((item) => {
+        if (isActive !== undefined && item.isActive !== isActive) return false;
+        if (breakLevel !== undefined && item.breakLevel !== breakLevel) {
+          return false;
+        }
+        return true;
+      });
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /glbreak/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          glBreakListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, code, name, breakLevel }) => ({
+              id,
+              code,
+              name,
+              breakLevel,
+            })),
+        ),
+      );
+    },
+    ['POST /glbreak']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string | null;
+        name?: string | null;
+        breakLabel?: string | null;
+        breakLevel: number;
+        address?: unknown;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          code: body.code ?? null,
+          name: body.name ?? null,
+          breakLabel: body.breakLabel ?? null,
+          breakLevel: body.breakLevel,
+          logoFileId: null,
+          isActive: true,
+          address: body.address ?? null,
+          trades: [],
+        }),
+        201,
+      );
+    },
+  };
+}
+
+const loadsGlBreaks = glBreakHandlers();
+
 export const ZonePostalCode: Story = {
   args: { initialPath: '/settings/company/zone-postal-code' },
   beforeEach: () => api.install(loadsZones),
@@ -595,6 +672,98 @@ export const ZoneFromGrid: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /^Zone/ }));
     await expect(
       await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+    ).toBeVisible();
+  },
+};
+
+export const BusinessUnit: Story = {
+  args: { initialPath: '/settings/company/business-unit' },
+  beforeEach: () => api.install(loadsGlBreaks),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
+    ).toBeVisible();
+    await expect(await canvas.findByText('LOC-1001')).toBeVisible();
+    await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Business Unit' }),
+    ).toBeEnabled();
+  },
+};
+
+export const BusinessUnitInactive: Story = {
+  args: { initialPath: '/settings/company/business-unit' },
+  beforeEach: () => api.install(loadsGlBreaks),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('LOC-1001');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
+    await expect(await canvas.findByText('LOC-1008')).toBeVisible();
+    await expect(canvas.queryByText('LOC-1001')).not.toBeInTheDocument();
+  },
+};
+
+export const BusinessUnitCatalog: Story = {
+  args: {
+    initialPath: '/settings/company/business-unit?catalog=break2',
+  },
+  beforeEach: () => api.install(loadsGlBreaks),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(await canvas.findByText('BR2-2001')).toBeVisible();
+    await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Break 2' }),
+    ).toBeEnabled();
+  },
+};
+
+export const BusinessUnitAdd: Story = {
+  args: { initialPath: '/settings/company/business-unit' },
+  beforeEach: () => api.install(loadsGlBreaks),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('LOC-1001');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Add Business Unit' }),
+    );
+    const dialog = await canvas.findByRole('dialog');
+    const withinDialog = within(dialog);
+    await userEvent.type(withinDialog.getByRole('textbox', { name: /code/i }), 'MID');
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /business unit/i }),
+      'Mid Unit',
+    );
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Create Business Unit' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    await expect(await canvas.findByText('Business unit created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/glbreak');
+    await expect(post?.body).toEqual({
+      code: 'MID',
+      name: 'Mid Unit',
+      breakLabel: null,
+      breakLevel: 1,
+      logoFileId: null,
+      address: null,
+      tradeCodes: null,
+    });
+  },
+};
+
+export const BusinessUnitFromGrid: Story = {
+  beforeEach: () => api.install(loadsGlBreaks),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: /^Business Unit/ }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
     ).toBeVisible();
   },
 };

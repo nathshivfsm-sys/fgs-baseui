@@ -1,3 +1,2 @@
 export { FormSelectField } from './FormSelectField';
-export { FormTextInput } from './FormTextInput';
-export { FormTextarea } from './FormTextarea';
+export { FormTextInput, FormTextarea } from '../../../../shared/component';

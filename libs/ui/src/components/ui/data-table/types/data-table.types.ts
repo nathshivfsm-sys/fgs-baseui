@@ -191,9 +191,11 @@ export interface DataTableRowAction {
 export interface DataTableRowActionsProps {
   actions?: readonly DataTableRowAction[];
   className?: string;
-  menuLabel?: string;
-  onEdit?: () => void;
+  deleteLabel?: string;
   editLabel?: string;
+  menuLabel?: string;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 export type PageItem = number | 'ellipsis-start' | 'ellipsis-end';
