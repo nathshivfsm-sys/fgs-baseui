@@ -26,6 +26,9 @@ export const taxSummaryDtoSchema = z.object({
   name: nullableText,
   showTaxDetail: z.boolean(),
   description: nullableText,
+  regionCode: nullableText,
+  county: nullableText,
+  city: nullableText,
   taxRate: z.number(),
   isActive: z.boolean(),
 });
@@ -49,6 +52,9 @@ export const taxCreateDtoSchema = z.object({
   syncToken: nullableText,
   showTaxDetail: z.boolean(),
   description: nullableText,
+  regionCode: nullableText,
+  county: nullableText,
+  city: nullableText,
 });
 
 export const taxUpdateDtoSchema = taxCreateDtoSchema;
@@ -61,6 +67,9 @@ export const taxPatchDtoSchema = z.object({
   syncToken: nullableText,
   showTaxDetail: z.boolean().nullish(),
   description: nullableText,
+  regionCode: nullableText,
+  county: nullableText,
+  city: nullableText,
   isActive: z.boolean().nullish(),
 });
 
