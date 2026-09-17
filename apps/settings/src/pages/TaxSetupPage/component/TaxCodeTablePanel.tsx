@@ -177,10 +177,20 @@ export function TaxCodeTablePanel({
     <div className="flex min-w-0 flex-1 flex-col">
       <Tabs onValueChange={handleStatusChange} value={status}>
         <TabsList bordered className="px-6">
-          <TabsTrigger size="default" tone="action" value="active">
+          <TabsTrigger
+            className="border-transparent py-3"
+            size="default"
+            tone="action"
+            value="active"
+          >
             Active ({activeCount})
           </TabsTrigger>
-          <TabsTrigger size="default" tone="action" value="inactive">
+          <TabsTrigger
+            className="border-transparent py-3"
+            size="default"
+            tone="action"
+            value="inactive"
+          >
             Inactive ({inactiveCount})
           </TabsTrigger>
         </TabsList>

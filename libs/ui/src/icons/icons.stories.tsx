@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   AlertTriangleIcon,
+  BuildingIcon,
   CheckIcon,
   CircleCheckIcon,
   CircleXIcon,
@@ -8,6 +9,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ColumnsIcon,
+  DocumentEditIcon,
   EditIcon,
   ExportIcon,
   FilterIcon,
@@ -15,6 +17,7 @@ import {
   InfoCircleIcon,
   LocationPinIcon,
   LockIcon,
+  MapPinIcon,
   MessageIcon,
   MoreVerticalIcon,
   OrganizationIcon,
@@ -33,6 +36,7 @@ import {
 
 const icons = [
   ['Alert triangle', AlertTriangleIcon],
+  ['Building', BuildingIcon],
   ['Check', CheckIcon],
   ['Circle check', CircleCheckIcon],
   ['Circle x', CircleXIcon],
@@ -40,6 +44,7 @@ const icons = [
   ['Chevron left', ChevronLeftIcon],
   ['Chevron right', ChevronRightIcon],
   ['Columns', ColumnsIcon],
+  ['Document edit', DocumentEditIcon],
   ['Edit', EditIcon],
   ['Export', ExportIcon],
   ['Filter', FilterIcon],
@@ -47,6 +52,7 @@ const icons = [
   ['Info circle', InfoCircleIcon],
   ['Location pin', LocationPinIcon],
   ['Lock', LockIcon],
+  ['Map pin', MapPinIcon],
   ['Message', MessageIcon],
   ['More vertical', MoreVerticalIcon],
   ['Organization', OrganizationIcon],

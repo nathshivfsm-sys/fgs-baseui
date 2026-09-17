@@ -48,6 +48,12 @@ Import `alert` / `Toaster` from the `@cms/ui` barrel, not a deep path. The toast
 
 Components accept `className` for extension without requiring MFE-specific forks. Native inputs support both `value`/`onChange` and `defaultValue`; Base UI-backed controls support `value`/change callbacks and default-value equivalents.
 
+Name icons and other public primitives for the **glyph or role**
+(`BuildingIcon`, `MapPinIcon`, `Callout`), never the first screen that used
+them (`SettingsTaxCodeIcon`, `RecommendationPinIcon`). Page-owned feature
+components stay in the MFE. Details: `.cursor/rules/generic-shared-ui-names.mdc`
+and the Icons section of `.claude/context/coding-standards.md`.
+
 ## Public components
 
 | Component                     | Default                                  | Primary configuration                                                                               |

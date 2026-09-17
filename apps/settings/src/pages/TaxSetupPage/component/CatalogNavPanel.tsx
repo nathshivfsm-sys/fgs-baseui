@@ -1,8 +1,9 @@
 import {
   BodySmall,
+  BuildingIcon,
   Callout,
-  SettingsBusinessUnitIcon,
-  SettingsTaxStatesIcon,
+  DocumentEditIcon,
+  MapPinIcon,
 } from '@cms/ui';
 import { CatalogNavCard } from './CatalogNavCard';
 import {
@@ -38,7 +39,7 @@ export function CatalogNavPanel({
       <CatalogNavCard
         activeCount={activeAuthorityCount}
         description={AUTHORITY_NAV_DESCRIPTION}
-        icon={<SettingsBusinessUnitIcon />}
+        icon={<BuildingIcon className="size-4" />}
         iconClassName="bg-data-4 text-data-4-foreground"
         onSelect={selectAuthorities}
         selected={catalog === 'authorities'}
@@ -47,13 +48,18 @@ export function CatalogNavPanel({
       <CatalogNavCard
         activeCount={activeTaxCodeCount}
         description={TAX_CODE_NAV_DESCRIPTION}
-        icon={<SettingsTaxStatesIcon />}
+        icon={<DocumentEditIcon className="h-[22.3125px] w-[19.1955px]" />}
         iconClassName="bg-action-subtle text-action"
         onSelect={selectTaxCode}
         selected={catalog === 'tax-code'}
         title="Tax Code"
       />
-      <Callout className="rounded-xl px-4 py-4" title="Recommendation" variant="info">
+      <Callout
+        className="rounded-xl px-4 py-4"
+        icon={<MapPinIcon className="size-[15.984px]" />}
+        title="Recommendation"
+        variant="info"
+      >
         <ul className="mt-2 list-disc space-y-1.5 pl-4">
           {RECOMMENDATIONS.map((item) => (
             <li key={item}>
