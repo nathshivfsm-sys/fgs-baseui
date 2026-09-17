@@ -8,7 +8,6 @@ import {
   type TaxAuthorityListParams,
 } from '@cms/settings-data-access';
 import {
-  Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
@@ -18,11 +17,16 @@ import {
   TabsTrigger,
 } from '@cms/ui';
 import {
+  LOAD_AUTHORITIES_ERROR_TITLE,
+  LOAD_AUTHORITIES_ERROR_TOAST_ID,
+} from '../constant';
+import {
   describeTaxError,
   formatEffectiveDate,
   formatTaxPercent,
 } from '../util';
 import type { TaxStatusFilter } from '../types';
+import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<TaxAuthoritySummaryDto>();
 
@@ -60,6 +64,12 @@ export function TaxAuthorityTablePanel({
   const patchMutation = useMutation(
     patchTaxAuthorityMutationOptions(queryClient),
     queryClient,
+  );
+  useCatalogLoadToast(
+    query,
+    LOAD_AUTHORITIES_ERROR_TITLE,
+    describeTaxError,
+    LOAD_AUTHORITIES_ERROR_TOAST_ID,
   );
 
   function getRowId(row: TaxAuthoritySummaryDto) {
@@ -161,41 +171,33 @@ export function TaxAuthorityTablePanel({
         </TabsList>
       </Tabs>
 
-      {query.isError ? (
-        <div className="p-6">
-          <Callout title="Unable to load tax authorities" variant="error">
-            {describeTaxError(query.error)}
-          </Callout>
-        </div>
-      ) : (
-        <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
-          <DataTable
-            className="rounded-none border-0"
-            columns={columns}
-            data={items}
-            enableRowSelection={false}
-            enableSearch
-            getRowId={getRowId}
-            manual={{
-              pagination: true,
-              sorting: true,
-              pageCount: Math.max(
-                1,
-                Math.ceil(totalCount / pagination.pageSize),
-              ),
-              rowCount: totalCount,
-            }}
-            onPaginationChange={setPagination}
-            onSortingChange={setSorting}
-            rowLabel="entries"
-            searchPlaceholder="Search tax rates..."
-            showColumnVisibility={false}
-            state={{ pagination, sorting }}
-            status={tableStatus}
-            tableLabel="Taxing authorities"
-          />
-        </div>
-      )}
+      <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
+        <DataTable
+          className="rounded-none border-0"
+          columns={columns}
+          data={items}
+          enableRowSelection={false}
+          enableSearch
+          getRowId={getRowId}
+          manual={{
+            pagination: true,
+            sorting: true,
+            pageCount: Math.max(
+              1,
+              Math.ceil(totalCount / pagination.pageSize),
+            ),
+            rowCount: totalCount,
+          }}
+          onPaginationChange={setPagination}
+          onSortingChange={setSorting}
+          rowLabel="entries"
+          searchPlaceholder="Search tax rates..."
+          showColumnVisibility={false}
+          state={{ pagination, sorting }}
+          status={tableStatus}
+          tableLabel="Taxing authorities"
+        />
+      </div>
     </div>
   );
 }

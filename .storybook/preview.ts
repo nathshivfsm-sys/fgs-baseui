@@ -1,5 +1,6 @@
-import { createElement } from 'react';
+import { createElement, Fragment } from 'react';
 import type { Preview } from '@storybook/react-vite';
+import { Toaster } from '@cms/ui';
 import './preview.css';
 
 const preview: Preview = {
@@ -23,7 +24,12 @@ const preview: Preview = {
         'dark',
         context.globals.mode === 'dark',
       );
-      return createElement(Story);
+      return createElement(
+        Fragment,
+        null,
+        createElement(Story),
+        createElement(Toaster),
+      );
     },
   ],
   parameters: {

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { alert } from '@cms/ui';
 import {
   createStoryApi,
   jsonResponse,
@@ -11,6 +12,8 @@ import {
 import {
   companyResponseFixture,
   postalCodeListItemsFixture,
+  taxAuthorityListItemsFixture,
+  taxListItemsFixture,
   taxLookupItemsFixture,
   nonWorkingDateListItemsFixture,
   zoneListItemsFixture,
@@ -456,7 +459,8 @@ function zoneHandlers(): ApiHandlers {
         201,
       );
     },
-    ['GET /tax/lookup']: () => jsonResponse(setupEnvelope(taxLookupItemsFixture)),
+    ['GET /tax/lookup']: () =>
+      jsonResponse(setupEnvelope(taxLookupItemsFixture)),
   };
 }
 
@@ -471,9 +475,9 @@ export const ZonePostalCode: Story = {
       await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
     ).toBeVisible();
     await expect(
-      await canvas.findByText('NORTH'),
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
     ).toBeVisible();
-    await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
+    await expect(await canvas.findByText('NORTH')).toBeVisible();
     await expect(
       canvas.getByRole('tab', { name: 'Inactive (2)' }),
     ).toBeVisible();
@@ -499,6 +503,9 @@ export const ZonePostalCodeCatalog: Story = {
   beforeEach: () => api.install(loadsZones),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
+    ).toBeVisible();
     await expect(await canvas.findByText('NORTH')).toBeVisible();
     await expect(canvas.getAllByText('Houston').length).toBeGreaterThan(0);
     await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
@@ -515,12 +522,16 @@ export const ZonePostalCodeAdd: Story = {
   args: { initialPath: '/settings/company/zone-postal-code' },
   beforeEach: () => api.install(loadsZones),
   play: async ({ canvasElement }) => {
+    alert.remove();
     const canvas = within(canvasElement);
     await canvas.findByText('NORTH');
     await userEvent.click(canvas.getByRole('button', { name: 'Add Zone' }));
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await within(document.body).findByRole('dialog');
     const withinDialog = within(dialog);
-    await userEvent.type(withinDialog.getByRole('textbox', { name: /code/i }), 'MID');
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /code/i }),
+      'MID',
+    );
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /zone name/i }),
       'Mid Zone',
@@ -529,7 +540,9 @@ export const ZonePostalCodeAdd: Story = {
       withinDialog.getByRole('heading', { name: 'Create Zone' }),
     ).toBeVisible();
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
-    await expect(await canvas.findByText('Zone created')).toBeVisible();
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Zone created')).toBeVisible();
     const post = api.requests.find((request) => request.method === 'POST');
     await expect(post?.endpoint).toBe('/zone');
     await expect(post?.body).toEqual({
@@ -546,12 +559,13 @@ export const ZonePostalCodeAddPostal: Story = {
   },
   beforeEach: () => api.install(loadsZones),
   play: async ({ canvasElement }) => {
+    alert.remove();
     const canvas = within(canvasElement);
     await canvas.findByText('NORTH');
     await userEvent.click(
       canvas.getByRole('button', { name: 'Add Postal Code' }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await within(document.body).findByRole('dialog');
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /postal code/i }),
@@ -573,7 +587,9 @@ export const ZonePostalCodeAddPostal: Story = {
       withinDialog.getByRole('heading', { name: 'Add Postal Code' }),
     ).toBeVisible();
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
-    await expect(await canvas.findByText('Postal code created')).toBeVisible();
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Postal code created')).toBeVisible();
     const post = api.requests.find((request) => request.method === 'POST');
     await expect(post?.endpoint).toBe('/postalcode');
     await expect(post?.body).toEqual({
@@ -595,6 +611,331 @@ export const ZoneFromGrid: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /^Zone/ }));
     await expect(
       await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+    ).toBeVisible();
+  },
+};
+
+function taxSetupHandlers(): ApiHandlers {
+  return {
+    ['GET /taxauthority']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = taxAuthorityListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /taxauthority/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          taxAuthorityListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, code, name, taxPercent }) => ({
+              id,
+              code,
+              name,
+              taxPercent,
+            })),
+        ),
+      );
+    },
+    ['POST /taxauthority']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string;
+        name?: string;
+        regionCode?: string | null;
+        isExternalSystemRecord?: boolean;
+        taxPercent?: number;
+        description?: string | null;
+        effectiveFromDate?: string | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          code: body.code ?? null,
+          name: body.name ?? null,
+          regionCode: body.regionCode ?? null,
+          isExternalSystemRecord: body.isExternalSystemRecord ?? false,
+          taxPercent: body.taxPercent ?? 0,
+          description: body.description ?? null,
+          effectiveFromDate: body.effectiveFromDate ?? null,
+          usageCount: 0,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['GET /tax']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = taxListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /tax/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          taxListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, taxCode, name, taxRate }) => ({
+              id,
+              taxCode,
+              name,
+              taxRate,
+            })),
+        ),
+      );
+    },
+    ['POST /tax']: async (request) => {
+      const body = (await request.json()) as {
+        taxCode?: string;
+        name?: string;
+        description?: string | null;
+        showTaxDetail?: boolean;
+        regionCode?: string | null;
+        county?: string | null;
+        city?: string | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          taxCode: body.taxCode ?? null,
+          name: body.name ?? null,
+          showTaxDetail: body.showTaxDetail ?? false,
+          description: body.description ?? null,
+          regionCode: body.regionCode ?? null,
+          county: body.county ?? null,
+          city: body.city ?? null,
+          taxRate: 0,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+  };
+}
+
+const loadsTaxSetup = taxSetupHandlers();
+
+export const TaxSetup: Story = {
+  args: { initialPath: '/settings/company/tax' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Tax Setup' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (6)' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('Sales Tax – Harris County'),
+    ).toBeVisible();
+    await expect(canvas.getByText('01/23/2026')).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Effective From' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Assign Authority' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TaxSetupInactive: Story = {
+  args: { initialPath: '/settings/company/tax' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('Sales Tax – Harris County');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
+    await expect(await canvas.findByText('Oklahoma State')).toBeVisible();
+    await expect(
+      canvas.queryByText('Sales Tax – Harris County'),
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const TaxSetupCatalog: Story = {
+  args: { initialPath: '/settings/company/tax?catalog=tax-code' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (2)' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('Sales Tax – Harris County'),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Tax Name' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'State / Province' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'County' }),
+    ).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'City' })).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Status' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (1)' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Tax Code' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TaxSetupAddTaxRate: Story = {
+  args: { initialPath: '/settings/company/tax?catalog=tax-code' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Sales Tax – Harris County');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Tax Code' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /tax code/i }),
+      'TX-BEXAR',
+    );
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /^name$/i }),
+      'Bexar Sales Tax',
+    );
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /county/i }),
+      'Bexar',
+    );
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /state/i }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'TX' }),
+    );
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /city/i }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'San Antonio' }),
+    );
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Tax Rate' }),
+    ).toBeVisible();
+    await userEvent.click(
+      withinDialog.getByRole('button', { name: 'Save Tax Rate' }),
+    );
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Tax rate created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/tax');
+    await expect(post?.body).toEqual({
+      taxCode: 'TX-BEXAR',
+      name: 'Bexar Sales Tax',
+      isExternalSystemRecord: false,
+      externalSystemId: null,
+      syncToken: null,
+      showTaxDetail: true,
+      description: null,
+      regionCode: 'TX',
+      county: 'Bexar',
+      city: 'San Antonio',
+    });
+  },
+};
+
+export const TaxSetupAssignAuthority: Story = {
+  args: { initialPath: '/settings/company/tax' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Sales Tax – Harris County');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Assign Authority' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /tax authority/i }),
+      'Sales Tax – Bexar County',
+    );
+    await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /rate/i }),
+      '8.25',
+    );
+    await userEvent.type(
+      withinDialog.getByLabelText(/effective date/i),
+      '2026-01-23',
+    );
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Taxing Authority' }),
+    ).toBeVisible();
+    await userEvent.click(
+      withinDialog.getByRole('button', { name: 'Save Tax Rate' }),
+    );
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Tax authority created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/taxauthority');
+    await expect(post?.body).toEqual({
+      code: 'SALES-TAX-BEXAR-COUNTY',
+      name: 'Sales Tax – Bexar County',
+      regionCode: null,
+      isExternalSystemRecord: false,
+      taxPercent: 8.25,
+      description: null,
+      effectiveFromDate: '2026-01-23',
+    });
+  },
+};
+
+export const TaxFromGrid: Story = {
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: /^Tax & States/ }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Tax Setup' }),
     ).toBeVisible();
   },
 };
@@ -625,7 +966,8 @@ export const GeneralInfoSaveConflict: Story = {
 function nonWorkingDateListGets() {
   return api.requests.filter(
     (request) =>
-      request.method === 'GET' && request.endpoint === NON_WORKING_DATE_ENDPOINT,
+      request.method === 'GET' &&
+      request.endpoint === NON_WORKING_DATE_ENDPOINT,
   );
 }
 
@@ -816,7 +1158,9 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     await waitFor(() =>
       expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
     );
-    await expect(canvas.queryByText('No address on file')).not.toBeInTheDocument();
+    await expect(
+      canvas.queryByText('No address on file'),
+    ).not.toBeInTheDocument();
     await expect(canvas.getAllByText('100 Main St').length).toBeGreaterThan(1);
     await expect(
       api.requests.some((request) => request.method === 'PATCH'),
@@ -838,4 +1182,3 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     });
   },
 };
-

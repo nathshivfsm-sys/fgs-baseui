@@ -53,6 +53,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Configure tax jurisdictions, rates, and state-level settings.',
       icon: 'SettingsTaxStatesIcon',
       totalSettings: { count: 26, label: 'Rules' },
+      href: 'company/tax',
     },
     {
       title: 'Postal Codes',

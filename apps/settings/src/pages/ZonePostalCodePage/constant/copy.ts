@@ -16,12 +16,21 @@ export const RECOMMENDATIONS = [
   'Keep postal codes updated for accurate routing and coverage.',
 ] as const;
 
+export const SAVE_SUCCESS_TITLE = 'Saved';
+export const SAVE_ERROR_TITLE = 'Could not save';
+export const ZONE_CREATED_MESSAGE = 'Zone created';
+export const ZONE_UPDATED_MESSAGE = 'Zone updated';
+export const POSTAL_CREATED_MESSAGE = 'Postal code created';
+export const POSTAL_UPDATED_MESSAGE = 'Postal code updated';
+export const LOAD_ZONES_ERROR_TITLE = 'Unable to load zones';
+export const LOAD_POSTAL_ERROR_TITLE = 'Unable to load postal codes';
+export const LOAD_ZONES_ERROR_TOAST_ID = 'zone-list-error';
+export const LOAD_POSTAL_ERROR_TOAST_ID = 'postal-list-error';
+
 export const CREATE_ZONE_TITLE = 'Create Zone';
-export const CREATE_ZONE_DESCRIPTION =
-  'Define new Zone within your territory';
+export const CREATE_ZONE_DESCRIPTION = 'Define new Zone within your territory';
 export const EDIT_ZONE_TITLE = 'Edit Zone';
-export const EDIT_ZONE_DESCRIPTION =
-  'Update the zone within your territory';
+export const EDIT_ZONE_DESCRIPTION = 'Update the zone within your territory';
 export const ZONE_CODE_PLACEHOLDER = 'Enter code';
 export const ZONE_NAME_PLACEHOLDER = 'Enter zone name';
 export const ZONE_DESCRIPTION_PLACEHOLDER = 'Enter zone description';
@@ -30,8 +39,7 @@ export const CREATE_POSTAL_TITLE = 'Add Postal Code';
 export const CREATE_POSTAL_DESCRIPTION =
   'Add new postal code and define tax rate';
 export const EDIT_POSTAL_TITLE = 'Edit Postal Code';
-export const EDIT_POSTAL_DESCRIPTION =
-  'Update the postal code and tax rate';
+export const EDIT_POSTAL_DESCRIPTION = 'Update the postal code and tax rate';
 export const POSTAL_CODE_PLACEHOLDER = 'Enter postal code';
 export const POSTAL_CITY_PLACEHOLDER = 'Select City';
 export const POSTAL_STATE_PLACEHOLDER = 'Select State';

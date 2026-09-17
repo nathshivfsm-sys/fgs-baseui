@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { RemoteErrorBoundary } from './error-boundary';
-import { CompanySettingsPage, SetupPage, ZonePostalCodePage } from './pages';
+import { CompanySettingsPage, SetupPage, TaxSetupPage, ZonePostalCodePage } from './pages';
 import './styles.css';
 
 export interface AppProps {
@@ -28,6 +28,10 @@ export function App({ runtime }: AppProps) {
               <ZonePostalCodePage queryClient={runtime.queryClient} />
             }
             path="company/zone-postal-code"
+          />
+          <Route
+            element={<TaxSetupPage queryClient={runtime.queryClient} />}
+            path="company/tax"
           />
         </Routes>
       </div>

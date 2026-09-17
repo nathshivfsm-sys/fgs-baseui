@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   AlertTriangleIcon,
   CheckIcon,
+  CircleCheckIcon,
+  CircleXIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -10,6 +12,7 @@ import {
   ExportIcon,
   FilterIcon,
   ImportIcon,
+  InfoCircleIcon,
   LocationPinIcon,
   LockIcon,
   MessageIcon,
@@ -31,6 +34,8 @@ import {
 const icons = [
   ['Alert triangle', AlertTriangleIcon],
   ['Check', CheckIcon],
+  ['Circle check', CircleCheckIcon],
+  ['Circle x', CircleXIcon],
   ['Chevron down', ChevronDownIcon],
   ['Chevron left', ChevronLeftIcon],
   ['Chevron right', ChevronRightIcon],
@@ -39,6 +44,7 @@ const icons = [
   ['Export', ExportIcon],
   ['Filter', FilterIcon],
   ['Import', ImportIcon],
+  ['Info circle', InfoCircleIcon],
   ['Location pin', LocationPinIcon],
   ['Lock', LockIcon],
   ['Message', MessageIcon],
