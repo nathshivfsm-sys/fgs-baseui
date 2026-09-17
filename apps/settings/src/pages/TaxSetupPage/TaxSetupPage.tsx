@@ -18,7 +18,7 @@ import {
   updateTaxAuthorityMutationOptions,
   updateTaxMutationOptions,
 } from '@cms/settings-data-access';
-import { Callout } from '@cms/ui';
+import { alert } from '@cms/ui';
 import {
   CatalogNavPanel,
   TaxAuthorityFormDialog,
@@ -27,6 +27,14 @@ import {
   TaxCodeTablePanel,
   TaxSetupHeader,
 } from './component';
+import {
+  AUTHORITY_CREATED_MESSAGE,
+  AUTHORITY_UPDATED_MESSAGE,
+  SAVE_ERROR_TITLE,
+  SAVE_SUCCESS_TITLE,
+  TAX_CREATED_MESSAGE,
+  TAX_UPDATED_MESSAGE,
+} from './constant';
 import type { TaxCatalog } from './types';
 import { catalogFromSearch, describeTaxError } from './util';
 
@@ -88,26 +96,6 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
     0,
     (allTaxLookup.data?.length ?? 0) - activeTaxCount,
   );
-  const saveMessage = updateTaxMutation.isSuccess
-    ? 'Tax rate updated'
-    : createTaxMutation.isSuccess
-      ? 'Tax rate created'
-      : patchTaxMutation.isSuccess
-        ? 'Tax rate updated'
-        : updateAuthorityMutation.isSuccess
-          ? 'Tax authority updated'
-          : createAuthorityMutation.isSuccess
-            ? 'Tax authority created'
-            : patchAuthorityMutation.isSuccess
-              ? 'Tax authority updated'
-              : null;
-  const writeError =
-    createAuthorityMutation.error ??
-    updateAuthorityMutation.error ??
-    patchAuthorityMutation.error ??
-    createTaxMutation.error ??
-    updateTaxMutation.error ??
-    patchTaxMutation.error;
 
   function openCreate() {
     if (catalog === 'tax-code') {
@@ -153,72 +141,116 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
     if (!open) setEditingTax(null);
   }
 
+  function handleAuthorityCreated() {
+    closeAuthorityDialog();
+    alert.success(SAVE_SUCCESS_TITLE, {
+      description: AUTHORITY_CREATED_MESSAGE,
+    });
+  }
+
+  function handleAuthorityUpdated() {
+    closeAuthorityDialog();
+    alert.success(SAVE_SUCCESS_TITLE, {
+      description: AUTHORITY_UPDATED_MESSAGE,
+    });
+  }
+
+  function handleAuthorityWriteError(error: unknown) {
+    alert.error(SAVE_ERROR_TITLE, {
+      description: describeTaxError(error),
+    });
+  }
+
+  function handleTaxCreated() {
+    closeTaxDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: TAX_CREATED_MESSAGE });
+  }
+
+  function handleTaxUpdated() {
+    closeTaxDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: TAX_UPDATED_MESSAGE });
+  }
+
+  function handleTaxWriteError(error: unknown) {
+    alert.error(SAVE_ERROR_TITLE, {
+      description: describeTaxError(error),
+    });
+  }
+
   function handleAuthoritySubmit(
     body: TaxAuthorityCreateDto,
     isActive: boolean,
   ) {
     if (editingAuthority) {
-      updateAuthorityMutation.mutate(
-        { id: editingAuthority.id, body },
-        {
-          onSuccess: () => {
-            if (editingAuthority.isActive === isActive) {
-              closeAuthorityDialog();
-              return;
-            }
-            patchAuthorityMutation.mutate(
-              { id: editingAuthority.id, body: { isActive } },
-              { onSuccess: closeAuthorityDialog },
-            );
-          },
-        },
-      );
-      return;
-    }
-    createAuthorityMutation.mutate(body, {
-      onSuccess: (created) => {
-        if (isActive) {
-          closeAuthorityDialog();
+      const handleUpdated = () => {
+        if (editingAuthority.isActive === isActive) {
+          handleAuthorityUpdated();
           return;
         }
         patchAuthorityMutation.mutate(
-          { id: created.id, body: { isActive: false } },
-          { onSuccess: closeAuthorityDialog },
+          { id: editingAuthority.id, body: { isActive } },
+          {
+            onError: handleAuthorityWriteError,
+            onSuccess: handleAuthorityUpdated,
+          },
         );
-      },
+      };
+      updateAuthorityMutation.mutate(
+        { id: editingAuthority.id, body },
+        { onError: handleAuthorityWriteError, onSuccess: handleUpdated },
+      );
+      return;
+    }
+    const handleCreated = (created: TaxAuthoritySummaryDto) => {
+      if (isActive) {
+        handleAuthorityCreated();
+        return;
+      }
+      patchAuthorityMutation.mutate(
+        { id: created.id, body: { isActive: false } },
+        {
+          onError: handleAuthorityWriteError,
+          onSuccess: handleAuthorityCreated,
+        },
+      );
+    };
+    createAuthorityMutation.mutate(body, {
+      onError: handleAuthorityWriteError,
+      onSuccess: handleCreated,
     });
   }
 
   function handleTaxSubmit(body: TaxCreateDto, isActive: boolean) {
     if (editingTax) {
-      updateTaxMutation.mutate(
-        { id: editingTax.id, body },
-        {
-          onSuccess: () => {
-            if (editingTax.isActive === isActive) {
-              closeTaxDialog();
-              return;
-            }
-            patchTaxMutation.mutate(
-              { id: editingTax.id, body: { isActive } },
-              { onSuccess: closeTaxDialog },
-            );
-          },
-        },
-      );
-      return;
-    }
-    createTaxMutation.mutate(body, {
-      onSuccess: (created) => {
-        if (isActive) {
-          closeTaxDialog();
+      const handleUpdated = () => {
+        if (editingTax.isActive === isActive) {
+          handleTaxUpdated();
           return;
         }
         patchTaxMutation.mutate(
-          { id: created.id, body: { isActive: false } },
-          { onSuccess: closeTaxDialog },
+          { id: editingTax.id, body: { isActive } },
+          { onError: handleTaxWriteError, onSuccess: handleTaxUpdated },
         );
-      },
+      };
+      updateTaxMutation.mutate(
+        { id: editingTax.id, body },
+        { onError: handleTaxWriteError, onSuccess: handleUpdated },
+      );
+      return;
+    }
+    const handleCreated = (created: TaxSummaryDto) => {
+      if (isActive) {
+        handleTaxCreated();
+        return;
+      }
+      patchTaxMutation.mutate(
+        { id: created.id, body: { isActive: false } },
+        { onError: handleTaxWriteError, onSuccess: handleTaxCreated },
+      );
+    };
+    createTaxMutation.mutate(body, {
+      onError: handleTaxWriteError,
+      onSuccess: handleCreated,
     });
   }
 
@@ -228,17 +260,6 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
       data-testid="tax-setup"
     >
       <TaxSetupHeader catalog={catalog} onAdd={openCreate} />
-
-      {saveMessage ? (
-        <Callout title="Saved" variant="success">
-          {saveMessage}
-        </Callout>
-      ) : null}
-      {writeError ? (
-        <Callout title="Could not save" variant="error">
-          {describeTaxError(writeError)}
-        </Callout>
-      ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <CatalogNavPanel

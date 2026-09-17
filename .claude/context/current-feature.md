@@ -2,6 +2,13 @@
 
 ## Status
 
+**Alert toast (`@cms/ui`)** — in progress on `feature/ui-alert-toast`.
+Reusable design-system `Alert` on `react-hot-toast`: success/error/warning/info,
+all six toast positions, imperative `alert.*` API, and a single `<Toaster />`
+mounted in the shell (hosted) and each remote's standalone bootstrap.
+
+## History
+
 **Company address edit modal** — in progress on `feature/company-general-info-settings-implementation`.
 General Info address cards open an edit dialog. Billing includes a
 "Same as physical address" checkbox: checking it copies the physical address and

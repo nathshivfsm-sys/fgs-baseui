@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@cms/shared-auth';
+import { Toaster } from '@cms/ui';
 import { BrowserRouter } from 'react-router-dom';
 import { loadRuntimeConfig } from './config';
 import { authenticateWithApi } from './util';
@@ -34,6 +35,7 @@ async function bootstrap() {
         <AuthProvider authenticate={authenticateWithApi}>
           <BrowserRouter basename={basename}>
             <App />
+            <Toaster />
           </BrowserRouter>
         </AuthProvider>
       </QueryClientProvider>

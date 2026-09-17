@@ -8,7 +8,6 @@ import {
   type ZoneListParams,
 } from '@cms/settings-data-access';
 import {
-  Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
@@ -17,8 +16,10 @@ import {
   TabsList,
   TabsTrigger,
 } from '@cms/ui';
+import { LOAD_ZONES_ERROR_TITLE, LOAD_ZONES_ERROR_TOAST_ID } from '../constant';
 import { describeZoneError } from '../util';
 import type { ZoneStatusFilter } from '../types';
+import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<ZoneSummaryDto>();
 
@@ -56,6 +57,12 @@ export function ZoneTablePanel({
   const patchMutation = useMutation(
     patchZoneMutationOptions(queryClient),
     queryClient,
+  );
+  useCatalogLoadToast(
+    query,
+    LOAD_ZONES_ERROR_TITLE,
+    describeZoneError,
+    LOAD_ZONES_ERROR_TOAST_ID,
   );
 
   function getRowId(row: ZoneSummaryDto) {
@@ -150,40 +157,29 @@ export function ZoneTablePanel({
         </TabsList>
       </Tabs>
 
-      {query.isError ? (
-        <div className="p-6">
-          <Callout title="Unable to load zones" variant="error">
-            {describeZoneError(query.error)}
-          </Callout>
-        </div>
-      ) : (
-        <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
-          <DataTable
-            className="rounded-none border-0"
-            columns={columns}
-            data={items}
-            enableRowSelection={false}
-            enableSearch={false}
-            getRowId={getRowId}
-            manual={{
-              pagination: true,
-              sorting: true,
-              pageCount: Math.max(
-                1,
-                Math.ceil(totalCount / pagination.pageSize),
-              ),
-              rowCount: totalCount,
-            }}
-            onPaginationChange={setPagination}
-            onSortingChange={setSorting}
-            rowLabel="entries"
-            showColumnVisibility={false}
-            state={{ pagination, sorting }}
-            status={tableStatus}
-            tableLabel="Zones"
-          />
-        </div>
-      )}
+      <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
+        <DataTable
+          className="rounded-none border-0"
+          columns={columns}
+          data={items}
+          enableRowSelection={false}
+          enableSearch={false}
+          getRowId={getRowId}
+          manual={{
+            pagination: true,
+            sorting: true,
+            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
+            rowCount: totalCount,
+          }}
+          onPaginationChange={setPagination}
+          onSortingChange={setSorting}
+          rowLabel="entries"
+          showColumnVisibility={false}
+          state={{ pagination, sorting }}
+          status={tableStatus}
+          tableLabel="Zones"
+        />
+      </div>
     </div>
   );
 }

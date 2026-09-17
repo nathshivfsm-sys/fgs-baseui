@@ -16,6 +16,17 @@ export const RECOMMENDATIONS = [
   'Keep tax rates updated to reflect current state and local regulations.',
 ] as const;
 
+export const SAVE_SUCCESS_TITLE = 'Saved';
+export const SAVE_ERROR_TITLE = 'Could not save';
+export const AUTHORITY_CREATED_MESSAGE = 'Tax authority created';
+export const AUTHORITY_UPDATED_MESSAGE = 'Tax authority updated';
+export const TAX_CREATED_MESSAGE = 'Tax rate created';
+export const TAX_UPDATED_MESSAGE = 'Tax rate updated';
+export const LOAD_AUTHORITIES_ERROR_TITLE = 'Unable to load tax authorities';
+export const LOAD_TAX_CODES_ERROR_TITLE = 'Unable to load tax codes';
+export const LOAD_AUTHORITIES_ERROR_TOAST_ID = 'tax-authority-list-error';
+export const LOAD_TAX_CODES_ERROR_TOAST_ID = 'tax-code-list-error';
+
 export const CREATE_AUTHORITY_TITLE = 'Add Taxing Authority';
 export const CREATE_AUTHORITY_DESCRIPTION =
   'Assign a tax authority and define its rate';

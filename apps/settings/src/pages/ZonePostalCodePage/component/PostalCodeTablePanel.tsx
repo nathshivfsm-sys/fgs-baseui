@@ -8,7 +8,6 @@ import {
   type PostalCodeListParams,
 } from '@cms/settings-data-access';
 import {
-  Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
@@ -18,11 +17,16 @@ import {
   TabsTrigger,
 } from '@cms/ui';
 import {
+  LOAD_POSTAL_ERROR_TITLE,
+  LOAD_POSTAL_ERROR_TOAST_ID,
+} from '../constant';
+import {
   describePostalCodeError,
   formatTaxRate,
   formatTripCharge,
 } from '../util';
 import type { ZoneStatusFilter } from '../types';
+import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<PostalCodeSummaryDto>();
 
@@ -60,6 +64,12 @@ export function PostalCodeTablePanel({
   const patchMutation = useMutation(
     patchPostalCodeMutationOptions(queryClient),
     queryClient,
+  );
+  useCatalogLoadToast(
+    query,
+    LOAD_POSTAL_ERROR_TITLE,
+    describePostalCodeError,
+    LOAD_POSTAL_ERROR_TOAST_ID,
   );
 
   function getRowId(row: PostalCodeSummaryDto) {
@@ -171,40 +181,29 @@ export function PostalCodeTablePanel({
         </TabsList>
       </Tabs>
 
-      {query.isError ? (
-        <div className="p-6">
-          <Callout title="Unable to load postal codes" variant="error">
-            {describePostalCodeError(query.error)}
-          </Callout>
-        </div>
-      ) : (
-        <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
-          <DataTable
-            className="rounded-none border-0"
-            columns={columns}
-            data={items}
-            enableRowSelection={false}
-            enableSearch={false}
-            getRowId={getRowId}
-            manual={{
-              pagination: true,
-              sorting: true,
-              pageCount: Math.max(
-                1,
-                Math.ceil(totalCount / pagination.pageSize),
-              ),
-              rowCount: totalCount,
-            }}
-            onPaginationChange={setPagination}
-            onSortingChange={setSorting}
-            rowLabel="entries"
-            showColumnVisibility={false}
-            state={{ pagination, sorting }}
-            status={tableStatus}
-            tableLabel="Postal codes"
-          />
-        </div>
-      )}
+      <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
+        <DataTable
+          className="rounded-none border-0"
+          columns={columns}
+          data={items}
+          enableRowSelection={false}
+          enableSearch={false}
+          getRowId={getRowId}
+          manual={{
+            pagination: true,
+            sorting: true,
+            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
+            rowCount: totalCount,
+          }}
+          onPaginationChange={setPagination}
+          onSortingChange={setSorting}
+          rowLabel="entries"
+          showColumnVisibility={false}
+          state={{ pagination, sorting }}
+          status={tableStatus}
+          tableLabel="Postal codes"
+        />
+      </div>
     </div>
   );
 }

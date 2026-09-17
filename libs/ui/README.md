@@ -35,38 +35,52 @@ import {
 <Button loading={saving} loadingText="Saving…">Save</Button>
 ```
 
+The shell (and each remote's standalone bootstrap) mounts a single `<Toaster />`. Feature code then fires toasts from anywhere:
+
+```tsx
+import { alert } from '@cms/ui';
+
+alert.success('Saved', { description: 'Company details were updated.' });
+alert.error('Could not save', { position: 'bottom-center' });
+```
+
+Import `alert` / `Toaster` from the `@cms/ui` barrel, not a deep path. The toast store lives in that singleton; a second copy would silently drop toasts from remotes.
+
 Components accept `className` for extension without requiring MFE-specific forks. Native inputs support both `value`/`onChange` and `defaultValue`; Base UI-backed controls support `value`/change callbacks and default-value equivalents.
 
 ## Public components
 
-| Component                | Default                               | Primary configuration                                                                               |
-| ------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `Button`                 | `variant="default"`, `size="default"` | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                         |
-| `IconButton`             | ghost-compatible square default size  | required `label`, `icon`, `size`, all `Button` states                                               |
-| `Checkbox`               | 16px, Base UI                         | `size`, `invalid`, `indeterminate`, `checked`/`defaultChecked`, `onCheckedChange`                   |
-| `Accordion*`             | single panel open, Base UI            | `value`/`defaultValue` (array), `multiple`, per-item `disabled`, height transition                  |
-| `Avatar*`                | 32px, initials fallback               | `size` (published as `data-size`), `AvatarImage`/`AvatarFallback`/`AvatarBadge`/`AvatarGroup`       |
-| `Card*`                  | `size="default"` (16px spacing)       | `size`, header/title/description/action/content/footer slots                                        |
-| `Dialog*`                | modal, close action, Base UI          | `showCloseButton`, `closeLabel`, header/footer slots; footer `showCloseButton`                      |
-| `Popover*`               | 288px wide, bottom/center             | `align`, `alignOffset`, `side`, `sideOffset`, header/title/description slots                        |
-| `Calendar`               | single month, label caption           | `mode`, `captionLayout`, `buttonVariant`, `showWeekNumber`, all react-day-picker props              |
-| `TextInput`              | 36px text field                       | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`                    |
-| `Textarea`               | 80px minimum height                   | `label`, `size`, `error`, `helperText`, native resize/value props                                   |
-| `SelectField`            | 36px Base UI Select                   | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging                 |
-| `Select*` primitives     | composable Base UI API                | trigger/content/item composition for advanced consumers                                             |
-| `RadioGroupField`        | horizontal group                      | `options`, orientation, controlled/uncontrolled value, error/disabled states                        |
-| `RadioGroup*` primitives | composable Base UI API                | custom radio compositions                                                                           |
-| `SwitchField`            | 44x23px, label before                 | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                             |
-| `Switch`                 | 44x23px                               | low-level Base UI switch                                                                            |
-| `Tabs*`                  | underline tabs, Base UI               | controlled/uncontrolled value, disabled triggers, keyboard navigation                               |
-| `DropdownMenu*`          | modal popup, Base UI                  | `DropdownMenuGroup` required around `DropdownMenuLabel`; items use `onClick`, not `onSelect`        |
-| `ComboboxField`          | 36px filterable Base UI Combobox      | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, `emptyMessage`, field messaging |
-| `Combobox*` primitives   | composable Base UI API                | input/trigger/content/item composition; `ComboboxOption.label` must be a `string`                   |
-| `Field`                  | 4px vertical gap                      | reusable label, description, required, helper, error, disabled layout                               |
-| `Callout`                | `variant="info"`                      | info/success/warning/error, optional icon and title                                                 |
-| `MetricCard`             | blue icon tone, 102px minimum height  | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state       |
-| `SectionCard*`           | 16px radius/padding                   | semantic settings/pricing section composition                                                       |
-| `SettingCard`            | blue icon tone, 60px icon tile        | `icon`, `title`, `description`, `footerText`, `tone`; `SettingCardGrid` for the responsive layout    |
+| Component                     | Default                                  | Primary configuration                                                                               |
+| ----------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `Button`                      | `variant="default"`, `size="default"`    | `variant`, `size`, `loading`, `loadingText`, `render`, native button events                         |
+| `IconButton`                  | ghost-compatible square default size     | required `label`, `icon`, `size`, all `Button` states                                               |
+| `Checkbox`                    | 16px, Base UI                            | `size`, `invalid`, `indeterminate`, `checked`/`defaultChecked`, `onCheckedChange`                   |
+| `Accordion*`                  | single panel open, Base UI               | `value`/`defaultValue` (array), `multiple`, per-item `disabled`, height transition                  |
+| `Avatar*`                     | 32px, initials fallback                  | `size` (published as `data-size`), `AvatarImage`/`AvatarFallback`/`AvatarBadge`/`AvatarGroup`       |
+| `Card*`                       | `size="default"` (16px spacing)          | `size`, header/title/description/action/content/footer slots                                        |
+| `Dialog*`                     | modal, close action, Base UI             | `showCloseButton`, `closeLabel`, header/footer slots; footer `showCloseButton`                      |
+| `Popover*`                    | 288px wide, bottom/center                | `align`, `alignOffset`, `side`, `sideOffset`, header/title/description slots                        |
+| `Calendar`                    | single month, label caption              | `mode`, `captionLayout`, `buttonVariant`, `showWeekNumber`, all react-day-picker props              |
+| `TextInput`                   | 36px text field                          | `label`, `placeholder`, adornments, `error`, `helperText`, `readOnly`, `loading`                    |
+| `Textarea`                    | 80px minimum height                      | `label`, `size`, `error`, `helperText`, native resize/value props                                   |
+| `SelectField`                 | 36px Base UI Select                      | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, field messaging                 |
+| `Select*` primitives          | composable Base UI API                   | trigger/content/item composition for advanced consumers                                             |
+| `RadioGroupField`             | horizontal group                         | `options`, orientation, controlled/uncontrolled value, error/disabled states                        |
+| `RadioGroup*` primitives      | composable Base UI API                   | custom radio compositions                                                                           |
+| `SwitchField`                 | 44x23px, label before                    | `checked`, `defaultChecked`, `onCheckedChange`, `size`, `labelPosition`                             |
+| `Switch`                      | 44x23px                                  | low-level Base UI switch                                                                            |
+| `Tabs*`                       | underline tabs, Base UI                  | controlled/uncontrolled value, disabled triggers, keyboard navigation                               |
+| `DropdownMenu*`               | modal popup, Base UI                     | `DropdownMenuGroup` required around `DropdownMenuLabel`; items use `onClick`, not `onSelect`        |
+| `ComboboxField`               | 36px filterable Base UI Combobox         | `options`, `placeholder`, `value`, `defaultValue`, `onValueChange`, `emptyMessage`, field messaging |
+| `Combobox*` primitives        | composable Base UI API                   | input/trigger/content/item composition; `ComboboxOption.label` must be a `string`                   |
+| `Field`                       | 4px vertical gap                         | reusable label, description, required, helper, error, disabled layout                               |
+| `Callout`                     | `variant="info"`                         | info/success/warning/error, optional icon and title                                                 |
+| `Alert` / `Toaster` / `alert` | `variant="info"`, `position="top-right"` | toast variants, all six positions, duration, dismiss, icon override; mount `Toaster` once           |
+| `MetricCard`                  | blue icon tone, 102px minimum height     | `label`, `value`, optional `icon`/`description`, icon `tone`, description tone, loading state       |
+| `SectionCard*`                | 16px radius/padding                      | semantic settings/pricing section composition                                                       |
+| `SettingCard`                 | blue icon tone, 60px icon tile           | `icon`, `title`, `description`, `footerText`, `tone`; `SettingCardGrid` for the responsive layout   |
+
+- `Callout` is the inline banner; `Alert` is the toast surface rendered by `alert.*`. Mount `<Toaster />` once at the application root. Do not import `react-hot-toast` from feature code.
 
 ### Shared internals worth knowing
 
@@ -113,15 +127,16 @@ Where each component came from. Check this before running `shadcn add` — sever
 
 **(c) Bespoke FieldPro — no registry equivalent.** Traced from the Figma component sets:
 
-| Component      | Why it is not a registry component                                                  |
-| -------------- | ----------------------------------------------------------------------------------- |
-| `TextInput`    | Figma's field pattern: label, adornments, helper/error, loading, all in one control |
-| `Textarea`     | Same field contract as `TextInput`, sized for multi-line                            |
-| `Field`        | The shared label/description/required/error layout the above compose                |
-| `Callout`      | FieldPro's info/success/warning/error banner                                        |
-| `IconButton`   | Square icon-only action with a required accessible `label`                          |
-| `MetricCard`   | Dashboard stat tile — 102px min height, 44px icon tile, semantic tones              |
-| `SectionCard*` | Page-level `<section>` grouping for settings/pricing composition                    |
+| Component      | Why it is not a registry component                                                                                                                                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TextInput`    | Figma's field pattern: label, adornments, helper/error, loading, all in one control                                                                                                                                                                                                                                       |
+| `Textarea`     | Same field contract as `TextInput`, sized for multi-line                                                                                                                                                                                                                                                                  |
+| `Field`        | The shared label/description/required/error layout the above compose                                                                                                                                                                                                                                                      |
+| `Callout`      | FieldPro's info/success/warning/error banner                                                                                                                                                                                                                                                                              |
+| `Alert`        | Ephemeral toast on react-hot-toast; the registry ships Sonner instead                                                                                                                                                                                                                                                     |
+| `IconButton`   | Square icon-only action with a required accessible `label`                                                                                                                                                                                                                                                                |
+| `MetricCard`   | Dashboard stat tile — 102px min height, 44px icon tile, semantic tones                                                                                                                                                                                                                                                    |
+| `SectionCard*` | Page-level `<section>` grouping for settings/pricing composition                                                                                                                                                                                                                                                          |
 | `SettingCard`  | Setup page category card — a real `<button>` (not `Card`, which is a `div`) carrying `cardSurfaceVariants` directly, the same seam `SectionCard` uses for its own `<section>` root; reuses `MetricCard`'s `bg-metric-*`/`text-metric-*-foreground` tone tokens at a 60px/12px-radius tile instead of inventing new colors |
 
 ### Naming collisions — read before `shadcn add`
@@ -133,6 +148,7 @@ Our name differs from the registry's for the same job. Running `add` on the righ
 | `TextInput`   | `input`              | Do not add `input`                                                                                                                                                                                                                                  |
 | `SectionCard` | `card`               | Related, not identical. `SectionCard` is a page-level `<section>` group. Adding the registry's `card` is reasonable for a content card with header/action/footer slots, but give the two a shared surface definition rather than two competing ones |
 | `Callout`     | `alert`              | Do not add `alert`                                                                                                                                                                                                                                  |
+| `Alert`       | `sonner`             | Toast notifications via react-hot-toast. Do not add `sonner`. `Callout` remains the inline banner                                                                                                                                                   |
 | `IconButton`  | `button` (icon size) | Covered by our `Button` + `IconButton` pair                                                                                                                                                                                                         |
 | `Field`       | `label` / `form`     | Do not add either                                                                                                                                                                                                                                   |
 
