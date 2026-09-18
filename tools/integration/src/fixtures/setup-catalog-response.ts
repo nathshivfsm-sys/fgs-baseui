@@ -226,3 +226,89 @@ export const postalCodeLookupResponseFixture = {
   ],
   errors: [] as string[],
 };
+
+export const techTradeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 51,
+        tradeCode: 'HVAC',
+        name: 'HVAC',
+        sortOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const techTradeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    ...techTradeListResponseFixture.data.items[0],
+    description: 'Heating, ventilation, and air conditioning',
+  },
+  errors: [] as string[],
+};
+
+export const techTradeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 51,
+      tradeCode: 'HVAC',
+      name: 'HVAC',
+      sortOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const techSkillLevelListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 61,
+        code: 'MAST',
+        name: 'Master',
+        description: 'Senior technician',
+        sortOrder: 3,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const techSkillLevelDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: techSkillLevelListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const techSkillLevelLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 61,
+      code: 'MAST',
+      name: 'Master',
+      sortOrder: 3,
+    },
+  ],
+  errors: [] as string[],
+};
