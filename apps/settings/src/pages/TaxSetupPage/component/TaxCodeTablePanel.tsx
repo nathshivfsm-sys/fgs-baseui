@@ -13,13 +13,13 @@ import {
   DataTable,
   DataTableRowActions,
   type DataTableState,
-  Tabs,
-  TabsList,
-  TabsTrigger,
 } from '@cms/ui';
+import { CatalogStatusTabBar } from '../../../shared';
 import {
+  ADD_TAX_CODE_LABEL,
   LOAD_TAX_CODES_ERROR_TITLE,
   LOAD_TAX_CODES_ERROR_TOAST_ID,
+  SEARCH_TAX_CODES_PLACEHOLDER,
 } from '../constant';
 import { describeTaxError, formatTaxPercent } from '../util';
 import type { TaxStatusFilter } from '../types';
@@ -30,6 +30,7 @@ const column = createDataTableColumnHelper<TaxSummaryDto>();
 export interface TaxCodeTablePanelProps {
   activeCount: number;
   inactiveCount: number;
+  onAdd: () => void;
   onEdit: (tax: TaxSummaryDto) => void;
   queryClient: QueryClient;
 }
@@ -37,6 +38,7 @@ export interface TaxCodeTablePanelProps {
 export function TaxCodeTablePanel({
   activeCount,
   inactiveCount,
+  onAdd,
   onEdit,
   queryClient,
 }: TaxCodeTablePanelProps) {
@@ -48,6 +50,7 @@ export function TaxCodeTablePanel({
   const [sorting, setSorting] = useState<DataTableState['sorting']>([
     { id: 'name', desc: false },
   ]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const params: TaxListParams = {
     page: pagination.pageIndex + 1,
@@ -168,23 +171,29 @@ export function TaxCodeTablePanel({
         ? 'error'
         : 'idle';
 
-  function handleStatusChange(next: string) {
-    setStatus(next as TaxStatusFilter);
+  const handleStatusChange = (next: TaxStatusFilter) => {
+    setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
-  }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setGlobalFilter(value);
+    setPagination((current) => ({ ...current, pageIndex: 0 }));
+  };
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <Tabs onValueChange={handleStatusChange} value={status}>
-        <TabsList bordered className="px-6">
-          <TabsTrigger size="default" tone="action" value="active">
-            Active ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger size="default" tone="action" value="inactive">
-            Inactive ({inactiveCount})
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <CatalogStatusTabBar
+        activeCount={activeCount}
+        addLabel={ADD_TAX_CODE_LABEL}
+        inactiveCount={inactiveCount}
+        onAdd={onAdd}
+        onSearchChange={handleSearchChange}
+        onStatusChange={handleStatusChange}
+        searchPlaceholder={SEARCH_TAX_CODES_PLACEHOLDER}
+        searchValue={globalFilter}
+        status={status}
+      />
 
       <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
         <DataTable
@@ -192,7 +201,7 @@ export function TaxCodeTablePanel({
           columns={columns}
           data={items}
           enableRowSelection={false}
-          enableSearch
+          enableSearch={false}
           getRowId={getRowId}
           manual={{
             pagination: true,
@@ -203,12 +212,12 @@ export function TaxCodeTablePanel({
             ),
             rowCount: totalCount,
           }}
+          onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}
           rowLabel="entries"
-          searchPlaceholder="Search tax codes..."
           showColumnVisibility={false}
-          state={{ pagination, sorting }}
+          state={{ globalFilter, pagination, sorting }}
           status={tableStatus}
           tableLabel="Tax codes"
         />

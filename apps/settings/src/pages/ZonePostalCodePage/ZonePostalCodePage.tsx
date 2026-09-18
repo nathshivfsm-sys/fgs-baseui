@@ -219,7 +219,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
       className="flex min-h-0 flex-1 flex-col gap-4"
       data-testid="zone-postal-code"
     >
-      <ZonePostalCodeHeader catalog={catalog} onAdd={openCreate} />
+      <ZonePostalCodeHeader />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <CatalogNavPanel
@@ -236,6 +236,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
           <PostalCodeTablePanel
             activeCount={activePostalCount}
             inactiveCount={inactivePostalCount}
+            onAdd={openCreate}
             onEdit={openEditPostal}
             queryClient={queryClient}
           />
@@ -243,6 +244,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
           <ZoneTablePanel
             activeCount={activeZoneCount}
             inactiveCount={inactiveZoneCount}
+            onAdd={openCreate}
             onEdit={openEditZone}
             queryClient={queryClient}
           />
