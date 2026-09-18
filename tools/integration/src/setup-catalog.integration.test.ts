@@ -7,6 +7,8 @@ import {
   createPostalCodeMutationOptions,
   createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
+  createTechSkillLevelMutationOptions,
+  createTechTradeMutationOptions,
   createZoneMutationOptions,
   deleteNonWorkingDateMutationOptions,
   nonWorkingDateDetailQueryOptions,
@@ -23,6 +25,12 @@ import {
   taxKeys,
   taxListQueryOptions,
   taxLookupQueryOptions,
+  techSkillLevelKeys,
+  techSkillLevelListQueryOptions,
+  techSkillLevelLookupQueryOptions,
+  techTradeKeys,
+  techTradeListQueryOptions,
+  techTradeLookupQueryOptions,
   zoneKeys,
   zoneListQueryOptions,
   zoneLookupQueryOptions,
@@ -40,6 +48,12 @@ import {
   taxDetailResponseFixture,
   taxListResponseFixture,
   taxLookupResponseFixture,
+  techSkillLevelDetailResponseFixture,
+  techSkillLevelListResponseFixture,
+  techSkillLevelLookupResponseFixture,
+  techTradeDetailResponseFixture,
+  techTradeListResponseFixture,
+  techTradeLookupResponseFixture,
   zoneDetailResponseFixture,
   zoneListResponseFixture,
   zoneLookupResponseFixture,
@@ -397,6 +411,110 @@ describe('postal code through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(
       client.getQueryState(postalCodeKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('tech trade through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(techTradeListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(techTradeLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      techTradeListQueryOptions({ tradeCode: 'HVAC' }),
+    );
+    const lookup = await client.fetchQuery(techTradeLookupQueryOptions(false));
+
+    expect(page.items[0]?.tradeCode).toBe('HVAC');
+    expect(lookup[0]?.name).toBe('HVAC');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/techtrade?tradeCode=HVAC',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/techtrade/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates tech trade queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(techTradeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(techTradeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createTechTradeMutationOptions(client));
+    await mutation.execute({
+      tradeCode: 'HVAC',
+      name: 'HVAC',
+      description: 'Heating, ventilation, and air conditioning',
+      sortOrder: 1,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techtrade');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(techTradeKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('tech skill level through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(techSkillLevelListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(techSkillLevelLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      techSkillLevelListQueryOptions({ name: 'Master' }),
+    );
+    const lookup = await client.fetchQuery(
+      techSkillLevelLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.code).toBe('MAST');
+    expect(lookup[0]?.name).toBe('Master');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/techskilllevel?name=Master',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/techskilllevel/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates tech skill level queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(techSkillLevelDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(techSkillLevelKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createTechSkillLevelMutationOptions(client));
+    await mutation.execute({
+      code: 'MAST',
+      name: 'Master',
+      description: 'Senior technician',
+      sortOrder: 3,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techskilllevel');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
     ).toBe(true);
     disposeCmsQueryClient(client);
   });
