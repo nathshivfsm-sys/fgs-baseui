@@ -772,6 +772,9 @@ export const TaxSetup: Story = {
     await expect(
       canvas.getByRole('button', { name: 'Assign Authority' }),
     ).toBeEnabled();
+    await expect(
+      canvas.getByRole('searchbox', { name: 'Search tax rates...' }),
+    ).toBeVisible();
   },
 };
 
@@ -819,6 +822,9 @@ export const TaxSetupCatalog: Story = {
     await expect(
       canvas.getByRole('button', { name: 'Add Tax Code' }),
     ).toBeEnabled();
+    await expect(
+      canvas.getByRole('searchbox', { name: 'Search tax codes...' }),
+    ).toBeVisible();
   },
 };
 

@@ -5,6 +5,11 @@ export const PAGE_TITLE = 'Tax Setup';
 export const PAGE_DESCRIPTION =
   'Configure tax jurisdictions, rates, and state-level settings for accurate invoicing.';
 
+export const ADD_TAX_CODE_LABEL = 'Add Tax Code';
+export const ASSIGN_AUTHORITY_LABEL = 'Assign Authority';
+export const SEARCH_TAX_RATES_PLACEHOLDER = 'Search tax rates...';
+export const SEARCH_TAX_CODES_PLACEHOLDER = 'Search tax codes...';
+
 export const AUTHORITY_NAV_DESCRIPTION =
   'Manage tax authorities and their respective rates';
 export const TAX_CODE_NAV_DESCRIPTION = 'Manage tax code and their rates';
