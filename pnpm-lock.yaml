@@ -171,6 +171,9 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
+      '@cms/settings-contract':
+        specifier: workspace:*
+        version: link:../../libs/settings/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
@@ -201,9 +204,15 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
+      '@cms/settings-contract':
+        specifier: workspace:*
+        version: link:../../libs/settings/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
+      '@cms/shared-auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
@@ -234,6 +243,9 @@ importers:
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
+      '@cms/shared-auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
       '@cms/shared-mocks':
         specifier: workspace:*
         version: link:../../libs/shared/mocks
@@ -309,9 +321,15 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../libs/platform-contract
+      '@cms/settings-contract':
+        specifier: workspace:*
+        version: link:../../libs/settings/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
+      '@cms/shared-auth':
+        specifier: workspace:*
+        version: link:../../libs/shared/auth
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@cms/platform-contract": "workspace:*",
+    "@cms/settings-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
     "@cms/ui": "workspace:*",
