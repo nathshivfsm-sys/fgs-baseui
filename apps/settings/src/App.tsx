@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { RouteBoundary } from './shared/component';
 import { RemoteErrorBoundary } from './error-boundary';
-import { CompanySettingsPage, SetupPage, TaxSetupPage, ZonePostalCodePage } from './pages';
 import './styles.css';
 
 const SetupPage = lazy(() =>
@@ -23,6 +22,9 @@ const BusinessUnitPage = lazy(() =>
   import('./pages/BusinessUnitPage').then((module) => ({
     default: module.BusinessUnitPage,
   })),
+);
+const TaxSetupPage = lazy(() =>
+  import('./pages/TaxSetupPage').then((module) => ({ default: module.TaxSetupPage })),
 );
 
 export interface AppProps {
