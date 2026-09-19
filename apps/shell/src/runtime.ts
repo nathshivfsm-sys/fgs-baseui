@@ -8,7 +8,9 @@ import {
   getSessionCompanyId,
   getSessionTenantId,
   getSessionToken,
+  refreshStoredAccessToken,
 } from '@cms/shared-auth';
+import { alert } from '@cms/ui';
 
 // No real backend exists yet — baseUrl is empty until one is wired up (see
 // libs/shared/api/README.md). VITE_API_URL is read here, not inside customFetch
@@ -23,6 +25,10 @@ configureCustomFetch({
   getAuthToken: getSessionToken,
   getTenantId: getSessionTenantId,
   getCompanyId: getSessionCompanyId,
+  onSessionRefreshStart: () => {
+    alert.info('Your session has expired. Refreshing...');
+  },
+  refreshSession: refreshStoredAccessToken,
 });
 
 export const cmsRuntime = {

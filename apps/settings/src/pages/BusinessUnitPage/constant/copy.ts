@@ -7,7 +7,6 @@ export const BREAK_TWO_BREAK_LEVEL = 2;
 export const PAGE_TITLE = 'Business Units & Break 2';
 export const PAGE_DESCRIPTION =
   'Manage your Business Units (BU) and a secondary organizational break for reporting, routing and analytics.';
-export const BREADCRUMB_LABEL = 'Setup > Company > Business Units & Breaks';
 
 export const BUSINESS_UNIT_NAV_TITLE = 'Business Units (BU)';
 export const BUSINESS_UNIT_NAV_DESCRIPTION =

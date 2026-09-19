@@ -163,3 +163,42 @@ describe('customFetch error messages', () => {
     });
   });
 });
+
+describe('customFetch 401 session refresh', () => {
+  it('refreshes once, notifies, and retries the original request', async () => {
+    const onSessionRefreshStart = vi.fn();
+    const refreshSession = vi.fn(async () => true);
+    configureCustomFetch({
+      baseUrl: '',
+      getAuthToken: () => 'token-after-refresh',
+      onSessionRefreshStart,
+      refreshSession,
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ message: 'Unauthorized' }, 401))
+      .mockResolvedValueOnce(jsonResponse({ ok: true }));
+
+    await expect(customFetch('/company/1')).resolves.toEqual({ ok: true });
+
+    expect(onSessionRefreshStart).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1]?.[1]?.headers).toMatchObject({
+      Authorization: 'Bearer token-after-refresh',
+    });
+  });
+
+  it('does not retry refresh when the refresh endpoint returns 401', async () => {
+    const refreshSession = vi.fn(async () => true);
+    configureCustomFetch({ baseUrl: '', refreshSession });
+    fetchMock.mockResolvedValue(jsonResponse({ message: 'Unauthorized' }, 401));
+
+    await expect(customFetch('/auth/refresh', { method: 'POST' })).rejects.toMatchObject({
+      status: 401,
+    });
+
+    expect(refreshSession).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
