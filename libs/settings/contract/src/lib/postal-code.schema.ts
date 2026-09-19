@@ -39,24 +39,24 @@ export const postalCodeLookupDtoSchema = z.object({
 
 export const postalCodeCreateDtoSchema = z.object({
   postalCode: nullableText,
-  city: nullableText,
-  state: nullableText,
   countryCode: nullableText,
+  stateProvinceCode: nullableText,
+  city: nullableText,
+  tripChargeAmount: nullableNumber,
   fgsSetupZoneId: nullableNumber,
   fgsSetupTaxId: nullableNumber,
-  tripCharge: nullableNumber,
 });
 
 export const postalCodeUpdateDtoSchema = postalCodeCreateDtoSchema;
 
 export const postalCodePatchDtoSchema = z.object({
   postalCode: nullableText,
-  city: nullableText,
-  state: nullableText,
   countryCode: nullableText,
+  stateProvinceCode: nullableText,
+  city: nullableText,
+  tripChargeAmount: nullableNumber,
   fgsSetupZoneId: nullableNumber,
   fgsSetupTaxId: nullableNumber,
-  tripCharge: nullableNumber,
   isActive: z.boolean().nullish(),
 });
 

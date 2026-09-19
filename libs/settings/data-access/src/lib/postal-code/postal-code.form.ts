@@ -62,11 +62,12 @@ export function toPostalCodeWriteDto(
 ): PostalCodeCreateDto & PostalCodeUpdateDto {
   return {
     postalCode: values.postalCode,
-    city: values.city,
     countryCode: values.countryCode,
-    state: values.state === '' ? null : values.state,
+    stateProvinceCode: values.state === '' ? null : values.state,
+    city: values.city,
+    tripChargeAmount:
+      values.tripCharge === '' ? null : Number(values.tripCharge),
     fgsSetupZoneId: optionalId(values.fgsSetupZoneId),
     fgsSetupTaxId: optionalId(values.fgsSetupTaxId),
-    tripCharge: values.tripCharge === '' ? null : Number(values.tripCharge),
   };
 }
