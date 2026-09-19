@@ -486,11 +486,11 @@ function zoneHandlers(): ApiHandlers {
       const body = (await request.json()) as {
         postalCode?: string;
         city?: string;
-        state?: string | null;
+        stateProvinceCode?: string | null;
         countryCode?: string | null;
         fgsSetupZoneId?: number | null;
         fgsSetupTaxId?: number | null;
-        tripCharge?: number | null;
+        tripChargeAmount?: number | null;
       };
       const zone = zoneListItemsFixture.find(
         (item) => item.id === body.fgsSetupZoneId,
@@ -503,7 +503,7 @@ function zoneHandlers(): ApiHandlers {
           id: 99,
           postalCode: body.postalCode ?? null,
           city: body.city ?? null,
-          state: body.state ?? null,
+          state: body.stateProvinceCode ?? null,
           countryCode: body.countryCode ?? null,
           fgsSetupZoneId: body.fgsSetupZoneId ?? null,
           zoneCode: zone?.code ?? null,
@@ -511,7 +511,7 @@ function zoneHandlers(): ApiHandlers {
           fgsSetupTaxId: body.fgsSetupTaxId ?? null,
           taxCode: tax?.taxCode ?? null,
           taxRate: tax?.taxRate ?? null,
-          tripCharge: body.tripCharge ?? null,
+          tripCharge: body.tripChargeAmount ?? null,
           isActive: true,
         }),
         201,
@@ -801,12 +801,12 @@ export const ZonePostalCodeAddPostal: Story = {
     await expect(post?.endpoint).toBe('/postalcode');
     await expect(post?.body).toEqual({
       postalCode: '77099',
-      city: 'Houston',
-      state: null,
       countryCode: 'US',
+      stateProvinceCode: null,
+      city: 'Houston',
+      tripChargeAmount: null,
       fgsSetupZoneId: null,
       fgsSetupTaxId: 11,
-      tripCharge: null,
     });
   },
 };

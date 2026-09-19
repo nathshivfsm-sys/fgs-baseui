@@ -6,6 +6,7 @@ import {
   type PostalCodeCreateDto,
   type PostalCodeDetailDto,
   type PostalCodeLookupDto,
+  type PostalCodePatchDto,
 } from '@cms/settings-contract';
 import {
   assignDefined,
@@ -213,13 +214,31 @@ function denormalizedFromIds(
   };
 }
 
+function summaryFieldsFromWrite(
+  body: PostalCodeCreateDto | PostalCodePatchDto,
+): Partial<PostalCodeDetailDto> {
+  const fields: Partial<PostalCodeDetailDto> = {
+    postalCode: body.postalCode,
+    city: body.city,
+    countryCode: body.countryCode,
+    state: body.stateProvinceCode,
+    tripCharge: body.tripChargeAmount,
+    fgsSetupZoneId: body.fgsSetupZoneId,
+    fgsSetupTaxId: body.fgsSetupTaxId,
+  };
+  if ('isActive' in body && typeof body.isActive === 'boolean') {
+    fields.isActive = body.isActive;
+  }
+  return fields;
+}
+
 function createFromBody(body: PostalCodeCreateDto): PostalCodeDetailDto {
   const linked = denormalizedFromIds(body.fgsSetupZoneId, body.fgsSetupTaxId);
   return {
     id: nextId(postalCodes),
     postalCode: body.postalCode ?? null,
     city: body.city ?? null,
-    state: body.state ?? null,
+    state: body.stateProvinceCode ?? null,
     countryCode: body.countryCode ?? null,
     fgsSetupZoneId: body.fgsSetupZoneId ?? null,
     zoneCode: linked.zoneCode,
@@ -227,7 +246,7 @@ function createFromBody(body: PostalCodeCreateDto): PostalCodeDetailDto {
     fgsSetupTaxId: body.fgsSetupTaxId ?? null,
     taxCode: linked.taxCode,
     taxRate: linked.taxRate,
-    tripCharge: body.tripCharge ?? null,
+    tripCharge: body.tripChargeAmount ?? null,
     isActive: true,
   };
 }
@@ -236,7 +255,7 @@ function applyWrite(
   record: PostalCodeDetailDto,
   body: PostalCodeCreateDto,
 ): void {
-  assignDefined(record, body);
+  assignDefined(record, summaryFieldsFromWrite(body));
   Object.assign(
     record,
     denormalizedFromIds(record.fgsSetupZoneId, record.fgsSetupTaxId),
@@ -297,7 +316,7 @@ export const postalCodeHandlers = [
     if (!body.ok) return body.response;
     const parsed = postalCodePatchDtoSchema.safeParse(body.value);
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
-    assignDefined(record, parsed.data);
+    assignDefined(record, summaryFieldsFromWrite(parsed.data));
     Object.assign(
       record,
       denormalizedFromIds(record.fgsSetupZoneId, record.fgsSetupTaxId),

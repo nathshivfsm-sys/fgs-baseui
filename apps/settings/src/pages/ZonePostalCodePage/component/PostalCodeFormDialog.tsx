@@ -110,17 +110,17 @@ export function PostalCodeFormDialog({
                   required
                 />
                 <FormSelectField<PostalCodeForm>
-                  label="City"
-                  name="city"
-                  options={POSTAL_CITY_OPTIONS}
-                  placeholder={POSTAL_CITY_PLACEHOLDER}
-                  required
-                />
-                <FormSelectField<PostalCodeForm>
                   label="Country"
                   name="countryCode"
                   options={COUNTRY_OPTIONS}
                   placeholder={POSTAL_COUNTRY_PLACEHOLDER}
+                  required
+                />
+                <FormSelectField<PostalCodeForm>
+                  label="City"
+                  name="city"
+                  options={POSTAL_CITY_OPTIONS}
+                  placeholder={POSTAL_CITY_PLACEHOLDER}
                   required
                 />
                 <FormSelectField<PostalCodeForm>

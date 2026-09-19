@@ -408,12 +408,12 @@ describe('postal code through customFetch', () => {
       .build(client, createPostalCodeMutationOptions(client));
     await mutation.execute({
       postalCode: '77099',
-      city: 'Houston',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Houston',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 31,
       fgsSetupTaxId: 11,
-      tripCharge: 10,
     });
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode');
