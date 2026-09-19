@@ -7,5 +7,10 @@ export type {
   BusinessUnitNavPanelProps,
   BusinessUnitPageProps,
   GlBreakFormDialogProps,
+  GlBreakFormSubmit,
   GlBreakTablePanelProps,
 } from './business-unit.types';
+export type {
+  FormMultiSelectFieldProps,
+  FormSelectFieldProps,
+} from './form.types';

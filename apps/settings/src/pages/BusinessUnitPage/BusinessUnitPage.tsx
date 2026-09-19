@@ -1,13 +1,19 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import type { GlBreakCreateDto, GlBreakSummaryDto } from '@cms/settings-contract';
+import type {
+  GlBreakDetailDto,
+  GlBreakSummaryDto,
+} from '@cms/settings-contract';
 import {
   createGlBreakMutationOptions,
+  glBreakDetailQueryOptions,
   glBreakLookupQueryOptions,
+  patchGlBreakMutationOptions,
+  techTradeLookupQueryOptions,
   updateGlBreakMutationOptions,
 } from '@cms/settings-data-access';
-import { Callout } from '@cms/ui';
+import { Callout, type SelectOption } from '@cms/ui';
 import {
   ADD_BREAK_TWO_LABEL,
   ADD_BUSINESS_UNIT_LABEL,
@@ -19,7 +25,11 @@ import {
   CatalogNavPanel,
   GlBreakTablePanel,
 } from './component';
-import type { BusinessUnitCatalog, BusinessUnitPageProps } from './types';
+import type {
+  BusinessUnitCatalog,
+  BusinessUnitPageProps,
+  GlBreakFormSubmit,
+} from './types';
 import {
   breakLevelForCatalog,
   catalogFromSearch,
@@ -48,12 +58,24 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
 
   const activeLookup = useQuery(glBreakLookupQueryOptions(true), queryClient);
   const allLookup = useQuery(glBreakLookupQueryOptions(false), queryClient);
+  const tradeLookup = useQuery(techTradeLookupQueryOptions(true), queryClient);
+  const detailQuery = useQuery(
+    {
+      ...glBreakDetailQueryOptions(editingRecord?.id ?? 0),
+      enabled: dialogOpen && editingRecord != null,
+    },
+    queryClient,
+  );
   const createMutation = useMutation(
     createGlBreakMutationOptions(queryClient),
     queryClient,
   );
   const updateMutation = useMutation(
     updateGlBreakMutationOptions(queryClient),
+    queryClient,
+  );
+  const patchMutation = useMutation(
+    patchGlBreakMutationOptions(queryClient),
     queryClient,
   );
 
@@ -75,6 +97,15 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
     countForLevel(allLookup.data, BREAK_TWO_BREAK_LEVEL) - activeBreakTwoCount,
   );
 
+  const tradeOptions = useMemo((): readonly SelectOption[] => {
+    return (tradeLookup.data ?? [])
+      .filter((item) => Boolean(item.tradeCode))
+      .map((item) => ({
+        value: item.tradeCode as string,
+        label: item.name || item.tradeCode || '',
+      }));
+  }, [tradeLookup.data]);
+
   const saveMessage = updateMutation.isSuccess
     ? catalog === 'break-2'
       ? 'Break 2 updated'
@@ -84,16 +115,25 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
         ? 'Break 2 created'
         : 'Business unit created'
       : null;
-  const writeError = createMutation.error ?? updateMutation.error;
+  const writeError =
+    createMutation.error ?? updateMutation.error ?? patchMutation.error;
   const writeErrorCopy = writeError ? describeGlBreakError(writeError) : null;
 
+  const resetWrites = () => {
+    createMutation.reset();
+    updateMutation.reset();
+    patchMutation.reset();
+  };
+
   const handleCatalogChange = (next: BusinessUnitCatalog) => {
+    resetWrites();
     setSearchParams(next === 'break-2' ? { catalog: 'break2' } : {}, {
       replace: true,
     });
   };
 
   const handleAdd = () => {
+    resetWrites();
     setEditingRecord(null);
     setDialogOpen(true);
   };
@@ -113,18 +153,34 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
     setEditingRecord(null);
   };
 
-  const handleSubmit = (body: GlBreakCreateDto) => {
+  const handleSubmit = (payload: GlBreakFormSubmit) => {
+    const afterWrite = (saved: GlBreakDetailDto) => {
+      if (saved.isActive === payload.isActive) {
+        closeDialog();
+        return;
+      }
+      patchMutation.mutate(
+        { id: saved.id, body: { isActive: payload.isActive } },
+        { onSuccess: closeDialog },
+      );
+    };
+
     if (editingRecord) {
       updateMutation.mutate(
-        { id: editingRecord.id, body },
-        { onSuccess: closeDialog },
+        { id: editingRecord.id, body: payload.body },
+        { onSuccess: afterWrite },
       );
       return;
     }
-    createMutation.mutate(body, { onSuccess: closeDialog });
+    createMutation.mutate(payload.body, { onSuccess: afterWrite });
   };
 
   const isBreakTwo = catalog === 'break-2';
+  const isWritePending =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    patchMutation.isPending ||
+    (dialogOpen && editingRecord != null && detailQuery.isPending);
 
   return (
     <section
@@ -177,11 +233,12 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
         <GlBreakFormDialog
           breakLevel={breakLevel}
           catalog={catalog}
-          isPending={createMutation.isPending || updateMutation.isPending}
+          isPending={isWritePending}
           onOpenChange={handleDialogOpenChange}
           onSubmit={handleSubmit}
           open={dialogOpen}
-          record={editingRecord}
+          record={detailQuery.data ?? editingRecord}
+          tradeOptions={tradeOptions}
         />
       </Suspense>
     </section>

@@ -1,5 +1,10 @@
 import type { QueryClient } from '@tanstack/react-query';
-import type { GlBreakCreateDto, GlBreakSummaryDto } from '@cms/settings-contract';
+import type {
+  GlBreakCreateDto,
+  GlBreakDetailDto,
+  GlBreakSummaryDto,
+} from '@cms/settings-contract';
+import type { SelectOption } from '@cms/ui';
 import type { BusinessUnitCatalog } from './catalog.types';
 
 export interface BusinessUnitPageProps {
@@ -29,12 +34,18 @@ export interface GlBreakTablePanelProps {
   tableLabel: string;
 }
 
+export interface GlBreakFormSubmit {
+  body: GlBreakCreateDto;
+  isActive: boolean;
+}
+
 export interface GlBreakFormDialogProps {
   breakLevel: number;
   catalog: BusinessUnitCatalog;
   isPending: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (body: GlBreakCreateDto) => void;
+  onSubmit: (payload: GlBreakFormSubmit) => void;
   open: boolean;
-  record: GlBreakSummaryDto | null;
+  record: GlBreakSummaryDto | GlBreakDetailDto | null;
+  tradeOptions: readonly SelectOption[];
 }

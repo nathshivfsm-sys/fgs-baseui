@@ -24,4 +24,4 @@ export {
   ZONE_NAV_DESCRIPTION,
   ZONE_POSTAL_PATH,
 } from './copy';
-export { POSTAL_CITY_OPTIONS, POSTAL_STATE_OPTIONS } from './postal-options';
+export { POSTAL_CITY_OPTIONS } from './postal-options';

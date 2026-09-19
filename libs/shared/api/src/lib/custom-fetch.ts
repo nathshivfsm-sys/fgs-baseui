@@ -10,6 +10,12 @@ export interface CustomFetchConfig {
    * endpoints. Return `undefined` when there is no tenant (e.g. before sign-in).
    */
   getTenantId?: () => string | undefined;
+  /**
+   * Called on every request; sent as `X-Company-Id`, which the API requires on
+   * company-scoped endpoints. Return `undefined` when there is no company (e.g. before
+   * sign-in).
+   */
+  getCompanyId?: () => string | undefined;
 }
 
 export type CustomFetchOptions = RequestInit & {
@@ -66,17 +72,22 @@ export async function customFetch<T>(
     options;
   const token = currentConfig.getAuthToken?.();
   const tenantId = currentConfig.getTenantId?.();
+  const companyId = currentConfig.getCompanyId?.();
   const headers: HeadersInit = {
     ...(isFormDataBody(requestInit.body)
       ? {}
       : { 'Content-Type': 'application/json' }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(tenantId ? { 'X-Tenant-Id': tenantId } : {}),
+    ...(companyId ? { 'X-Company-Id': companyId } : {}),
     ...optionHeaders,
   };
 
   const response = await fetch(`${currentConfig.baseUrl}${endpoint}`, {
     ...requestInit,
+    // Catalog GETs are otherwise eligible for the browser disk cache; a refetch
+    // after POST/PUT/PATCH would then replay the pre-write list.
+    cache: requestInit.cache ?? 'no-store',
     headers,
   });
 

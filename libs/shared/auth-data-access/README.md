@@ -45,7 +45,9 @@ Two ids are consumed. Both arrive as numbers and are coerced to strings:
   `configureCustomFetch({ getTenantId: getSessionTenantId })` in the shell. The API
   answers `400 "Tenant context is required. Include the X-Tenant-Id header."` without it.
 - `user.companyId` → `UserDetails.companyId` → the path key for `/company/{companyId}`
-  (the Settings › General Info screen).
+  (the Settings › General Info screen) and `X-Company-Id` on every request via
+  `configureCustomFetch({ getCompanyId: getSessionCompanyId })`. The API answers
+  `400 "Company context is required. Include the X-Company-Id header."` without it.
 
 ## Status: local development only
 

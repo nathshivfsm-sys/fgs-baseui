@@ -21,30 +21,53 @@ afterEach(() => {
 });
 
 describe('customFetch headers', () => {
-  it('sends X-Tenant-Id and the bearer token when both are configured', async () => {
+  it('sends X-Tenant-Id, X-Company-Id, and the bearer token when configured', async () => {
     configureCustomFetch({
       baseUrl: '/api/v1',
       getAuthToken: () => 'token',
       getTenantId: () => '52',
+      getCompanyId: () => '1',
     });
     fetchMock.mockResolvedValue(jsonResponse({}));
 
     await customFetch('/company/1');
 
-    expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
-      Authorization: 'Bearer token',
-      'X-Tenant-Id': '52',
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      cache: 'no-store',
+      headers: {
+        Authorization: 'Bearer token',
+        'X-Tenant-Id': '52',
+        'X-Company-Id': '1',
+      },
     });
   });
 
-  it('omits X-Tenant-Id when there is no tenant (e.g. before sign-in)', async () => {
-    configureCustomFetch({ baseUrl: '', getTenantId: () => undefined });
+  it('lets a caller override the default no-store cache mode', async () => {
+    configureCustomFetch({ baseUrl: '/api/v1' });
+    fetchMock.mockResolvedValue(jsonResponse({}));
+
+    await customFetch('/attachment/1', { cache: 'force-cache' });
+
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      cache: 'force-cache',
+    });
+  });
+
+  it('omits X-Tenant-Id and X-Company-Id when there is no session (e.g. before sign-in)', async () => {
+    configureCustomFetch({
+      baseUrl: '',
+      getTenantId: () => undefined,
+      getCompanyId: () => undefined,
+    });
     fetchMock.mockResolvedValue(jsonResponse({}));
 
     await customFetch('/auth/refresh');
 
     expect(fetchMock.mock.calls[0]?.[1]?.headers).not.toHaveProperty(
       'X-Tenant-Id',
+    );
+    expect(fetchMock.mock.calls[0]?.[1]?.headers).not.toHaveProperty(
+      'X-Company-Id',
     );
   });
 });
