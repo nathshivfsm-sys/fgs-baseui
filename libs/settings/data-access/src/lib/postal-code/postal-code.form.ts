@@ -8,6 +8,7 @@ import type {
 export const postalCodeFormSchema = z.object({
   postalCode: z.string().trim().min(1, 'Postal Code is required').max(16),
   city: z.string().trim().min(1, 'City is required').max(100),
+  countryCode: z.string().trim().min(1, 'Country is required').max(2),
   state: z.string().trim().max(32),
   fgsSetupZoneId: z.string(),
   fgsSetupTaxId: z.string().trim().min(1, 'Tax Code is required'),
@@ -26,6 +27,7 @@ export function emptyPostalCodeForm(): PostalCodeForm {
   return {
     postalCode: '',
     city: '',
+    countryCode: '',
     state: '',
     fgsSetupZoneId: '',
     fgsSetupTaxId: '',
@@ -39,6 +41,7 @@ export function toPostalCodeFormValues(
   return {
     postalCode: postalCode.postalCode ?? '',
     city: postalCode.city ?? '',
+    countryCode: postalCode.countryCode ?? '',
     state: postalCode.state ?? '',
     fgsSetupZoneId:
       postalCode.fgsSetupZoneId == null ? '' : String(postalCode.fgsSetupZoneId),
@@ -59,10 +62,12 @@ export function toPostalCodeWriteDto(
 ): PostalCodeCreateDto & PostalCodeUpdateDto {
   return {
     postalCode: values.postalCode,
+    countryCode: values.countryCode,
+    stateProvinceCode: values.state === '' ? null : values.state,
     city: values.city,
-    state: values.state === '' ? null : values.state,
+    tripChargeAmount:
+      values.tripCharge === '' ? null : Number(values.tripCharge),
     fgsSetupZoneId: optionalId(values.fgsSetupZoneId),
     fgsSetupTaxId: optionalId(values.fgsSetupTaxId),
-    tripCharge: values.tripCharge === '' ? null : Number(values.tripCharge),
   };
 }

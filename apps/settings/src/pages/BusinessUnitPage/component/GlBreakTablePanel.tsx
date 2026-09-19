@@ -6,18 +6,14 @@ import {
   patchGlBreakMutationOptions,
 } from '@cms/settings-data-access';
 import {
-  Button,
   Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
   DataTableStackedCell,
-  PlusIcon,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   type DataTableState,
 } from '@cms/ui';
+import { CatalogStatusTabBar } from '../../../shared';
 import type { CatalogStatusFilter, GlBreakTablePanelProps } from '../types';
 import { describeGlBreakError, formatGlBreakAddress } from '../util';
 
@@ -60,8 +56,8 @@ export const GlBreakTablePanel = ({
 
   const getRowId = (row: GlBreakSummaryDto) => String(row.id);
 
-  const handleStatusChange = (next: string) => {
-    setStatus(next as CatalogStatusFilter);
+  const handleStatusChange = (next: CatalogStatusFilter) => {
+    setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
   };
 
@@ -156,26 +152,14 @@ export const GlBreakTablePanel = ({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className="flex items-end justify-between gap-3 border-b border-border">
-        <Tabs
-          className="min-w-0 flex-1"
-          onValueChange={handleStatusChange}
-          value={status}
-        >
-          <TabsList bordered className="border-0 px-6">
-            <TabsTrigger size="default" tone="action" value="active">
-              Active ({activeCount})
-            </TabsTrigger>
-            <TabsTrigger size="default" tone="action" value="inactive">
-              Inactive ({inactiveCount})
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button className="my-2 mr-6 shrink-0" onClick={onAdd} type="button">
-          <PlusIcon className="size-3.5" />
-          {addLabel}
-        </Button>
-      </div>
+      <CatalogStatusTabBar
+        activeCount={activeCount}
+        addLabel={addLabel}
+        inactiveCount={inactiveCount}
+        onAdd={onAdd}
+        onStatusChange={handleStatusChange}
+        status={status}
+      />
 
       {query.isError ? (
         <div className="p-6">

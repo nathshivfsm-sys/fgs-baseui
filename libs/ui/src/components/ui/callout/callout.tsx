@@ -52,14 +52,21 @@ export function Callout({
       role={resolvedVariant === 'error' ? 'alert' : 'status'}
       {...props}
     >
-      {resolvedIcon != null && (
+      {resolvedIcon != null && title == null && (
         <span aria-hidden="true" className="mt-0.5 shrink-0">
           {resolvedIcon}
         </span>
       )}
       <div className="min-w-0">
         {title != null && (
-          <BodySmall className="font-semibold">{title}</BodySmall>
+          <div className="flex items-center gap-1.5">
+            {icon != null && (
+              <span aria-hidden="true" className="shrink-0">
+                {icon}
+              </span>
+            )}
+            <BodySmall className="font-semibold">{title}</BodySmall>
+          </div>
         )}
         <div>{children}</div>
       </div>

@@ -1,6 +1,7 @@
 import {
   BodySmall,
   Callout,
+  MapPinIcon,
   OrganizationIcon,
   SettingsBusinessUnitIcon,
 } from '@cms/ui';
@@ -48,7 +49,12 @@ export const CatalogNavPanel = ({
         selected={catalog === 'break-2'}
         title={BREAK_TWO_NAV_TITLE}
       />
-      <Callout className="rounded-xl px-4 py-4" title="Recommendation" variant="info">
+      <Callout
+        className="rounded-xl px-4 py-4"
+        icon={<MapPinIcon className="size-[15.984px]" />}
+        title="Recommendation"
+        variant="info"
+      >
         <ul className="mt-2 list-disc space-y-1.5 pl-4">
           {RECOMMENDATIONS.map((item) => (
             <li key={item}>

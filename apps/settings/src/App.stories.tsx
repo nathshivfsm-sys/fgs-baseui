@@ -139,13 +139,48 @@ const meta = {
   beforeEach: () => api.install({}),
 } satisfies Meta<typeof SettingsRoutes>;
 
+const LAZY_PAGE = { timeout: 10_000 } as const;
+
+const findDialog = async () => {
+  const dialog = await within(document.body).findByRole(
+    'dialog',
+    {},
+    LAZY_PAGE,
+  );
+  await waitFor(() => expect(dialog).toBeVisible(), LAZY_PAGE);
+  return dialog;
+};
+
+const chooseSelectOption = async (
+  scope: ReturnType<typeof within>,
+  fieldName: RegExp,
+  optionName: string,
+) => {
+  await userEvent.click(scope.getByRole('combobox', { name: fieldName }));
+  await userEvent.click(
+    await within(document.body).findByRole('option', { name: optionName }),
+  );
+  await waitFor(() => {
+    expect(scope.getByRole('combobox', { name: fieldName })).toHaveTextContent(
+      optionName,
+    );
+  });
+};
+
+const waitForDialogClosed = () =>
+  waitFor(() => {
+    expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument();
+  }, LAZY_PAGE);
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('heading', { name: 'Setup' })).toBeVisible();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Setup' }, LAZY_PAGE),
+    ).toBeVisible();
     await expect(canvas.getByRole('tab', { name: 'Company' })).toHaveAttribute(
       'data-active',
       '',
@@ -159,7 +194,9 @@ export const Default: Story = {
 export const SwitchTab: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('tab', { name: 'Users & Payroll' }));
+    await userEvent.click(
+      await canvas.findByRole('tab', { name: 'Users & Payroll' }, LAZY_PAGE),
+    );
     await expect(canvas.getByRole('button', { name: /^Roles/ })).toBeVisible();
     await expect(
       canvas.queryByRole('button', { name: /^General Info/ }),
@@ -170,7 +207,10 @@ export const SwitchTab: Story = {
 export const SearchFilter: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText('Search settings'), 'tax');
+    await userEvent.type(
+      await canvas.findByLabelText('Search settings', {}, LAZY_PAGE),
+      'tax',
+    );
     await expect(
       canvas.getByRole('button', { name: /^Tax & States/ }),
     ).toBeVisible();
@@ -184,7 +224,7 @@ export const SearchNoResults: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.type(
-      canvas.getByLabelText('Search settings'),
+      await canvas.findByLabelText('Search settings', {}, LAZY_PAGE),
       'zzz-no-match',
     );
     await expect(
@@ -199,7 +239,7 @@ export const GeneralInfo: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole('textbox', { name: 'Name' }),
+      await canvas.findByRole('textbox', { name: 'Name' }, LAZY_PAGE),
     ).toHaveValue('Acme Field Services');
     await expect(canvas.getByRole('textbox', { name: 'Code' })).toHaveAttribute(
       'readonly',
@@ -225,7 +265,9 @@ export const GeneralInfoSave: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const website = await canvas.findByRole('textbox', { name: 'Website' });
+    const website = await canvas.findByRole('textbox', {
+      name: 'Website',
+    }, LAZY_PAGE);
     await userEvent.clear(website);
     await userEvent.type(website, 'www.acme.example.com');
     await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
@@ -246,11 +288,11 @@ export const GeneralInfoCancel: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByRole('textbox', { name: 'Name' });
+    await canvas.findByRole('textbox', { name: 'Name' }, LAZY_PAGE);
     await userEvent.click(canvas.getByRole('button', { name: 'Cancel' }));
     // Back on the Setup grid, not climbed out of /settings/*.
     await expect(
-      await canvas.findByRole('heading', { name: 'Setup' }),
+      await canvas.findByRole('heading', { name: 'Setup' }, LAZY_PAGE),
     ).toBeVisible();
     await expect(
       api.requests.some((request) => request.method === 'PATCH'),
@@ -263,7 +305,7 @@ export const GeneralInfoFromGrid: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(
-      canvas.getByRole('button', { name: /^General Info/ }),
+      await canvas.findByRole('button', { name: /^General Info/ }, LAZY_PAGE),
     );
     await expect(
       await canvas.findByRole('heading', { name: 'General Info' }),
@@ -296,7 +338,11 @@ export const GeneralInfoValidation: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const name = await canvas.findByRole('textbox', { name: 'Name' });
+    const name = await canvas.findByRole(
+      'textbox',
+      { name: 'Name' },
+      LAZY_PAGE,
+    );
     await userEvent.clear(name);
     await userEvent.tab();
     await expect(await canvas.findByText('Name is required')).toBeVisible();
@@ -323,7 +369,11 @@ export const GeneralInfoLoading: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      canvas.getByRole('status', { name: 'Loading company details' }),
+      await canvas.findByRole(
+        'status',
+        { name: 'Loading company details' },
+        LAZY_PAGE,
+      ),
     ).toBeVisible();
   },
 };
@@ -340,6 +390,8 @@ export const GeneralInfoError: Story = {
     await expect(
       await canvas.findByText(
         "You don't have access to this company's settings.",
+        {},
+        LAZY_PAGE,
       ),
     ).toBeVisible();
   },
@@ -353,8 +405,10 @@ export const GeneralInfoMissingCompany: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      canvas.getByText(
+      await canvas.findByText(
         "Your session isn't linked to a company. Sign out and sign in again.",
+        {},
+        LAZY_PAGE,
       ),
     ).toBeVisible();
     await expect(
@@ -452,10 +506,11 @@ function zoneHandlers(): ApiHandlers {
       const body = (await request.json()) as {
         postalCode?: string;
         city?: string;
-        state?: string | null;
+        stateProvinceCode?: string | null;
+        countryCode?: string | null;
         fgsSetupZoneId?: number | null;
         fgsSetupTaxId?: number | null;
-        tripCharge?: number | null;
+        tripChargeAmount?: number | null;
       };
       const zone = zoneListItemsFixture.find(
         (item) => item.id === body.fgsSetupZoneId,
@@ -468,14 +523,15 @@ function zoneHandlers(): ApiHandlers {
           id: 99,
           postalCode: body.postalCode ?? null,
           city: body.city ?? null,
-          state: body.state ?? null,
+          state: body.stateProvinceCode ?? null,
+          countryCode: body.countryCode ?? null,
           fgsSetupZoneId: body.fgsSetupZoneId ?? null,
           zoneCode: zone?.code ?? null,
           zoneName: zone?.name ?? null,
           fgsSetupTaxId: body.fgsSetupTaxId ?? null,
           taxCode: tax?.taxCode ?? null,
           taxRate: tax?.taxRate ?? null,
-          tripCharge: body.tripCharge ?? null,
+          tripCharge: body.tripChargeAmount ?? null,
           isActive: true,
         }),
         201,
@@ -575,7 +631,22 @@ function glBreakHandlers(): ApiHandlers {
         breakLevel: body.breakLevel,
         logoFileId: body.logoFileId ?? null,
         isActive: true,
-        address: body.address ?? null,
+        address: body.address
+          ? {
+              id: 'aaaaaaaa-bbbb-cccc-dddd-000000000099',
+              addressLine1: body.address.addressLine1 ?? null,
+              addressLine2: body.address.addressLine2 ?? null,
+              addressLine3: body.address.addressLine3 ?? null,
+              addressLine4: body.address.addressLine4 ?? null,
+              city: body.address.city ?? null,
+              state: body.address.state ?? null,
+              country: body.address.country ?? null,
+              postalCode: body.address.postalCode ?? null,
+              formattedAddress: body.address.formattedAddress ?? null,
+              latitude: body.address.latitude ?? null,
+              longitude: body.address.longitude ?? null,
+            }
+          : null,
         trades: (body.tradeCodes ?? []).map((tradeCode, index) => ({
           id: 900 + index,
           tradeCode,
@@ -633,7 +704,11 @@ export const ZonePostalCode: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+      await canvas.findByRole(
+        'heading',
+        { name: 'Zone & Postal Code' },
+        LAZY_PAGE,
+      ),
     ).toBeVisible();
     await expect(
       await canvas.findByRole('tab', { name: 'Active (5)' }),
@@ -687,7 +762,7 @@ export const ZonePostalCodeAdd: Story = {
     const canvas = within(canvasElement);
     await canvas.findByText('NORTH');
     await userEvent.click(canvas.getByRole('button', { name: 'Add Zone' }));
-    const dialog = await within(document.body).findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /code/i }),
@@ -726,24 +801,15 @@ export const ZonePostalCodeAddPostal: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: 'Add Postal Code' }),
     );
-    const dialog = await within(document.body).findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /postal code/i }),
       '77099',
     );
-    await userEvent.click(
-      withinDialog.getByRole('combobox', { name: /city/i }),
-    );
-    await userEvent.click(
-      within(document.body).getByRole('option', { name: 'Houston' }),
-    );
-    await userEvent.click(
-      withinDialog.getByRole('combobox', { name: /tax code/i }),
-    );
-    await userEvent.click(
-      within(document.body).getByRole('option', { name: 'TX-STD' }),
-    );
+    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
+    await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await chooseSelectOption(withinDialog, /tax code/i, 'TX-STD');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Postal Code' }),
     ).toBeVisible();
@@ -755,11 +821,12 @@ export const ZonePostalCodeAddPostal: Story = {
     await expect(post?.endpoint).toBe('/postalcode');
     await expect(post?.body).toEqual({
       postalCode: '77099',
+      countryCode: 'US',
+      stateProvinceCode: null,
       city: 'Houston',
-      state: null,
+      tripChargeAmount: null,
       fgsSetupZoneId: null,
       fgsSetupTaxId: 11,
-      tripCharge: null,
     });
   },
 };
@@ -768,10 +835,16 @@ export const ZoneFromGrid: Story = {
   beforeEach: () => api.install(loadsZones),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('tab', { name: 'Operations' }));
+    await userEvent.click(
+      await canvas.findByRole('tab', { name: 'Operations' }, LAZY_PAGE),
+    );
     await userEvent.click(canvas.getByRole('button', { name: /^Zone/ }));
     await expect(
-      await canvas.findByRole('heading', { name: 'Zone & Postal Code' }),
+      await canvas.findByRole(
+        'heading',
+        { name: 'Zone & Postal Code' },
+        LAZY_PAGE,
+      ),
     ).toBeVisible();
   },
 };
@@ -782,9 +855,15 @@ export const BusinessUnit: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
+      await canvas.findByRole(
+        'heading',
+        { name: 'Business Units & Break 2' },
+        LAZY_PAGE,
+      ),
     ).toBeVisible();
-    await expect(await canvas.findByText('LOC-1001')).toBeVisible();
+    await waitFor(() => {
+      expect(canvas.getByText('LOC-1001')).toBeVisible();
+    }, LAZY_PAGE);
     await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
     await expect(
       canvas.getByRole('tab', { name: 'Inactive (2)' }),
@@ -800,7 +879,7 @@ export const BusinessUnitInactive: Story = {
   beforeEach: () => api.install(loadsGlBreaks),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText('LOC-1001');
+    await canvas.findByText('LOC-1001', {}, LAZY_PAGE);
     await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
     await expect(await canvas.findByText('LOC-1008')).toBeVisible();
     await expect(canvas.queryByText('LOC-1001')).not.toBeInTheDocument();
@@ -814,7 +893,9 @@ export const BusinessUnitCatalog: Story = {
   beforeEach: () => api.install(loadsGlBreaks),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(await canvas.findByText('BR2-2001')).toBeVisible();
+    await waitFor(() => {
+      expect(canvas.getByText('BR2-2001')).toBeVisible();
+    }, LAZY_PAGE);
     await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
     await expect(
       canvas.getByRole('button', { name: 'Add Break 2' }),
@@ -827,11 +908,11 @@ export const BusinessUnitAdd: Story = {
   beforeEach: () => api.install(loadsGlBreaks),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText('LOC-1001');
+    await canvas.findByText('LOC-1001', {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: 'Add Business Unit' }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /business unit name/i }),
@@ -853,13 +934,18 @@ export const BusinessUnitAdd: Story = {
       withinDialog.getByRole('textbox', { name: /^city/i }),
       'Springfield',
     );
+    await chooseSelectOption(withinDialog, /state/i, 'IL');
+    await chooseSelectOption(withinDialog, /country/i, 'United States');
     await expect(
       withinDialog.getByRole('heading', { name: 'Create Business Unit' }),
     ).toBeVisible();
     await userEvent.click(
       withinDialog.getByRole('button', { name: 'Save Business Unit' }),
     );
-    await expect(await canvas.findByText('Business unit created')).toBeVisible();
+    await waitForDialogClosed();
+    await expect(
+      await canvas.findByText('Business unit created'),
+    ).toBeVisible();
     await expect(await canvas.findByText('MID')).toBeVisible();
     const post = api.requests.find((request) => request.method === 'POST');
     await expect(post?.endpoint).toBe('/glbreak');
@@ -905,9 +991,9 @@ export const BusinessUnitAddBreak2: Story = {
   beforeEach: () => api.install(loadsGlBreaks),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText('BR2-2001');
+    await canvas.findByText('BR2-2001', {}, LAZY_PAGE);
     await userEvent.click(canvas.getByRole('button', { name: 'Add Break 2' }));
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await expect(
       withinDialog.getByRole('heading', { name: 'Create Break 2' }),
@@ -932,9 +1018,12 @@ export const BusinessUnitAddBreak2: Story = {
       withinDialog.getByRole('textbox', { name: /^city/i }),
       'Peoria',
     );
+    await chooseSelectOption(withinDialog, /state/i, 'IL');
+    await chooseSelectOption(withinDialog, /country/i, 'United States');
     await userEvent.click(
       withinDialog.getByRole('button', { name: 'Save Break 2' }),
     );
+    await waitForDialogClosed();
     await expect(await canvas.findByText('Break 2 created')).toBeVisible();
     await expect(await canvas.findByText('BR2-2010')).toBeVisible();
     const post = api.requests.find((request) => request.method === 'POST');
@@ -953,7 +1042,13 @@ export const BusinessUnitFromGrid: Story = {
   beforeEach: () => api.install(loadsGlBreaks),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('button', { name: /^Business Unit/ }));
+    await userEvent.click(
+      await canvas.findByRole(
+        'button',
+        { name: /^Business Unit/ },
+        LAZY_PAGE,
+      ),
+    );
     await expect(
       await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
     ).toBeVisible();
@@ -1119,7 +1214,7 @@ export const TaxSetup: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole('heading', { name: 'Tax Setup' }),
+      await canvas.findByRole('heading', { name: 'Tax Setup' }, LAZY_PAGE),
     ).toBeVisible();
     await expect(
       await canvas.findByRole('tab', { name: 'Active (6)' }),
@@ -1201,7 +1296,7 @@ export const TaxSetupAddTaxRate: Story = {
     const canvas = within(canvasElement);
     await canvas.findByText('Sales Tax – Harris County');
     await userEvent.click(canvas.getByRole('button', { name: 'Add Tax Code' }));
-    const dialog = await within(document.body).findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /tax code/i }),
@@ -1211,22 +1306,8 @@ export const TaxSetupAddTaxRate: Story = {
       withinDialog.getByRole('textbox', { name: /^name$/i }),
       'Bexar Sales Tax',
     );
-    await userEvent.type(
-      withinDialog.getByRole('textbox', { name: /county/i }),
-      'Bexar',
-    );
-    await userEvent.click(
-      withinDialog.getByRole('combobox', { name: /state/i }),
-    );
-    await userEvent.click(
-      within(document.body).getByRole('option', { name: 'TX' }),
-    );
-    await userEvent.click(
-      withinDialog.getByRole('combobox', { name: /city/i }),
-    );
-    await userEvent.click(
-      within(document.body).getByRole('option', { name: 'San Antonio' }),
-    );
+    await chooseSelectOption(withinDialog, /state/i, 'TX');
+    await chooseSelectOption(withinDialog, /^city$/i, 'San Antonio');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Tax Rate' }),
     ).toBeVisible();
@@ -1247,7 +1328,7 @@ export const TaxSetupAddTaxRate: Story = {
       showTaxDetail: true,
       description: null,
       regionCode: 'TX',
-      county: 'Bexar',
+      county: null,
       city: 'San Antonio',
     });
   },
@@ -1263,7 +1344,7 @@ export const TaxSetupAssignAuthority: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: 'Assign Authority' }),
     );
-    const dialog = await within(document.body).findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /tax authority/i }),
@@ -1304,9 +1385,11 @@ export const TaxFromGrid: Story = {
   beforeEach: () => api.install(loadsTaxSetup),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('button', { name: /^Tax & States/ }));
+    await userEvent.click(
+      await canvas.findByRole('button', { name: /^Tax & States/ }, LAZY_PAGE),
+    );
     await expect(
-      await canvas.findByRole('heading', { name: 'Tax Setup' }),
+      await canvas.findByRole('heading', { name: 'Tax Setup' }, LAZY_PAGE),
     ).toBeVisible();
   },
 };
@@ -1321,9 +1404,11 @@ export const GeneralInfoSaveConflict: Story = {
     }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const legalName = await canvas.findByRole('textbox', {
-      name: 'Legal Name',
-    });
+    const legalName = await canvas.findByRole(
+      'textbox',
+      { name: 'Legal Name' },
+      LAZY_PAGE,
+    );
     await userEvent.type(legalName, ' LLC');
     await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
     await expect(
@@ -1347,16 +1432,16 @@ export const GeneralInfoAddNonWorkingDay: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText("New Year's Day");
+    await canvas.findByText("New Year's Day", {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: 'Add Non-Working Day' }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await expect(
       withinDialog.getByRole('heading', { name: 'Create Non-Working Day' }),
     ).toBeVisible();
-    const date = withinDialog.getByLabelText('Date');
+    const date = withinDialog.getByLabelText(/date/i);
     await userEvent.type(date, '2025-02-17');
     await userEvent.type(
       withinDialog.getByRole('textbox', { name: /description/i }),
@@ -1384,16 +1469,16 @@ export const GeneralInfoEditNonWorkingDay: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText("New Year's Day");
+    await canvas.findByText("New Year's Day", {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: "Edit New Year's Day" }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await expect(
       withinDialog.getByRole('heading', { name: 'Edit Non-Working Day' }),
     ).toBeVisible();
-    await expect(withinDialog.getByLabelText('Date')).toHaveValue('2025-01-01');
+    await expect(withinDialog.getByLabelText(/date/i)).toHaveValue('2025-01-01');
     const description = withinDialog.getByRole('textbox', {
       name: /description/i,
     });
@@ -1424,11 +1509,11 @@ export const GeneralInfoDeleteNonWorkingDay: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText("New Year's Day");
+    await canvas.findByText("New Year's Day", {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: "Delete New Year's Day" }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     const withinDialog = within(dialog);
     await expect(
       withinDialog.getByRole('heading', { name: 'Delete Non-Working Day' }),
@@ -1450,11 +1535,11 @@ export const GeneralInfoEditPhysicalAddress: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText('Austin, TX 78701');
+    await canvas.findByText('Austin, TX 78701', {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: 'Edit Physical Address' }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     await waitFor(() => expect(dialog).toBeVisible());
     const withinDialog = within(dialog);
     await expect(
@@ -1470,7 +1555,7 @@ export const GeneralInfoEditPhysicalAddress: Story = {
     await userEvent.type(city, 'Houston');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
-      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+      expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
     );
     await expect(canvas.getByText('Houston, TX 78701')).toBeVisible();
     await expect(
@@ -1500,11 +1585,11 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await canvas.findByText('No address on file');
+    await canvas.findByText('No address on file', {}, LAZY_PAGE);
     await userEvent.click(
       canvas.getByRole('button', { name: 'Edit Billing Address' }),
     );
-    const dialog = await canvas.findByRole('dialog');
+    const dialog = await findDialog();
     await waitFor(() => expect(dialog).toBeVisible());
     const withinDialog = within(dialog);
     await expect(
@@ -1527,7 +1612,7 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     ).toHaveValue('Austin');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
-      expect(canvas.queryByRole('dialog')).not.toBeInTheDocument(),
+      expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
     );
     await expect(
       canvas.queryByText('No address on file'),

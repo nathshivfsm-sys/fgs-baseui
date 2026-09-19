@@ -190,6 +190,7 @@ export const postalCodeListResponseFixture = {
         postalCode: 'NORTH',
         city: 'Houston',
         state: 'TX',
+        countryCode: 'US',
         fgsSetupZoneId: 31,
         zoneCode: 'NORTH',
         zoneName: 'Harris County -North',

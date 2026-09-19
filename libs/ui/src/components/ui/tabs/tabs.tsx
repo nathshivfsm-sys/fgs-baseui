@@ -55,7 +55,7 @@ const tabsTriggerVariants = cva(
     variants: {
       size: {
         default:
-          'border-b border-input px-3 pt-2 pb-3 text-body leading-[1.4] data-active:border-b-2',
+          'border-b-2 border-transparent px-3 pt-2 pb-3 text-body leading-[1.4]',
         /**
          * 12px capitalised notes tabs. The resting hairline comes from
          * `TabsList bordered`; the active tab overlaps it with its own border.

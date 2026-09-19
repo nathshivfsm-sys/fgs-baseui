@@ -140,6 +140,12 @@
 - No external icon library (e.g. `lucide-react`) is a dependency anywhere in the workspace. If a
   needed icon doesn't exist yet in `libs/ui/src/icons`, trace it from Figma rather than pulling in
   a package.
+- **Name the glyph, not the screen.** Shared icons and `@cms/ui` / `src/shared/`
+  components use a generic role name (`BuildingIcon`, `DocumentEditIcon`,
+  `MapPinIcon`, `Callout`) so any module can reuse them. Do not prefix with the
+  first consumer (`SettingsTaxAuthorityIcon`, `RecommendationPinIcon`,
+  `TaxSetupCallout`). Page-owned files under `pages/<PageName>/` may stay
+  feature-specific. See `.cursor/rules/generic-shared-ui-names.mdc`.
 
 ## Adding a Design System (`@cms/ui`) Component
 

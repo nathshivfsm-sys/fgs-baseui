@@ -17,6 +17,7 @@ function LoginFlow({ initialPath }: { initialPath: string }) {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<RequireAuth />}>
             <Route path="/" element={<Body>Home page (protected)</Body>} />
+            <Route path="/today" element={<Body>Home page (protected)</Body>} />
             <Route
               path="/invoice"
               element={<Body>Invoices (protected)</Body>}
