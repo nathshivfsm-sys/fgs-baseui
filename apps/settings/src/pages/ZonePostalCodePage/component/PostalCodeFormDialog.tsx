@@ -22,7 +22,7 @@ import {
   SectionCard,
   type SelectOption,
 } from '@cms/ui';
-import { STATE_OPTIONS } from '../../../shared/constant';
+import { COUNTRY_OPTIONS, STATE_OPTIONS } from '../../../shared/constant';
 import {
   CREATE_POSTAL_DESCRIPTION,
   CREATE_POSTAL_TITLE,
@@ -31,6 +31,7 @@ import {
   POSTAL_CITY_OPTIONS,
   POSTAL_CITY_PLACEHOLDER,
   POSTAL_CODE_PLACEHOLDER,
+  POSTAL_COUNTRY_PLACEHOLDER,
   POSTAL_STATE_PLACEHOLDER,
   POSTAL_TAX_PLACEHOLDER,
   POSTAL_TRIP_CHARGE_PLACEHOLDER,
@@ -113,6 +114,13 @@ export function PostalCodeFormDialog({
                   name="city"
                   options={POSTAL_CITY_OPTIONS}
                   placeholder={POSTAL_CITY_PLACEHOLDER}
+                  required
+                />
+                <FormSelectField<PostalCodeForm>
+                  label="Country"
+                  name="countryCode"
+                  options={COUNTRY_OPTIONS}
+                  placeholder={POSTAL_COUNTRY_PLACEHOLDER}
                   required
                 />
                 <FormSelectField<PostalCodeForm>

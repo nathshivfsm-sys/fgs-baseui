@@ -410,6 +410,7 @@ describe('postal code through customFetch', () => {
       postalCode: '77099',
       city: 'Houston',
       state: 'TX',
+      countryCode: 'US',
       fgsSetupZoneId: 31,
       fgsSetupTaxId: 11,
       tripCharge: 10,

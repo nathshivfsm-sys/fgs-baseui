@@ -1,5 +1,6 @@
 import type { UserDetails } from '@cms/platform-contract';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { MemoryRouter } from 'react-router-dom';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { TopNav } from './TopNav';
 
@@ -20,6 +21,13 @@ const meta = {
   component: TopNav,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
   args: {
     currentUser: MOCK_CURRENT_USER,
     onLogout: fn(),

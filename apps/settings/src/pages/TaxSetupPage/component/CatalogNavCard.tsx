@@ -27,7 +27,7 @@ export function CatalogNavCard({
     <button
       aria-current={selected ? 'true' : undefined}
       className={cn(
-        'flex w-full flex-col rounded-xl border p-4 text-left transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30',
+        'flex w-full flex-col items-stretch rounded-xl border p-4 text-left transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30',
         selected
           ? 'border-action bg-action-subtle'
           : 'border-border bg-surface hover:border-input-strong',
@@ -39,7 +39,7 @@ export function CatalogNavCard({
         <span
           aria-hidden="true"
           className={cn(
-            'flex size-8 shrink-0 items-center justify-center rounded-lg [&_svg]:size-4',
+            'flex size-8 shrink-0 items-center justify-center rounded-lg',
             iconClassName,
           )}
         >
@@ -52,7 +52,7 @@ export function CatalogNavCard({
       <BodySmall className="mt-2 text-caption" color="foreground-muted">
         {description}
       </BodySmall>
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex w-full items-center justify-between">
         <span className="text-caption font-medium text-action">{countLabel}</span>
         <span className="inline-flex items-center gap-0.5 text-caption font-medium text-action">
           View

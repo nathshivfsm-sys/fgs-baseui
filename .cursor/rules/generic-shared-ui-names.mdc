@@ -1,0 +1,30 @@
+---
+description: Name shared icons and common UI by glyph or role, never the first screen that used them
+alwaysApply: true
+---
+
+# Generic names for shared UI
+
+Icons in `libs/ui/src/icons` and other common components (`@cms/ui`,
+`src/shared/`) are named for the **glyph or role**, not the first page or
+module that needed them. A later MFE must be able to import the same symbol
+without a Tax/Zone/Recommendation prefix. Page-owned files under
+`pages/<PageName>/` may stay feature-specific (`TaxAuthorityTablePanel`).
+
+```tsx
+// ❌ BAD — first consumer baked into the name
+SettingsTaxAuthorityIcon
+SettingsTaxCodeIcon
+RecommendationPinIcon
+TaxSetupCallout
+
+// ✅ GOOD — reusable anywhere
+BuildingIcon
+DocumentEditIcon
+MapPinIcon
+Callout
+```
+
+File names follow the export: `building-icon.tsx` → `BuildingIcon`. Do not add
+a `Settings*` prefix unless the mark is unique to the Setup category grid.
+Do not mass-rename existing Setup-grid icons unless asked.

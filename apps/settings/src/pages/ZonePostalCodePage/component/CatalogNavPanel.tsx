@@ -1,6 +1,7 @@
 import {
   BodySmall,
   Callout,
+  MapPinIcon,
   SettingsPostalCodesIcon,
   SettingsZoneIcon,
 } from '@cms/ui';
@@ -53,7 +54,12 @@ export function CatalogNavPanel({
         selected={catalog === 'postal'}
         title="Postal Code"
       />
-      <Callout className="rounded-xl px-4 py-4" title="Recommendation" variant="info">
+      <Callout
+        className="rounded-xl px-4 py-4"
+        icon={<MapPinIcon className="size-[15.984px]" />}
+        title="Recommendation"
+        variant="info"
+      >
         <ul className="mt-2 list-disc space-y-1.5 pl-4">
           {RECOMMENDATIONS.map((item) => (
             <li key={item}>
