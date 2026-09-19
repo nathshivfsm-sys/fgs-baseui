@@ -55,6 +55,8 @@ jobs:
       - name: Build applications
         env:
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+          VITE_DEV_REFRESH_TOKEN: ${{ secrets.VITE_DEV_REFRESH_TOKEN }}
+          VITE_API_URL: https://api-dev.fieldwhizey.com/api/v1
         run: pnpm run pages:build
 
       - name: Assemble GitHub Pages site

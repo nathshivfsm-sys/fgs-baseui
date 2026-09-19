@@ -2,6 +2,29 @@
 
 ## Status
 
+**Setup catalog APIs (TechTrade, TechSkillLevel)** — implemented and verified
+locally on `feature/setup-tech-trade-skill-level-api`. Adds TanStack Query
+options factories in `@cms/settings-data-access` from the FGS Setup Service
+swagger (`/swagger/setup/v1/swagger.json`), cloned from Zone / Postal Code.
+
+Wire operations per module: list, detail, lookup, create (POST), update (PUT),
+patch (PATCH). No UI, form schema, or DELETE (swagger has no DELETE).
+
+- Spec: [features/tech-trade-catalog-api-prd.md](features/tech-trade-catalog-api-prd.md)
+- Spec: [features/tech-skill-level-catalog-api-prd.md](features/tech-skill-level-catalog-api-prd.md)
+
+Verified: `test:query` 48/48; lint and typecheck clean for `settings-contract`,
+`settings-data-access`, `shared-mocks`, and `integration`.
+
+## History
+
+**Alert toast (`@cms/ui`)** — in progress on `feature/ui-alert-toast`.
+Reusable design-system `Alert` on `react-hot-toast`: success/error/warning/info,
+all six toast positions, imperative `alert.*` API, and a single `<Toaster />`
+mounted in the shell (hosted) and each remote's standalone bootstrap.
+
+## History
+
 **Company address edit modal** — in progress on `feature/company-general-info-settings-implementation`.
 General Info address cards open an edit dialog. Billing includes a
 "Same as physical address" checkbox: checking it copies the physical address and

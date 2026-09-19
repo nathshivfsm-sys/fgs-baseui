@@ -39,7 +39,7 @@ export const CatalogNavCard = ({
           {title}
         </Body>
       </div>
-      <BodySmall className="mt-2 text-caption" color="foreground-subtle">
+      <BodySmall className="mt-2 text-caption" color="foreground-muted">
         {description}
       </BodySmall>
       <div className="mt-3 flex items-center justify-between">

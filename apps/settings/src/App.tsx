@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { RouteBoundary } from './shared/component';
 import { RemoteErrorBoundary } from './error-boundary';
+import { CompanySettingsPage, SetupPage, TaxSetupPage, ZonePostalCodePage } from './pages';
 import './styles.css';
 
 const SetupPage = lazy(() =>
@@ -66,6 +67,14 @@ export const App = ({ runtime }: AppProps) => (
               <BusinessUnitPage queryClient={runtime.queryClient} />
             </RouteBoundary>
           }
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <TaxSetupPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="company/tax"
         />
       </Routes>
     </div>

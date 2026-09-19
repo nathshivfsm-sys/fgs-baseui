@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from '@cms/ui';
 import { App } from './App';
 import { standaloneRuntime } from './standalone-runtime';
 
@@ -28,6 +29,7 @@ async function bootstrap() {
           <div className="mx-auto max-w-content p-4 sm:p-6">
             <App runtime={standaloneRuntime} />
           </div>
+          <Toaster />
         </BrowserRouter>
       </QueryClientProvider>
     </StrictMode>,

@@ -32,12 +32,15 @@ function seedTaxes(): TaxRecord[] {
     {
       id: 11,
       taxCode: 'TX-STD',
-      name: 'Standard Tax',
+      name: 'Sales Tax – Harris County',
       isExternalSystemRecord: false,
       externalSystemId: null,
       syncToken: null,
       showTaxDetail: true,
       description: 'State plus city sales tax',
+      regionCode: 'TX',
+      county: 'Harris County',
+      city: 'Houston',
       taxRate: 8.25,
       isActive: true,
       taxDetails: [
@@ -72,6 +75,9 @@ function seedTaxes(): TaxRecord[] {
       syncToken: null,
       showTaxDetail: true,
       description: 'Tax applied to labor charges',
+      regionCode: 'TX',
+      county: 'Dallas County',
+      city: 'Dallas',
       taxRate: 8.25,
       isActive: true,
       taxDetails: [
@@ -106,6 +112,9 @@ function seedTaxes(): TaxRecord[] {
       syncToken: null,
       showTaxDetail: false,
       description: 'No tax collected',
+      regionCode: 'TX',
+      county: null,
+      city: null,
       taxRate: 0,
       isActive: false,
       taxDetails: [],
@@ -122,6 +131,9 @@ function toSummary(record: TaxRecord): TaxSummaryDto {
     name: record.name,
     showTaxDetail: record.showTaxDetail,
     description: record.description,
+    regionCode: record.regionCode,
+    county: record.county,
+    city: record.city,
     taxRate: record.taxRate,
     isActive: record.isActive,
   };
@@ -153,7 +165,14 @@ function filterTaxes(url: URL): TaxRecord[] {
     if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
       return false;
     }
-    return matchesSearch(search, [record.taxCode, record.name, record.description]);
+    return matchesSearch(search, [
+      record.taxCode,
+      record.name,
+      record.description,
+      record.regionCode,
+      record.county,
+      record.city,
+    ]);
   });
 }
 
@@ -167,6 +186,9 @@ function createFromBody(body: TaxCreateDto): TaxRecord {
     syncToken: body.syncToken ?? null,
     showTaxDetail: body.showTaxDetail,
     description: body.description ?? null,
+    regionCode: body.regionCode ?? null,
+    county: body.county ?? null,
+    city: body.city ?? null,
     taxRate: 0,
     isActive: true,
     taxDetails: [],

@@ -4,7 +4,9 @@ import { toSearchParams } from '../util';
 /** Relative to `customFetch`'s `baseUrl`, which already carries `/api/v1`. */
 export const techTradeCollectionEndpoint = '/techtrade';
 
-export function techTradeListEndpoint(params: TechTradeListParams = {}): string {
+export function techTradeListEndpoint(
+  params: TechTradeListParams = {},
+): string {
   return `${techTradeCollectionEndpoint}${toSearchParams(params)}`;
 }
 

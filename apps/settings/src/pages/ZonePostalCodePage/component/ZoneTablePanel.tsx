@@ -8,23 +8,27 @@ import {
   type ZoneListParams,
 } from '@cms/settings-data-access';
 import {
-  Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
   type DataTableState,
-  Tabs,
-  TabsList,
-  TabsTrigger,
 } from '@cms/ui';
+import {
+  ADD_ZONE_LABEL,
+  LOAD_ZONES_ERROR_TITLE,
+  LOAD_ZONES_ERROR_TOAST_ID,
+} from '../constant';
 import { describeZoneError } from '../util';
 import type { ZoneStatusFilter } from '../types';
+import { CatalogStatusTabBar } from '../../../shared';
+import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<ZoneSummaryDto>();
 
 export interface ZoneTablePanelProps {
   activeCount: number;
   inactiveCount: number;
+  onAdd: () => void;
   onEdit: (zone: ZoneSummaryDto) => void;
   queryClient: QueryClient;
 }
@@ -32,6 +36,7 @@ export interface ZoneTablePanelProps {
 export function ZoneTablePanel({
   activeCount,
   inactiveCount,
+  onAdd,
   onEdit,
   queryClient,
 }: ZoneTablePanelProps) {
@@ -56,6 +61,12 @@ export function ZoneTablePanel({
   const patchMutation = useMutation(
     patchZoneMutationOptions(queryClient),
     queryClient,
+  );
+  useCatalogLoadToast(
+    query,
+    LOAD_ZONES_ERROR_TITLE,
+    describeZoneError,
+    LOAD_ZONES_ERROR_TOAST_ID,
   );
 
   function getRowId(row: ZoneSummaryDto) {
@@ -132,58 +143,45 @@ export function ZoneTablePanel({
         ? 'error'
         : 'idle';
 
-  function handleStatusChange(next: string) {
-    setStatus(next as ZoneStatusFilter);
+  function handleStatusChange(next: ZoneStatusFilter) {
+    setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
   }
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <Tabs onValueChange={handleStatusChange} value={status}>
-        <TabsList bordered className="px-6">
-          <TabsTrigger size="default" tone="action" value="active">
-            Active ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger size="default" tone="action" value="inactive">
-            Inactive ({inactiveCount})
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <CatalogStatusTabBar
+        activeCount={activeCount}
+        addLabel={ADD_ZONE_LABEL}
+        inactiveCount={inactiveCount}
+        onAdd={onAdd}
+        onStatusChange={handleStatusChange}
+        status={status}
+      />
 
-      {query.isError ? (
-        <div className="p-6">
-          <Callout title="Unable to load zones" variant="error">
-            {describeZoneError(query.error)}
-          </Callout>
-        </div>
-      ) : (
-        <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
-          <DataTable
-            className="rounded-none border-0"
-            columns={columns}
-            data={items}
-            enableRowSelection={false}
-            enableSearch={false}
-            getRowId={getRowId}
-            manual={{
-              pagination: true,
-              sorting: true,
-              pageCount: Math.max(
-                1,
-                Math.ceil(totalCount / pagination.pageSize),
-              ),
-              rowCount: totalCount,
-            }}
-            onPaginationChange={setPagination}
-            onSortingChange={setSorting}
-            rowLabel="entries"
-            showColumnVisibility={false}
-            state={{ pagination, sorting }}
-            status={tableStatus}
-            tableLabel="Zones"
-          />
-        </div>
-      )}
+      <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
+        <DataTable
+          className="rounded-none border-0"
+          columns={columns}
+          data={items}
+          enableRowSelection={false}
+          enableSearch={false}
+          getRowId={getRowId}
+          manual={{
+            pagination: true,
+            sorting: true,
+            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
+            rowCount: totalCount,
+          }}
+          onPaginationChange={setPagination}
+          onSortingChange={setSorting}
+          rowLabel="entries"
+          showColumnVisibility={false}
+          state={{ pagination, sorting }}
+          status={tableStatus}
+          tableLabel="Zones"
+        />
+      </div>
     </div>
   );
 }

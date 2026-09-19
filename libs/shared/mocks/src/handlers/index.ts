@@ -6,6 +6,7 @@ import { companyHandlers } from './company';
 import { nonWorkingDateHandlers } from './non-working-date';
 import { taxHandlers } from './tax';
 import { taxAuthorityHandlers } from './tax-authority';
+import { techSkillLevelHandlers } from './tech-skill-level';
 import { techTradeHandlers } from './tech-trade';
 import { zoneHandlers } from './zone';
 
@@ -20,5 +21,6 @@ export const handlers = [
   ...zoneHandlers,
   ...glBreakHandlers,
   ...techTradeHandlers,
+  ...techSkillLevelHandlers,
   ...attachmentHandlers,
 ];

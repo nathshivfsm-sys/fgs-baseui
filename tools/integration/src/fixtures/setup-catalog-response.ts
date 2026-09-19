@@ -11,6 +11,9 @@ export const taxListResponseFixture = {
         name: 'Standard Tax',
         showTaxDetail: true,
         description: 'State plus local',
+        regionCode: 'TX',
+        county: 'Travis',
+        city: 'Austin',
         taxRate: 8.25,
         isActive: true,
       },
@@ -31,6 +34,9 @@ export const taxDetailResponseFixture = {
     name: 'Standard Tax',
     showTaxDetail: true,
     description: 'State plus local',
+    regionCode: 'TX',
+    county: 'Travis',
+    city: 'Austin',
     taxRate: 8.25,
     isActive: true,
     taxDetails: [
@@ -76,6 +82,7 @@ export const taxAuthorityListResponseFixture = {
         isExternalSystemRecord: false,
         taxPercent: 6.25,
         description: 'State sales tax',
+        effectiveFromDate: '2026-01-01',
         usageCount: 4,
         isActive: true,
       },
@@ -322,6 +329,48 @@ export const glBreakLookupResponseFixture = {
       code: 'HQ',
       name: 'Headquarters',
       breakLevel: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const techSkillLevelListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 61,
+        code: 'MAST',
+        name: 'Master',
+        description: 'Senior technician',
+        sortOrder: 3,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const techSkillLevelDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: techSkillLevelListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const techSkillLevelLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 61,
+      code: 'MAST',
+      name: 'Master',
+      sortOrder: 3,
     },
   ],
   errors: [] as string[],

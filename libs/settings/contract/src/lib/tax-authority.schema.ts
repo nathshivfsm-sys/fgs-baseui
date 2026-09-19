@@ -18,6 +18,7 @@ export const taxAuthoritySummaryDtoSchema = z.object({
   isExternalSystemRecord: z.boolean(),
   taxPercent: z.number(),
   description: nullableText,
+  effectiveFromDate: nullableText,
   usageCount: z.number(),
   isActive: z.boolean(),
 });
@@ -38,6 +39,7 @@ export const taxAuthorityCreateDtoSchema = z.object({
   isExternalSystemRecord: z.boolean(),
   taxPercent: z.number(),
   description: nullableText,
+  effectiveFromDate: nullableText,
 });
 
 export const taxAuthorityUpdateDtoSchema = taxAuthorityCreateDtoSchema;
@@ -49,6 +51,7 @@ export const taxAuthorityPatchDtoSchema = z.object({
   isExternalSystemRecord: z.boolean().nullish(),
   taxPercent: z.number().nullish(),
   description: nullableText,
+  effectiveFromDate: nullableText,
   isActive: z.boolean().nullish(),
 });
 

@@ -17,7 +17,7 @@ import {
   updateZoneMutationOptions,
   zoneLookupQueryOptions,
 } from '@cms/settings-data-access';
-import { Callout, type SelectOption } from '@cms/ui';
+import { alert, type SelectOption } from '@cms/ui';
 import {
   CatalogNavPanel,
   PostalCodeFormDialog,
@@ -26,6 +26,14 @@ import {
   ZonePostalCodeHeader,
   ZoneTablePanel,
 } from './component';
+import {
+  POSTAL_CREATED_MESSAGE,
+  POSTAL_UPDATED_MESSAGE,
+  SAVE_ERROR_TITLE,
+  SAVE_SUCCESS_TITLE,
+  ZONE_CREATED_MESSAGE,
+  ZONE_UPDATED_MESSAGE,
+} from './constant';
 import type { ZoneCatalog } from './types';
 import {
   catalogFromSearch,
@@ -84,25 +92,6 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
     0,
     (allPostalLookup.data?.length ?? 0) - activePostalCount,
   );
-  const saveMessage = updatePostalMutation.isSuccess
-    ? 'Postal code updated'
-    : createPostalMutation.isSuccess
-      ? 'Postal code created'
-      : updateZoneMutation.isSuccess
-        ? 'Zone updated'
-        : createZoneMutation.isSuccess
-          ? 'Zone created'
-          : null;
-  const writeError =
-    createPostalMutation.error ??
-    updatePostalMutation.error ??
-    createZoneMutation.error ??
-    updateZoneMutation.error;
-  const writeErrorCopy = writeError
-    ? createPostalMutation.error || updatePostalMutation.error
-      ? describePostalCodeError(writeError)
-      : describeZoneError(writeError)
-    : null;
 
   const zoneOptions = useMemo<SelectOption[]>(
     () =>
@@ -165,26 +154,64 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
     if (!open) setEditingPostalCode(null);
   }
 
+  function handleZoneCreated() {
+    closeZoneDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: ZONE_CREATED_MESSAGE });
+  }
+
+  function handleZoneUpdated() {
+    closeZoneDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: ZONE_UPDATED_MESSAGE });
+  }
+
+  function handleZoneWriteError(error: unknown) {
+    alert.error(SAVE_ERROR_TITLE, {
+      description: describeZoneError(error),
+    });
+  }
+
+  function handlePostalCreated() {
+    closePostalDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: POSTAL_CREATED_MESSAGE });
+  }
+
+  function handlePostalUpdated() {
+    closePostalDialog();
+    alert.success(SAVE_SUCCESS_TITLE, { description: POSTAL_UPDATED_MESSAGE });
+  }
+
+  function handlePostalWriteError(error: unknown) {
+    alert.error(SAVE_ERROR_TITLE, {
+      description: describePostalCodeError(error),
+    });
+  }
+
   function handleZoneSubmit(body: ZoneCreateDto) {
     if (editingZone) {
       updateZoneMutation.mutate(
         { id: editingZone.id, body },
-        { onSuccess: closeZoneDialog },
+        { onError: handleZoneWriteError, onSuccess: handleZoneUpdated },
       );
       return;
     }
-    createZoneMutation.mutate(body, { onSuccess: closeZoneDialog });
+    createZoneMutation.mutate(body, {
+      onError: handleZoneWriteError,
+      onSuccess: handleZoneCreated,
+    });
   }
 
   function handlePostalSubmit(body: PostalCodeCreateDto) {
     if (editingPostalCode) {
       updatePostalMutation.mutate(
         { id: editingPostalCode.id, body },
-        { onSuccess: closePostalDialog },
+        { onError: handlePostalWriteError, onSuccess: handlePostalUpdated },
       );
       return;
     }
-    createPostalMutation.mutate(body, { onSuccess: closePostalDialog });
+    createPostalMutation.mutate(body, {
+      onError: handlePostalWriteError,
+      onSuccess: handlePostalCreated,
+    });
   }
 
   return (
@@ -192,18 +219,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
       className="flex min-h-0 flex-1 flex-col gap-4"
       data-testid="zone-postal-code"
     >
-      <ZonePostalCodeHeader catalog={catalog} onAdd={openCreate} />
-
-      {saveMessage ? (
-        <Callout title="Saved" variant="success">
-          {saveMessage}
-        </Callout>
-      ) : null}
-      {writeErrorCopy ? (
-        <Callout title="Could not save" variant="error">
-          {writeErrorCopy}
-        </Callout>
-      ) : null}
+      <ZonePostalCodeHeader />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <CatalogNavPanel
@@ -220,6 +236,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
           <PostalCodeTablePanel
             activeCount={activePostalCount}
             inactiveCount={inactivePostalCount}
+            onAdd={openCreate}
             onEdit={openEditPostal}
             queryClient={queryClient}
           />
@@ -227,6 +244,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
           <ZoneTablePanel
             activeCount={activeZoneCount}
             inactiveCount={inactiveZoneCount}
+            onAdd={openCreate}
             onEdit={openEditZone}
             queryClient={queryClient}
           />
@@ -234,9 +252,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
       </div>
 
       <ZoneFormDialog
-        isPending={
-          createZoneMutation.isPending || updateZoneMutation.isPending
-        }
+        isPending={createZoneMutation.isPending || updateZoneMutation.isPending}
         onOpenChange={handleZoneDialogOpenChange}
         onSubmit={handleZoneSubmit}
         open={zoneDialogOpen}

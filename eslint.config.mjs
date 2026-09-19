@@ -146,6 +146,11 @@ export default tseslint.config(
               message:
                 'Use hand-traced icons from @cms/ui instead of lucide-react — see coding-standards.md.',
             },
+            {
+              group: ['react-hot-toast', 'react-hot-toast/**'],
+              message:
+                'Import Alert, Toaster, and alert from @cms/ui so every MFE shares one toast store.',
+            },
           ],
         },
       ],
@@ -163,6 +168,23 @@ export default tseslint.config(
     files: ['libs/platform-contract/src/index.ts'],
     rules: {
       '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
+  {
+    files: ['libs/ui/src/components/ui/alert/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['lucide-react'],
+              message:
+                'Use hand-traced icons from @cms/ui instead of lucide-react — see coding-standards.md.',
+            },
+          ],
+        },
+      ],
     },
   },
   {
