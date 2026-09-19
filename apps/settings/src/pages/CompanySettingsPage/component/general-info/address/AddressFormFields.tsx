@@ -5,7 +5,8 @@ import {
   type CompanyAddressForm,
 } from '@cms/settings-data-access';
 import { Checkbox } from '@cms/ui';
-import { COUNTRY_OPTIONS, SAME_AS_PHYSICAL_LABEL } from '../../../constant';
+import { COUNTRY_OPTIONS } from '../../../../../shared/constant';
+import { SAME_AS_PHYSICAL_LABEL } from '../../../constant';
 import type { AddressFormFieldsProps } from '../../../types';
 import { FormSelectField, FormTextInput } from '../../form';
 

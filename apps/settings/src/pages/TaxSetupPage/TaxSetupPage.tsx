@@ -259,7 +259,7 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
       className="flex min-h-0 flex-1 flex-col gap-4"
       data-testid="tax-setup"
     >
-      <TaxSetupHeader catalog={catalog} onAdd={openCreate} />
+      <TaxSetupHeader />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <CatalogNavPanel
@@ -276,6 +276,7 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
           <TaxCodeTablePanel
             activeCount={activeTaxCount}
             inactiveCount={inactiveTaxCount}
+            onAdd={openCreate}
             onEdit={openEditTax}
             queryClient={queryClient}
           />
@@ -283,6 +284,7 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
           <TaxAuthorityTablePanel
             activeCount={activeAuthorityCount}
             inactiveCount={inactiveAuthorityCount}
+            onAdd={openCreate}
             onEdit={openEditAuthority}
             queryClient={queryClient}
           />

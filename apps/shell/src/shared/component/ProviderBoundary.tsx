@@ -1,5 +1,6 @@
 import { Component, Suspense, type ReactNode } from 'react';
 import { BodySmall } from '@cms/ui';
+import { RouteLoadingFallback } from './RouteLoadingFallback';
 
 export interface ProviderBoundaryProps {
   children: ReactNode;
@@ -31,11 +32,7 @@ export class ProviderBoundary extends Component<
     }
 
     return (
-      <Suspense
-        fallback={
-          <BodySmall role="status">Loading {this.props.name}…</BodySmall>
-        }
-      >
+      <Suspense fallback={<RouteLoadingFallback />}>
         {this.props.children}
       </Suspense>
     );

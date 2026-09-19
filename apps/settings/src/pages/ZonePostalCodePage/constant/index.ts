@@ -1,4 +1,6 @@
 export {
+  ADD_POSTAL_LABEL,
+  ADD_ZONE_LABEL,
   CREATE_POSTAL_DESCRIPTION,
   CREATE_POSTAL_TITLE,
   CREATE_ZONE_DESCRIPTION,
@@ -34,4 +36,4 @@ export {
   ZONE_POSTAL_PATH,
   ZONE_UPDATED_MESSAGE,
 } from './copy';
-export { POSTAL_CITY_OPTIONS, POSTAL_STATE_OPTIONS } from './postal-options';
+export { POSTAL_CITY_OPTIONS } from './postal-options';

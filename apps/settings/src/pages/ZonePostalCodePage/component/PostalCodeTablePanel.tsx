@@ -12,11 +12,9 @@ import {
   DataTable,
   DataTableRowActions,
   type DataTableState,
-  Tabs,
-  TabsList,
-  TabsTrigger,
 } from '@cms/ui';
 import {
+  ADD_POSTAL_LABEL,
   LOAD_POSTAL_ERROR_TITLE,
   LOAD_POSTAL_ERROR_TOAST_ID,
 } from '../constant';
@@ -26,6 +24,7 @@ import {
   formatTripCharge,
 } from '../util';
 import type { ZoneStatusFilter } from '../types';
+import { CatalogStatusTabBar } from '../../../shared';
 import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<PostalCodeSummaryDto>();
@@ -33,6 +32,7 @@ const column = createDataTableColumnHelper<PostalCodeSummaryDto>();
 export interface PostalCodeTablePanelProps {
   activeCount: number;
   inactiveCount: number;
+  onAdd: () => void;
   onEdit: (postalCode: PostalCodeSummaryDto) => void;
   queryClient: QueryClient;
 }
@@ -40,6 +40,7 @@ export interface PostalCodeTablePanelProps {
 export function PostalCodeTablePanel({
   activeCount,
   inactiveCount,
+  onAdd,
   onEdit,
   queryClient,
 }: PostalCodeTablePanelProps) {
@@ -163,33 +164,21 @@ export function PostalCodeTablePanel({
         ? 'error'
         : 'idle';
 
-  function handleStatusChange(next: string) {
-    setStatus(next as ZoneStatusFilter);
+  function handleStatusChange(next: ZoneStatusFilter) {
+    setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
   }
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <Tabs onValueChange={handleStatusChange} value={status}>
-        <TabsList bordered className="px-6">
-          <TabsTrigger
-            className="border-transparent py-3"
-            size="default"
-            tone="action"
-            value="active"
-          >
-            Active ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger
-            className="border-transparent py-3"
-            size="default"
-            tone="action"
-            value="inactive"
-          >
-            Inactive ({inactiveCount})
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <CatalogStatusTabBar
+        activeCount={activeCount}
+        addLabel={ADD_POSTAL_LABEL}
+        inactiveCount={inactiveCount}
+        onAdd={onAdd}
+        onStatusChange={handleStatusChange}
+        status={status}
+      />
 
       <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
         <DataTable

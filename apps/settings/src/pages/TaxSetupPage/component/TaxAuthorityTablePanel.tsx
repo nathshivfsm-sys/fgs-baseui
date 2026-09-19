@@ -12,13 +12,13 @@ import {
   DataTable,
   DataTableRowActions,
   type DataTableState,
-  Tabs,
-  TabsList,
-  TabsTrigger,
 } from '@cms/ui';
+import { CatalogStatusTabBar } from '../../../shared';
 import {
+  ASSIGN_AUTHORITY_LABEL,
   LOAD_AUTHORITIES_ERROR_TITLE,
   LOAD_AUTHORITIES_ERROR_TOAST_ID,
+  SEARCH_TAX_RATES_PLACEHOLDER,
 } from '../constant';
 import {
   describeTaxError,
@@ -33,6 +33,7 @@ const column = createDataTableColumnHelper<TaxAuthoritySummaryDto>();
 export interface TaxAuthorityTablePanelProps {
   activeCount: number;
   inactiveCount: number;
+  onAdd: () => void;
   onEdit: (authority: TaxAuthoritySummaryDto) => void;
   queryClient: QueryClient;
 }
@@ -40,6 +41,7 @@ export interface TaxAuthorityTablePanelProps {
 export function TaxAuthorityTablePanel({
   activeCount,
   inactiveCount,
+  onAdd,
   onEdit,
   queryClient,
 }: TaxAuthorityTablePanelProps) {
@@ -51,6 +53,7 @@ export function TaxAuthorityTablePanel({
   const [sorting, setSorting] = useState<DataTableState['sorting']>([
     { id: 'name', desc: false },
   ]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const params: TaxAuthorityListParams = {
     page: pagination.pageIndex + 1,
@@ -153,33 +156,29 @@ export function TaxAuthorityTablePanel({
         ? 'error'
         : 'idle';
 
-  function handleStatusChange(next: string) {
-    setStatus(next as TaxStatusFilter);
+  const handleStatusChange = (next: TaxStatusFilter) => {
+    setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
-  }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setGlobalFilter(value);
+    setPagination((current) => ({ ...current, pageIndex: 0 }));
+  };
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <Tabs onValueChange={handleStatusChange} value={status}>
-        <TabsList bordered className="px-6">
-          <TabsTrigger
-            className="border-transparent py-3"
-            size="default"
-            tone="action"
-            value="active"
-          >
-            Active ({activeCount})
-          </TabsTrigger>
-          <TabsTrigger
-            className="border-transparent py-3"
-            size="default"
-            tone="action"
-            value="inactive"
-          >
-            Inactive ({inactiveCount})
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <CatalogStatusTabBar
+        activeCount={activeCount}
+        addLabel={ASSIGN_AUTHORITY_LABEL}
+        inactiveCount={inactiveCount}
+        onAdd={onAdd}
+        onSearchChange={handleSearchChange}
+        onStatusChange={handleStatusChange}
+        searchPlaceholder={SEARCH_TAX_RATES_PLACEHOLDER}
+        searchValue={globalFilter}
+        status={status}
+      />
 
       <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
         <DataTable
@@ -187,7 +186,7 @@ export function TaxAuthorityTablePanel({
           columns={columns}
           data={items}
           enableRowSelection={false}
-          enableSearch
+          enableSearch={false}
           getRowId={getRowId}
           manual={{
             pagination: true,
@@ -198,12 +197,12 @@ export function TaxAuthorityTablePanel({
             ),
             rowCount: totalCount,
           }}
+          onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}
           rowLabel="entries"
-          searchPlaceholder="Search tax rates..."
           showColumnVisibility={false}
-          state={{ pagination, sorting }}
+          state={{ globalFilter, pagination, sorting }}
           status={tableStatus}
           tableLabel="Taxing authorities"
         />

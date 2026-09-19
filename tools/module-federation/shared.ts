@@ -19,8 +19,6 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
 const uiVersion: string = require('../../libs/ui/package.json').version;
-const platformContractVersion: string =
-  require('../../libs/platform-contract/package.json').version;
 const sharedApiVersion: string =
   require('../../libs/shared/api/package.json').version;
 const sharedAuthVersion: string =
@@ -46,11 +44,11 @@ export const sharedDependencies = {
   // the "./*": "./src/*" export and are bundled per container instead of shared. That
   // is safe for presentational components, which hold no cross-boundary state; the
   // barrel import is shared and remains the default. See libs/ui/README.md.
-  '@cms/platform-contract': {
-    singleton: true,
-    requiredVersion: platformContractVersion,
-    strictVersion: false,
-  },
+  //
+  // `@cms/platform-contract` is intentionally NOT shared. Workspace singletons get a
+  // lazy MF proxy that often exposes only `default`, so named imports such as
+  // `createCmsQueryClient` are undefined at runtime. The lib has no cross-boundary
+  // singleton state — the shell passes a single `QueryClient` instance via `CmsRuntime`.
   '@cms/shared-api': {
     singleton: true,
     requiredVersion: sharedApiVersion,
@@ -70,9 +68,8 @@ export const sharedDependencies = {
   // grows a contract lib.
   //
   // Restart every `nx serve` after adding named exports to a shared contract barrel.
-  // `@module-federation/vite` snapshots those names into `loadShare` at boot; HMR
-  // updates the source module but not the generated re-export list, so a new DTO
-  // import fails with "does not provide an export named …".
+  // `@module-federation/vite` snapshots those names into `loadShare` at boot; HMR does
+  // not refresh the list, so new DTO imports fail with "does not provide an export named …".
   '@cms/settings-contract': {
     singleton: true,
     requiredVersion: settingsContractVersion,

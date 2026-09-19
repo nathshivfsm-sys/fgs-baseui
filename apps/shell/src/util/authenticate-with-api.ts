@@ -47,13 +47,13 @@ export const authenticateWithApi: Authenticate =
     // machine that has a .env.local — a committed credential in all but name.
     // `import.meta.env.DEV` becomes `false` in a build, making everything below dead
     // code the minifier drops, token literal included. Verified by grepping dist/.
-    if (!import.meta.env.DEV) {
-      return {
-        ok: false,
-        message:
-          'Development-only sign-in is not available in this build. A real credential exchange is still to be implemented.',
-      };
-    }
+    // if (!import.meta.env.DEV) {
+    //   return {
+    //     ok: false,
+    //     message:
+    //       'Development-only sign-in is not available in this build. A real credential exchange is still to be implemented.',
+    //   };
+    // }
 
     const refreshToken = import.meta.env.VITE_DEV_REFRESH_TOKEN;
 

@@ -46,6 +46,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Manage business divisions, branches, or departments used across operations.',
       icon: 'SettingsBusinessUnitIcon',
       totalSettings: { count: 8, label: 'Units' },
+      href: 'company/business-unit',
     },
     {
       title: 'Tax & States',

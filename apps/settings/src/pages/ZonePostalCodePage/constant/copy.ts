@@ -5,6 +5,9 @@ export const PAGE_TITLE = 'Zone & Postal Code';
 export const PAGE_DESCRIPTION =
   'Manage service zones and postal codes used for scheduling, dispatch, and coverage.';
 
+export const ADD_ZONE_LABEL = 'Add Zone';
+export const ADD_POSTAL_LABEL = 'Add Postal Code';
+
 export const ZONE_NAV_DESCRIPTION =
   'Create and manage service zones used for scheduling, dispatching and reporting.';
 export const POSTAL_NAV_DESCRIPTION =
