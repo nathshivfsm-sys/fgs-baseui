@@ -1,4 +1,3 @@
-export { CatalogNavCard } from './CatalogNavCard';
 export { CatalogNavPanel } from './CatalogNavPanel';
 export { PostalCodeFormDialog } from './PostalCodeFormDialog';
 export { PostalCodeTablePanel } from './PostalCodeTablePanel';

@@ -49,6 +49,8 @@ provider per `@cms/*` package, supplied by the shell.
 | `useAuth()`                      | `{ isAuthenticated, user, login, logout }`. Throws outside a provider.                                |
 | `RequireAuth`                    | Route guard element. Redirects to `LOGIN_ROUTE`, preserving the intercepted location in `state.from`. |
 | `getSessionToken()`              | Non-React token read for `configureCustomFetch({ getAuthToken })`.                                    |
+| `getSessionTenantId()`           | Non-React tenant read for `configureCustomFetch({ getTenantId })` → `X-Tenant-Id`.                    |
+| `getSessionCompanyId()`          | Non-React company read for `configureCustomFetch({ getCompanyId })` → `X-Company-Id`.                 |
 | `DEMO_*`, `authenticateDemoUser` | The throwaway credential check (see below).                                                           |
 
 `initialSession` is three-valued: `undefined` hydrates from storage (the normal app

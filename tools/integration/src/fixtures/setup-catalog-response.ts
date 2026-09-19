@@ -271,6 +271,69 @@ export const techTradeLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const glBreakListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 61,
+        code: 'HQ',
+        name: 'Headquarters',
+        breakLabel: 'Company HQ',
+        breakLevel: 1,
+        logoFileId: null,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const glBreakDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    ...glBreakListResponseFixture.data.items[0],
+    address: {
+      id: 'aaaaaaaa-bbbb-cccc-dddd-000000000061',
+      addressLine1: '100 Main St',
+      addressLine2: null,
+      addressLine3: null,
+      addressLine4: null,
+      city: 'Houston',
+      state: 'TX',
+      country: 'US',
+      postalCode: '77002',
+      formattedAddress: '100 Main St, Houston, TX 77002',
+      latitude: 29.7604,
+      longitude: -95.3698,
+    },
+    trades: [
+      { id: 601, tradeCode: 'HVAC' },
+      { id: 602, tradeCode: 'PLUMB' },
+    ],
+  },
+  errors: [] as string[],
+};
+
+export const glBreakLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 61,
+      code: 'HQ',
+      name: 'Headquarters',
+      breakLevel: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const techSkillLevelListResponseFixture = {
   success: true,
   statusCode: 200,

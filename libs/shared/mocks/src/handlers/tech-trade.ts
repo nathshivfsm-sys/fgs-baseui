@@ -6,6 +6,7 @@ import {
   type TechTradeCreateDto,
   type TechTradeDetailDto,
   type TechTradeLookupDto,
+  type TechTradeSummaryDto,
 } from '@cms/settings-contract';
 import {
   assignDefined,
@@ -34,7 +35,7 @@ function seedTechTrades(): TechTradeDetailDto[] {
       id: 52,
       tradeCode: 'PLUMB',
       name: 'Plumbing',
-      description: 'Residential plumbing',
+      description: 'Residential and commercial plumbing',
       sortOrder: 2,
       isActive: true,
     },
@@ -42,7 +43,7 @@ function seedTechTrades(): TechTradeDetailDto[] {
       id: 53,
       tradeCode: 'ELEC',
       name: 'Electrical',
-      description: 'Residential electrical',
+      description: 'Electrical service and repair',
       sortOrder: 3,
       isActive: true,
     },
@@ -66,6 +67,16 @@ function seedTechTrades(): TechTradeDetailDto[] {
 }
 
 const techTrades = seedTechTrades();
+
+function toSummary(record: TechTradeDetailDto): TechTradeSummaryDto {
+  return {
+    id: record.id,
+    tradeCode: record.tradeCode,
+    name: record.name,
+    sortOrder: record.sortOrder,
+    isActive: record.isActive,
+  };
+}
 
 function toLookup(record: TechTradeDetailDto): TechTradeLookupDto {
   return {
@@ -140,7 +151,7 @@ export const techTradeHandlers = [
 
   http.get('/api/v1/techtrade', ({ request }) => {
     const url = new URL(request.url);
-    return setupOk(pagedResult(filterTechTrades(url), url));
+    return setupOk(pagedResult(filterTechTrades(url).map(toSummary), url));
   }),
 
   http.post('/api/v1/techtrade', async ({ request }) => {

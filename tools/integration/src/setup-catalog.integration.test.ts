@@ -4,6 +4,7 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
+  createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
@@ -11,6 +12,10 @@ import {
   createTechTradeMutationOptions,
   createZoneMutationOptions,
   deleteNonWorkingDateMutationOptions,
+  glBreakDetailQueryOptions,
+  glBreakKeys,
+  glBreakListQueryOptions,
+  glBreakLookupQueryOptions,
   nonWorkingDateDetailQueryOptions,
   nonWorkingDateKeys,
   nonWorkingDateListQueryOptions,
@@ -21,13 +26,13 @@ import {
   postalCodeLookupQueryOptions,
   taxAuthorityKeys,
   taxAuthorityListQueryOptions,
+  techSkillLevelKeys,
+  techSkillLevelListQueryOptions,
+  techSkillLevelLookupQueryOptions,
   taxDetailQueryOptions,
   taxKeys,
   taxListQueryOptions,
   taxLookupQueryOptions,
-  techSkillLevelKeys,
-  techSkillLevelListQueryOptions,
-  techSkillLevelLookupQueryOptions,
   techTradeKeys,
   techTradeListQueryOptions,
   techTradeLookupQueryOptions,
@@ -37,6 +42,9 @@ import {
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import {
+  glBreakDetailResponseFixture,
+  glBreakListResponseFixture,
+  glBreakLookupResponseFixture,
   postalCodeDetailResponseFixture,
   postalCodeListResponseFixture,
   postalCodeLookupResponseFixture,
@@ -463,6 +471,66 @@ describe('tech trade through customFetch', () => {
     expect(client.getQueryState(techTradeKeys.list({}))?.isInvalidated).toBe(
       true,
     );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('GL break through customFetch', () => {
+  it('GETs the paged list, detail, and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(glBreakListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(glBreakDetailResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(glBreakLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      glBreakListQueryOptions({ code: 'HQ', breakLevel: 1 }),
+    );
+    const detail = await client.fetchQuery(glBreakDetailQueryOptions(61));
+    const lookup = await client.fetchQuery(glBreakLookupQueryOptions(false));
+
+    expect(page.items[0]?.code).toBe('HQ');
+    expect(detail.trades?.[0]?.tradeCode).toBe('HVAC');
+    expect(lookup[0]?.breakLevel).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/glbreak?code=HQ&breakLevel=1',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/v1/glbreak/61');
+    expect(fetchMock.mock.calls[2]?.[0]).toBe(
+      '/api/v1/glbreak/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates GL break queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(glBreakDetailResponseFixture, 201));
+    const client = createCmsQueryClient();
+    client.setQueryData(glBreakKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createGlBreakMutationOptions(client));
+    await mutation.execute({
+      code: 'HQ',
+      name: 'Headquarters',
+      breakLabel: 'Company HQ',
+      breakLevel: 1,
+      logoFileId: null,
+      address: {
+        addressLine1: '100 Main St',
+        city: 'Houston',
+        state: 'TX',
+        country: 'US',
+        postalCode: '77002',
+      },
+      tradeCodes: ['HVAC', 'PLUMB'],
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/glbreak');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(glBreakKeys.list({}))?.isInvalidated).toBe(true);
     disposeCmsQueryClient(client);
   });
 });

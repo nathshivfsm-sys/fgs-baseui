@@ -1,5 +1,6 @@
 import { attachmentHandlers } from './attachment';
 import { authHandlers } from './auth';
+import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { companyHandlers } from './company';
 import { nonWorkingDateHandlers } from './non-working-date';
@@ -18,6 +19,7 @@ export const handlers = [
   ...postalCodeHandlers,
   ...nonWorkingDateHandlers,
   ...zoneHandlers,
+  ...glBreakHandlers,
   ...techTradeHandlers,
   ...techSkillLevelHandlers,
   ...attachmentHandlers,

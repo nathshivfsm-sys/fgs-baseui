@@ -103,3 +103,8 @@ export function getSessionToken(): string | undefined {
 export function getSessionTenantId(): string | undefined {
   return readStoredSession()?.tenantId;
 }
+
+/** Non-React accessor for `configureCustomFetch({ getCompanyId })`, read per request. */
+export function getSessionCompanyId(): string | undefined {
+  return readStoredSession()?.user.companyId;
+}

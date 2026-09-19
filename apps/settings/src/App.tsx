@@ -1,42 +1,84 @@
+import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
+import { RouteBoundary } from './shared/component';
 import { RemoteErrorBoundary } from './error-boundary';
 import { CompanySettingsPage, SetupPage, TaxSetupPage, ZonePostalCodePage } from './pages';
 import './styles.css';
+
+const SetupPage = lazy(() =>
+  import('./pages/SetupPage').then((module) => ({ default: module.SetupPage })),
+);
+const CompanySettingsPage = lazy(() =>
+  import('./pages/CompanySettingsPage').then((module) => ({
+    default: module.CompanySettingsPage,
+  })),
+);
+const ZonePostalCodePage = lazy(() =>
+  import('./pages/ZonePostalCodePage').then((module) => ({
+    default: module.ZonePostalCodePage,
+  })),
+);
+const BusinessUnitPage = lazy(() =>
+  import('./pages/BusinessUnitPage').then((module) => ({
+    default: module.BusinessUnitPage,
+  })),
+);
 
 export interface AppProps {
   runtime: CmsRuntime;
 }
 
-export function App({ runtime }: AppProps) {
-  return (
-    <RemoteErrorBoundary>
-      <div className="flex min-h-0 flex-1 flex-col" data-tenant={runtime.tenantId}>
-        <Routes>
-          <Route index element={<SetupPage />} />
-          <Route
-            element={
+export const App = ({ runtime }: AppProps) => (
+  <RemoteErrorBoundary>
+    <div className="flex min-h-0 flex-1 flex-col" data-tenant={runtime.tenantId}>
+      <Routes>
+        <Route
+          index
+          element={
+            <RouteBoundary>
+              <SetupPage />
+            </RouteBoundary>
+          }
+        />
+        <Route
+          path="company/general-info"
+          element={
+            <RouteBoundary>
               <CompanySettingsPage
                 companyId={runtime.currentUser.companyId}
                 queryClient={runtime.queryClient}
               />
-            }
-            path="company/general-info"
-          />
-          <Route
-            element={
+            </RouteBoundary>
+          }
+        />
+        <Route
+          path="company/zone-postal-code"
+          element={
+            <RouteBoundary>
               <ZonePostalCodePage queryClient={runtime.queryClient} />
-            }
-            path="company/zone-postal-code"
-          />
-          <Route
-            element={<TaxSetupPage queryClient={runtime.queryClient} />}
-            path="company/tax"
-          />
-        </Routes>
-      </div>
-    </RemoteErrorBoundary>
-  );
-}
+            </RouteBoundary>
+          }
+        />
+        <Route
+          path="company/business-unit"
+          element={
+            <RouteBoundary>
+              <BusinessUnitPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <TaxSetupPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="company/tax"
+        />
+      </Routes>
+    </div>
+  </RemoteErrorBoundary>
+);
 
 export default App;

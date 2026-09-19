@@ -14,7 +14,9 @@ const optionalId = z
  *
  * - `tenantId` (`52`) is sent back as the `X-Tenant-Id` header on every request; the
  *   API rejects tenant-scoped calls without it.
- * - `companyId` (`1`) is the path key for `/company/{companyId}`.
+ * - `companyId` (`1`) is the path key for `/company/{companyId}` and is sent as the
+ *   `X-Company-Id` header on every request; the API rejects company-scoped calls
+ *   without it.
  *
  * Both tolerate nullish so sign-in never fails on them — consumers handle absence.
  */

@@ -1,17 +1,7 @@
-import type { ReactNode } from 'react';
 import { Body, BodySmall, ChevronRightIcon, cn } from '@cms/ui';
+import type { CatalogNavCardProps } from '../types';
 
-export interface CatalogNavCardProps {
-  activeCount?: number;
-  description: string;
-  icon: ReactNode;
-  iconClassName?: string;
-  onSelect: () => void;
-  selected: boolean;
-  title: string;
-}
-
-export function CatalogNavCard({
+export const CatalogNavCard = ({
   activeCount,
   description,
   icon,
@@ -19,7 +9,7 @@ export function CatalogNavCard({
   onSelect,
   selected,
   title,
-}: CatalogNavCardProps) {
+}: CatalogNavCardProps) => {
   const countLabel =
     activeCount === undefined ? '—' : `${activeCount} Active`;
 
@@ -61,4 +51,4 @@ export function CatalogNavCard({
       </div>
     </button>
   );
-}
+};

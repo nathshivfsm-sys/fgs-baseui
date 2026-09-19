@@ -111,6 +111,30 @@ export {
   type ZoneUpdateDto,
 } from './lib/zone.schema';
 export {
+  glBreakAddressDetailDtoSchema,
+  glBreakCreateDtoSchema,
+  glBreakDetailDtoSchema,
+  glBreakDetailResponseSchema,
+  glBreakListResponseSchema,
+  glBreakLocationWriteDtoSchema,
+  glBreakLookupDtoSchema,
+  glBreakLookupResponseSchema,
+  glBreakPatchDtoSchema,
+  glBreakSummaryDtoSchema,
+  glBreakTradeDtoSchema,
+  glBreakUpdateDtoSchema,
+  type GlBreakAddressDetailDto,
+  type GlBreakCreateDto,
+  type GlBreakDetailDto,
+  type GlBreakListParams,
+  type GlBreakLocationWriteDto,
+  type GlBreakLookupDto,
+  type GlBreakPatchDto,
+  type GlBreakSummaryDto,
+  type GlBreakTradeDto,
+  type GlBreakUpdateDto,
+} from './lib/gl-break.schema';
+export {
   techTradeCreateDtoSchema,
   techTradeDetailDtoSchema,
   techTradeDetailResponseSchema,
@@ -128,6 +152,7 @@ export {
   type TechTradeSummaryDto,
   type TechTradeUpdateDto,
 } from './lib/tech-trade.schema';
+
 export {
   techSkillLevelCreateDtoSchema,
   techSkillLevelDetailDtoSchema,
