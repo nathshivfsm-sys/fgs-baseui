@@ -171,7 +171,7 @@ export const GlBreakTablePanel = ({
             </TabsTrigger>
           </TabsList>
         </Tabs>
-        <Button className="mb-2 mr-6 shrink-0" onClick={onAdd} type="button">
+        <Button className="my-2 mr-6 shrink-0" onClick={onAdd} type="button">
           <PlusIcon className="size-3.5" />
           {addLabel}
         </Button>

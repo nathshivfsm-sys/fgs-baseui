@@ -1,29 +1,10 @@
-import { refreshAccessToken, type AuthSessionDto } from '@cms/auth-data-access';
-import type { UserDetails } from '@cms/platform-contract';
+import { refreshAccessToken } from '@cms/auth-data-access';
 import { ApiError } from '@cms/shared-api';
-import type { Authenticate, AuthOutcome } from '@cms/shared-auth';
-
-/** `TENANT_ADMIN` -> `Tenant Admin`. The API returns roles as SCREAMING_SNAKE_CASE. */
-function formatRole(role: string | undefined): string {
-  if (!role) return 'User';
-  return role
-    .toLowerCase()
-    .split('_')
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function toUserDetails(user: AuthSessionDto['user']): UserDetails {
-  const displayName = `${user.firstName} ${user.lastName}`.trim();
-  return {
-    id: user.userId,
-    displayName: displayName || user.email,
-    email: user.email,
-    role: formatRole(user.roles[0]),
-    ...(user.companyId ? { companyId: user.companyId } : {}),
-  };
-}
+import {
+  mapAuthUserDtoToUserDetails,
+  type Authenticate,
+  type AuthOutcome,
+} from '@cms/shared-auth';
 
 /**
  * Real authentication adapter, replacing `authenticateDemoUser` for the running app.
@@ -41,20 +22,6 @@ function toUserDetails(user: AuthSessionDto['user']): UserDetails {
  */
 export const authenticateWithApi: Authenticate =
   async (): Promise<AuthOutcome> => {
-    // Load-bearing, not defensive. Vite inlines every `import.meta.env.VITE_*`
-    // reference as a string literal at build time, so without this guard the refresh
-    // token would be baked into the production bundle by any `vite build` run on a
-    // machine that has a .env.local — a committed credential in all but name.
-    // `import.meta.env.DEV` becomes `false` in a build, making everything below dead
-    // code the minifier drops, token literal included. Verified by grepping dist/.
-    // if (!import.meta.env.DEV) {
-    //   return {
-    //     ok: false,
-    //     message:
-    //       'Development-only sign-in is not available in this build. A real credential exchange is still to be implemented.',
-    //   };
-    // }
-
     const refreshToken = import.meta.env.VITE_DEV_REFRESH_TOKEN;
 
     if (!refreshToken) {
@@ -71,7 +38,8 @@ export const authenticateWithApi: Authenticate =
         ok: true,
         session: {
           token: session.accessToken,
-          user: toUserDetails(session.user),
+          user: mapAuthUserDtoToUserDetails(session.user),
+          refreshToken,
           ...(session.user.tenantId ? { tenantId: session.user.tenantId } : {}),
         },
       };
@@ -85,7 +53,6 @@ export const authenticateWithApi: Authenticate =
               : error.message,
         };
       }
-      // A Zod parse failure, or a transport error (offline, DNS, CORS preflight).
       return {
         ok: false,
         message:

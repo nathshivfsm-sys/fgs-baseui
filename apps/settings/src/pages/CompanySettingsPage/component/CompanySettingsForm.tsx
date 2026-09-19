@@ -47,7 +47,7 @@ export const CompanySettingsForm = ({
   return (
     <FormProvider {...form}>
       <div
-        className="flex min-h-0 flex-1 flex-col gap-6 overflow-hidden"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
         data-testid="company-settings-form"
       >
         <SectionCard
@@ -73,14 +73,14 @@ export const CompanySettingsForm = ({
                 <BrandingSection />
                 <CompanyDefaultsSection />
               </form>
-              <div className="min-w-0 border-t border-border-subtle p-5 lg:border-t-0">
+              <div className="min-w-0 border-t border-border-subtle p-5 lg:sticky lg:top-0 lg:self-start lg:border-t-0">
                 <NonWorkingDaysPanel queryClient={queryClient} />
               </div>
             </div>
           </div>
         </SectionCard>
 
-        <div className="flex shrink-0 flex-col-reverse gap-3 bg-background sm:flex-row sm:justify-end">
+        <div className="flex shrink-0 flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
           <Button
             disabled={isPending}
             onClick={onCancel}

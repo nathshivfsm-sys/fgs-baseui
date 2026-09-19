@@ -20,11 +20,12 @@ export function SetupTabs({
   onTabChange,
   query,
 }: SetupTabsProps) {
+  const handleValueChange = (value: string) => {
+    onTabChange(value as SettingsTabKey);
+  };
+
   return (
-    <Tabs
-      onValueChange={(value) => onTabChange(value as SettingsTabKey)}
-      value={activeTab}
-    >
+    <Tabs onValueChange={handleValueChange} value={activeTab}>
       <TabsList aria-label="Setup categories" bordered>
         {SETTING_TABS.map((tab) => (
           <TabsTrigger key={tab.key} tone="action" value={tab.key}>

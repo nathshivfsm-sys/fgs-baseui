@@ -271,6 +271,26 @@ export const GeneralInfoFromGrid: Story = {
   },
 };
 
+export const GeneralInfoCompanyBreadcrumb: Story = {
+  args: { initialPath: '/settings/company/general-info' },
+  beforeEach: () => api.install(loadsCompany),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByRole('heading', { name: 'General Info' });
+    await userEvent.click(canvas.getByRole('link', { name: 'Company' }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Setup' }),
+    ).toBeVisible();
+    await expect(canvas.getByRole('tab', { name: 'Company' })).toHaveAttribute(
+      'data-active',
+      '',
+    );
+    await expect(
+      canvas.getByRole('button', { name: /^General Info/ }),
+    ).toBeVisible();
+  },
+};
+
 export const GeneralInfoValidation: Story = {
   args: { initialPath: '/settings/company/general-info' },
   beforeEach: () => api.install(savesCompany),
@@ -1072,6 +1092,26 @@ function taxSetupHandlers(): ApiHandlers {
 }
 
 const loadsTaxSetup = taxSetupHandlers();
+
+export const TaxSetupCompanyBreadcrumb: Story = {
+  args: { initialPath: '/settings/company/tax' },
+  beforeEach: () => api.install(loadsTaxSetup),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByRole('heading', { name: 'Tax Setup' });
+    await userEvent.click(canvas.getByRole('link', { name: 'Company' }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Setup' }),
+    ).toBeVisible();
+    await expect(canvas.getByRole('tab', { name: 'Company' })).toHaveAttribute(
+      'data-active',
+      '',
+    );
+    await expect(
+      canvas.getByRole('button', { name: /^Tax & States/ }),
+    ).toBeVisible();
+  },
+};
 
 export const TaxSetup: Story = {
   args: { initialPath: '/settings/company/tax' },

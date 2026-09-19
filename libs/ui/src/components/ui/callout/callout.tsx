@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
+import { InfoCircleIcon } from '../../../icons';
 import { cn } from '../../../lib/cn';
 import { BodySmall } from '../typography';
 
@@ -22,7 +23,8 @@ const calloutVariants = cva(
 export interface CalloutProps
   extends Omit<ComponentProps<'div'>, 'title'>,
     VariantProps<typeof calloutVariants> {
-  icon?: ReactNode;
+  /** Pass `false` to hide the default info icon. */
+  icon?: ReactNode | false;
   title?: ReactNode;
 }
 
@@ -35,15 +37,24 @@ export function Callout({
   variant,
   ...props
 }: CalloutProps) {
+  const resolvedVariant = variant ?? 'info';
+  const resolvedIcon =
+    icon === false
+      ? null
+      : (icon ??
+        (resolvedVariant === 'info' ? (
+          <InfoCircleIcon className="size-3.5" />
+        ) : null));
+
   return (
     <div
       className={cn(calloutVariants({ variant }), className)}
-      role={variant === 'error' ? 'alert' : 'status'}
+      role={resolvedVariant === 'error' ? 'alert' : 'status'}
       {...props}
     >
-      {icon != null && (
+      {resolvedIcon != null && (
         <span aria-hidden="true" className="mt-0.5 shrink-0">
-          {icon}
+          {resolvedIcon}
         </span>
       )}
       <div className="min-w-0">

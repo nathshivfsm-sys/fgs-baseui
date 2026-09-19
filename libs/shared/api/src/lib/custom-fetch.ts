@@ -1,5 +1,8 @@
 import { ApiError } from './api-error';
 
+/** Auth endpoints that must not trigger an access-token refresh retry loop. */
+const AUTH_REFRESH_PATH = '/auth/refresh';
+
 export interface CustomFetchConfig {
   /** Origin + path prefix prepended to every `customFetch` endpoint, e.g. "https://api.example.com". */
   baseUrl: string;
@@ -16,14 +19,21 @@ export interface CustomFetchConfig {
    * sign-in).
    */
   getCompanyId?: () => string | undefined;
+  /** Fired once when a 401 starts a background session refresh (e.g. show a toast). */
+  onSessionRefreshStart?: () => void;
+  /** Return true when a new access token was stored and the failed request may be retried. */
+  refreshSession?: () => Promise<boolean>;
 }
 
 export type CustomFetchOptions = RequestInit & {
   /** Default `json`. Use `blob` for File Service download/thumbnail bytes. */
   responseType?: 'json' | 'blob';
+  /** @internal Prevents infinite retry after a refresh attempt. */
+  _authRetry?: boolean;
 };
 
 let currentConfig: CustomFetchConfig = { baseUrl: '' };
+let refreshInFlight: Promise<boolean> | null = null;
 
 /**
  * Sets the base URL and auth token source every subsequent `customFetch` call uses.
@@ -38,6 +48,10 @@ export function configureCustomFetch(config: CustomFetchConfig) {
 
 function isFormDataBody(body: BodyInit | null | undefined): boolean {
   return typeof FormData !== 'undefined' && body instanceof FormData;
+}
+
+function isAuthRefreshEndpoint(endpoint: string): boolean {
+  return endpoint === AUTH_REFRESH_PATH || endpoint.endsWith(AUTH_REFRESH_PATH);
 }
 
 /**
@@ -58,6 +72,20 @@ function extractErrorMessage(body: unknown, status: number): string {
   return `API request failed with HTTP ${status}`;
 }
 
+const coalesceSessionRefresh = async (): Promise<boolean> => {
+  const refresh = currentConfig.refreshSession;
+  if (!refresh) {
+    return false;
+  }
+  if (!refreshInFlight) {
+    currentConfig.onSessionRefreshStart?.();
+    refreshInFlight = refresh().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
+};
+
 /**
  * The single sanctioned way to call APIs from this workspace (see
  * context/coding-standards.md). Callers are responsible for validating the
@@ -68,7 +96,7 @@ export async function customFetch<T>(
   endpoint: string,
   options: CustomFetchOptions = {},
 ): Promise<T> {
-  const { responseType = 'json', headers: optionHeaders, ...requestInit } =
+  const { responseType = 'json', headers: optionHeaders, _authRetry, ...requestInit } =
     options;
   const token = currentConfig.getAuthToken?.();
   const tenantId = currentConfig.getTenantId?.();
@@ -93,6 +121,17 @@ export async function customFetch<T>(
 
   if (!response.ok) {
     const errorBody: unknown = await response.json().catch(() => ({}));
+    if (
+      response.status === 401 &&
+      !_authRetry &&
+      !isAuthRefreshEndpoint(endpoint) &&
+      currentConfig.refreshSession
+    ) {
+      const refreshed = await coalesceSessionRefresh();
+      if (refreshed) {
+        return customFetch(endpoint, { ...options, _authRetry: true });
+      }
+    }
     throw new ApiError(
       response.status,
       extractErrorMessage(errorBody, response.status),

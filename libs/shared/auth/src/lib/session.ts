@@ -3,6 +3,8 @@ import type { UserDetails } from '@cms/platform-contract';
 export interface AuthSession {
   token: string;
   user: UserDetails;
+  /** Used to obtain a new access token when the current one expires. */
+  refreshToken?: string;
   /**
    * The API's tenant id from the login response, sent as `X-Tenant-Id` on every request.
    * Distinct from `CmsRuntime.tenantId`, which is the shell's display tenant.
@@ -13,6 +15,7 @@ export interface AuthSession {
 const TOKEN_KEY = 'fgs.auth.token';
 const USER_KEY = 'fgs.auth.user';
 const TENANT_KEY = 'fgs.auth.tenant';
+const REFRESH_TOKEN_KEY = 'fgs.auth.refresh';
 
 /**
  * `sessionStorage`, deliberately — NOT `localStorage`. A token in web storage is
@@ -55,7 +58,13 @@ export function readStoredSession(): AuthSession | null {
     const user: unknown = JSON.parse(rawUser);
     if (!isUserDetails(user)) return null;
     const tenantId = store.getItem(TENANT_KEY);
-    return tenantId ? { token, user, tenantId } : { token, user };
+    const refreshToken = store.getItem(REFRESH_TOKEN_KEY) ?? undefined;
+    return {
+      token,
+      user,
+      ...(refreshToken ? { refreshToken } : {}),
+      ...(tenantId ? { tenantId } : {}),
+    };
   } catch {
     return null;
   }
@@ -72,6 +81,11 @@ export function writeStoredSession(session: AuthSession): void {
     } else {
       store.removeItem(TENANT_KEY);
     }
+    if (session.refreshToken) {
+      store.setItem(REFRESH_TOKEN_KEY, session.refreshToken);
+    } else {
+      store.removeItem(REFRESH_TOKEN_KEY);
+    }
   } catch {
     // Quota or private-mode failure: the in-memory session still works for this tab.
   }
@@ -84,6 +98,7 @@ export function clearStoredSession(): void {
     store.removeItem(TOKEN_KEY);
     store.removeItem(USER_KEY);
     store.removeItem(TENANT_KEY);
+    store.removeItem(REFRESH_TOKEN_KEY);
   } catch {
     // Nothing to clean up if storage is unavailable.
   }

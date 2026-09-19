@@ -408,6 +408,9 @@ importers:
 
   libs/shared/auth:
     dependencies:
+      '@cms/auth-data-access':
+        specifier: workspace:*
+        version: link:../auth-data-access
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../platform-contract
