@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { alert } from '@cms/ui';
+import type { GlBreakDetailDto } from '@cms/settings-contract';
 import {
   createStoryApi,
   jsonResponse,
@@ -467,9 +468,7 @@ function zoneHandlers(): ApiHandlers {
 
 const loadsZones = zoneHandlers();
 
-type StoryGlBreak = (typeof glBreakListItemsFixture)[number] & {
-  trades?: { id: number; tradeCode: string | null }[];
-};
+type StoryGlBreak = GlBreakDetailDto;
 
 const GL_BREAK_ID_ROUTE = /^(GET|PUT|PATCH) \/glbreak\/(\d+)$/;
 
