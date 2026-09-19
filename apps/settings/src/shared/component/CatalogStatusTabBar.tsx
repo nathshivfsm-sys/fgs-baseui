@@ -28,7 +28,7 @@ export const CatalogStatusTabBar = ({
 
   return (
     <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-6">
-      <Tabs onValueChange={handleStatusChange} value={status}>
+      <Tabs className="self-end" onValueChange={handleStatusChange} value={status}>
         <TabsList>
           <TabsTrigger size="default" tone="action" value="active">
             Active ({activeCount})

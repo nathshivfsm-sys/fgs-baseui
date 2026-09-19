@@ -18,6 +18,7 @@ export const postalCodeSummaryDtoSchema = z.object({
   postalCode: nullableText,
   city: nullableText,
   state: nullableText,
+  countryCode: nullableText,
   fgsSetupZoneId: nullableNumber,
   zoneCode: nullableText,
   zoneName: nullableText,
@@ -40,6 +41,7 @@ export const postalCodeCreateDtoSchema = z.object({
   postalCode: nullableText,
   city: nullableText,
   state: nullableText,
+  countryCode: nullableText,
   fgsSetupZoneId: nullableNumber,
   fgsSetupTaxId: nullableNumber,
   tripCharge: nullableNumber,
@@ -51,6 +53,7 @@ export const postalCodePatchDtoSchema = z.object({
   postalCode: nullableText,
   city: nullableText,
   state: nullableText,
+  countryCode: nullableText,
   fgsSetupZoneId: nullableNumber,
   fgsSetupTaxId: nullableNumber,
   tripCharge: nullableNumber,
@@ -78,4 +81,5 @@ export type PostalCodeListParams = SetupListParams & {
   postalCode?: string;
   city?: string;
   state?: string;
+  countryCode?: string;
 };

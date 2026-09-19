@@ -45,6 +45,7 @@ export const EDIT_POSTAL_TITLE = 'Edit Postal Code';
 export const EDIT_POSTAL_DESCRIPTION = 'Update the postal code and tax rate';
 export const POSTAL_CODE_PLACEHOLDER = 'Enter postal code';
 export const POSTAL_CITY_PLACEHOLDER = 'Select City';
+export const POSTAL_COUNTRY_PLACEHOLDER = 'Select Country';
 export const POSTAL_STATE_PLACEHOLDER = 'Select State';
 export const POSTAL_ZONE_PLACEHOLDER = 'Select Zone';
 export const POSTAL_TAX_PLACEHOLDER = 'Select Tax Code';

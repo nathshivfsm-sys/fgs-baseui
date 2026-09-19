@@ -50,4 +50,5 @@ export const TAX_CODE_PLACEHOLDER = 'Enter Sales Tax Code';
 export const TAX_NAME_PLACEHOLDER = 'Enter Sales Tax Name';
 export const TAX_COUNTY_PLACEHOLDER = 'Enter County Name';
 export const TAX_STATE_PLACEHOLDER = 'Select State';
+export const TAX_COUNTRY_PLACEHOLDER = 'Select Country';
 export const TAX_CITY_PLACEHOLDER = 'Select City';
