@@ -14,13 +14,13 @@ export const techTradeSummaryDtoSchema = z.object({
   id: z.number(),
   tradeCode: nullableText,
   name: nullableText,
+  description: nullableText,
   sortOrder: z.number().nullish(),
   isActive: z.boolean(),
+  skillIds: z.array(z.number()).nullish(),
 });
 
-export const techTradeDetailDtoSchema = techTradeSummaryDtoSchema.extend({
-  description: nullableText,
-});
+export const techTradeDetailDtoSchema = techTradeSummaryDtoSchema;
 
 export const techTradeLookupDtoSchema = z.object({
   id: z.number(),
@@ -34,6 +34,7 @@ export const techTradeCreateDtoSchema = z.object({
   name: nullableText,
   description: nullableText,
   sortOrder: z.number().nullish(),
+  skillIds: z.array(z.number()).nullish(),
 });
 
 export const techTradeUpdateDtoSchema = techTradeCreateDtoSchema;

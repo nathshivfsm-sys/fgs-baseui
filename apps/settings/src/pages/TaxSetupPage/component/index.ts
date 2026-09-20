@@ -1,4 +1,3 @@
-export { CatalogNavCard } from './CatalogNavCard';
 export { CatalogNavPanel } from './CatalogNavPanel';
 export { TaxAuthorityFormDialog } from './TaxAuthorityFormDialog';
 export { TaxAuthorityTablePanel } from './TaxAuthorityTablePanel';

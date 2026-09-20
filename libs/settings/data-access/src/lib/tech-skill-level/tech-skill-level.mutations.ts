@@ -51,6 +51,16 @@ export const updateTechSkillLevel = async (
   return parseTechSkillLevelDetail(response);
 };
 
+export const deleteTechSkillLevel = async (
+  id: number,
+  context?: QueryRequestContext,
+): Promise<void> => {
+  await customFetch<unknown>(techSkillLevelDetailEndpoint(id), {
+    method: 'DELETE',
+    signal: context?.signal,
+  });
+};
+
 export const patchTechSkillLevel = async (
   id: number,
   body: TechSkillLevelPatchDto,
@@ -96,5 +106,12 @@ export const patchTechSkillLevelMutationOptions = (queryClient: QueryClient) =>
     mutationFn: ({ id, body }: { id: number; body: TechSkillLevelPatchDto }) =>
       patchTechSkillLevel(id, body),
     meta: { feature: 'tech-skill-level', operation: 'patch' },
+    onSuccess: () => invalidateTechSkillLevels(queryClient),
+  });
+
+export const deleteTechSkillLevelMutationOptions = (queryClient: QueryClient) =>
+  mutationOptions({
+    mutationFn: (id: number) => deleteTechSkillLevel(id),
+    meta: { feature: 'tech-skill-level', operation: 'delete' },
     onSuccess: () => invalidateTechSkillLevels(queryClient),
   });

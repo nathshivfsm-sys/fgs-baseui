@@ -1,5 +1,6 @@
 import { AUTH_REFRESH_ENDPOINT } from '@cms/auth-data-access';
 import { http, HttpResponse } from 'msw';
+import { setupDelay } from './util';
 
 /**
  * Wire body of `POST /auth/refresh`. Numbers for `tenantId` / `companyId` match
@@ -38,6 +39,7 @@ function errorBody(statusCode: number, message: string) {
  */
 export const authHandlers = [
   http.post(`/api/v1${AUTH_REFRESH_ENDPOINT}`, async ({ request }) => {
+    await setupDelay();
     let refreshToken: unknown;
     try {
       const body: unknown = await request.json();

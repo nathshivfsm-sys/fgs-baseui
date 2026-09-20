@@ -5,7 +5,7 @@ import {
   DocumentEditIcon,
   MapPinIcon,
 } from '@cms/ui';
-import { CatalogNavCard } from './CatalogNavCard';
+import { CatalogNavCard } from '../../../shared/component';
 import {
   AUTHORITY_NAV_DESCRIPTION,
   RECOMMENDATIONS,

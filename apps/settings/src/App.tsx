@@ -24,7 +24,15 @@ const BusinessUnitPage = lazy(() =>
   })),
 );
 const TaxSetupPage = lazy(() =>
-  import('./pages/TaxSetupPage').then((module) => ({ default: module.TaxSetupPage })),
+  import('./pages/TaxSetupPage').then((module) => ({
+    default: module.TaxSetupPage,
+  })),
+);
+
+const TradeSkillsPage = lazy(() =>
+  import('./pages/TradeSkillsPage').then((module) => ({
+    default: module.TradeSkillsPage,
+  })),
 );
 
 export interface AppProps {
@@ -33,7 +41,10 @@ export interface AppProps {
 
 export const App = ({ runtime }: AppProps) => (
   <RemoteErrorBoundary>
-    <div className="flex min-h-0 flex-1 flex-col" data-tenant={runtime.tenantId}>
+    <div
+      className="flex min-h-0 flex-1 flex-col"
+      data-tenant={runtime.tenantId}
+    >
       <Routes>
         <Route
           index
@@ -77,6 +88,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="company/tax"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <TradeSkillsPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/trade-skills"
         />
       </Routes>
     </div>

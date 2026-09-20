@@ -17,6 +17,7 @@ import {
   readJsonObject,
   readOptionalBoolean,
   setupError,
+  setupNoContent,
   setupOk,
 } from './util';
 
@@ -24,41 +25,65 @@ function seedTechSkillLevels(): TechSkillLevelDetailDto[] {
   return [
     {
       id: 61,
-      code: 'APPR',
-      name: 'Apprentice',
-      description: 'Entry-level technician',
+      code: 'INST',
+      name: 'Install',
+      description: 'Installation work across trades',
       sortOrder: 1,
       isActive: true,
     },
     {
       id: 62,
-      code: 'JOUR',
-      name: 'Journeyman',
-      description: 'Fully qualified technician',
+      code: 'REPR',
+      name: 'Repair',
+      description: 'Repair and service work',
       sortOrder: 2,
       isActive: true,
     },
     {
       id: 63,
-      code: 'MAST',
-      name: 'Master',
-      description: 'Senior technician',
+      code: 'DIAG',
+      name: 'Diagnose',
+      description: 'Diagnostic and troubleshooting',
       sortOrder: 3,
       isActive: true,
     },
     {
       id: 64,
-      code: 'LEAD',
-      name: 'Lead',
-      description: 'Crew lead',
+      code: 'INSP',
+      name: 'Inspect',
+      description: 'Inspection and safety checks',
       sortOrder: 4,
       isActive: true,
     },
     {
       id: 65,
-      code: 'INTR',
-      name: 'Intern',
-      description: 'Training-only skill level',
+      code: 'MAIN',
+      name: 'Maintain',
+      description: 'Preventive maintenance',
+      sortOrder: 5,
+      isActive: true,
+    },
+    {
+      id: 66,
+      code: 'WELD',
+      name: 'Weld',
+      description: 'Welding (inactive)',
+      sortOrder: 6,
+      isActive: false,
+    },
+    {
+      id: 67,
+      code: 'PAINT',
+      name: 'Paint',
+      description: 'Painting (inactive)',
+      sortOrder: 7,
+      isActive: false,
+    },
+    {
+      id: 68,
+      code: 'DEMO',
+      name: 'Demo',
+      description: 'Demolition (inactive)',
       sortOrder: 99,
       isActive: false,
     },
@@ -168,5 +193,13 @@ export const techSkillLevelHandlers = [
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
+  }),
+
+  http.delete('/api/v1/techskilllevel/:id', ({ params }) => {
+    const id = parseRouteId(params['id']);
+    const index = techSkillLevels.findIndex((record) => record.id === id);
+    if (index < 0) return setupError(404, 'Tech skill level not found.');
+    techSkillLevels.splice(index, 1);
+    return setupNoContent();
   }),
 ];
