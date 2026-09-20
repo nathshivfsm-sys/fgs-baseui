@@ -2,6 +2,20 @@
 
 ## Status
 
+**Geo lookups (country, state/province, postal-code cities)** — implemented
+and verified locally. GET-only factories in `@cms/shared-data-access`
+(cross-MFE, same home as attachment) from Setup Service `/glo/country/lookup`,
+`/glo/stateprovince/lookup`, and `/postalcode/cities`. No UI this pass.
+
+- Spec: [features/geo-lookup-catalog-api-prd.md](features/geo-lookup-catalog-api-prd.md)
+
+Verified: lint and typecheck clean for `shared-contract`, `shared-data-access`,
+`shared-mocks`, and `integration`. `test:query` 55/56 — the new geo-lookup
+case passes; the remaining failure is a pre-existing tech-skill-level DELETE
+test that never stubs `fetch`.
+
+## History
+
 **Setup catalog APIs (TechTrade, TechSkillLevel)** — implemented and verified
 locally on `feature/setup-tech-trade-skill-level-api`. Adds TanStack Query
 options factories in `@cms/settings-data-access` from the FGS Setup Service
