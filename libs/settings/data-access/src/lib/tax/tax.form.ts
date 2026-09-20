@@ -7,6 +7,11 @@ import type {
 
 export const taxFormSchema = z.object({
   taxCode: z.string().trim().min(1, 'Tax Code is required').max(32),
+  taxRate: z
+    .string()
+    .trim()
+    .min(1, 'Tax rate is required')
+    .refine((value) => Number.isFinite(Number(value)), 'Enter a valid rate'),
   name: z.string().trim().max(100),
   county: z.string().trim().max(100),
   regionCode: z.string().trim().min(1, 'State is required').max(2),
@@ -19,6 +24,7 @@ export type TaxForm = z.infer<typeof taxFormSchema>;
 export function emptyTaxForm(): TaxForm {
   return {
     taxCode: '',
+    taxRate: '',
     name: '',
     county: '',
     regionCode: '',
@@ -30,6 +36,7 @@ export function emptyTaxForm(): TaxForm {
 export function toTaxFormValues(tax: TaxSummaryDto): TaxForm {
   return {
     taxCode: tax.taxCode ?? '',
+    taxRate: String(tax.taxRate),
     name: tax.name ?? '',
     county: tax.county ?? '',
     regionCode: tax.regionCode ?? '',
@@ -53,5 +60,6 @@ export function toTaxWriteDto(
     regionCode: values.regionCode,
     county: values.county === '' ? null : values.county,
     city: values.city === '' ? null : values.city,
+    taxRate: Number(values.taxRate),
   };
 }
