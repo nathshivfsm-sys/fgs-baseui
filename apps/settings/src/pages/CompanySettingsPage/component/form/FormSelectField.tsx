@@ -10,6 +10,7 @@ import { withCurrentOption } from '../../util';
  */
 export const FormSelectField = <Values extends FieldValues>({
   name,
+  onValueChange,
   options,
   ...selectProps
 }: FormSelectFieldProps<Values>) => {
@@ -19,17 +20,25 @@ export const FormSelectField = <Values extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
-        <SelectField
-          {...selectProps}
-          error={fieldState.error?.message}
-          name={field.name}
-          onValueChange={(value) => field.onChange(value ?? '')}
-          options={withCurrentOption(options, field.value)}
-          value={field.value}
-          variant="soft"
-        />
-      )}
+      render={({ field, fieldState }) => {
+        const handleValueChange = (value: string | null) => {
+          const next = value ?? '';
+          field.onChange(next);
+          onValueChange?.(next);
+        };
+
+        return (
+          <SelectField
+            {...selectProps}
+            error={fieldState.error?.message}
+            name={field.name}
+            onValueChange={handleValueChange}
+            options={withCurrentOption(options, field.value)}
+            value={field.value}
+            variant="soft"
+          />
+        );
+      }}
     />
   );
 };

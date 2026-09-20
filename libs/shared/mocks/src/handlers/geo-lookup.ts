@@ -85,7 +85,31 @@ function seedCities(): CityRecord[] {
       isActive: true,
     },
     {
+      city: 'Austin',
+      countryCode: 'US',
+      stateProvinceCode: 'TX',
+      isActive: true,
+    },
+    {
+      city: 'San Antonio',
+      countryCode: 'US',
+      stateProvinceCode: 'TX',
+      isActive: true,
+    },
+    {
       city: 'Chicago',
+      countryCode: 'US',
+      stateProvinceCode: 'IL',
+      isActive: true,
+    },
+    {
+      city: 'Springfield',
+      countryCode: 'US',
+      stateProvinceCode: 'IL',
+      isActive: true,
+    },
+    {
+      city: 'Peoria',
       countryCode: 'US',
       stateProvinceCode: 'IL',
       isActive: true,

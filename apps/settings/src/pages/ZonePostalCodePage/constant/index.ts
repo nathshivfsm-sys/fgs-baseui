@@ -37,4 +37,3 @@ export {
   ZONE_POSTAL_PATH,
   ZONE_UPDATED_MESSAGE,
 } from './copy';
-export { POSTAL_CITY_OPTIONS } from './postal-options';

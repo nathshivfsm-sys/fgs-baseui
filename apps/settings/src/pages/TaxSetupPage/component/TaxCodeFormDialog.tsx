@@ -1,6 +1,7 @@
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   emptyTaxForm,
   toTaxFormValues,
@@ -19,18 +20,17 @@ import {
   SectionCard,
   SwitchField,
 } from '@cms/ui';
+import { useGeoLookupOptions } from '../../../shared';
 import {
   CREATE_TAX_DESCRIPTION,
   CREATE_TAX_TITLE,
   EDIT_TAX_DESCRIPTION,
   EDIT_TAX_TITLE,
-  TAX_CITY_OPTIONS,
   TAX_CITY_PLACEHOLDER,
   TAX_CODE_PLACEHOLDER,
   TAX_COUNTY_PLACEHOLDER,
   TAX_NAME_PLACEHOLDER,
   TAX_RATE_PLACEHOLDER,
-  TAX_STATE_OPTIONS,
   TAX_STATE_PLACEHOLDER,
 } from '../constant';
 import { FormSelectField, FormTextInput } from './form';
@@ -40,6 +40,7 @@ export interface TaxCodeFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (body: TaxCreateDto, isActive: boolean) => void;
   open: boolean;
+  queryClient: QueryClient;
   tax: TaxSummaryDto | null;
 }
 
@@ -48,6 +49,7 @@ export function TaxCodeFormDialog({
   onOpenChange,
   onSubmit,
   open,
+  queryClient,
   tax,
 }: TaxCodeFormDialogProps) {
   const isEdit = tax != null;
@@ -56,6 +58,13 @@ export function TaxCodeFormDialog({
     resolver: zodResolver(taxFormSchema),
     values: tax ? toTaxFormValues(tax) : emptyTaxForm(),
   });
+  const regionCode = form.watch('regionCode');
+  const { cityOptions, stateOptions } = useGeoLookupOptions(queryClient, {
+    enabled: open,
+    includeCities: true,
+    loadStatesWithoutCountry: true,
+    stateProvinceCode: regionCode,
+  });
 
   useEffect(() => {
     if (open) {
@@ -63,13 +72,17 @@ export function TaxCodeFormDialog({
     }
   }, [form, open, tax]);
 
-  function handleClear() {
+  const handleClear = () => {
     form.reset(emptyTaxForm());
-  }
+  };
 
-  function handleSubmit(values: TaxForm) {
+  const handleSubmit = (values: TaxForm) => {
     onSubmit(toTaxWriteDto(values, tax), values.isActive);
-  }
+  };
+
+  const handleStateChange = () => {
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
+  };
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -117,14 +130,16 @@ export function TaxCodeFormDialog({
                 <FormSelectField<TaxForm>
                   label="State"
                   name="regionCode"
-                  options={TAX_STATE_OPTIONS}
+                  onValueChange={handleStateChange}
+                  options={stateOptions}
                   placeholder={TAX_STATE_PLACEHOLDER}
                   required
                 />
                 <FormSelectField<TaxForm>
+                  disabled={!regionCode}
                   label="City"
                   name="city"
-                  options={TAX_CITY_OPTIONS}
+                  options={cityOptions}
                   placeholder={TAX_CITY_PLACEHOLDER}
                 />
                 <Controller

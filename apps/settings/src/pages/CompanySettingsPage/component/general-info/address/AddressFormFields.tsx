@@ -5,7 +5,7 @@ import {
   type CompanyAddressForm,
 } from '@cms/settings-data-access';
 import { Checkbox } from '@cms/ui';
-import { COUNTRY_OPTIONS } from '../../../../../shared/constant';
+import { useGeoLookupOptions } from '../../../../../shared';
 import { SAME_AS_PHYSICAL_LABEL } from '../../../constant';
 import type { AddressFormFieldsProps } from '../../../types';
 import { FormSelectField, FormTextInput } from '../../form';
@@ -13,12 +13,23 @@ import { FormSelectField, FormTextInput } from '../../form';
 export const AddressFormFields = ({
   kind,
   physicalAddress,
+  queryClient,
 }: AddressFormFieldsProps) => {
   const sameAsPhysicalLabelId = useId();
   const form = useFormContext<CompanyAddressForm>();
   const sameAsPhysical = form.watch('sameAsPhysical');
+  const country = form.watch('country');
+  const state = form.watch('state');
   const fieldsLocked = kind === 'billing' && sameAsPhysical;
   const showSameAsPhysical = kind === 'billing';
+  const { cityOptions, countryOptions, stateOptions } = useGeoLookupOptions(
+    queryClient,
+    {
+      countryCode: country,
+      includeCities: true,
+      stateProvinceCode: state,
+    },
+  );
 
   const handleSameAsPhysicalChange = (
     checked: boolean | 'indeterminate',
@@ -51,6 +62,15 @@ export const AddressFormFields = ({
       shouldDirty: true,
       shouldValidate: true,
     });
+  };
+
+  const handleCountryChange = () => {
+    form.setValue('state', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleStateChange = () => {
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
   };
 
   return (
@@ -94,18 +114,30 @@ export const AddressFormFields = ({
           readOnly={fieldsLocked}
         />
       </div>
-      <FormTextInput<CompanyAddressForm>
-        label="City"
-        name="city"
-        placeholder="Enter city"
-        readOnly={fieldsLocked}
+      <FormSelectField<CompanyAddressForm>
+        disabled={fieldsLocked}
+        label="Country"
+        name="country"
+        onValueChange={handleCountryChange}
+        options={countryOptions}
+        placeholder="Select country"
         required
       />
-      <FormTextInput<CompanyAddressForm>
+      <FormSelectField<CompanyAddressForm>
+        disabled={fieldsLocked || !country}
         label="State"
         name="state"
-        placeholder="Enter state"
-        readOnly={fieldsLocked}
+        onValueChange={handleStateChange}
+        options={stateOptions}
+        placeholder="Select state"
+        required
+      />
+      <FormSelectField<CompanyAddressForm>
+        disabled={fieldsLocked || !state}
+        label="City"
+        name="city"
+        options={cityOptions}
+        placeholder="Select city"
         required
       />
       <FormTextInput<CompanyAddressForm>
@@ -113,14 +145,6 @@ export const AddressFormFields = ({
         name="postalCode"
         placeholder="Enter postal code"
         readOnly={fieldsLocked}
-        required
-      />
-      <FormSelectField<CompanyAddressForm>
-        disabled={fieldsLocked}
-        label="Country"
-        name="country"
-        options={COUNTRY_OPTIONS}
-        placeholder="Select country"
         required
       />
     </div>

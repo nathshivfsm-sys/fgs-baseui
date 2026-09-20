@@ -31,6 +31,7 @@ export const AddressFormDialog = ({
   onSubmit,
   open,
   physicalAddress,
+  queryClient,
 }: AddressFormDialogProps) => {
   const sameAsPhysical =
     kind === 'billing' && isSameCompanyAddress(address, physicalAddress);
@@ -75,6 +76,7 @@ export const AddressFormDialog = ({
             <AddressFormFields
               kind={kind}
               physicalAddress={physicalAddress}
+              queryClient={queryClient}
             />
             <div className="flex flex-col-reverse justify-end gap-2 sm:flex-row">
               <Button onClick={handleClose} type="button" variant="outline">

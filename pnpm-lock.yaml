@@ -246,6 +246,9 @@ importers:
       '@cms/shared-auth':
         specifier: workspace:*
         version: link:../../libs/shared/auth
+      '@cms/shared-data-access':
+        specifier: workspace:*
+        version: link:../../libs/shared/data-access
       '@cms/shared-mocks':
         specifier: workspace:*
         version: link:../../libs/shared/mocks

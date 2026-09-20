@@ -69,7 +69,7 @@ export const CompanySettingsForm = ({
                   companyNumber={profile.companyNumber}
                 />
                 <ContactInformationSection />
-                <AddressesSection />
+                <AddressesSection queryClient={queryClient} />
                 <BrandingSection />
                 <CompanyDefaultsSection />
               </form>

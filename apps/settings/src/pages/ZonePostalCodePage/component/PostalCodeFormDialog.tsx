@@ -1,6 +1,7 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   emptyPostalCodeForm,
   toPostalCodeFormValues,
@@ -22,13 +23,12 @@ import {
   SectionCard,
   type SelectOption,
 } from '@cms/ui';
-import { COUNTRY_OPTIONS, STATE_OPTIONS } from '../../../shared/constant';
+import { useGeoLookupOptions } from '../../../shared';
 import {
   CREATE_POSTAL_DESCRIPTION,
   CREATE_POSTAL_TITLE,
   EDIT_POSTAL_DESCRIPTION,
   EDIT_POSTAL_TITLE,
-  POSTAL_CITY_OPTIONS,
   POSTAL_CITY_PLACEHOLDER,
   POSTAL_CODE_PLACEHOLDER,
   POSTAL_COUNTRY_PLACEHOLDER,
@@ -45,6 +45,7 @@ export interface PostalCodeFormDialogProps {
   onSubmit: (body: PostalCodeCreateDto) => void;
   open: boolean;
   postalCode: PostalCodeSummaryDto | null;
+  queryClient: QueryClient;
   taxOptions: readonly SelectOption[];
   zoneOptions: readonly SelectOption[];
 }
@@ -55,6 +56,7 @@ export function PostalCodeFormDialog({
   onSubmit,
   open,
   postalCode,
+  queryClient,
   taxOptions,
   zoneOptions,
 }: PostalCodeFormDialogProps) {
@@ -66,6 +68,17 @@ export function PostalCodeFormDialog({
       ? toPostalCodeFormValues(postalCode)
       : emptyPostalCodeForm(),
   });
+  const countryCode = form.watch('countryCode');
+  const state = form.watch('state');
+  const { cityOptions, countryOptions, stateOptions } = useGeoLookupOptions(
+    queryClient,
+    {
+      countryCode,
+      enabled: open,
+      includeCities: true,
+      stateProvinceCode: state,
+    },
+  );
 
   useEffect(() => {
     if (open) {
@@ -75,13 +88,22 @@ export function PostalCodeFormDialog({
     }
   }, [form, open, postalCode]);
 
-  function handleClose() {
+  const handleClose = () => {
     onOpenChange(false);
-  }
+  };
 
-  function handleSubmit(values: PostalCodeForm) {
+  const handleSubmit = (values: PostalCodeForm) => {
     onSubmit(toPostalCodeWriteDto(values));
-  }
+  };
+
+  const handleCountryChange = () => {
+    form.setValue('state', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleStateChange = () => {
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
+  };
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -112,22 +134,26 @@ export function PostalCodeFormDialog({
                 <FormSelectField<PostalCodeForm>
                   label="Country"
                   name="countryCode"
-                  options={COUNTRY_OPTIONS}
+                  onValueChange={handleCountryChange}
+                  options={countryOptions}
                   placeholder={POSTAL_COUNTRY_PLACEHOLDER}
                   required
                 />
                 <FormSelectField<PostalCodeForm>
-                  label="City"
-                  name="city"
-                  options={POSTAL_CITY_OPTIONS}
-                  placeholder={POSTAL_CITY_PLACEHOLDER}
-                  required
-                />
-                <FormSelectField<PostalCodeForm>
+                  disabled={!countryCode}
                   label="State"
                   name="state"
-                  options={STATE_OPTIONS}
+                  onValueChange={handleStateChange}
+                  options={stateOptions}
                   placeholder={POSTAL_STATE_PLACEHOLDER}
+                />
+                <FormSelectField<PostalCodeForm>
+                  disabled={!state}
+                  label="City"
+                  name="city"
+                  options={cityOptions}
+                  placeholder={POSTAL_CITY_PLACEHOLDER}
+                  required
                 />
                 <FormSelectField<PostalCodeForm>
                   label="Zone"
