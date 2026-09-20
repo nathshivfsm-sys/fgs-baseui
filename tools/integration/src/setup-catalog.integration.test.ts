@@ -164,6 +164,7 @@ describe('tax through customFetch', () => {
       syncToken: null,
       showTaxDetail: true,
       description: 'State plus local',
+      taxRate: 8.25,
     });
 
     expect(created.id).toBe(11);
@@ -390,6 +391,9 @@ describe('postal code through customFetch', () => {
     const lookup = await client.fetchQuery(postalCodeLookupQueryOptions(false));
 
     expect(page.items[0]?.postalCode).toBe('NORTH');
+    expect(page.items[0]?.stateProvinceCode).toBe('TX');
+    expect(page.items[0]?.tripChargeAmount).toBe(10);
+    expect(page.items[0]?.fgsSetupZoneId).toBe(31);
     expect(lookup[0]?.city).toBe('Houston');
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode?city=Houston');
     expect(fetchMock.mock.calls[1]?.[0]).toBe(

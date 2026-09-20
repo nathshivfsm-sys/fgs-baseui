@@ -29,6 +29,7 @@ import {
   TAX_CODE_PLACEHOLDER,
   TAX_COUNTY_PLACEHOLDER,
   TAX_NAME_PLACEHOLDER,
+  TAX_RATE_PLACEHOLDER,
   TAX_STATE_OPTIONS,
   TAX_STATE_PLACEHOLDER,
 } from '../constant';
@@ -94,6 +95,13 @@ export function TaxCodeFormDialog({
                   label="Tax Code"
                   name="taxCode"
                   placeholder={TAX_CODE_PLACEHOLDER}
+                  required
+                />
+                <FormTextInput<TaxForm>
+                  inputMode="decimal"
+                  label="Tax rate"
+                  name="taxRate"
+                  placeholder={TAX_RATE_PLACEHOLDER}
                   required
                 />
                 <FormTextInput<TaxForm>

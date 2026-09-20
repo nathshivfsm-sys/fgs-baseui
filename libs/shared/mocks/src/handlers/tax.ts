@@ -189,7 +189,7 @@ function createFromBody(body: TaxCreateDto): TaxRecord {
     regionCode: body.regionCode ?? null,
     county: body.county ?? null,
     city: body.city ?? null,
-    taxRate: 0,
+    taxRate: body.taxRate,
     isActive: true,
     taxDetails: [],
   };

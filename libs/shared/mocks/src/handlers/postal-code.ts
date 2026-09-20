@@ -21,127 +21,83 @@ import {
   setupOk,
 } from './util';
 
-const zonesById: Record<number, { code: string; name: string }> = {
-  31: { code: 'NORTH', name: 'Harris County -North' },
-  32: { code: 'SOUTH', name: 'Harris County -South' },
-  34: { code: 'EAST', name: 'Harris County -East' },
-  35: { code: 'WEST', name: 'Harris County -West' },
-  33: { code: 'CENTRAL', name: 'Harris County -Central' },
-  36: { code: 'OUTER', name: 'Outer Zone' },
-  37: { code: 'RURAL', name: 'Rural Zone' },
-};
-
-const taxesById: Record<number, { taxCode: string; taxRate: number }> = {
-  11: { taxCode: 'TX-STD', taxRate: 8.7 },
-  12: { taxCode: 'TX-LABOR', taxRate: 6.2 },
-  13: { taxCode: 'TX-EXEMPT', taxRate: 0 },
-};
-
 function seedPostalCodes(): PostalCodeDetailDto[] {
   return [
     {
       id: 41,
       postalCode: 'NORTH',
-      city: 'Houston',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Houston',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 31,
-      zoneCode: 'NORTH',
-      zoneName: 'Harris County -North',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: true,
     },
     {
       id: 42,
       postalCode: 'SOUTH',
-      city: 'Houston',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Houston',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 32,
-      zoneCode: 'SOUTH',
-      zoneName: 'Harris County -South',
       fgsSetupTaxId: 12,
-      taxCode: 'TX-LABOR',
-      taxRate: 6.2,
-      tripCharge: 10,
       isActive: true,
     },
     {
       id: 43,
       postalCode: 'EAST',
-      city: 'Dallas',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Dallas',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 34,
-      zoneCode: 'EAST',
-      zoneName: 'Harris County -East',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: true,
     },
     {
       id: 44,
       postalCode: 'WEST',
-      city: 'Chicago',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Chicago',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 35,
-      zoneCode: 'WEST',
-      zoneName: 'Harris County -West',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: true,
     },
     {
       id: 45,
       postalCode: 'CENTRAL',
-      city: 'Dallas',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Dallas',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 33,
-      zoneCode: 'CENTRAL',
-      zoneName: 'Harris County -Central',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: true,
     },
     {
       id: 46,
       postalCode: 'OUTER',
-      city: 'Houston',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Houston',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 36,
-      zoneCode: 'OUTER',
-      zoneName: 'Outer Zone',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: false,
     },
     {
       id: 47,
       postalCode: 'RURAL',
-      city: 'Houston',
-      state: 'TX',
       countryCode: 'US',
+      stateProvinceCode: 'TX',
+      city: 'Houston',
+      tripChargeAmount: 10,
       fgsSetupZoneId: 37,
-      zoneCode: 'RURAL',
-      zoneName: 'Rural Zone',
       fgsSetupTaxId: 11,
-      taxCode: 'TX-STD',
-      taxRate: 8.7,
-      tripCharge: 10,
       isActive: false,
     },
   ];
@@ -184,34 +140,17 @@ function filterPostalCodes(url: URL): PostalCodeDetailDto[] {
     }
     if (
       state &&
-      (record.state ?? '').toLowerCase() !== state.toLowerCase()
+      (record.stateProvinceCode ?? '').toLowerCase() !== state.toLowerCase()
     ) {
       return false;
     }
     return matchesSearch(search, [
       record.postalCode,
       record.city,
-      record.state,
+      record.stateProvinceCode,
       record.countryCode,
-      record.zoneName,
-      record.taxCode,
     ]);
   });
-}
-
-function denormalizedFromIds(
-  fgsSetupZoneId: number | null | undefined,
-  fgsSetupTaxId: number | null | undefined,
-) {
-  const zone =
-    fgsSetupZoneId == null ? undefined : zonesById[fgsSetupZoneId];
-  const tax = fgsSetupTaxId == null ? undefined : taxesById[fgsSetupTaxId];
-  return {
-    zoneCode: zone?.code ?? null,
-    zoneName: zone?.name ?? null,
-    taxCode: tax?.taxCode ?? null,
-    taxRate: tax?.taxRate ?? null,
-  };
 }
 
 function summaryFieldsFromWrite(
@@ -219,10 +158,10 @@ function summaryFieldsFromWrite(
 ): Partial<PostalCodeDetailDto> {
   const fields: Partial<PostalCodeDetailDto> = {
     postalCode: body.postalCode,
-    city: body.city,
     countryCode: body.countryCode,
-    state: body.stateProvinceCode,
-    tripCharge: body.tripChargeAmount,
+    stateProvinceCode: body.stateProvinceCode,
+    city: body.city,
+    tripChargeAmount: body.tripChargeAmount,
     fgsSetupZoneId: body.fgsSetupZoneId,
     fgsSetupTaxId: body.fgsSetupTaxId,
   };
@@ -233,20 +172,15 @@ function summaryFieldsFromWrite(
 }
 
 function createFromBody(body: PostalCodeCreateDto): PostalCodeDetailDto {
-  const linked = denormalizedFromIds(body.fgsSetupZoneId, body.fgsSetupTaxId);
   return {
     id: nextId(postalCodes),
     postalCode: body.postalCode ?? null,
-    city: body.city ?? null,
-    state: body.stateProvinceCode ?? null,
     countryCode: body.countryCode ?? null,
+    stateProvinceCode: body.stateProvinceCode ?? null,
+    city: body.city ?? null,
+    tripChargeAmount: body.tripChargeAmount ?? null,
     fgsSetupZoneId: body.fgsSetupZoneId ?? null,
-    zoneCode: linked.zoneCode,
-    zoneName: linked.zoneName,
     fgsSetupTaxId: body.fgsSetupTaxId ?? null,
-    taxCode: linked.taxCode,
-    taxRate: linked.taxRate,
-    tripCharge: body.tripChargeAmount ?? null,
     isActive: true,
   };
 }
@@ -256,10 +190,6 @@ function applyWrite(
   body: PostalCodeCreateDto,
 ): void {
   assignDefined(record, summaryFieldsFromWrite(body));
-  Object.assign(
-    record,
-    denormalizedFromIds(record.fgsSetupZoneId, record.fgsSetupTaxId),
-  );
 }
 
 /**
@@ -317,10 +247,6 @@ export const postalCodeHandlers = [
     const parsed = postalCodePatchDtoSchema.safeParse(body.value);
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, summaryFieldsFromWrite(parsed.data));
-    Object.assign(
-      record,
-      denormalizedFromIds(record.fgsSetupZoneId, record.fgsSetupTaxId),
-    );
     return setupOk(record);
   }),
 ];

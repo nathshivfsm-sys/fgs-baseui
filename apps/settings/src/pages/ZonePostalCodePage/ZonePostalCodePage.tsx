@@ -109,6 +109,21 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
       })),
     [taxLookup.data],
   );
+  const zoneLabelsById = useMemo(
+    () =>
+      new Map(
+        (allZoneLookup.data ?? []).map((zone) => [
+          zone.id,
+          zone.name ?? zone.code ?? '',
+        ]),
+      ),
+    [allZoneLookup.data],
+  );
+  const taxRatesById = useMemo(
+    () =>
+      new Map((taxLookup.data ?? []).map((tax) => [tax.id, tax.taxRate])),
+    [taxLookup.data],
+  );
 
   function openCreate() {
     if (catalog === 'postal') {
@@ -239,6 +254,8 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
             onAdd={openCreate}
             onEdit={openEditPostal}
             queryClient={queryClient}
+            taxRatesById={taxRatesById}
+            zoneLabelsById={zoneLabelsById}
           />
         ) : (
           <ZoneTablePanel

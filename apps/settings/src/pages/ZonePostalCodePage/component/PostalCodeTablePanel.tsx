@@ -22,6 +22,7 @@ import {
   describePostalCodeError,
   formatTaxRate,
   formatTripCharge,
+  labelForId,
 } from '../util';
 import type { ZoneStatusFilter } from '../types';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -35,6 +36,8 @@ export interface PostalCodeTablePanelProps {
   onAdd: () => void;
   onEdit: (postalCode: PostalCodeSummaryDto) => void;
   queryClient: QueryClient;
+  taxRatesById: ReadonlyMap<number, number>;
+  zoneLabelsById: ReadonlyMap<number, string>;
 }
 
 export function PostalCodeTablePanel({
@@ -43,6 +46,8 @@ export function PostalCodeTablePanel({
   onAdd,
   onEdit,
   queryClient,
+  taxRatesById,
+  zoneLabelsById,
 }: PostalCodeTablePanelProps) {
   const [status, setStatus] = useState<ZoneStatusFilter>('active');
   const [pagination, setPagination] = useState<DataTableState['pagination']>({
@@ -98,24 +103,32 @@ export function PostalCodeTablePanel({
         meta: { label: 'City' },
         cell: ({ getValue }) => getValue() ?? '—',
       }),
-      column.accessor('state', {
+      column.accessor('stateProvinceCode', {
         header: 'State',
         meta: { label: 'State' },
         cell: ({ getValue }) => getValue() ?? '—',
       }),
-      column.accessor('zoneName', {
+      column.display({
+        id: 'zone',
         header: 'Zone',
         enableSorting: false,
         meta: { label: 'Zone' },
-        cell: ({ getValue }) => getValue() ?? '—',
+        cell: ({ row }) =>
+          labelForId(row.original.fgsSetupZoneId, zoneLabelsById),
       }),
-      column.accessor('taxRate', {
+      column.display({
+        id: 'taxRate',
         header: 'Tax Rate',
         enableSorting: false,
         meta: { label: 'Tax Rate' },
-        cell: ({ getValue }) => formatTaxRate(getValue()),
+        cell: ({ row }) => {
+          const taxId = row.original.fgsSetupTaxId;
+          return formatTaxRate(
+            taxId == null ? undefined : taxRatesById.get(taxId),
+          );
+        },
       }),
-      column.accessor('tripCharge', {
+      column.accessor('tripChargeAmount', {
         header: 'Trip Charge',
         enableSorting: false,
         meta: { label: 'Trip Charge' },
@@ -151,7 +164,7 @@ export function PostalCodeTablePanel({
         },
       }),
     ],
-    [onEdit, patchMutation],
+    [onEdit, patchMutation, taxRatesById, zoneLabelsById],
   );
 
   const items = query.data?.items ?? [];

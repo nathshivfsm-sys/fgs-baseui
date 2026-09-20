@@ -521,26 +521,16 @@ function zoneHandlers(): ApiHandlers {
         fgsSetupTaxId?: number | null;
         tripChargeAmount?: number | null;
       };
-      const zone = zoneListItemsFixture.find(
-        (item) => item.id === body.fgsSetupZoneId,
-      );
-      const tax = taxLookupItemsFixture.find(
-        (item) => item.id === body.fgsSetupTaxId,
-      );
       return jsonResponse(
         setupEnvelope({
           id: 99,
           postalCode: body.postalCode ?? null,
-          city: body.city ?? null,
-          state: body.stateProvinceCode ?? null,
           countryCode: body.countryCode ?? null,
+          stateProvinceCode: body.stateProvinceCode ?? null,
+          city: body.city ?? null,
+          tripChargeAmount: body.tripChargeAmount ?? null,
           fgsSetupZoneId: body.fgsSetupZoneId ?? null,
-          zoneCode: zone?.code ?? null,
-          zoneName: zone?.name ?? null,
           fgsSetupTaxId: body.fgsSetupTaxId ?? null,
-          taxCode: tax?.taxCode ?? null,
-          taxRate: tax?.taxRate ?? null,
-          tripCharge: body.tripChargeAmount ?? null,
           isActive: true,
         }),
         201,
@@ -753,6 +743,9 @@ export const ZonePostalCodeCatalog: Story = {
     ).toBeVisible();
     await expect(await canvas.findByText('NORTH')).toBeVisible();
     await expect(canvas.getAllByText('Houston').length).toBeGreaterThan(0);
+    await expect(canvas.getAllByText('TX').length).toBeGreaterThan(0);
+    await expect(canvas.getByText('North Zone')).toBeVisible();
+    await expect(canvas.getAllByText('$10.00').length).toBeGreaterThan(0);
     await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
     await expect(
       canvas.getByRole('tab', { name: 'Inactive (2)' }),
@@ -1621,6 +1614,7 @@ function taxSetupHandlers(): ApiHandlers {
         regionCode?: string | null;
         county?: string | null;
         city?: string | null;
+        taxRate?: number;
       };
       return jsonResponse(
         setupEnvelope({
@@ -1632,7 +1626,7 @@ function taxSetupHandlers(): ApiHandlers {
           regionCode: body.regionCode ?? null,
           county: body.county ?? null,
           city: body.city ?? null,
-          taxRate: 0,
+          taxRate: body.taxRate ?? 0,
           isActive: true,
         }),
         201,
@@ -1758,6 +1752,10 @@ export const TaxSetupAddTaxRate: Story = {
       'TX-BEXAR',
     );
     await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /tax rate/i }),
+      '8.25',
+    );
+    await userEvent.type(
       withinDialog.getByRole('textbox', { name: /^name$/i }),
       'Bexar Sales Tax',
     );
@@ -1785,6 +1783,7 @@ export const TaxSetupAddTaxRate: Story = {
       regionCode: 'TX',
       county: null,
       city: 'San Antonio',
+      taxRate: 8.25,
     });
   },
 };
