@@ -18,6 +18,7 @@ import {
   readJsonObject,
   readOptionalBoolean,
   setupError,
+  setupNoContent,
   setupOk,
 } from './util';
 
@@ -26,10 +27,11 @@ function seedTechTrades(): TechTradeDetailDto[] {
     {
       id: 51,
       tradeCode: 'HVAC',
-      name: 'HVAC',
-      description: 'Heating, ventilation, and air conditioning',
+      name: 'HVAC- Repair',
+      description: 'Heating, Ventilation and Air Conditioning repairing',
       sortOrder: 1,
       isActive: true,
+      skillIds: [61, 62],
     },
     {
       id: 52,
@@ -38,6 +40,7 @@ function seedTechTrades(): TechTradeDetailDto[] {
       description: 'Residential and commercial plumbing',
       sortOrder: 2,
       isActive: true,
+      skillIds: [61, 62],
     },
     {
       id: 53,
@@ -46,22 +49,43 @@ function seedTechTrades(): TechTradeDetailDto[] {
       description: 'Electrical service and repair',
       sortOrder: 3,
       isActive: true,
+      skillIds: [61, 62],
     },
     {
       id: 54,
-      tradeCode: 'APPL',
-      name: 'Appliance',
-      description: 'Appliance repair',
+      tradeCode: 'PLUMB',
+      name: 'Plumbing Repair',
+      description: 'Plumbing repair',
       sortOrder: 4,
       isActive: true,
+      skillIds: [61, 62],
     },
     {
       id: 55,
+      tradeCode: 'ELEC',
+      name: 'Electrical',
+      description: 'Residential electrical',
+      sortOrder: 5,
+      isActive: true,
+      skillIds: [61],
+    },
+    {
+      id: 56,
+      tradeCode: 'APPL',
+      name: 'Appliance',
+      description: 'Appliance repair',
+      sortOrder: 6,
+      isActive: false,
+      skillIds: [],
+    },
+    {
+      id: 57,
       tradeCode: 'ARCH',
       name: 'Archived HVAC',
       description: 'Legacy HVAC trade',
       sortOrder: 99,
       isActive: false,
+      skillIds: [],
     },
   ];
 }
@@ -125,6 +149,7 @@ function createFromBody(body: TechTradeCreateDto): TechTradeDetailDto {
     description: body.description ?? null,
     sortOrder: body.sortOrder ?? null,
     isActive: true,
+    skillIds: body.skillIds ?? [],
   };
 }
 
@@ -184,5 +209,13 @@ export const techTradeHandlers = [
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
+  }),
+
+  http.delete('/api/v1/techtrade/:id', ({ params }) => {
+    const id = parseRouteId(params['id']);
+    const index = techTrades.findIndex((record) => record.id === id);
+    if (index < 0) return setupError(404, 'Tech trade not found.');
+    techTrades.splice(index, 1);
+    return setupNoContent();
   }),
 ];

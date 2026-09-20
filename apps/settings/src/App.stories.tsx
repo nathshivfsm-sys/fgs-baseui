@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { configure, expect, fireEvent, userEvent, waitFor, within } from 'storybook/test';
 import { alert } from '@cms/ui';
 import type { GlBreakDetailDto } from '@cms/settings-contract';
 import {
@@ -16,6 +16,8 @@ import {
   taxAuthorityListItemsFixture,
   taxListItemsFixture,
   taxLookupItemsFixture,
+  techSkillLevelListItemsFixture,
+  techTradeListItemsFixture,
   nonWorkingDateListItemsFixture,
   zoneListItemsFixture,
 } from '../../../.storybook/fixtures/feature-data';
@@ -26,6 +28,8 @@ import {
 } from '../../../.storybook/fixtures/runtime';
 import { App } from './App';
 
+configure({ asyncUtilTimeout: 5000 });
+
 const SettingsApp = withCmsRuntime(App);
 
 const api = createStoryApi();
@@ -34,6 +38,11 @@ const NON_WORKING_DATE_ENDPOINT = '/nonworkingdate';
 
 function setupEnvelope(data: unknown) {
   return { success: true, statusCode: 200, data, errors: [] as string[] };
+}
+
+async function fillTextbox(element: HTMLElement, value: string) {
+  await userEvent.click(element);
+  await fireEvent.input(element, { target: { value } });
 }
 
 function nonWorkingDateHandlers(): ApiHandlers {
@@ -1052,6 +1061,452 @@ export const BusinessUnitFromGrid: Story = {
     await expect(
       await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
     ).toBeVisible();
+  },
+};
+
+function tradeSkillsHandlers(): ApiHandlers {
+  return {
+    ['GET /techtrade']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = techTradeListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /techtrade/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          techTradeListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, tradeCode, name, sortOrder }) => ({
+              id,
+              tradeCode,
+              name,
+              sortOrder,
+            })),
+        ),
+      );
+    },
+    ['POST /techtrade']: async (request) => {
+      const body = (await request.json()) as {
+        tradeCode?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+        skillIds?: number[] | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          tradeCode: body.tradeCode ?? null,
+          name: body.name ?? null,
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? null,
+          skillIds: body.skillIds ?? [],
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['PUT /techtrade/51']: async (request) => {
+      const body = (await request.json()) as {
+        tradeCode?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+        skillIds?: number[] | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 51,
+          tradeCode: body.tradeCode ?? 'HVAC',
+          name: body.name ?? 'HVAC- Repair',
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? 1,
+          skillIds: body.skillIds ?? [61, 62],
+          isActive: true,
+        }),
+      );
+    },
+    ['DELETE /techtrade/52']: () => new Response(null, { status: 204 }),
+    ['GET /techskilllevel']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = techSkillLevelListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /techskilllevel/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          techSkillLevelListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, code, name, sortOrder }) => ({
+              id,
+              code,
+              name,
+              sortOrder,
+            })),
+        ),
+      );
+    },
+    ['POST /techskilllevel']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          code: body.code ?? null,
+          name: body.name ?? null,
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? null,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['PUT /techskilllevel/61']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 61,
+          code: body.code ?? 'INST',
+          name: body.name ?? 'Install',
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? 1,
+          isActive: true,
+        }),
+      );
+    },
+    ['DELETE /techskilllevel/62']: () => new Response(null, { status: 204 }),
+  };
+}
+
+const loadsTradeSkills = tradeSkillsHandlers();
+
+export const TradeSkills: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
+    ).toBeVisible();
+    await expect(await canvas.findByText('HVAC- Repair')).toBeVisible();
+    await expect(
+      (await canvas.findAllByText('Install, Repair')).length,
+    ).toBeGreaterThan(0);
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Trade' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TradeSkillsInactive: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
+    await expect(await canvas.findByText('Appliance')).toBeVisible();
+    await expect(canvas.queryByText('HVAC- Repair')).not.toBeInTheDocument();
+  },
+};
+
+export const TradeSkillsAdd: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Trade' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    const tradeCode = withinDialog.getByRole('textbox', { name: /trade code/i });
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(tradeCode, 'GAS');
+    await fillTextbox(name, 'Gas Fitting');
+    await expect(tradeCode).toHaveValue('GAS');
+    await expect(name).toHaveValue('Gas Fitting');
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /skills/i }),
+    );
+    await userEvent.click(
+      await within(document.body).findByRole('option', { name: 'Install' }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'Repair' }),
+    );
+    await userEvent.keyboard('{Escape}');
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Trade' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Trade created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/techtrade');
+    await expect(post?.body).toEqual({
+      tradeCode: 'GAS',
+      name: 'Gas Fitting',
+      description: null,
+      skillIds: [61, 62],
+    });
+  },
+};
+
+export const TradeSkillsEdit: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit HVAC- Repair' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Trade' }),
+    ).toBeVisible();
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(name, 'HVAC Repair');
+    await expect(name).toHaveValue('HVAC Repair');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Trade updated')).toBeVisible();
+    const put = api.requests.find((request) => request.method === 'PUT');
+    await expect(put?.endpoint).toBe('/techtrade/51');
+  },
+};
+
+export const TradeSkillsDelete: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Plumbing -Install');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Delete Plumbing -Install' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Delete Trade' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Delete' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Deleted')).toBeVisible();
+    await expect(body.getByText('Trade deleted')).toBeVisible();
+    const del = api.requests.find((request) => request.method === 'DELETE');
+    await expect(del?.endpoint).toBe('/techtrade/52');
+  },
+};
+
+export const TradeSkillsFromGrid: Story = {
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('tab', { name: 'Operations' }));
+    await userEvent.click(
+      canvas.getByRole('button', { name: /^Trade & Skills/ }),
+    );
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+  },
+};
+
+export const TradeSkillsOperationsBreadcrumb: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByRole('heading', { name: 'Trade & Skills' });
+    await expect(canvas.getByRole('link', { name: 'Setup' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('link', { name: 'Operations' }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Setup' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Operations' }),
+    ).toHaveAttribute('data-active', '');
+    await expect(
+      canvas.getByRole('button', { name: /^Trade & Skills/ }),
+    ).toBeVisible();
+  },
+};
+
+export const TradeSkillsCatalog: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
+    ).toBeVisible();
+    await expect(await canvas.findByText('Install')).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Skill' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TradeSkillsCatalogInactive: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (3)' }));
+    await expect(await canvas.findByText('Weld')).toBeVisible();
+    await expect(canvas.queryByText('Install')).not.toBeInTheDocument();
+  },
+};
+
+export const TradeSkillsAddSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Skill' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    const code = withinDialog.getByRole('textbox', { name: /skill code/i });
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(code, 'CAL');
+    await fillTextbox(name, 'Calibrate');
+    await expect(code).toHaveValue('CAL');
+    await expect(name).toHaveValue('Calibrate');
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Skill' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Skill created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/techskilllevel');
+    await expect(post?.body).toEqual({
+      code: 'CAL',
+      name: 'Calibrate',
+      description: null,
+    });
+  },
+};
+
+export const TradeSkillsEditSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('button', { name: 'Edit Install' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Skill' }),
+    ).toBeVisible();
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(name, 'Installation');
+    await expect(name).toHaveValue('Installation');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Skill updated')).toBeVisible();
+    const put = api.requests.find((request) => request.method === 'PUT');
+    await expect(put?.endpoint).toBe('/techskilllevel/61');
+  },
+};
+
+export const TradeSkillsDeleteSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Repair');
+    await userEvent.click(canvas.getByRole('button', { name: 'Delete Repair' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Delete Skill' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Delete' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Deleted')).toBeVisible();
+    await expect(body.getByText('Skill deleted')).toBeVisible();
+    const del = api.requests.find((request) => request.method === 'DELETE');
+    await expect(del?.endpoint).toBe('/techskilllevel/62');
   },
 };
 

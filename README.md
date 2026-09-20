@@ -1,101 +1,15 @@
 # CMS micro-frontends
 
-Minimal Nx 23 + React 19 CMS using Vite Module Federation.
+A minimal Nx 23 + React 19 CMS built with Vite Module Federation.
 
-## Projects
+## Quick start
 
-- `shell` (port 4200): layout, router, runtime config, Zustand store, QueryClient
-- `workorder` (port 5101): independently built federated provider
-- `lead` (port 5102): independently built federated provider
-- `invoice` (port 5103): independently built federated provider
-- `settings` (port 5104): independently built federated provider
-- `@cms/ui`: publishable shadcn-style React library with Tailwind v4
-- `@cms/platform-contract`: shell ↔ remote runtime and QueryClient factory (not API DTOs)
-- `@cms/shared-api`: `customFetch` wrapper and typed `ApiError`
-- `@cms/settings-contract`: settings catalog wire DTOs. Other remotes follow
-  `libs/<mfe>/contract` → `@cms/<mfe>-contract`
-- `@cms/settings-data-access`, `@cms/workorder-data-access`, `@cms/lead-data-access`:
-  query/mutation factories for their domain. Wire types come from that MFE's contract.
+Requirements:
 
-Add a new remote with `pnpm exec nx g ./tools/generators/remote-app:remote-app <name>`;
-it prints the sidebar wiring for you to apply by hand.
+- Node 20.19+
+- pnpm
 
-## Styling architecture
-
-Tailwind CSS v4 is configured in CSS rather than a JavaScript config file. Shared
-semantic tokens and base styles live under `libs/ui/src/styles`; each independently
-built application keeps a small compiler entry in `apps/*/src/styles.css` so it can
-run standalone or through Module Federation. The UI JavaScript barrel has no global
-CSS side effects.
-
-Design tokens live in two layers, and the distinction matters. `tokens.css` first
-declares **primitives** — a generic palette named by hue family and ramp step
-(`--blue-55`, `--gray-blue-10`), running 5 for the lightest to 100 for the darkest.
-These are raw values and are identical in both color schemes. It then declares
-**semantic roles** (`--surface`, `--foreground-muted`, `--border-subtle`, `--data-1`)
-which reference a primitive and are reassigned in the `.dark` block.
-
-Build UI against the roles: `bg-surface`, `text-foreground-subtle`,
-`border-border-subtle`. A component that reaches for a primitive opts out of dark
-mode, because primitives do not change between schemes. No token is named after a
-component. `libs/ui/src/theme` mirrors the whole set as TypeScript unions plus
-`themeVar` accessors for the cases a utility class cannot reach.
-
-Spacing has no named tokens. Tailwind derives every step from `--spacing` (4px), so
-`h-9` is 36px and `w-56` is 224px directly.
-
-`primary` is the brand color and the main interaction color — the two were separate
-roles holding different blues, and are now one. There is no `brand` role; use
-`primary`, with `primary-hover`, `primary-strong`, `primary-subtle`, and
-`primary-foreground` for its states. `action` remains a distinct, lighter
-interaction blue used by the Service Location screens. `surface-inverse` is the dark
-banner blue and is deliberately independent, so the top bar can be re-themed without
-moving the interaction color.
-
-Inter is the single application font, self-hosted and
-declared once in `libs/ui/src/styles/font.css` — the only file in the repo that names
-a typeface. Swap the font there and every app plus Storybook follows; no component
-change is needed. Use `font-sans` for type and `tabular-figures` where digits need to
-align in columns (record codes, amounts, counts).
-Shared product-level values such as `max-w-app`, `max-w-content`, and the named type
-scale (`text-caption`, `text-field`, `text-control`, `text-body`, `text-title`) are
-defined in `libs/ui/src/styles/theme.css`. The 13px step is `field`, not `input`:
-`--color-input` exists, so `text-input` resolved to the color instead of the size.
-Figma light values and intentionally derived dark values are maintained together in
-`tokens.css`.
-
-## Data fetching architecture
-
-`libs/platform-contract/src/lib/query-client.ts` is the single source of React Query
-client defaults and lifecycle helpers. The shell creates one module-scoped client for
-the browser page and passes it through `CmsRuntime`; hosted MFEs must use that client
-and must never clear it when an individual remote unmounts. A standalone MFE creates
-one module-scoped client with `createCmsQueryClient()` and owns that isolated cache for
-its page lifetime. Storybook and tests create isolated clients and clear them during
-teardown.
-
-Shared defaults are 30 seconds stale time, 10 minutes garbage collection, one query
-retry with capped exponential delay, no mutation retries, reconnect refetching, and no
-window-focus refetching. Hosts can pass `onError` to the factory for telemetry. Feature
-components remain responsible for user-facing errors. Endpoint-specific behavior
-belongs in a feature-local `queryOptions` factory rather than another QueryClient.
-
-Query keys must start with a unique feature scope and include every variable that
-changes the response. Keep key factories and query option factories in the owning MFE's
-`data-access` lib. Wire request/response types live in that MFE's `contract` lib so UI
-and MSW share them. Invalidate the narrowest key possible; cross-feature prefix
-invalidation requires an explicit product reason. Query functions receive TanStack
-Query's `AbortSignal` and must pass it to network clients that support cancellation.
-
-**SSR is planned, not implemented.** There is no server entry, `renderToString` call, or
-dehydrate/hydrate boundary anywhere in this repo yet; every QueryClient described above
-runs client-side. Run `pnpm run test:query` to verify shared defaults, request
-deduplication, cancellation, cache sharing, standalone isolation, tenant scoping, and
-error callbacks.
-
-## Run locally
-
-Node 20.19+ and pnpm are required. With nvm and corepack:
+With nvm and Corepack:
 
 ```bash
 nvm use
@@ -103,13 +17,346 @@ corepack enable
 pnpm install
 pnpm run dev
 ```
+Then open 'http://127.0.0.1:4200'.
 
-Open http://127.0.0.1:4200. The shell reads remote URLs from
-`apps/shell/public/config.json` at runtime.
+The shell loads remote URLs from 'apps/shell/public/config.json'
 
-## Validate
+
+## Architecture at a glance
+Project	Port	Responsibility
+shell	4200	Layout, routing, runtime configuration, Zustand store, and QueryClient
+workorder	5101	Independently built federated remote
+lead	5102	Independently built federated remote
+invoice	5103	Independently built federated remote
+settings	5104	Independently built federated remote
+'@cms/ui'	—	Publishable shadcn-style React UI library with Tailwind v4
+'@cms/platform-contract'	—	Shell/remote runtime contract and QueryClient factory
+'@cms/shared-api'	—	customFetch wrapper and typed ApiError
+'@cms/settings-contract'	—	Settings catalog wire DTOs
+'@cms/settings-data-access'	—	Settings query and mutation factories
+'@cms/workorder-data-access'	—	Work order query and mutation factories
+'@cms/lead-data-access'	—	Lead query and mutation factories
+
+Feature-specific contracts follow this convention:
+
+'libs/<mfe>/contract' → '@cms/<mfe>-contract'
+
+
+'libs/<mfe>/contract' → '@cms/<mfe>-contract'
+Wire request and response types belong in the owning MFE's contract library.
+They are not API DTOs in '@cms/platform-contract'
+
+## Adding a remote
+
+Generate a new remote with:
+pnpm exec nx g './tools/generators/remote-app:remote-app' <name>
+
+
+The generator creates the application and prints the sidebar wiring that must be
+applied manually.
+
+After generating a remote:
+
+Apply the printed sidebar wiring.
+Add the remote to the shell's runtime configuration.
+Add its contract library.
+Add its data-access library if the remote owns API queries or mutations.
+Add deployment configuration for the remote.
+Run the validation commands described below.
+
+
+
+## Hosted and standalone MFEs
+A hosted MFE runs inside the shell and receives the shell's CmsRuntime.
+It uses the shell's Zustand store and TanStack QueryClient.
+
+A standalone MFE runs independently and creates its own runtime, store, and
+QueryClient for the lifetime of its page.
+
+Hosted MFEs must not clear the shell's QueryClient when they unmount.
+
+
+## Styling architecture
+Tailwind CSS v4 is configured in CSS rather than in a JavaScript configuration
+file.
+
+Shared semantic tokens and base styles live under
+'libs/ui/src/styles' [blocked]. Each independently built application
+keeps a small compiler entry in apps/*/src/styles.css, allowing it to run
+standalone or through Module Federation.
+
+The UI JavaScript barrel has no global CSS side effects.
+
+
+
+## Design tokens
+Design tokens have two layers.
+
+tokens.css first declares primitives: generic palettes named by hue family and
+ramp step, such as --blue-55 and --gray-blue-10. Ramp values run from 5
+for the lightest value to 100 for the darkest value. Primitive values are
+identical in both color schemes.
+
+The file then declares semantic roles, such as:
+
+--surface
+--foreground-muted
+--border-subtle
+--data-1
+Semantic roles reference primitives and are reassigned in the .dark block.
+
+Build UI against semantic roles:
+
+'bg-surface'
+'text-foreground-subtle'
+'border-border-subtle'
+
+A component that uses a primitive directly opts out of the intended dark-mode
+behavior because primitives do not change between color schemes.
+
+No token is named after a component. The
+'libs/ui/src/theme' [blocked] directory mirrors the complete token set
+as TypeScript unions and provides themeVar accessors for cases where a utility
+class cannot be used.
+
+
+
+## Color roles
+primary is both the brand color and the main interaction color. Use the
+following related roles for its states:
+
+'primary-hover'
+'primary-strong'
+'primary-subtle'
+'primary-foreground'
+There is no brand role.
+
+action remains a distinct, lighter interaction blue used by the Service
+Location screens.
+
+surface-inverse is the dark banner blue. It is intentionally independent of
+the interaction color so the top bar can be re-themed without changing the
+primary interaction color.
+
+## Spacing
+Spacing has no named tokens. Tailwind derives every spacing step from
+--spacing, which is 4px.
+
+For example:
+
+h-9 is 36px
+w-56 is 224px
+
+
+## Typography
+
+Inter is the single application font. It is self-hosted and declared once in
+'libs/ui/src/styles/font.css' [blocked], which is the only
+file in the repository that names a typeface.
+
+Change the font in that file to update every application and Storybook without
+changing components.
+
+Use:
+
+'font-sans' for application typography
+tabular-figures when digits need to align in columns, such as record codes, amounts, and counts
+Shared product-level values such as max-w-app, max-w-content, and the named
+type scale are defined in
+'libs/ui/src/styles/theme.css' [blocked].
+
+The named type-scale utilities are:
+
+'text-caption'
+'text-field'
+'text-control'
+'text-body'
+'text-title'
+The 13px type step is named field, not input. This avoids a collision with
+the --color-input token, which would cause text-input to resolve as a color
+rather than a type size.
+
+Figma light values and intentionally derived dark values are maintained together
+in tokens.css.
+
+
+## Data-fetching architecture
+'libs/platform-contract/src/lib/query-client.ts' [blocked]
+is the single source of React Query client defaults and lifecycle helpers.
+
+The shell creates one module-scoped QueryClient for the browser page and passes it
+through CmsRuntime.
+
+Hosted MFEs must use that client. They must never clear it when an individual
+remote unmounts.
+
+A standalone MFE creates one module-scoped client with
+createCmsQueryClient() and owns that isolated cache for the lifetime of its
+page.
+
+Storybook and tests create isolated clients and clear them during teardown.
+
+
+## Shared QueryClient defaults
+The shared defaults are:
+
+30 seconds of stale time
+10 minutes of garbage collection
+One query retry with capped exponential backoff
+No mutation retries
+Refetching on reconnect
+No refetching on window focus
+Hosts can pass onError to the factory for telemetry. Feature components remain
+responsible for user-facing error states.
+
+Endpoint-specific behavior belongs in a feature-local queryOptions factory,
+not in another QueryClient.
+
+
+## Query keys and factories
+Query keys must:
+
+Start with a unique feature scope.
+Include every variable that changes the response.
+Be defined in the owning MFE's data-access library.
+Keep key factories and query option factories in the owning MFE's data-access
+library.
+
+Wire request and response types belong in that MFE's contract library so the UI
+and MSW fixtures share the same types.
+
+Invalidate the narrowest key possible. Cross-feature prefix invalidation requires
+an explicit product reason.
+
+Query functions receive TanStack Query's AbortSignal and must pass it to
+network clients that support cancellation.
+
+## SSR status
+SSR is planned but not implemented.
+
+There is currently no server entry, renderToString call, or
+dehydrate/hydrate boundary in the repository. Every QueryClient described above
+runs client-side.
+
+Run the following command to verify shared query behavior:
 
 ```bash
+pnpm run test:query
+
+The query tests cover:
+
+Shared QueryClient defaults
+Request deduplication
+Request cancellation
+Cache sharing
+Standalone isolation
+Tenant scoping
+Error callbacks
+
+
+
+## Runtime configuration
+The shell reads remote configuration from
+'apps/shell/public/config.json' [blocked] at runtime.
+
+The configuration must be valid JSON. Do not include comments or trailing
+commas in deployed files.
+
+The file is copied into apps/shell/dist during the shell build and is fetched
+by 'apps/shell/src/config.ts' [blocked].
+
+
+##Local development
+```json
+{
+  "environment": "development",
+  "remotes": {
+    "workorder": {
+      "name": "workorder",
+      "entry": "http://localhost:5101/remoteEntry.js"
+    },
+    "lead": {
+      "name": "lead",
+      "entry": "http://localhost:5102/remoteEntry.js"
+    },
+    "invoice": {
+      "name": "invoice",
+      "entry": "http://localhost:5103/remoteEntry.js"
+    },
+    "settings": {
+      "name": "settings",
+      "entry": "http://localhost:5104/remoteEntry.js"
+    }
+  }
+}
+```
+
+## Staging
+Use versioned, immutable remote entry URLs for staging deployments:
+
+```json
+{
+  "environment": "staging",
+  "remotes": {
+    "workorder": {
+      "name": "workorder",
+      "entry": "https://staging-workorder.example.com/v1.4.2/remoteEntry.js"
+    },
+    "lead": {
+      "name": "lead",
+      "entry": "https://staging-lead.example.com/v1.4.2/remoteEntry.js"
+    },
+    "invoice": {
+      "name": "invoice",
+      "entry": "https://staging-invoice.example.com/v1.4.2/remoteEntry.js"
+    },
+    "settings": {
+      "name": "settings",
+      "entry": "https://staging-settings.example.com/v1.4.2/remoteEntry.js"
+    }
+  }
+}
+
+```
+
+## Production
+Use the same configuration shape with production hosts and versions:
+
+```json
+
+
+{
+  "environment": "production",
+  "remotes": {
+    "workorder": {
+      "name": "workorder",
+      "entry": "https://workorder.example.com/v1.4.2/remoteEntry.js"
+    },
+    "lead": {
+      "name": "lead",
+      "entry": "https://lead.example.com/v1.4.2/remoteEntry.js"
+    },
+    "invoice": {
+      "name": "invoice",
+      "entry": "https://invoice.example.com/v1.4.2/remoteEntry.js"
+    },
+    "settings": {
+      "name": "settings",
+      "entry": "https://settings.example.com/v1.4.2/remoteEntry.js"
+    }
+  }
+}
+
+```
+
+Replace the shell's config.json with the environment-specific version as part
+of deploying the shell, alongside each remote's own dist directory.
+
+
+## Validation
+Run the complete validation suite with:
+
+````bash
 pnpm run format:check
 pnpm run lint
 pnpm run typecheck
@@ -118,103 +365,143 @@ pnpm run test:query
 pnpm run storybook:typecheck
 pnpm run storybook:build
 pnpm run storybook:test
+pnpm run lint and pnpm run typecheck run against every project.
 ```
 
-`pnpm run lint` and `pnpm run typecheck` run against every project; use
-`pnpm exec nx affected -t <target>` to run only what changed relative to a base branch,
-which is what CI does. `test:query` currently covers only the shared QueryClient
-factory (`tools/integration`) — `workorder`, `lead`, and `invoice` have no
-component-level tests yet.
+To run only projects affected relative to a base branch, use:
+
+````bash
+pnpm exec nx affected -t <target>
+```
+
+This is the command used by CI for affected-project validation.
+
+The test:query target currently covers only the shared QueryClient factory in
+tools/integration. The workorder, lead, and invoice applications do not
+yet have component-level tests.
+
 
 ## Storybook
+Run Storybook with:
 
-Run `pnpm run storybook` and open http://localhost:6006. The workspace uses one
-Storybook owned by `@cms/ui`; it discovers shared component stories in
-`libs/ui/src` and feature-composition stories in `apps/*/src`.
+`````bash
+pnpm run storybook
+```
 
-Conventions:
+Open 'http://localhost:6006'.
 
-- Colocate files as `component-name.stories.tsx`; title shared primitives as
-  `Components/Name` and application compositions as `Features/Area`.
-- Prefer typed args and controls over one story per prop combination. Add
-  explicit stories for meaningful loading, empty, error, disabled, and layout
-  states.
-- Keep fixtures in `.storybook/fixtures`. Use `withCmsRuntime` for components
-  that need the platform store or QueryClient so every story gets isolated
-  state.
-- Use `play` functions from `storybook/test` for important keyboard and user
-  flows. Accessibility checks run for every story and fail component tests on
-  violations.
-- Import production global styles in `.storybook/preview.css`; configure global
-  providers and decorators in `.storybook/preview.ts`, not in individual
-  stories.
+The workspace has one Storybook owned by @cms/ui. It discovers:
+
+Shared component stories in 'libs/ui/src'
+Feature-composition stories in 'apps/*/src'
+
+
+## Story conventions
+- Colocate stories as component-name.stories.tsx.
+- Title shared primitives as Components/Name.
+- Title application compositions as Features/Area.
+- Prefer typed args and controls over one story for every prop combination.
+- Add explicit stories for meaningful loading, empty, error, disabled, and layout states.
+- Keep fixtures in .storybook/fixtures.
+- Use withCmsRuntime for components that need the platform store or QueryClient.
+- Ensure every story receives isolated state.
+- Use play functions from storybook/test for important keyboard and user flows.
+- Keep production global styles in .storybook/preview.css.
+- Configure global providers and decorators in .storybook/preview.ts, not in individual stories.
+- Accessibility checks run for every story and fail component tests when  violations are found.
 
 Before running browser tests locally or in CI for the first time, install the
-pinned Chromium browser with `pnpm exec playwright install chromium`. CI runs this
-install step plus `pnpm run storybook:typecheck`, `pnpm run storybook:build`, and
-`pnpm run storybook:test` in its slow lane — see `.github/workflows/ci.yml`.
+pinned Chromium browser:
 
-## Production notes
+```bash
 
-Each app builds and deploys to its own `dist` directory, but `@cms/ui` and
-`@cms/platform-contract` are not yet consumed as published packages: each library's
-`package.json` `exports` points at its own `libs/*/src` source, which the apps reach
-through the pnpm workspace symlink, so each app's build compiles its own copy from
-source. Changing either library currently requires rebuilding the apps, not just
-the ones with a version bump to pick up — `nx release` and the Verdaccio
-`local-registry` target exist for closing this gap but are not yet wired into a script
-or CI job. Module Federation's `shared` config deduplicates the _runtime_ singleton
-between the shell and its remotes; only the build-time dependency is source-resolved.
+pnpm exec playwright install chromium
 
-No `vite.config.ts` may add a `resolve.alias` for a `@cms/*` package. An alias rewrites
-the bare specifier before `@module-federation/vite` can wrap the import in `loadShare`,
-which silently defeats `singleton: true` — see `tools/module-federation/shared.ts`.
-Storybook is the one exception (`.storybook/aliases.ts`); it has no Module Federation,
-and the workspace root declares no `@cms/*` dependencies to resolve through.
-
-Replace the shell's `config.json` with immutable, versioned remote URLs when
-deploying. Cache hashed chunks for a long time, but serve `config.json` and
-remote entry files with short/no cache. The shell creates one Zustand store and
-one TanStack QueryClient, then passes both to providers through `CmsRuntime`;
-providers only create local instances in standalone mode.
-
-`apps/shell/public/config.json` (shown below for local dev) is copied into
-`apps/shell/dist` at build time and fetched at runtime by
-`apps/shell/src/config.ts` — replace it per environment as part of deploying the
-shell, alongside each remote's own `dist`:
-
-```jsonc
-// Local dev — apps/shell/public/config.json
-{
-  "environment": "development",
-  "remotes": {
-    "workorder": { "name": "workorder", "entry": "http://localhost:5101/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "http://localhost:5102/remoteEntry.js" },
-    "invoice": { "name": "invoice", "entry": "http://localhost:5103/remoteEntry.js" },
-  },
-}
 ```
 
-```jsonc
-// Staging — versioned, immutable remote entry URLs per deploy
-{
-  "environment": "staging",
-  "remotes": {
-    "workorder": { "name": "workorder", "entry": "https://staging-workorder.example.com/v1.4.2/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "https://staging-lead.example.com/v1.4.2/remoteEntry.js" },
-    "invoice": { "name": "invoice", "entry": "https://staging-invoice.example.com/v1.4.2/remoteEntry.js" },
-  },
-}
-```
+CI installs Chromium and runs the following in its slow lane:
 
-```jsonc
-// Production — same shape, production hosts and versions
-{
-  "environment": "production",
-  "remotes": {
-    "workorder": { "name": "workorder", "entry": "https://workorder.example.com/v1.4.2/remoteEntry.js" },
-    "lead": { "name": "lead", "entry": "https://lead.example.com/v1.4.2/remoteEntry.js" },
-    "invoice": { "name": "invoice", "entry": "https://invoice.example.com/v1.4.2/remoteEntry.js" },
-  },
-}
+```bash
+pnpm run storybook:typecheck
+pnpm run storybook:build
+pnpm run storybook:test
+
 ```
+See '.github/workflows/ci.yml' [blocked] for the CI
+configuration.
+
+## Production and deployment notes
+Library consumption
+Each application builds and deploys to its own dist directory.
+
+'@cms/ui' and '@cms/platform-contract' are package-ready libraries, but they are
+not currently consumed as published packages. Each library's package.json
+exports points to its own libs/*/src source, which applications reach through
+the pnpm workspace symlink.
+
+As a result, each application's build compiles its own copy of the library
+source.
+
+Changing either library currently requires rebuilding the applications that
+consume it. Published package versioning is not yet wired into the standard
+build or CI flow.
+
+nx release and the Verdaccio local-registry target exist for closing this
+gap, but they are not currently wired into a script or CI job.
+
+Module Federation's shared configuration deduplicates runtime singletons
+between the shell and its remotes. It does not change how the build-time
+workspace dependency is source-resolved.
+
+
+## Module Federation aliases
+No vite.config.ts may add a resolve.alias for an '@cms/*' package.
+
+Module Federation must see the bare package specifier so it can wrap the import
+with loadShare and preserve singleton: true.
+
+An alias rewrites the bare specifier before @module-federation/vite can apply
+that behavior, silently defeating runtime singleton sharing.
+
+See 'tools/module-federation/shared.ts' [blocked] for
+the shared configuration.
+
+Storybook is the one exception:
+'.storybook/aliases.ts' [blocked] uses aliases because Storybook
+does not use Module Federation. The workspace root also declares no @cms/*
+dependencies for Storybook to resolve through.
+
+
+
+## Runtime configuration and caching
+The shell creates one Zustand store and one TanStack QueryClient, then passes
+both through CmsRuntime.
+
+Hosted providers use those instances. Providers create local instances only when
+running in standalone mode.
+
+For deployment:
+
+- Build each shell and remote application.
+- Publish each application's dist directory.
+- Publish versioned remote entry URLs.
+- Replace the shell's config.json with the target environment's configuration.
+- Serve config.json and remote entry files with short or disabled caching.
+- Serve hashed application chunks with long-lived caching.
+- Remote entry URLs should be immutable and versioned per deployment. The shell's
+runtime configuration should be changed independently so remote versions can be updated without rebuilding the shell.
+
+- Remote loading failures should be handled at the shell or route boundary so a single unavailable remote does not prevent unrelated shell functionality from
+starting.
+
+
+## Repository conventions
+- Use semantic design tokens rather than primitive color tokens in UI code.
+- Keep feature wire types in the owning MFE's contract library.
+- Keep query keys and query option factories in the owning MFE's data-access library.
+- Pass TanStack Query's AbortSignal to cancellable network clients.
+- Invalidate the narrowest query key possible.
+- Do not clear the shell's QueryClient from a hosted remote.
+- Do not add @cms/* aliases to Vite configuration.
+- Keep global styles in the shared style entry points, not in the UI JavaScript barrel.
+- Use font-sans for typography and tabular-figures for aligned numeric data.

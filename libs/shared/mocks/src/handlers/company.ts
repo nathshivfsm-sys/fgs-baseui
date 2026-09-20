@@ -1,10 +1,11 @@
-import { http, HttpResponse } from 'msw';
+import { http } from 'msw';
 import { companyPatchDtoSchema, type CompanyAddressDto } from '@cms/settings-contract';
 import {
   assignDefined,
   firstIssueMessage,
   readJsonObject,
   setupError,
+  setupNoContent,
   setupOk,
 } from './util';
 
@@ -139,6 +140,6 @@ export const companyHandlers = [
         billingAddress,
       );
     }
-    return new HttpResponse<null>(null, { status: 204 });
+    return setupNoContent();
   }),
 ];

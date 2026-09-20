@@ -1,6 +1,14 @@
-import { HttpResponse } from 'msw';
+import { delay, HttpResponse } from 'msw';
 
-export function setupOk<T>(data: T, statusCode = 200) {
+/** Pause mock responses so table skeletons and Save/Delete loaders are visible. */
+export const MOCK_RESPONSE_DELAY_MS = 1000;
+
+export async function setupDelay(): Promise<void> {
+  await delay(MOCK_RESPONSE_DELAY_MS);
+}
+
+export async function setupOk<T>(data: T, statusCode = 200) {
+  await setupDelay();
   return HttpResponse.json(
     {
       success: true,
@@ -12,7 +20,8 @@ export function setupOk<T>(data: T, statusCode = 200) {
   );
 }
 
-export function setupError(statusCode: number, message: string) {
+export async function setupError(statusCode: number, message: string) {
+  await setupDelay();
   return HttpResponse.json(
     {
       success: false,
@@ -23,11 +32,16 @@ export function setupError(statusCode: number, message: string) {
   );
 }
 
+export async function setupNoContent() {
+  await setupDelay();
+  return new HttpResponse<null>(null, { status: 204 });
+}
+
 export async function readJsonObject(
   request: Request,
 ): Promise<
   | { ok: true; value: Record<string, unknown> }
-  | { ok: false; response: ReturnType<typeof setupError> }
+  | { ok: false; response: Awaited<ReturnType<typeof setupError>> }
 > {
   let body: unknown;
   try {
@@ -35,14 +49,14 @@ export async function readJsonObject(
   } catch {
     return {
       ok: false,
-      response: setupError(400, 'Request body must be JSON.'),
+      response: await setupError(400, 'Request body must be JSON.'),
     };
   }
 
   if (typeof body !== 'object' || body === null || Array.isArray(body)) {
     return {
       ok: false,
-      response: setupError(400, 'Request body must be a JSON object.'),
+      response: await setupError(400, 'Request body must be a JSON object.'),
     };
   }
 
