@@ -46,6 +46,7 @@ export interface GlBreakFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (payload: GlBreakFormSubmit) => void;
   open: boolean;
+  queryClient: QueryClient;
   record: GlBreakSummaryDto | GlBreakDetailDto | null;
   tradeOptions: readonly SelectOption[];
 }

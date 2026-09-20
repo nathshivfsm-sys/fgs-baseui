@@ -237,6 +237,7 @@ export const BusinessUnitPage = ({ queryClient }: BusinessUnitPageProps) => {
           onOpenChange={handleDialogOpenChange}
           onSubmit={handleSubmit}
           open={dialogOpen}
+          queryClient={queryClient}
           record={detailQuery.data ?? editingRecord}
           tradeOptions={tradeOptions}
         />

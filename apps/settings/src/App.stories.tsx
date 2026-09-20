@@ -40,6 +40,80 @@ function setupEnvelope(data: unknown) {
   return { success: true, statusCode: 200, data, errors: [] as string[] };
 }
 
+function geoLookupHandlers(): ApiHandlers {
+  const countries = [
+    {
+      countryCode: 'US',
+      countryName: 'United States',
+      currencyCode: 'USD',
+    },
+    {
+      countryCode: 'CA',
+      countryName: 'Canada',
+      currencyCode: 'CAD',
+    },
+  ];
+  const states = [
+    {
+      id: 1,
+      countryCode: 'US',
+      stateProvinceCode: 'TX',
+      stateProvinceName: 'Texas',
+    },
+    {
+      id: 2,
+      countryCode: 'US',
+      stateProvinceCode: 'IL',
+      stateProvinceName: 'Illinois',
+    },
+    {
+      id: 3,
+      countryCode: 'CA',
+      stateProvinceCode: 'ON',
+      stateProvinceName: 'Ontario',
+    },
+  ];
+  const cities = [
+    { city: 'Houston', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Dallas', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Austin', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'San Antonio', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Chicago', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Springfield', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Peoria', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Toronto', countryCode: 'CA', stateProvinceCode: 'ON' },
+  ];
+
+  return {
+    ['GET /glo/country/lookup']: () => jsonResponse(setupEnvelope(countries)),
+    ['GET /glo/stateprovince/lookup']: (request) => {
+      const countryCode = new URL(request.url).searchParams.get('countryCode');
+      const items = countryCode
+        ? states.filter((state) => state.countryCode === countryCode)
+        : states;
+      return jsonResponse(setupEnvelope(items));
+    },
+    ['GET /postalcode/cities']: (request) => {
+      const url = new URL(request.url);
+      const countryCode = url.searchParams.get('countryCode');
+      const stateProvinceCode = url.searchParams.get('stateProvinceCode');
+      const items = cities
+        .filter((city) => {
+          if (countryCode && city.countryCode !== countryCode) return false;
+          if (
+            stateProvinceCode &&
+            city.stateProvinceCode !== stateProvinceCode
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .map(({ city }) => ({ city }));
+      return jsonResponse(setupEnvelope(items));
+    },
+  };
+}
+
 async function fillTextbox(element: HTMLElement, value: string) {
   await userEvent.click(element);
   await fireEvent.input(element, { target: { value } });
@@ -100,6 +174,7 @@ const loadsNonWorkingDates = nonWorkingDateHandlers();
 const loadsCompany: ApiHandlers = {
   [`GET ${COMPANY_ENDPOINT}`]: () => jsonResponse(companyResponseFixture),
   ...loadsNonWorkingDates,
+  ...geoLookupHandlers(),
 };
 
 const savesCompany: ApiHandlers = {
@@ -175,6 +250,14 @@ const chooseSelectOption = async (
     );
   });
 };
+
+const waitForEnabledCombobox = (
+  scope: ReturnType<typeof within>,
+  fieldName: RegExp,
+) =>
+  waitFor(() => {
+    expect(scope.getByRole('combobox', { name: fieldName })).toBeEnabled();
+  }, LAZY_PAGE);
 
 const waitForDialogClosed = () =>
   waitFor(() => {
@@ -430,6 +513,7 @@ export const GeneralInfoMissingCompany: Story = {
 
 function zoneHandlers(): ApiHandlers {
   return {
+    ...geoLookupHandlers(),
     ['GET /zone']: (request) => {
       const url = new URL(request.url);
       const isActiveParam = url.searchParams.get('isActive');
@@ -577,6 +661,7 @@ function glBreakHandlers(): ApiHandlers {
   };
 
   const handlers: ApiHandlers = {
+    ...geoLookupHandlers(),
     ['GET /glbreak']: (request) => {
       const matched = filterItems(request);
       return jsonResponse(
@@ -809,8 +894,11 @@ export const ZonePostalCodeAddPostal: Story = {
       withinDialog.getByRole('textbox', { name: /postal code/i }),
       '77099',
     );
-    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Texas');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await chooseSelectOption(withinDialog, /tax code/i, 'TX-STD');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Postal Code' }),
@@ -824,7 +912,7 @@ export const ZonePostalCodeAddPostal: Story = {
     await expect(post?.body).toEqual({
       postalCode: '77099',
       countryCode: 'US',
-      stateProvinceCode: null,
+      stateProvinceCode: 'TX',
       city: 'Houston',
       tripChargeAmount: null,
       fgsSetupZoneId: null,
@@ -932,12 +1020,11 @@ export const BusinessUnitAdd: Story = {
       withinDialog.getByRole('textbox', { name: /zip\/postal code/i }),
       '62701',
     );
-    await userEvent.type(
-      withinDialog.getByRole('textbox', { name: /^city/i }),
-      'Springfield',
-    );
-    await chooseSelectOption(withinDialog, /state/i, 'IL');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Illinois');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Springfield');
     await expect(
       withinDialog.getByRole('heading', { name: 'Create Business Unit' }),
     ).toBeVisible();
@@ -1016,12 +1103,11 @@ export const BusinessUnitAddBreak2: Story = {
       withinDialog.getByRole('textbox', { name: /zip\/postal code/i }),
       '61602',
     );
-    await userEvent.type(
-      withinDialog.getByRole('textbox', { name: /^city/i }),
-      'Peoria',
-    );
-    await chooseSelectOption(withinDialog, /state/i, 'IL');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Illinois');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Peoria');
     await userEvent.click(
       withinDialog.getByRole('button', { name: 'Save Break 2' }),
     );
@@ -1505,6 +1591,7 @@ export const TradeSkillsDeleteSkill: Story = {
 
 function taxSetupHandlers(): ApiHandlers {
   return {
+    ...geoLookupHandlers(),
     ['GET /taxauthority']: (request) => {
       const url = new URL(request.url);
       const isActiveParam = url.searchParams.get('isActive');
@@ -1759,7 +1846,8 @@ export const TaxSetupAddTaxRate: Story = {
       withinDialog.getByRole('textbox', { name: /^name$/i }),
       'Bexar Sales Tax',
     );
-    await chooseSelectOption(withinDialog, /state/i, 'TX');
+    await chooseSelectOption(withinDialog, /state/i, 'Texas');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
     await chooseSelectOption(withinDialog, /^city$/i, 'San Antonio');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Tax Rate' }),
@@ -2004,9 +2092,8 @@ export const GeneralInfoEditPhysicalAddress: Story = {
         name: 'Same as physical address',
       }),
     ).not.toBeInTheDocument();
-    const city = withinDialog.getByRole('textbox', { name: 'City' });
-    await userEvent.clear(city);
-    await userEvent.type(city, 'Houston');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
       expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
@@ -2062,8 +2149,8 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     await expect(line1).toHaveValue('100 Main St');
     await expect(line1).toHaveAttribute('readonly');
     await expect(
-      withinDialog.getByRole('textbox', { name: 'City' }),
-    ).toHaveValue('Austin');
+      withinDialog.getByRole('combobox', { name: 'City' }),
+    ).toHaveTextContent('Austin');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
       expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),

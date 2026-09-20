@@ -38,4 +38,3 @@ export {
   TAX_STATE_PLACEHOLDER,
   TAX_UPDATED_MESSAGE,
 } from './copy';
-export { TAX_CITY_OPTIONS, TAX_STATE_OPTIONS } from './tax-options';

@@ -1,5 +1,6 @@
 import { attachmentHandlers } from './attachment';
 import { authHandlers } from './auth';
+import { geoLookupHandlers } from './geo-lookup';
 import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { companyHandlers } from './company';
@@ -16,6 +17,7 @@ export const handlers = [
   ...companyHandlers,
   ...taxHandlers,
   ...taxAuthorityHandlers,
+  ...geoLookupHandlers,
   ...postalCodeHandlers,
   ...nonWorkingDateHandlers,
   ...zoneHandlers,

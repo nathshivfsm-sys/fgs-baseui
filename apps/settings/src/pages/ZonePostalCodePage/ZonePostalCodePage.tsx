@@ -283,6 +283,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
         onSubmit={handlePostalSubmit}
         open={postalDialogOpen}
         postalCode={editingPostalCode}
+        queryClient={queryClient}
         taxOptions={taxOptions}
         zoneOptions={zoneOptions}
       />

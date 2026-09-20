@@ -2,8 +2,9 @@ import { FormSection } from '../FormSection';
 import { AddressCard } from './AddressCard';
 import { AddressFormDialog } from './AddressFormDialog';
 import { useAddressesSection } from './use-addresses-section';
+import type { AddressesSectionProps } from '../../../types';
 
-export const AddressesSection = () => {
+export const AddressesSection = ({ queryClient }: AddressesSectionProps) => {
   const {
     billingAddress,
     editingKind,
@@ -38,6 +39,7 @@ export const AddressesSection = () => {
         onSubmit={handleSubmit}
         open={editingKind != null}
         physicalAddress={physicalAddress}
+        queryClient={queryClient}
       />
     </>
   );
