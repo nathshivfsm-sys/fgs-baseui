@@ -14,6 +14,7 @@
     "@cms/settings-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
+    "@cms/shared-locale": "workspace:*",
     "@cms/ui": "workspace:*",
     "@tanstack/react-query": "5.101.4",
     "react": "19.2.8",

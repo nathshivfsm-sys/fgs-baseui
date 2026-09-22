@@ -8,6 +8,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Create and manage system users, status, assignments, and defaults.',
       icon: 'SettingsUserIcon',
       totalSettings: { count: 42, label: 'Users' },
+      href: 'users-and-payroll/users',
     },
     {
       title: 'Roles & Permissions',

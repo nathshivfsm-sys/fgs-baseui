@@ -23,6 +23,8 @@ const sharedApiVersion: string =
   require('../../libs/shared/api/package.json').version;
 const sharedAuthVersion: string =
   require('../../libs/shared/auth/package.json').version;
+const sharedLocaleVersion: string =
+  require('../../libs/shared/locale/package.json').version;
 const settingsContractVersion: string =
   require('../../libs/settings/contract/package.json').version;
 const userContractVersion: string =
@@ -63,6 +65,11 @@ export const sharedDependencies = {
   '@cms/shared-auth': {
     singleton: true,
     requiredVersion: sharedAuthVersion,
+    strictVersion: false,
+  },
+  '@cms/shared-locale': {
+    singleton: true,
+    requiredVersion: sharedLocaleVersion,
     strictVersion: false,
   },
   // Per-MFE wire DTOs (`libs/<mfe>/contract`). Share the singleton so UI and data-access

@@ -11,6 +11,7 @@ import {
   assignDefined,
   firstIssueMessage,
   matchesSearch,
+  readJsonBody,
   readJsonObject,
   readOptionalBoolean,
   setupError,
@@ -27,7 +28,7 @@ function seedUsers(): UserRecord[] {
       email: 'alex.admin@example.com',
       phoneNumber: '+1-555-0100',
       roleId: 1,
-      roleName: 'Administrator',
+      roleName: 'Admin',
       invitationStatus: 'Accepted',
       isActive: true,
       hasAcceptedInvitation: true,
@@ -39,7 +40,7 @@ function seedUsers(): UserRecord[] {
       email: 'sam.scheduler@example.com',
       phoneNumber: null,
       roleId: 2,
-      roleName: 'Scheduler',
+      roleName: 'Manager',
       invitationStatus: 'Pending',
       isActive: true,
       hasAcceptedInvitation: false,
@@ -51,7 +52,7 @@ function seedUsers(): UserRecord[] {
       email: 'inactive@example.com',
       phoneNumber: null,
       roleId: 2,
-      roleName: 'Scheduler',
+      roleName: 'Technician',
       invitationStatus: 'Accepted',
       isActive: false,
       hasAcceptedInvitation: true,
@@ -200,7 +201,7 @@ export const userHandlers = [
   }),
 
   http.post('/api/v1/user', async ({ request }) => {
-    const body = await readJsonObject(request);
+    const body = await readJsonBody(request);
     if (!body.ok) return body.response;
     const parsed = userInviteDtoSchema.array().safeParse(body.value);
     if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));

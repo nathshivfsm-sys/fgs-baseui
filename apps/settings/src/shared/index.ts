@@ -6,6 +6,8 @@ export {
   SETUP_OPERATIONS_TAB,
   SETUP_PATH,
   SETUP_TAB_STATE_KEY,
+  SETUP_USERS_PAYROLL_LABEL,
+  SETUP_USERS_PAYROLL_TAB,
 } from './constant';
 export {
   useGeoLookupOptions,

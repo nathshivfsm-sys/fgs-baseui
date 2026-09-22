@@ -48,6 +48,10 @@ export function storybookAliases(workspaceRoot: string) {
       replacement: join(workspaceRoot, 'libs/shared/auth/src/index.ts'),
     },
     {
+      find: '@cms/shared-locale',
+      replacement: join(workspaceRoot, 'libs/shared/locale/src/index.ts'),
+    },
+    {
       find: '@cms/auth-data-access',
       replacement: join(
         workspaceRoot,
