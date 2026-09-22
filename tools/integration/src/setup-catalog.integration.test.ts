@@ -67,7 +67,31 @@ import {
   zoneDetailResponseFixture,
   zoneListResponseFixture,
   zoneLookupResponseFixture,
+  userDetailResponseFixture,
+  userListResponseFixture,
+  userRoleDetailResponseFixture,
+  userRoleListResponseFixture,
+  userRoleLookupResponseFixture,
+  roleDetailResponseFixture,
+  roleListResponseFixture,
+  roleLookupResponseFixture,
 } from './fixtures/setup-catalog-response';
+import {
+  createRoleMutationOptions,
+  createUserRoleMutationOptions,
+  createUsersMutationOptions,
+  roleDetailQueryOptions,
+  roleKeys,
+  roleListQueryOptions,
+  roleLookupQueryOptions,
+  userDetailQueryOptions,
+  userKeys,
+  userListQueryOptions,
+  userRoleDetailQueryOptions,
+  userRoleKeys,
+  userRoleLookupQueryOptions,
+  userRolesByUserQueryOptions,
+} from '@cms/user-data-access';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -626,6 +650,219 @@ describe('tech skill level through customFetch', () => {
     expect(
       client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
     ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('user through customFetch', () => {
+  it('GETs the paged list with filters and optional summary', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userListResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      userListQueryOptions({
+        page: 2,
+        search: 'alex',
+        isActive: true,
+        includeSummary: true,
+      }),
+    );
+
+    expect(page.items).toHaveLength(1);
+    expect(page.summary?.admins).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/user?page=2&search=alex&isActive=true&includeSummary=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs a detail record', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userDetailResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const user = await client.fetchQuery(
+      userDetailQueryOptions('a1111111-1111-4111-8111-111111111101'),
+    );
+
+    expect(user.hasAcceptedInvitation).toBe(true);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/user/a1111111-1111-4111-8111-111111111101',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs invite payloads and invalidates user queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        {
+          success: true,
+          statusCode: 201,
+          data: [userDetailResponseFixture.data],
+        },
+        201,
+      ),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(userKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createUsersMutationOptions(client));
+    const created = await mutation.execute([
+      {
+        displayName: 'New User',
+        email: 'new@example.com',
+        phoneNumber: null,
+        roleIds: [2],
+        authenticationMethod: 'password',
+      },
+    ]);
+
+    expect(created).toHaveLength(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/user');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(userKeys.list({}))?.isInvalidated).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('user role through customFetch', () => {
+  it('GETs roles for a user', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userRoleListResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const roles = await client.fetchQuery(
+      userRolesByUserQueryOptions('a1111111-1111-4111-8111-111111111101'),
+    );
+
+    expect(roles[0]?.fgsRoleId).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/userrole/a1111111-1111-4111-8111-111111111101',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs lookup rows', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userRoleLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await client.fetchQuery(
+      userRoleLookupQueryOptions({
+        userId: 'a1111111-1111-4111-8111-111111111101',
+      }),
+    );
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/userrole/lookup?userId=a1111111-1111-4111-8111-111111111101',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs a user role item', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userRoleDetailResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const item = await client.fetchQuery(userRoleDetailQueryOptions(501));
+
+    expect(item.id).toBe(501);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/userrole/item/501');
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a user role and invalidates user role queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(userRoleDetailResponseFixture, 201));
+    const client = createCmsQueryClient();
+    client.setQueryData(userRoleKeys.lookup({}), []);
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createUserRoleMutationOptions(client));
+    await mutation.execute({
+      userId: 'a1111111-1111-4111-8111-111111111102',
+      fgsRoleId: 2,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/userrole');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(userRoleKeys.lookup({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('role through customFetch', () => {
+  it('GETs the paged list', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(roleListResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      roleListQueryOptions({ roleCode: 'ADMIN', isBuiltIn: true }),
+    );
+
+    expect(page.items[0]?.roleCode).toBe('ADMIN');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/role?roleCode=ADMIN&isBuiltIn=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs lookup options', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(roleLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await client.fetchQuery(roleLookupQueryOptions(true));
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role/lookup?activeOnly=true');
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs a detail record', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(roleDetailResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const role = await client.fetchQuery(roleDetailQueryOptions(1));
+
+    expect(role.isBuiltIn).toBe(true);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role/1');
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates role queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(roleDetailResponseFixture, 201));
+    const client = createCmsQueryClient();
+    client.setQueryData(roleKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createRoleMutationOptions(client));
+    await mutation.execute({
+      roleCode: 'DISPATCH',
+      name: 'Dispatcher',
+      description: 'Dispatch queue',
+      parentRoleId: null,
+      displayOrder: 4,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(roleKeys.list({}))?.isInvalidated).toBe(true);
     disposeCmsQueryClient(client);
   });
 });

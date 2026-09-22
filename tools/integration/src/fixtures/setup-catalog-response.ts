@@ -372,3 +372,132 @@ export const techSkillLevelLookupResponseFixture = {
   ],
   errors: [] as string[],
 };
+
+export const userListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 'a1111111-1111-4111-8111-111111111101',
+        displayName: 'Alex Admin',
+        email: 'alex.admin@example.com',
+        phoneNumber: '+1-555-0100',
+        roleId: 1,
+        roleName: 'Administrator',
+        invitationStatus: 'Accepted',
+        isActive: true,
+        lastLoginOn: '2026-03-01T12:00:00Z',
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+    summary: {
+      totalUsers: 1,
+      pendingInvitation: 0,
+      activeRegistered: 1,
+      inactive: 0,
+      admins: 1,
+    },
+  },
+  errors: [] as string[],
+};
+
+export const userDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    id: 'a1111111-1111-4111-8111-111111111101',
+    displayName: 'Alex Admin',
+    email: 'alex.admin@example.com',
+    phoneNumber: '+1-555-0100',
+    roleId: 1,
+    roleName: 'Administrator',
+    invitationStatus: 'Accepted',
+    isActive: true,
+    hasAcceptedInvitation: true,
+    lastLoginOn: '2026-03-01T12:00:00Z',
+  },
+  errors: [] as string[],
+};
+
+export const userRoleListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 501,
+      userId: 'a1111111-1111-4111-8111-111111111101',
+      fgsRoleId: 1,
+      createdOn: '2026-01-15T10:00:00Z',
+      createdBy: 'system',
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const userRoleDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: userRoleListResponseFixture.data[0],
+  errors: [] as string[],
+};
+
+export const userRoleLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 501,
+      userId: 'a1111111-1111-4111-8111-111111111101',
+      fgsRoleId: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const roleListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1,
+        roleCode: 'ADMIN',
+        name: 'Administrator',
+        description: 'Full access',
+        parentRoleId: null,
+        isBuiltIn: true,
+        displayOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const roleDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: roleListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const roleLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1,
+      roleCode: 'ADMIN',
+      name: 'Administrator',
+      isBuiltIn: true,
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};

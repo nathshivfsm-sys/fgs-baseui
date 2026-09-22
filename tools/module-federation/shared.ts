@@ -25,6 +25,8 @@ const sharedAuthVersion: string =
   require('../../libs/shared/auth/package.json').version;
 const settingsContractVersion: string =
   require('../../libs/settings/contract/package.json').version;
+const userContractVersion: string =
+  require('../../libs/user/contract/package.json').version;
 
 export const sharedDependencies = {
   react: { singleton: true, requiredVersion: '19.2.8' },
@@ -73,6 +75,11 @@ export const sharedDependencies = {
   '@cms/settings-contract': {
     singleton: true,
     requiredVersion: settingsContractVersion,
+    strictVersion: false,
+  },
+  '@cms/user-contract': {
+    singleton: true,
+    requiredVersion: userContractVersion,
     strictVersion: false,
   },
 } as const;

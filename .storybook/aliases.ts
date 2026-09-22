@@ -88,5 +88,13 @@ export function storybookAliases(workspaceRoot: string) {
         'libs/settings/data-access/src/index.ts',
       ),
     },
+    {
+      find: '@cms/user-contract',
+      replacement: join(workspaceRoot, 'libs/user/contract/src/index.ts'),
+    },
+    {
+      find: '@cms/user-data-access',
+      replacement: join(workspaceRoot, 'libs/user/data-access/src/index.ts'),
+    },
   ];
 }
