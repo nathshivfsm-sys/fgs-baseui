@@ -2,6 +2,7 @@ import type {
   Column,
   ColumnFiltersState,
   ColumnVisibilityState,
+  ExpandedState,
   HeaderGroup,
   OnChangeFn,
   PaginationState,
@@ -27,12 +28,15 @@ export interface DataTableColumnMeta {
   cellClassName?: string;
   headerClassName?: string;
   label?: string;
+  /** Render before the expand/selection columns (e.g. drag handle). */
+  pin?: 'leading';
   wrap?: boolean;
 }
 
 export interface DataTableState {
   columnFilters: ColumnFiltersState;
   columnVisibility: ColumnVisibilityState;
+  expanded: ExpandedState;
   globalFilter: string;
   pagination: PaginationState;
   rowSelection: RowSelectionState;
@@ -53,7 +57,9 @@ type ReservedDataTableOption =
   | 'enableColumnResizing'
   | 'enableRowSelection'
   | 'features'
+  | 'getRowCanExpand'
   | 'getRowId'
+  | 'getSubRows'
   | 'globalFilterFn'
   | 'initialState'
   | 'manualFiltering'
@@ -61,11 +67,13 @@ type ReservedDataTableOption =
   | 'manualSorting'
   | 'onColumnFiltersChange'
   | 'onColumnVisibilityChange'
+  | 'onExpandedChange'
   | 'onGlobalFilterChange'
   | 'onPaginationChange'
   | 'onRowSelectionChange'
   | 'onSortingChange'
   | 'pageCount'
+  | 'paginateExpandedRows'
   | 'rowCount'
   | 'state';
 
@@ -92,16 +100,21 @@ export interface DataTableProps<TData extends RowData> {
   enablePagination?: boolean;
   enableRowSelection?: boolean;
   enableSearch?: boolean;
+  enableExpanding?: boolean;
   errorState?: ReactNode;
   filterContent?: ReactNode;
   filterActive?: boolean;
+  getRowCanExpand?: (row: TData) => boolean;
+  getRowExpandLabel?: (row: TData, expanded: boolean) => string;
   getRowLabel?: (row: TData) => string;
   getRowId: (row: TData, index: number) => string;
+  getSubRows?: (row: TData) => TData[] | undefined;
   initialState?: Partial<DataTableState>;
   manual?: DataTableManualMode;
   menuContent?: ReactNode;
   onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
   onColumnVisibilityChange?: OnChangeFn<ColumnVisibilityState>;
+  onExpandedChange?: OnChangeFn<ExpandedState>;
   onGlobalFilterChange?: OnChangeFn<string>;
   onPaginationChange?: OnChangeFn<PaginationState>;
   onRowActivate?: (row: TData) => void;
@@ -109,9 +122,14 @@ export interface DataTableProps<TData extends RowData> {
   onRowClick?: (row: TData) => void;
   onRowSelectionChange?: OnChangeFn<RowSelectionState>;
   onSortingChange?: OnChangeFn<SortingState>;
+  formatPageSizeOption?: (pageSize: number) => string;
   pageSizeOptions?: readonly number[];
+  pageSizeLabel?: string;
+  paginateExpandedRows?: boolean;
+  renderExpandedRow?: (row: TData) => ReactNode;
   rowLabel?: string;
   searchPlaceholder?: string;
+  showExpandColumn?: boolean;
   state?: Partial<DataTableState>;
   status?: DataTableStatus;
   tableLabel?: string;
@@ -128,6 +146,8 @@ export interface DataTableColumnHeaderProps<TData extends RowData> {
 
 export interface DataTablePaginationProps<TData extends RowData> {
   className?: string;
+  formatPageSizeOption?: (pageSize: number) => string;
+  pageSizeLabel?: string;
   rowLabel?: string;
   pageSizeOptions?: readonly number[];
   siblingCount?: number;
@@ -216,6 +236,7 @@ export interface DataTableBodyProps<TData extends RowData> {
   enableRowSelection: boolean;
   errorState?: ReactNode;
   getRowLabel?: (row: TData) => string;
+  renderExpandedRow?: (row: TData) => ReactNode;
   rowActivation?: (row: TData) => void;
   rowLabel: string;
   status: DataTableStatus;

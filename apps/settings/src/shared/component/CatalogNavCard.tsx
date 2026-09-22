@@ -3,6 +3,7 @@ import type { CatalogNavCardProps } from '../types';
 
 export const CatalogNavCard = ({
   activeCount,
+  inactiveCount,
   description,
   icon,
   iconClassName,
@@ -11,7 +12,18 @@ export const CatalogNavCard = ({
   title,
 }: CatalogNavCardProps) => {
   const countLabel =
-    activeCount === undefined ? '—' : `${activeCount} Active`;
+    activeCount === undefined ? (
+      '—'
+    ) : inactiveCount === undefined ? (
+      `${activeCount} Active`
+    ) : (
+      <>
+        {activeCount} Active{' '}
+        <span className="text-foreground-muted">
+          • {inactiveCount} Inactive
+        </span>
+      </>
+    );
 
   return (
     <button
@@ -43,7 +55,9 @@ export const CatalogNavCard = ({
         {description}
       </BodySmall>
       <div className="mt-3 flex w-full items-center justify-between">
-        <span className="text-caption font-medium text-action">{countLabel}</span>
+        <span className="text-caption font-medium text-action">
+          {countLabel}
+        </span>
         <span className="inline-flex items-center gap-0.5 text-caption font-medium text-action">
           View
           <ChevronRightIcon className="size-3" />

@@ -19,6 +19,8 @@ const pageControlClass =
 /** Range summary, rows-per-page control, and numbered pager. */
 export function DataTablePagination<TData extends RowData>({
   className,
+  formatPageSizeOption,
+  pageSizeLabel = 'Rows per page:',
   rowLabel = 'rows',
   pageSizeOptions = [10, 25, 50, 100],
   siblingCount = 1,
@@ -49,16 +51,22 @@ export function DataTablePagination<TData extends RowData>({
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-foreground-muted" id={pageSizeLabelId}>
-            Rows per page:
-          </span>
+          {pageSizeLabel ? (
+            <span className="text-foreground-muted" id={pageSizeLabelId}>
+              {pageSizeLabel}
+            </span>
+          ) : null}
           <Select
             onValueChange={(value) => table.setPageSize(Number(value))}
             value={String(pageSize)}
           >
             <SelectTrigger
-              aria-labelledby={pageSizeLabelId}
-              className="w-[4.25rem] border-input bg-surface"
+              aria-label="Rows per page"
+              aria-labelledby={pageSizeLabel ? pageSizeLabelId : undefined}
+              className={cn(
+                'border-input bg-surface',
+                pageSizeLabel ? 'w-[4.25rem]' : 'min-w-[7.5rem]',
+              )}
               size="sm"
             >
               <SelectValue />
@@ -66,7 +74,7 @@ export function DataTablePagination<TData extends RowData>({
             <SelectContent>
               {pageSizeOptions.map((option) => (
                 <SelectItem key={option} value={String(option)}>
-                  {option}
+                  {formatPageSizeOption?.(option) ?? option}
                 </SelectItem>
               ))}
             </SelectContent>

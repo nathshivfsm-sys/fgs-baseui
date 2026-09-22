@@ -452,3 +452,53 @@ export const Loading: Story = {
 export const Empty: Story = {
   args: { data: [] },
 };
+
+interface ExpandableTeamRow {
+  id: string;
+  name: string;
+  region: string;
+}
+
+const teamColumn = createDataTableColumnHelper<ExpandableTeamRow>();
+
+function ExpandableTeamsTable() {
+  const data: ExpandableTeamRow[] = [
+    { id: 'east', name: 'East crew', region: 'Northeast' },
+    { id: 'west', name: 'West crew', region: 'Pacific' },
+  ];
+  const columns = useMemo(
+    () => [
+      teamColumn.accessor('name', { header: 'Team' }),
+      teamColumn.accessor('region', { header: 'Region' }),
+    ],
+    [],
+  );
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      enablePagination={false}
+      enableRowSelection={false}
+      enableSearch={false}
+      getRowCanExpand={() => true}
+      getRowId={(row) => row.id}
+      renderExpandedRow={(row) => (
+        <div className="border-t border-divider bg-surface-sunken px-4 py-3 text-control text-foreground-muted">
+          Detail panel for {row.name}
+        </div>
+      )}
+      tableLabel="Teams"
+    />
+  );
+}
+
+/** Master rows with a custom detail region rendered beneath the expanded row. */
+export const ExpandableDetailRows: Story = {
+  render: () => <ExpandableTeamsTable />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Expand row' }));
+    await expect(canvas.getByText('Detail panel for East crew')).toBeVisible();
+  },
+};

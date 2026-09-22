@@ -26,6 +26,9 @@ const BusinessUnitPage = lazy(() =>
 const TaxSetupPage = lazy(() =>
   import('./pages/TaxSetupPage').then((module) => ({ default: module.TaxSetupPage })),
 );
+const JobTypePage = lazy(() =>
+  import('./pages/JobTypePage').then((module) => ({ default: module.JobTypePage })),
+);
 
 export interface AppProps {
   runtime: CmsRuntime;
@@ -77,6 +80,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="company/tax"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <JobTypePage />
+            </RouteBoundary>
+          }
+          path="operations/job-type"
         />
       </Routes>
     </div>

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 export interface CatalogNavCardProps {
   activeCount?: number;
+  inactiveCount?: number;
   description: string;
   icon: ReactNode;
   iconClassName?: string;
