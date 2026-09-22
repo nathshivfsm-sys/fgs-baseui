@@ -79,6 +79,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Define trades and technician skills used for service qualification.',
       icon: 'SettingsTradeSkillsIcon',
       totalSettings: { count: 18, label: 'Trades • 96 Skills' },
+      href: 'operations/trade-skills',
     },
     {
       title: 'Work Order & Booking',

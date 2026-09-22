@@ -15,5 +15,6 @@ export interface FormSelectFieldProps<Values extends FieldValues>
     'defaultValue' | 'error' | 'name' | 'onValueChange' | 'options' | 'value'
   > {
   name: FieldPathByValue<Values, string>;
+  onValueChange?: (value: string) => void;
   options: readonly SelectOption[];
 }

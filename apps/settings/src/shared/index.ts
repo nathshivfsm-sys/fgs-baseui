@@ -11,6 +11,11 @@ export {
   SETUP_PATH,
   SETUP_TAB_STATE_KEY,
 } from './constant';
+export {
+  useGeoLookupOptions,
+  type GeoLookupOptions,
+  type GeoLookupOptionsParams,
+} from './util';
 export type {
   CatalogNavCardProps,
   CatalogStatusFilter,

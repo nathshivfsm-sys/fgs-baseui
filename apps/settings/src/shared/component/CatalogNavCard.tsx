@@ -54,11 +54,11 @@ export const CatalogNavCard = ({
       <BodySmall className="mt-2 text-caption" color="foreground-muted">
         {description}
       </BodySmall>
-      <div className="mt-3 flex w-full items-center justify-between">
-        <span className="text-caption font-medium text-action">
+      <div className="mt-3 flex w-full items-center justify-between gap-2">
+        <span className="min-w-0 text-caption font-medium text-action">
           {countLabel}
         </span>
-        <span className="inline-flex items-center gap-0.5 text-caption font-medium text-action">
+        <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 text-caption font-medium text-action">
           View
           <ChevronRightIcon className="size-3" />
         </span>

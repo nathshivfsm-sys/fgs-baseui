@@ -37,6 +37,14 @@ export function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+/** Pause mock responses so table skeletons and Save/Delete loaders are visible. */
+export const STORY_API_DELAY_MS = 1000;
+
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 /** A request that never settles, for asserting on a loading state. */
 export const pendingResponse: ApiHandler = () =>
   new Promise<Response>(() => undefined);
@@ -79,6 +87,7 @@ export function createStoryApi(): StoryApi {
         `No story API handler for "${request.method} ${endpoint}". Add one in the story's beforeEach.`,
       );
     }
+    await wait(STORY_API_DELAY_MS);
     return handler(request);
   };
 

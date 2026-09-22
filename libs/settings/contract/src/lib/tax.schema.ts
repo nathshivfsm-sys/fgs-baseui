@@ -55,6 +55,7 @@ export const taxCreateDtoSchema = z.object({
   regionCode: nullableText,
   county: nullableText,
   city: nullableText,
+  taxRate: z.number(),
 });
 
 export const taxUpdateDtoSchema = taxCreateDtoSchema;
@@ -70,6 +71,7 @@ export const taxPatchDtoSchema = z.object({
   regionCode: nullableText,
   county: nullableText,
   city: nullableText,
+  taxRate: z.number().nullish(),
   isActive: z.boolean().nullish(),
 });
 

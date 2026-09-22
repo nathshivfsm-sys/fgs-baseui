@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import type {
   CompanyAddress,
   CompanyAddressForm,
@@ -18,9 +19,15 @@ export interface AddressFormDialogProps {
   onSubmit: (values: CompanyAddressForm) => void;
   open: boolean;
   physicalAddress: CompanyAddress | null;
+  queryClient: QueryClient;
 }
 
 export interface AddressFormFieldsProps {
   kind: CompanyAddressKind;
   physicalAddress: CompanyAddress | null;
+  queryClient: QueryClient;
+}
+
+export interface AddressesSectionProps {
+  queryClient: QueryClient;
 }

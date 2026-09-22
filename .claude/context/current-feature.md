@@ -2,6 +2,14 @@
 
 ## Status
 
+**Geo lookups (country, state/province, postal-code cities)** — wired into
+Settings forms. Cascading selects use `@cms/shared-data-access` GET factories:
+country → state → city. Changing or clearing a parent field resets dependents.
+
+- Spec: [features/geo-lookup-catalog-api-prd.md](features/geo-lookup-catalog-api-prd.md)
+
+## History
+
 **Setup catalog APIs (TechTrade, TechSkillLevel)** — implemented and verified
 locally on `feature/setup-tech-trade-skill-level-api`. Adds TanStack Query
 options factories in `@cms/settings-data-access` from the FGS Setup Service

@@ -10,22 +10,18 @@ const nullableNumber = z.number().nullish();
 
 /**
  * Wire shapes of `/postalcode` from the FGS Setup Service swagger
- * (`FgsSetupPostalCode*` DTOs), inferred from the Zone catalog pattern and the
- * Postal Code listing / create screens.
+ * (`FgsSetupPostalCode*` DTOs). List/detail items match the create payload plus
+ * `id` and `isActive`.
  */
 export const postalCodeSummaryDtoSchema = z.object({
   id: z.number(),
   postalCode: nullableText,
-  city: nullableText,
-  state: nullableText,
   countryCode: nullableText,
+  stateProvinceCode: nullableText,
+  city: nullableText,
+  tripChargeAmount: nullableNumber,
   fgsSetupZoneId: nullableNumber,
-  zoneCode: nullableText,
-  zoneName: nullableText,
   fgsSetupTaxId: nullableNumber,
-  taxCode: nullableText,
-  taxRate: nullableNumber,
-  tripCharge: nullableNumber,
   isActive: z.boolean(),
 });
 

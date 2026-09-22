@@ -42,13 +42,15 @@ export function toPostalCodeFormValues(
     postalCode: postalCode.postalCode ?? '',
     city: postalCode.city ?? '',
     countryCode: postalCode.countryCode ?? '',
-    state: postalCode.state ?? '',
+    state: postalCode.stateProvinceCode ?? '',
     fgsSetupZoneId:
       postalCode.fgsSetupZoneId == null ? '' : String(postalCode.fgsSetupZoneId),
     fgsSetupTaxId:
       postalCode.fgsSetupTaxId == null ? '' : String(postalCode.fgsSetupTaxId),
     tripCharge:
-      postalCode.tripCharge == null ? '' : String(postalCode.tripCharge),
+      postalCode.tripChargeAmount == null
+        ? ''
+        : String(postalCode.tripChargeAmount),
   };
 }
 

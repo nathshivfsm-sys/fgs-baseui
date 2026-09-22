@@ -16,6 +16,8 @@ import {
   glBreakKeys,
   glBreakListQueryOptions,
   glBreakLookupQueryOptions,
+  deleteTechTradeMutationOptions,
+  deleteTechSkillLevelMutationOptions,
   nonWorkingDateDetailQueryOptions,
   nonWorkingDateKeys,
   nonWorkingDateListQueryOptions,
@@ -162,6 +164,7 @@ describe('tax through customFetch', () => {
       syncToken: null,
       showTaxDetail: true,
       description: 'State plus local',
+      taxRate: 8.25,
     });
 
     expect(created.id).toBe(11);
@@ -388,6 +391,9 @@ describe('postal code through customFetch', () => {
     const lookup = await client.fetchQuery(postalCodeLookupQueryOptions(false));
 
     expect(page.items[0]?.postalCode).toBe('NORTH');
+    expect(page.items[0]?.stateProvinceCode).toBe('TX');
+    expect(page.items[0]?.tripChargeAmount).toBe(10);
+    expect(page.items[0]?.fgsSetupZoneId).toBe(31);
     expect(lookup[0]?.city).toBe('Houston');
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode?city=Houston');
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
@@ -469,6 +475,24 @@ describe('tech trade through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techtrade');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(techTradeKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('DELETEs a trade and invalidates tech trade queries', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+    const client = createCmsQueryClient();
+    client.setQueryData(techTradeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, deleteTechTradeMutationOptions(client));
+    await mutation.execute(51);
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techtrade/51');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
     expect(client.getQueryState(techTradeKeys.list({}))?.isInvalidated).toBe(
       true,
     );
@@ -582,6 +606,23 @@ describe('tech skill level through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techskilllevel');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+
+  it('DELETEs a skill level and invalidates tech skill level queries', async () => {
+    const client = createCmsQueryClient();
+    client.setQueryData(techSkillLevelKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, deleteTechSkillLevelMutationOptions(client));
+    await mutation.execute(61);
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/techskilllevel/61');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
     expect(
       client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
     ).toBe(true);

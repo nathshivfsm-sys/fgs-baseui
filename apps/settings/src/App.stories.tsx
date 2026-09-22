@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { configure, expect, fireEvent, userEvent, waitFor, within } from 'storybook/test';
 import { alert } from '@cms/ui';
 import type { GlBreakDetailDto } from '@cms/settings-contract';
 import {
@@ -16,6 +16,8 @@ import {
   taxAuthorityListItemsFixture,
   taxListItemsFixture,
   taxLookupItemsFixture,
+  techSkillLevelListItemsFixture,
+  techTradeListItemsFixture,
   nonWorkingDateListItemsFixture,
   zoneListItemsFixture,
 } from '../../../.storybook/fixtures/feature-data';
@@ -26,6 +28,8 @@ import {
 } from '../../../.storybook/fixtures/runtime';
 import { App } from './App';
 
+configure({ asyncUtilTimeout: 5000 });
+
 const SettingsApp = withCmsRuntime(App);
 
 const api = createStoryApi();
@@ -34,6 +38,85 @@ const NON_WORKING_DATE_ENDPOINT = '/nonworkingdate';
 
 function setupEnvelope(data: unknown) {
   return { success: true, statusCode: 200, data, errors: [] as string[] };
+}
+
+function geoLookupHandlers(): ApiHandlers {
+  const countries = [
+    {
+      countryCode: 'US',
+      countryName: 'United States',
+      currencyCode: 'USD',
+    },
+    {
+      countryCode: 'CA',
+      countryName: 'Canada',
+      currencyCode: 'CAD',
+    },
+  ];
+  const states = [
+    {
+      id: 1,
+      countryCode: 'US',
+      stateProvinceCode: 'TX',
+      stateProvinceName: 'Texas',
+    },
+    {
+      id: 2,
+      countryCode: 'US',
+      stateProvinceCode: 'IL',
+      stateProvinceName: 'Illinois',
+    },
+    {
+      id: 3,
+      countryCode: 'CA',
+      stateProvinceCode: 'ON',
+      stateProvinceName: 'Ontario',
+    },
+  ];
+  const cities = [
+    { city: 'Houston', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Dallas', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Austin', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'San Antonio', countryCode: 'US', stateProvinceCode: 'TX' },
+    { city: 'Chicago', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Springfield', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Peoria', countryCode: 'US', stateProvinceCode: 'IL' },
+    { city: 'Toronto', countryCode: 'CA', stateProvinceCode: 'ON' },
+  ];
+
+  return {
+    ['GET /glo/country/lookup']: () => jsonResponse(setupEnvelope(countries)),
+    ['GET /glo/stateprovince/lookup']: (request) => {
+      const countryCode = new URL(request.url).searchParams.get('countryCode');
+      const items = countryCode
+        ? states.filter((state) => state.countryCode === countryCode)
+        : states;
+      return jsonResponse(setupEnvelope(items));
+    },
+    ['GET /postalcode/cities']: (request) => {
+      const url = new URL(request.url);
+      const countryCode = url.searchParams.get('countryCode');
+      const stateProvinceCode = url.searchParams.get('stateProvinceCode');
+      const items = cities
+        .filter((city) => {
+          if (countryCode && city.countryCode !== countryCode) return false;
+          if (
+            stateProvinceCode &&
+            city.stateProvinceCode !== stateProvinceCode
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .map(({ city }) => ({ city }));
+      return jsonResponse(setupEnvelope(items));
+    },
+  };
+}
+
+async function fillTextbox(element: HTMLElement, value: string) {
+  await userEvent.click(element);
+  await fireEvent.input(element, { target: { value } });
 }
 
 function nonWorkingDateHandlers(): ApiHandlers {
@@ -91,6 +174,7 @@ const loadsNonWorkingDates = nonWorkingDateHandlers();
 const loadsCompany: ApiHandlers = {
   [`GET ${COMPANY_ENDPOINT}`]: () => jsonResponse(companyResponseFixture),
   ...loadsNonWorkingDates,
+  ...geoLookupHandlers(),
 };
 
 const savesCompany: ApiHandlers = {
@@ -166,6 +250,14 @@ const chooseSelectOption = async (
     );
   });
 };
+
+const waitForEnabledCombobox = (
+  scope: ReturnType<typeof within>,
+  fieldName: RegExp,
+) =>
+  waitFor(() => {
+    expect(scope.getByRole('combobox', { name: fieldName })).toBeEnabled();
+  }, LAZY_PAGE);
 
 const waitForDialogClosed = () =>
   waitFor(() => {
@@ -421,6 +513,7 @@ export const GeneralInfoMissingCompany: Story = {
 
 function zoneHandlers(): ApiHandlers {
   return {
+    ...geoLookupHandlers(),
     ['GET /zone']: (request) => {
       const url = new URL(request.url);
       const isActiveParam = url.searchParams.get('isActive');
@@ -512,26 +605,16 @@ function zoneHandlers(): ApiHandlers {
         fgsSetupTaxId?: number | null;
         tripChargeAmount?: number | null;
       };
-      const zone = zoneListItemsFixture.find(
-        (item) => item.id === body.fgsSetupZoneId,
-      );
-      const tax = taxLookupItemsFixture.find(
-        (item) => item.id === body.fgsSetupTaxId,
-      );
       return jsonResponse(
         setupEnvelope({
           id: 99,
           postalCode: body.postalCode ?? null,
-          city: body.city ?? null,
-          state: body.stateProvinceCode ?? null,
           countryCode: body.countryCode ?? null,
+          stateProvinceCode: body.stateProvinceCode ?? null,
+          city: body.city ?? null,
+          tripChargeAmount: body.tripChargeAmount ?? null,
           fgsSetupZoneId: body.fgsSetupZoneId ?? null,
-          zoneCode: zone?.code ?? null,
-          zoneName: zone?.name ?? null,
           fgsSetupTaxId: body.fgsSetupTaxId ?? null,
-          taxCode: tax?.taxCode ?? null,
-          taxRate: tax?.taxRate ?? null,
-          tripCharge: body.tripChargeAmount ?? null,
           isActive: true,
         }),
         201,
@@ -578,6 +661,7 @@ function glBreakHandlers(): ApiHandlers {
   };
 
   const handlers: ApiHandlers = {
+    ...geoLookupHandlers(),
     ['GET /glbreak']: (request) => {
       const matched = filterItems(request);
       return jsonResponse(
@@ -744,6 +828,9 @@ export const ZonePostalCodeCatalog: Story = {
     ).toBeVisible();
     await expect(await canvas.findByText('NORTH')).toBeVisible();
     await expect(canvas.getAllByText('Houston').length).toBeGreaterThan(0);
+    await expect(canvas.getAllByText('TX').length).toBeGreaterThan(0);
+    await expect(canvas.getByText('North Zone')).toBeVisible();
+    await expect(canvas.getAllByText('$10.00').length).toBeGreaterThan(0);
     await expect(canvas.getByRole('tab', { name: 'Active (5)' })).toBeVisible();
     await expect(
       canvas.getByRole('tab', { name: 'Inactive (2)' }),
@@ -807,8 +894,11 @@ export const ZonePostalCodeAddPostal: Story = {
       withinDialog.getByRole('textbox', { name: /postal code/i }),
       '77099',
     );
-    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Texas');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await chooseSelectOption(withinDialog, /tax code/i, 'TX-STD');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Postal Code' }),
@@ -822,7 +912,7 @@ export const ZonePostalCodeAddPostal: Story = {
     await expect(post?.body).toEqual({
       postalCode: '77099',
       countryCode: 'US',
-      stateProvinceCode: null,
+      stateProvinceCode: 'TX',
       city: 'Houston',
       tripChargeAmount: null,
       fgsSetupZoneId: null,
@@ -930,12 +1020,11 @@ export const BusinessUnitAdd: Story = {
       withinDialog.getByRole('textbox', { name: /zip\/postal code/i }),
       '62701',
     );
-    await userEvent.type(
-      withinDialog.getByRole('textbox', { name: /^city/i }),
-      'Springfield',
-    );
-    await chooseSelectOption(withinDialog, /state/i, 'IL');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Illinois');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Springfield');
     await expect(
       withinDialog.getByRole('heading', { name: 'Create Business Unit' }),
     ).toBeVisible();
@@ -1014,12 +1103,11 @@ export const BusinessUnitAddBreak2: Story = {
       withinDialog.getByRole('textbox', { name: /zip\/postal code/i }),
       '61602',
     );
-    await userEvent.type(
-      withinDialog.getByRole('textbox', { name: /^city/i }),
-      'Peoria',
-    );
-    await chooseSelectOption(withinDialog, /state/i, 'IL');
     await chooseSelectOption(withinDialog, /country/i, 'United States');
+    await waitForEnabledCombobox(withinDialog, /state/i);
+    await chooseSelectOption(withinDialog, /state/i, 'Illinois');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Peoria');
     await userEvent.click(
       withinDialog.getByRole('button', { name: 'Save Break 2' }),
     );
@@ -1055,8 +1143,455 @@ export const BusinessUnitFromGrid: Story = {
   },
 };
 
+function tradeSkillsHandlers(): ApiHandlers {
+  return {
+    ['GET /techtrade']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = techTradeListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /techtrade/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          techTradeListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, tradeCode, name, sortOrder }) => ({
+              id,
+              tradeCode,
+              name,
+              sortOrder,
+            })),
+        ),
+      );
+    },
+    ['POST /techtrade']: async (request) => {
+      const body = (await request.json()) as {
+        tradeCode?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+        skillIds?: number[] | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          tradeCode: body.tradeCode ?? null,
+          name: body.name ?? null,
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? null,
+          skillIds: body.skillIds ?? [],
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['PUT /techtrade/51']: async (request) => {
+      const body = (await request.json()) as {
+        tradeCode?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+        skillIds?: number[] | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 51,
+          tradeCode: body.tradeCode ?? 'HVAC',
+          name: body.name ?? 'HVAC- Repair',
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? 1,
+          skillIds: body.skillIds ?? [61, 62],
+          isActive: true,
+        }),
+      );
+    },
+    ['DELETE /techtrade/52']: () => new Response(null, { status: 204 }),
+    ['GET /techskilllevel']: (request) => {
+      const url = new URL(request.url);
+      const isActiveParam = url.searchParams.get('isActive');
+      const isActive =
+        isActiveParam === 'true'
+          ? true
+          : isActiveParam === 'false'
+            ? false
+            : undefined;
+      const items = techSkillLevelListItemsFixture.filter((item) =>
+        isActive === undefined ? true : item.isActive === isActive,
+      );
+      return jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 10,
+          totalCount: items.length,
+        }),
+      );
+    },
+    ['GET /techskilllevel/lookup']: (request) => {
+      const url = new URL(request.url);
+      const activeOnly = url.searchParams.get('activeOnly') !== 'false';
+      return jsonResponse(
+        setupEnvelope(
+          techSkillLevelListItemsFixture
+            .filter((item) => (activeOnly ? item.isActive : true))
+            .map(({ id, code, name, sortOrder }) => ({
+              id,
+              code,
+              name,
+              sortOrder,
+            })),
+        ),
+      );
+    },
+    ['POST /techskilllevel']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 99,
+          code: body.code ?? null,
+          name: body.name ?? null,
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? null,
+          isActive: true,
+        }),
+        201,
+      );
+    },
+    ['PUT /techskilllevel/61']: async (request) => {
+      const body = (await request.json()) as {
+        code?: string | null;
+        name?: string | null;
+        description?: string | null;
+        sortOrder?: number | null;
+      };
+      return jsonResponse(
+        setupEnvelope({
+          id: 61,
+          code: body.code ?? 'INST',
+          name: body.name ?? 'Install',
+          description: body.description ?? null,
+          sortOrder: body.sortOrder ?? 1,
+          isActive: true,
+        }),
+      );
+    },
+    ['DELETE /techskilllevel/62']: () => new Response(null, { status: 204 }),
+  };
+}
+
+const loadsTradeSkills = tradeSkillsHandlers();
+
+export const TradeSkills: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
+    ).toBeVisible();
+    await expect(await canvas.findByText('HVAC- Repair')).toBeVisible();
+    await expect(
+      (await canvas.findAllByText('Install, Repair')).length,
+    ).toBeGreaterThan(0);
+    await expect(
+      canvas.getByRole('tab', { name: 'Inactive (2)' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Trade' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TradeSkillsInactive: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (2)' }));
+    await expect(await canvas.findByText('Appliance')).toBeVisible();
+    await expect(canvas.queryByText('HVAC- Repair')).not.toBeInTheDocument();
+  },
+};
+
+export const TradeSkillsAdd: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Trade' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    const tradeCode = withinDialog.getByRole('textbox', { name: /trade code/i });
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(tradeCode, 'GAS');
+    await fillTextbox(name, 'Gas Fitting');
+    await expect(tradeCode).toHaveValue('GAS');
+    await expect(name).toHaveValue('Gas Fitting');
+    await userEvent.click(
+      withinDialog.getByRole('combobox', { name: /skills/i }),
+    );
+    await userEvent.click(
+      await within(document.body).findByRole('option', { name: 'Install' }),
+    );
+    await userEvent.click(
+      within(document.body).getByRole('option', { name: 'Repair' }),
+    );
+    await userEvent.keyboard('{Escape}');
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Trade' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Trade created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/techtrade');
+    await expect(post?.body).toEqual({
+      tradeCode: 'GAS',
+      name: 'Gas Fitting',
+      description: null,
+      skillIds: [61, 62],
+    });
+  },
+};
+
+export const TradeSkillsEdit: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('HVAC- Repair');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Edit HVAC- Repair' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Trade' }),
+    ).toBeVisible();
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(name, 'HVAC Repair');
+    await expect(name).toHaveValue('HVAC Repair');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Trade updated')).toBeVisible();
+    const put = api.requests.find((request) => request.method === 'PUT');
+    await expect(put?.endpoint).toBe('/techtrade/51');
+  },
+};
+
+export const TradeSkillsDelete: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Plumbing -Install');
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Delete Plumbing -Install' }),
+    );
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Delete Trade' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Delete' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Deleted')).toBeVisible();
+    await expect(body.getByText('Trade deleted')).toBeVisible();
+    const del = api.requests.find((request) => request.method === 'DELETE');
+    await expect(del?.endpoint).toBe('/techtrade/52');
+  },
+};
+
+export const TradeSkillsFromGrid: Story = {
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('tab', { name: 'Operations' }));
+    await userEvent.click(
+      canvas.getByRole('button', { name: /^Trade & Skills/ }),
+    );
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+  },
+};
+
+export const TradeSkillsOperationsBreadcrumb: Story = {
+  args: { initialPath: '/settings/operations/trade-skills' },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByRole('heading', { name: 'Trade & Skills' });
+    await expect(canvas.getByRole('link', { name: 'Setup' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('link', { name: 'Operations' }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Setup' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('tab', { name: 'Operations' }),
+    ).toHaveAttribute('data-active', '');
+    await expect(
+      canvas.getByRole('button', { name: /^Trade & Skills/ }),
+    ).toBeVisible();
+  },
+};
+
+export const TradeSkillsCatalog: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Trade & Skills' }),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByRole('tab', { name: 'Active (5)' }),
+    ).toBeVisible();
+    await expect(await canvas.findByText('Install')).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Add Skill' }),
+    ).toBeEnabled();
+  },
+};
+
+export const TradeSkillsCatalogInactive: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('tab', { name: 'Inactive (3)' }));
+    await expect(await canvas.findByText('Weld')).toBeVisible();
+    await expect(canvas.queryByText('Install')).not.toBeInTheDocument();
+  },
+};
+
+export const TradeSkillsAddSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('button', { name: 'Add Skill' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    const code = withinDialog.getByRole('textbox', { name: /skill code/i });
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(code, 'CAL');
+    await fillTextbox(name, 'Calibrate');
+    await expect(code).toHaveValue('CAL');
+    await expect(name).toHaveValue('Calibrate');
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Add Skill' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Skill created')).toBeVisible();
+    const post = api.requests.find((request) => request.method === 'POST');
+    await expect(post?.endpoint).toBe('/techskilllevel');
+    await expect(post?.body).toEqual({
+      code: 'CAL',
+      name: 'Calibrate',
+      description: null,
+    });
+  },
+};
+
+export const TradeSkillsEditSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Install');
+    await userEvent.click(canvas.getByRole('button', { name: 'Edit Install' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Edit Skill' }),
+    ).toBeVisible();
+    const name = withinDialog.getByRole('textbox', { name: /^name/i });
+    await fillTextbox(name, 'Installation');
+    await expect(name).toHaveValue('Installation');
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Saved')).toBeVisible();
+    await expect(body.getByText('Skill updated')).toBeVisible();
+    const put = api.requests.find((request) => request.method === 'PUT');
+    await expect(put?.endpoint).toBe('/techskilllevel/61');
+  },
+};
+
+export const TradeSkillsDeleteSkill: Story = {
+  args: {
+    initialPath: '/settings/operations/trade-skills?catalog=skills',
+  },
+  beforeEach: () => api.install(loadsTradeSkills),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await canvas.findByText('Repair');
+    await userEvent.click(canvas.getByRole('button', { name: 'Delete Repair' }));
+    const dialog = await within(document.body).findByRole('dialog');
+    const withinDialog = within(dialog);
+    await expect(
+      withinDialog.getByRole('heading', { name: 'Delete Skill' }),
+    ).toBeVisible();
+    await userEvent.click(withinDialog.getByRole('button', { name: 'Delete' }));
+    const body = within(document.body);
+    await expect(await body.findByText('Deleted')).toBeVisible();
+    await expect(body.getByText('Skill deleted')).toBeVisible();
+    const del = api.requests.find((request) => request.method === 'DELETE');
+    await expect(del?.endpoint).toBe('/techskilllevel/62');
+  },
+};
+
 function taxSetupHandlers(): ApiHandlers {
   return {
+    ...geoLookupHandlers(),
     ['GET /taxauthority']: (request) => {
       const url = new URL(request.url);
       const isActiveParam = url.searchParams.get('isActive');
@@ -1166,6 +1701,7 @@ function taxSetupHandlers(): ApiHandlers {
         regionCode?: string | null;
         county?: string | null;
         city?: string | null;
+        taxRate?: number;
       };
       return jsonResponse(
         setupEnvelope({
@@ -1177,7 +1713,7 @@ function taxSetupHandlers(): ApiHandlers {
           regionCode: body.regionCode ?? null,
           county: body.county ?? null,
           city: body.city ?? null,
-          taxRate: 0,
+          taxRate: body.taxRate ?? 0,
           isActive: true,
         }),
         201,
@@ -1303,10 +1839,15 @@ export const TaxSetupAddTaxRate: Story = {
       'TX-BEXAR',
     );
     await userEvent.type(
+      withinDialog.getByRole('textbox', { name: /tax rate/i }),
+      '8.25',
+    );
+    await userEvent.type(
       withinDialog.getByRole('textbox', { name: /^name$/i }),
       'Bexar Sales Tax',
     );
-    await chooseSelectOption(withinDialog, /state/i, 'TX');
+    await chooseSelectOption(withinDialog, /state/i, 'Texas');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
     await chooseSelectOption(withinDialog, /^city$/i, 'San Antonio');
     await expect(
       withinDialog.getByRole('heading', { name: 'Add Tax Rate' }),
@@ -1330,6 +1871,7 @@ export const TaxSetupAddTaxRate: Story = {
       regionCode: 'TX',
       county: null,
       city: 'San Antonio',
+      taxRate: 8.25,
     });
   },
 };
@@ -1550,9 +2092,8 @@ export const GeneralInfoEditPhysicalAddress: Story = {
         name: 'Same as physical address',
       }),
     ).not.toBeInTheDocument();
-    const city = withinDialog.getByRole('textbox', { name: 'City' });
-    await userEvent.clear(city);
-    await userEvent.type(city, 'Houston');
+    await waitForEnabledCombobox(withinDialog, /^city$/i);
+    await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
       expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
@@ -1608,8 +2149,8 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     await expect(line1).toHaveValue('100 Main St');
     await expect(line1).toHaveAttribute('readonly');
     await expect(
-      withinDialog.getByRole('textbox', { name: 'City' }),
-    ).toHaveValue('Austin');
+      withinDialog.getByRole('combobox', { name: 'City' }),
+    ).toHaveTextContent('Austin');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
       expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),

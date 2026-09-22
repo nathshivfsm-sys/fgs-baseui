@@ -47,6 +47,7 @@ export const CREATE_TAX_DESCRIPTION =
 export const EDIT_TAX_TITLE = 'Edit Tax Rate';
 export const EDIT_TAX_DESCRIPTION = 'Update the tax rate and its jurisdiction';
 export const TAX_CODE_PLACEHOLDER = 'Enter Sales Tax Code';
+export const TAX_RATE_PLACEHOLDER = 'e.g. 8.25';
 export const TAX_NAME_PLACEHOLDER = 'Enter Sales Tax Name';
 export const TAX_COUNTY_PLACEHOLDER = 'Enter County Name';
 export const TAX_STATE_PLACEHOLDER = 'Select State';

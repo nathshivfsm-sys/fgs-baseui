@@ -56,6 +56,16 @@ export const patchTechTrade = async (
   return parseTechTradeDetail(response);
 };
 
+export const deleteTechTrade = async (
+  id: number,
+  context?: QueryRequestContext,
+): Promise<void> => {
+  await customFetch<unknown>(techTradeDetailEndpoint(id), {
+    method: 'DELETE',
+    signal: context?.signal,
+  });
+};
+
 function invalidateTechTrades(queryClient: QueryClient) {
   return queryClient.invalidateQueries({ queryKey: techTradeKeys.all });
 }
@@ -80,5 +90,12 @@ export const patchTechTradeMutationOptions = (queryClient: QueryClient) =>
     mutationFn: ({ id, body }: { id: number; body: TechTradePatchDto }) =>
       patchTechTrade(id, body),
     meta: { feature: 'tech-trade', operation: 'patch' },
+    onSuccess: () => invalidateTechTrades(queryClient),
+  });
+
+export const deleteTechTradeMutationOptions = (queryClient: QueryClient) =>
+  mutationOptions({
+    mutationFn: (id: number) => deleteTechTrade(id),
+    meta: { feature: 'tech-trade', operation: 'delete' },
     onSuccess: () => invalidateTechTrades(queryClient),
   });

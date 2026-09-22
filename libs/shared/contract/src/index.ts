@@ -20,3 +20,17 @@ export {
   type AttachmentListParams,
   type AttachmentMetadataDto,
 } from './lib/attachment.schema';
+export {
+  gloCountryLookupDtoSchema,
+  gloCountryLookupResponseSchema,
+  gloStateProvinceLookupDtoSchema,
+  gloStateProvinceLookupResponseSchema,
+  postalCodeCityLookupDtoSchema,
+  postalCodeCityLookupResponseSchema,
+  type GloCountryLookupDto,
+  type GloCountryLookupParams,
+  type GloStateProvinceLookupDto,
+  type GloStateProvinceLookupParams,
+  type PostalCodeCityLookupDto,
+  type PostalCodeCityLookupParams,
+} from './lib/geo-lookup.schema';

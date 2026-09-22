@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { http } from 'msw';
 import {
   nonWorkingDateCreateDtoSchema,
   nonWorkingDatePatchDtoSchema,
@@ -17,6 +17,7 @@ import {
   readJsonObject,
   readOptionalBoolean,
   setupError,
+  setupNoContent,
   setupOk,
 } from './util';
 
@@ -168,6 +169,6 @@ export const nonWorkingDateHandlers = [
     const index = nonWorkingDates.findIndex((record) => record.id === id);
     if (index < 0) return setupError(404, 'Non-working date not found.');
     nonWorkingDates.splice(index, 1);
-    return new HttpResponse<null>(null, { status: 204 });
+    return setupNoContent();
   }),
 ];

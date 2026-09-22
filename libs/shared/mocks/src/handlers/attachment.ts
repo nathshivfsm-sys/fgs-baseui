@@ -11,6 +11,7 @@ import {
   parseRouteId,
   readOptionalBoolean,
   setupError,
+  setupNoContent,
   setupOk,
 } from './util';
 
@@ -292,7 +293,7 @@ export const attachmentHandlers = [
       if (category && record.category !== category) continue;
       attachments.splice(index, 1);
     }
-    return new HttpResponse<null>(null, { status: 204 });
+    return setupNoContent();
   }),
 
   http.delete('/api/v1/attachment/:attachmentId', ({ params }) => {
@@ -302,7 +303,7 @@ export const attachmentHandlers = [
     );
     if (index < 0) return setupError(404, 'Attachment not found.');
     attachments.splice(index, 1);
-    return new HttpResponse<null>(null, { status: 204 });
+    return setupNoContent();
   }),
 
   http.get('/api/v1/attachment', ({ request }) => {

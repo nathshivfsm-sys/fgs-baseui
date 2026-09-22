@@ -311,6 +311,7 @@ export function TaxSetupPage({ queryClient }: TaxSetupPageProps) {
         onOpenChange={handleTaxDialogOpenChange}
         onSubmit={handleTaxSubmit}
         open={taxDialogOpen}
+        queryClient={queryClient}
         tax={editingTax}
       />
     </section>

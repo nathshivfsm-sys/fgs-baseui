@@ -18,7 +18,7 @@ import {
   SwitchField,
 } from '@cms/ui';
 import { FormTextInput } from '../../../shared/component';
-import { COUNTRY_OPTIONS, STATE_OPTIONS } from '../../../shared/constant';
+import { useGeoLookupOptions } from '../../../shared';
 import {
   ADDRESS_LINE_1_PLACEHOLDER,
   ADDRESS_LINE_2_PLACEHOLDER,
@@ -71,6 +71,7 @@ export const GlBreakFormDialog = ({
   onOpenChange,
   onSubmit,
   open,
+  queryClient,
   record,
   tradeOptions,
 }: GlBreakFormDialogProps) => {
@@ -81,6 +82,17 @@ export const GlBreakFormDialog = ({
     resolver: zodResolver(glBreakFormSchema),
     values: record ? toGlBreakFormValues(record) : emptyGlBreakForm(),
   });
+  const country = form.watch('country');
+  const state = form.watch('state');
+  const { cityOptions, countryOptions, stateOptions } = useGeoLookupOptions(
+    queryClient,
+    {
+      countryCode: country,
+      enabled: open,
+      includeCities: true,
+      stateProvinceCode: state,
+    },
+  );
 
   useEffect(() => {
     if (open) {
@@ -97,6 +109,15 @@ export const GlBreakFormDialog = ({
       body: toGlBreakWriteDto(values, breakLevel),
       isActive: values.isActive,
     });
+  };
+
+  const handleCountryChange = () => {
+    form.setValue('state', '', { shouldDirty: true, shouldValidate: true });
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleStateChange = () => {
+    form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
   };
 
   return (
@@ -164,26 +185,31 @@ export const GlBreakFormDialog = ({
                 placeholder={POSTAL_CODE_PLACEHOLDER}
                 required
               />
-              <FormTextInput<GlBreakForm>
+              <FormSelectField<GlBreakForm>
+                disabled={!state}
                 label="City"
                 name="city"
+                options={cityOptions}
                 placeholder={CITY_PLACEHOLDER}
                 required
               />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormSelectField<GlBreakForm>
-                label="State/Province"
-                name="state"
-                options={STATE_OPTIONS}
-                placeholder={STATE_PLACEHOLDER}
+                label="Country"
+                name="country"
+                onValueChange={handleCountryChange}
+                options={countryOptions}
+                placeholder={COUNTRY_PLACEHOLDER}
                 required
               />
               <FormSelectField<GlBreakForm>
-                label="Country"
-                name="country"
-                options={COUNTRY_OPTIONS}
-                placeholder={COUNTRY_PLACEHOLDER}
+                disabled={!country}
+                label="State/Province"
+                name="state"
+                onValueChange={handleStateChange}
+                options={stateOptions}
+                placeholder={STATE_PLACEHOLDER}
                 required
               />
             </div>

@@ -8,11 +8,20 @@ export { techTradeKeys } from './tech-trade.keys';
 export {
   createTechTrade,
   createTechTradeMutationOptions,
+  deleteTechTrade,
+  deleteTechTradeMutationOptions,
   patchTechTrade,
   patchTechTradeMutationOptions,
   updateTechTrade,
   updateTechTradeMutationOptions,
 } from './tech-trade.mutations';
+export {
+  emptyTechTradeForm,
+  techTradeFormSchema,
+  toTechTradeFormValues,
+  toTechTradeWriteDto,
+  type TechTradeForm,
+} from './tech-trade.form';
 export {
   loadTechTrade,
   loadTechTradeLookup,
