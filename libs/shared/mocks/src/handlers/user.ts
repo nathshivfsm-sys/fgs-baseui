@@ -81,6 +81,16 @@ function findUser(id: string | undefined): UserRecord | undefined {
   return id === undefined ? undefined : users.find((record) => record.id === id);
 }
 
+function roleNameForId(roleId: number | null | undefined): string | null {
+  if (roleId == null) return null;
+  const names: Record<number, string> = {
+    1: 'Admin',
+    2: 'Manager',
+    3: 'Technician',
+  };
+  return names[roleId] ?? `Role ${roleId}`;
+}
+
 function filterUsers(url: URL): UserRecord[] {
   const isActive = readOptionalBoolean(url, 'isActive');
   const email = url.searchParams.get('email');
@@ -167,6 +177,7 @@ export const userHandlers = [
     assignDefined(record, parsed.data);
     if (parsed.data.roleIds?.[0] !== undefined) {
       record.roleId = parsed.data.roleIds[0] ?? null;
+      record.roleName = roleNameForId(record.roleId);
     }
     return setupOk(record);
   }),
@@ -181,6 +192,7 @@ export const userHandlers = [
     assignDefined(record, parsed.data);
     if (parsed.data.roleIds?.[0] !== undefined) {
       record.roleId = parsed.data.roleIds[0] ?? null;
+      record.roleName = roleNameForId(record.roleId);
     }
     return setupOk(record);
   }),

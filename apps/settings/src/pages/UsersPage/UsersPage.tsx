@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import type { UserSummaryDto } from '@cms/user-contract';
 import {
   createUsersMutationOptions,
   roleLookupQueryOptions,
+  updateUserMutationOptions,
   userListQueryOptions,
 } from '@cms/user-data-access';
 import { alert } from '@cms/ui';
 import {
+  EditUserDialog,
   InviteUserDialog,
   UserTablePanel,
   UsersHeader,
@@ -15,13 +18,20 @@ import {
 import {
   SAVE_ERROR_TITLE,
   SAVE_SUCCESS_TITLE,
+  UPDATE_SUCCESS_TITLE,
   USER_INVITED_MESSAGE,
+  USER_UPDATED_MESSAGE,
 } from './constant';
 import type { UsersPageProps } from './types';
-import { describeUserError, type InviteUserForm } from './util';
+import {
+  describeUserError,
+  type EditUserForm,
+  type InviteUserForm,
+} from './util';
 
 export const UsersPage = ({ queryClient }: UsersPageProps) => {
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserSummaryDto | null>(null);
 
   const rolesQuery = useQuery(roleLookupQueryOptions(true), queryClient);
   const activeCountQuery = useQuery(
@@ -45,16 +55,31 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
     createUsersMutationOptions(queryClient),
     queryClient,
   );
+  const updateUserMutation = useMutation(
+    updateUserMutationOptions(queryClient),
+    queryClient,
+  );
 
   const activeCount = activeCountQuery.data?.totalCount ?? 0;
   const inactiveCount = inactiveCountQuery.data?.totalCount ?? 0;
+  const editOpen = editingUser != null;
 
   const handleAddUser = () => {
     setInviteOpen(true);
   };
 
+  const handleEditUser = (user: UserSummaryDto) => {
+    setEditingUser(user);
+  };
+
   const handleInviteOpenChange = (open: boolean) => {
     setInviteOpen(open);
+  };
+
+  const handleEditOpenChange = (open: boolean) => {
+    if (!open) {
+      setEditingUser(null);
+    }
   };
 
   const handleInviteSubmit = (values: InviteUserForm) => {
@@ -84,6 +109,35 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
     );
   };
 
+  const handleEditSubmit = (values: EditUserForm) => {
+    if (!editingUser) return;
+
+    updateUserMutation.mutate(
+      {
+        id: editingUser.id,
+        body: {
+          displayName: values.displayName,
+          phoneNumber: values.phoneNumber,
+          roleIds: [Number(values.roleId)],
+          isActive: editingUser.isActive,
+        },
+      },
+      {
+        onError: (error) => {
+          alert.error(SAVE_ERROR_TITLE, {
+            description: describeUserError(error),
+          });
+        },
+        onSuccess: () => {
+          alert.success(UPDATE_SUCCESS_TITLE, {
+            description: USER_UPDATED_MESSAGE,
+          });
+          setEditingUser(null);
+        },
+      },
+    );
+  };
+
   return (
     <section
       className="flex min-h-0 flex-1 flex-col gap-4"
@@ -101,6 +155,7 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
           activeCount={activeCount}
           inactiveCount={inactiveCount}
           onAdd={handleAddUser}
+          onEdit={handleEditUser}
           queryClient={queryClient}
         />
       </div>
@@ -111,6 +166,15 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
         onSubmit={handleInviteSubmit}
         open={inviteOpen}
         roles={rolesQuery.data}
+      />
+
+      <EditUserDialog
+        isPending={updateUserMutation.isPending}
+        onOpenChange={handleEditOpenChange}
+        onSubmit={handleEditSubmit}
+        open={editOpen}
+        roles={rolesQuery.data}
+        user={editingUser}
       />
     </section>
   );

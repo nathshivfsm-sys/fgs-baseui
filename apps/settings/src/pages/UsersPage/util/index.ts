@@ -1,4 +1,10 @@
 export {
+  editUserFormSchema,
+  emptyEditUserForm,
+  toEditUserForm,
+  type EditUserForm,
+} from './edit-user-form.schema';
+export {
   emptyInviteUserForm,
   inviteUserFormSchema,
   type InviteUserForm,

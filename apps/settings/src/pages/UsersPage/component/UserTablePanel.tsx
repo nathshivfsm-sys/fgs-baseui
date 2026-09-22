@@ -33,6 +33,7 @@ export interface UserTablePanelProps {
   activeCount: number;
   inactiveCount: number;
   onAdd: () => void;
+  onEdit: (user: UserSummaryDto) => void;
   queryClient: QueryClient;
 }
 
@@ -40,6 +41,7 @@ export const UserTablePanel = ({
   activeCount,
   inactiveCount,
   onAdd,
+  onEdit,
   queryClient,
 }: UserTablePanelProps) => {
   const [status, setStatus] = useState<UserStatusFilter>('active');
@@ -130,6 +132,10 @@ export const UserTablePanel = ({
             });
           };
 
+          const handleEdit = () => {
+            onEdit(row.original);
+          };
+
           return (
             <DataTableRowActions
               actions={[
@@ -138,12 +144,14 @@ export const UserTablePanel = ({
                   onSelect: handleToggle,
                 },
               ]}
+              editLabel={`Edit ${row.original.displayName ?? 'user'}`}
+              onEdit={handleEdit}
             />
           );
         },
       }),
     ],
-    [patchMutation],
+    [onEdit, patchMutation],
   );
 
   const items = query.data?.items ?? [];
