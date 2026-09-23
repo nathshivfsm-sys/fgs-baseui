@@ -74,7 +74,8 @@ export const sharedDependencies = {
   },
   // Per-MFE wire DTOs (`libs/<mfe>/contract`). Share the singleton so UI and data-access
   // see one copy of the schema modules. Add `@cms/<mfe>-contract` here when a remote
-  // grows a contract lib.
+  // grows a contract lib — and add the same `workspace:*` dependency to every federated
+  // app's package.json (shell + all remotes), or MF prebuild cannot resolve the share.
   //
   // Restart every `nx serve` after adding named exports to a shared contract barrel.
   // `@module-federation/vite` snapshots those names into `loadShare` at boot; HMR does

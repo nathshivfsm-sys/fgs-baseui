@@ -12,6 +12,7 @@
     "@cms/lead-data-access": "workspace:*",
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-contract": "workspace:*",
+    "@cms/user-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
     "@cms/shared-locale": "workspace:*",
