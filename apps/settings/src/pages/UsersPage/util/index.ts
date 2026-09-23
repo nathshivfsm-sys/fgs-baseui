@@ -9,6 +9,7 @@ export {
   inviteUserFormSchema,
   type InviteUserForm,
 } from './invite-user-form.schema';
+export { tabCountsFromUserSummary } from './tab-counts-from-user-summary';
 export { describeUserError } from './describe-user-error';
 export { formatUserLastLogin } from './format-user-last-login';
 export { getUserInitials } from './get-user-initials';

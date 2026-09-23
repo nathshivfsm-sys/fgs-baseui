@@ -25,6 +25,7 @@ import {
 import type { UsersPageProps } from './types';
 import {
   describeUserError,
+  tabCountsFromUserSummary,
   type EditUserForm,
   type InviteUserForm,
 } from './util';
@@ -34,14 +35,6 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
   const [editingUser, setEditingUser] = useState<UserSummaryDto | null>(null);
 
   const rolesQuery = useQuery(roleLookupQueryOptions(true), queryClient);
-  const activeCountQuery = useQuery(
-    userListQueryOptions({ page: 1, pageSize: 1, isActive: true }),
-    queryClient,
-  );
-  const inactiveCountQuery = useQuery(
-    userListQueryOptions({ page: 1, pageSize: 1, isActive: false }),
-    queryClient,
-  );
   const summaryQuery = useQuery(
     userListQueryOptions({
       page: 1,
@@ -60,8 +53,9 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
     queryClient,
   );
 
-  const activeCount = activeCountQuery.data?.totalCount ?? 0;
-  const inactiveCount = inactiveCountQuery.data?.totalCount ?? 0;
+  const { activeCount, inactiveCount } = tabCountsFromUserSummary(
+    summaryQuery.data?.summary,
+  );
   const editOpen = editingUser != null;
 
   const handleAddUser = () => {
