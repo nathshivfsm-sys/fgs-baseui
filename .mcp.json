@@ -4,7 +4,7 @@
       "command": "repowise",
       "args": [
         "mcp",
-        "/Users/HS105833/Desktop/Learning/React/orbit-mfe",
+        "C:/Users/AKSHAY/Akshay_data/FSM/New folder/worktrees",
         "--transport",
         "stdio"
       ],

@@ -34,6 +34,9 @@ const TradeSkillsPage = lazy(() =>
     default: module.TradeSkillsPage,
   })),
 );
+const JobTypePage = lazy(() =>
+  import('./pages/JobTypePage').then((module) => ({ default: module.JobTypePage })),
+);
 
 const UsersPage = lazy(() =>
   import('./pages/UsersPage').then((module) => ({
@@ -94,6 +97,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="company/tax"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <JobTypePage />
+            </RouteBoundary>
+          }
+          path="operations/job-type"
         />
         <Route
           element={

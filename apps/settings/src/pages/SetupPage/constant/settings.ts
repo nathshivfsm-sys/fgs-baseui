@@ -94,6 +94,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Define the types of jobs your company performs.',
       icon: 'SettingsJobTypeIcon',
       totalSettings: { count: 22, label: 'Job Types' },
+      href: 'operations/job-type',
     },
     {
       title: 'Billing Category',

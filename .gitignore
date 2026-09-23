@@ -75,3 +75,6 @@ Thumbs.db
 **/@mf-types
 .kiro/
 .repowise/
+
+.mcp.json
+.cursor/mcp.json

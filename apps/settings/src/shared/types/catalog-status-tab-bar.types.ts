@@ -5,6 +5,7 @@ export interface CatalogStatusTabBarProps {
   addLabel: string;
   inactiveCount: number;
   onAdd: () => void;
+  onFilterClick?: () => void;
   onSearchChange?: (value: string) => void;
   onStatusChange: (status: CatalogStatusFilter) => void;
   searchPlaceholder?: string;

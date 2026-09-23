@@ -1,4 +1,8 @@
-export { CatalogStatusTabBar, SetupBreadcrumb } from './component';
+export {
+  CatalogNavCard,
+  CatalogStatusTabBar,
+  SetupBreadcrumb,
+} from './component';
 export {
   SETUP_COMPANY_LABEL,
   SETUP_COMPANY_TAB,
@@ -15,6 +19,7 @@ export {
   type GeoLookupOptionsParams,
 } from './util';
 export type {
+  CatalogNavCardProps,
   CatalogStatusFilter,
   CatalogStatusTabBarProps,
   SetupBreadcrumbProps,

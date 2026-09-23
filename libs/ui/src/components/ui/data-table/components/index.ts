@@ -1,4 +1,6 @@
 export * from './data-table-body';
+export * from './data-table-drag-handle-column';
+export * from './data-table-expand-column';
 export * from './data-table-cells';
 export * from './data-table-column-header';
 export * from './data-table-header';

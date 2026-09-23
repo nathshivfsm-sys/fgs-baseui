@@ -4,9 +4,15 @@
       "url": "https://mcp.figma.com/mcp"
     },
     "repowise": {
+      "type": "stdio",
       "command": "repowise",
-      "args": ["mcp"]
+      "args": [
+        "mcp",
+        "C:/Users/AKSHAY/Akshay_data/FSM/New folder/worktrees",
+        "--transport",
+        "stdio"
+      ],
+      "description": "repowise: codebase intelligence \u2014 docs, graph, git signals, dead code, decisions"
     }
-
   }
 }

@@ -1,6 +1,7 @@
 import {
   Button,
   DataTableSearch,
+  FilterIcon,
   PlusIcon,
   Tabs,
   TabsList,
@@ -16,6 +17,7 @@ export const CatalogStatusTabBar = ({
   addLabel,
   inactiveCount,
   onAdd,
+  onFilterClick,
   onSearchChange,
   onStatusChange,
   searchPlaceholder = 'Search...',
@@ -26,8 +28,12 @@ export const CatalogStatusTabBar = ({
     onStatusChange(next as CatalogStatusFilter);
   };
 
+  const handleFilterClick = () => {
+    onFilterClick?.();
+  };
+
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-6">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6">
       <Tabs className="self-end" onValueChange={handleStatusChange} value={status}>
         <TabsList>
           <TabsTrigger size="default" tone="action" value="active">
@@ -47,6 +53,17 @@ export const CatalogStatusTabBar = ({
             placeholder={searchPlaceholder}
             value={searchValue ?? ''}
           />
+        ) : null}
+        {onFilterClick ? (
+          <Button
+            className="shrink-0"
+            onClick={handleFilterClick}
+            type="button"
+            variant="outline"
+          >
+            <FilterIcon className="size-3.5" />
+            Filter
+          </Button>
         ) : null}
         <Button className="shrink-0" onClick={onAdd} type="button">
           <PlusIcon className="size-3.5" />
