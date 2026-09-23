@@ -33,21 +33,21 @@ export const CatalogStatusTabBar = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5">
-      <Tabs className="min-w-0 flex-1" onValueChange={handleStatusChange} value={status}>
-        <TabsList bordered className="w-full min-w-0">
-          <TabsTrigger size="sm" tone="action" value="active">
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6">
+      <Tabs className="self-end" onValueChange={handleStatusChange} value={status}>
+        <TabsList>
+          <TabsTrigger size="default" tone="action" value="active">
             Active ({activeCount})
           </TabsTrigger>
-          <TabsTrigger size="sm" tone="action" value="inactive">
+          <TabsTrigger size="default" tone="action" value="inactive">
             Inactive ({inactiveCount})
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <div className="flex min-w-0 shrink-0 items-center justify-end gap-2 py-2">
+      <div className="flex min-w-0 items-center justify-end gap-2 py-2">
         {onSearchChange ? (
           <DataTableSearch
-            className="w-[13.75rem]"
+            className="w-44 sm:w-56"
             label={searchPlaceholder}
             onValueChange={onSearchChange}
             placeholder={searchPlaceholder}
