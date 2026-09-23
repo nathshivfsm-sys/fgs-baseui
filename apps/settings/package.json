@@ -11,9 +11,12 @@
   "dependencies": {
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-data-access": "workspace:*",
+    "@cms/user-data-access": "workspace:*",
+    "@cms/user-contract": "workspace:*",
     "@cms/settings-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
+    "@cms/shared-locale": "workspace:*",
     "@cms/shared-data-access": "workspace:*",
     "@cms/shared-mocks": "workspace:*",
     "@cms/ui": "workspace:*",

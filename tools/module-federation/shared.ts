@@ -23,8 +23,12 @@ const sharedApiVersion: string =
   require('../../libs/shared/api/package.json').version;
 const sharedAuthVersion: string =
   require('../../libs/shared/auth/package.json').version;
+const sharedLocaleVersion: string =
+  require('../../libs/shared/locale/package.json').version;
 const settingsContractVersion: string =
   require('../../libs/settings/contract/package.json').version;
+const userContractVersion: string =
+  require('../../libs/user/contract/package.json').version;
 
 export const sharedDependencies = {
   react: { singleton: true, requiredVersion: '19.2.8' },
@@ -63,6 +67,11 @@ export const sharedDependencies = {
     requiredVersion: sharedAuthVersion,
     strictVersion: false,
   },
+  '@cms/shared-locale': {
+    singleton: true,
+    requiredVersion: sharedLocaleVersion,
+    strictVersion: false,
+  },
   // Per-MFE wire DTOs (`libs/<mfe>/contract`). Share the singleton so UI and data-access
   // see one copy of the schema modules. Add `@cms/<mfe>-contract` here when a remote
   // grows a contract lib.
@@ -73,6 +82,11 @@ export const sharedDependencies = {
   '@cms/settings-contract': {
     singleton: true,
     requiredVersion: settingsContractVersion,
+    strictVersion: false,
+  },
+  '@cms/user-contract': {
+    singleton: true,
+    requiredVersion: userContractVersion,
     strictVersion: false,
   },
 } as const;

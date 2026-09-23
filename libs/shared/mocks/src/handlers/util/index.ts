@@ -6,6 +6,7 @@ export {
   nextId,
   pagedResult,
   parseRouteId,
+  readJsonBody,
   readJsonObject,
   readOptionalBoolean,
   setupDelay,

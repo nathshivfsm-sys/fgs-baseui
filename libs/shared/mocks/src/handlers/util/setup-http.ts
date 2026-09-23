@@ -63,6 +63,22 @@ export async function readJsonObject(
   return { ok: true, value: body as Record<string, unknown> };
 }
 
+export async function readJsonBody(
+  request: Request,
+): Promise<
+  | { ok: true; value: unknown }
+  | { ok: false; response: Awaited<ReturnType<typeof setupError>> }
+> {
+  try {
+    return { ok: true, value: await request.json() };
+  } catch {
+    return {
+      ok: false,
+      response: await setupError(400, 'Request body must be JSON.'),
+    };
+  }
+}
+
 export function parseRouteId(
   value: string | readonly string[] | undefined,
 ): number | undefined {

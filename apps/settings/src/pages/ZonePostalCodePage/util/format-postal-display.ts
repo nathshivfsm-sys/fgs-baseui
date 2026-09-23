@@ -1,7 +1,4 @@
-const currency = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+import { formatLocaleCurrency } from '@cms/shared-locale';
 
 export function formatTaxRate(value: number | null | undefined): string {
   if (value == null) return '—';
@@ -10,5 +7,6 @@ export function formatTaxRate(value: number | null | undefined): string {
 
 export function formatTripCharge(value: number | null | undefined): string {
   if (value == null) return '—';
-  return currency.format(value);
+  const formatted = formatLocaleCurrency(value);
+  return formatted || '—';
 }
