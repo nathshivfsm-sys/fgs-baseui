@@ -38,6 +38,12 @@ const JobTypePage = lazy(() =>
   import('./pages/JobTypePage').then((module) => ({ default: module.JobTypePage })),
 );
 
+const UsersPage = lazy(() =>
+  import('./pages/UsersPage').then((module) => ({
+    default: module.UsersPage,
+  })),
+);
+
 export interface AppProps {
   runtime: CmsRuntime;
 }
@@ -107,6 +113,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/trade-skills"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <UsersPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="users-and-payroll/users"
         />
       </Routes>
     </div>

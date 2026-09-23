@@ -1,0 +1,30 @@
+{
+  "name": "user-contract",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/user/contract/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:user", "type:contract"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/user/contract",
+        "main": "libs/user/contract/src/index.ts",
+        "tsConfig": "libs/user/contract/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/user/contract/tsconfig.json"
+      }
+    }
+  }
+}

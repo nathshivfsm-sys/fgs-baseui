@@ -20,6 +20,7 @@
       "@cms/ui/*": ["./libs/ui/src/*"],
       "@cms/shared-api": ["./libs/shared/api/src/index.ts"],
       "@cms/shared-auth": ["./libs/shared/auth/src/index.ts"],
+      "@cms/shared-locale": ["./libs/shared/locale/src/index.ts"],
       "@cms/shared-mocks": ["./libs/shared/mocks/src/index.ts"],
       "@cms/auth-data-access": ["./libs/shared/auth-data-access/src/index.ts"],
       "@cms/shared-contract": ["./libs/shared/contract/src/index.ts"],
@@ -32,6 +33,8 @@
       "@cms/settings-data-access": [
         "./libs/settings/data-access/src/index.ts"
       ],
+      "@cms/user-contract": ["./libs/user/contract/src/index.ts"],
+      "@cms/user-data-access": ["./libs/user/data-access/src/index.ts"],
       "@cms/module-federation-shared": ["./tools/module-federation/shared.ts"]
     }
   },

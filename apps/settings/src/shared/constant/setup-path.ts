@@ -4,3 +4,5 @@ export const SETUP_COMPANY_TAB = 'company';
 export const SETUP_COMPANY_LABEL = 'Company';
 export const SETUP_OPERATIONS_TAB = 'operations';
 export const SETUP_OPERATIONS_LABEL = 'Operations';
+export const SETUP_USERS_PAYROLL_TAB = 'usersAndPayroll';
+export const SETUP_USERS_PAYROLL_LABEL = 'Users & Payroll';

@@ -48,6 +48,10 @@ export function storybookAliases(workspaceRoot: string) {
       replacement: join(workspaceRoot, 'libs/shared/auth/src/index.ts'),
     },
     {
+      find: '@cms/shared-locale',
+      replacement: join(workspaceRoot, 'libs/shared/locale/src/index.ts'),
+    },
+    {
       find: '@cms/auth-data-access',
       replacement: join(
         workspaceRoot,
@@ -87,6 +91,14 @@ export function storybookAliases(workspaceRoot: string) {
         workspaceRoot,
         'libs/settings/data-access/src/index.ts',
       ),
+    },
+    {
+      find: '@cms/user-contract',
+      replacement: join(workspaceRoot, 'libs/user/contract/src/index.ts'),
+    },
+    {
+      find: '@cms/user-data-access',
+      replacement: join(workspaceRoot, 'libs/user/data-access/src/index.ts'),
     },
   ];
 }

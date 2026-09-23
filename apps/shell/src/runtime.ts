@@ -10,7 +10,11 @@ import {
   getSessionToken,
   refreshStoredAccessToken,
 } from '@cms/shared-auth';
+import { localeStore } from '@cms/shared-locale';
 import { alert } from '@cms/ui';
+
+// Eager import so Module Federation initializes one locale store before remotes load.
+void localeStore;
 
 // No real backend exists yet — baseUrl is empty until one is wired up (see
 // libs/shared/api/README.md). VITE_API_URL is read here, not inside customFetch

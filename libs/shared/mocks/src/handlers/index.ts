@@ -10,11 +10,17 @@ import { taxAuthorityHandlers } from './tax-authority';
 import { techSkillLevelHandlers } from './tech-skill-level';
 import { techTradeHandlers } from './tech-trade';
 import { zoneHandlers } from './zone';
+import { userHandlers } from './user';
+import { userRoleHandlers } from './user-role';
+import { roleHandlers } from './role';
 
 /** Domain handlers composed for the browser worker. Add a file per domain. */
 export const handlers = [
   ...authHandlers,
   ...companyHandlers,
+  ...userHandlers,
+  ...userRoleHandlers,
+  ...roleHandlers,
   ...taxHandlers,
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,

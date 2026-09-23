@@ -11,8 +11,10 @@
   "dependencies": {
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-contract": "workspace:*",
+    "@cms/user-contract": "workspace:*",
     "@cms/shared-api": "workspace:*",
     "@cms/shared-auth": "workspace:*",
+    "@cms/shared-locale": "workspace:*",
     "@cms/ui": "workspace:*",
     "@cms/workorder-data-access": "workspace:*",
     "@tanstack/react-query": "5.101.4",
