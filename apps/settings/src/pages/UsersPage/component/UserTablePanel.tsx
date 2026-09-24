@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { formatLocaleMobile } from '@cms/shared-locale';
-import type { UserSummaryDto } from '@cms/user-contract';
+import type { RoleLookupDto, UserSummaryDto } from '@cms/user-contract';
 import {
   patchUserMutationOptions,
   userListQueryOptions,
@@ -19,12 +19,14 @@ import {
   ADD_USER_LABEL,
   LOAD_USERS_ERROR_TITLE,
   LOAD_USERS_ERROR_TOAST_ID,
+  NO_USERS_FOUND,
   SEARCH_USERS_PLACEHOLDER,
 } from '../constant';
 import type { UserStatusFilter } from '../types';
 import { describeUserError, formatUserLastLogin } from '../util';
 import { useUserListLoadToast } from './use-user-list-load-toast';
 import { UserListAvatar } from './UserListAvatar';
+import { UserListRoleFilter } from './UserListRoleFilter';
 import { UserRoleBadge } from './UserRoleBadge';
 
 const column = createDataTableColumnHelper<UserSummaryDto>();
@@ -35,6 +37,7 @@ export interface UserTablePanelProps {
   onAdd: () => void;
   onEdit: (user: UserSummaryDto) => void;
   queryClient: QueryClient;
+  roles: readonly RoleLookupDto[] | undefined;
 }
 
 export const UserTablePanel = ({
@@ -43,8 +46,10 @@ export const UserTablePanel = ({
   onAdd,
   onEdit,
   queryClient,
+  roles,
 }: UserTablePanelProps) => {
   const [status, setStatus] = useState<UserStatusFilter>('active');
+  const [appliedRoleIds, setAppliedRoleIds] = useState<string[]>([]);
   const [pagination, setPagination] = useState<DataTableState['pagination']>({
     pageIndex: 0,
     pageSize: 10,
@@ -61,6 +66,10 @@ export const UserTablePanel = ({
     sortBy: sorting[0]?.id,
     sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
     search: globalFilter.trim() || undefined,
+    roleIds:
+      appliedRoleIds.length > 0
+        ? appliedRoleIds.map((id) => Number(id))
+        : undefined,
   };
 
   const query = useQuery(userListQueryOptions(params), queryClient);
@@ -174,11 +183,29 @@ export const UserTablePanel = ({
     setPagination((current) => ({ ...current, pageIndex: 0 }));
   };
 
+  const handleRoleFilterApply = (roleIds: readonly string[]) => {
+    setAppliedRoleIds([...roleIds]);
+    setPagination((current) => ({ ...current, pageIndex: 0 }));
+  };
+
+  const handleRoleFilterClear = () => {
+    setAppliedRoleIds([]);
+    setPagination((current) => ({ ...current, pageIndex: 0 }));
+  };
+
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       <CatalogStatusTabBar
         activeCount={activeCount}
         addLabel={ADD_USER_LABEL}
+        filter={
+          <UserListRoleFilter
+            appliedRoleIds={appliedRoleIds}
+            onApply={handleRoleFilterApply}
+            onClear={handleRoleFilterClear}
+            roles={roles}
+          />
+        }
         inactiveCount={inactiveCount}
         onAdd={onAdd}
         onSearchChange={handleSearchChange}
@@ -193,6 +220,7 @@ export const UserTablePanel = ({
           className="rounded-none border-0"
           columns={columns}
           data={items}
+          emptyState={NO_USERS_FOUND}
           enableRowSelection={false}
           enableSearch={false}
           getRowId={(row) => row.id}

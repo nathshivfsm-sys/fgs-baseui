@@ -120,7 +120,6 @@ function filterUsers(url: URL): UserRecord[] {
       record.displayName,
       record.email,
       record.phoneNumber,
-      record.roleName,
     ]);
   });
 }
