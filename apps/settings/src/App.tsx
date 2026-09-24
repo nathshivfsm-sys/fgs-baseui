@@ -23,6 +23,11 @@ const BusinessUnitPage = lazy(() =>
     default: module.BusinessUnitPage,
   })),
 );
+const BusinessTypePage = lazy(() =>
+  import('./pages/BusinessTypePage').then((module) => ({
+    default: module.BusinessTypePage,
+  })),
+);
 const TaxSetupPage = lazy(() =>
   import('./pages/TaxSetupPage').then((module) => ({
     default: module.TaxSetupPage,
@@ -87,6 +92,14 @@ export const App = ({ runtime }: AppProps) => (
           element={
             <RouteBoundary>
               <BusinessUnitPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+        />
+        <Route
+          path="company/business-type"
+          element={
+            <RouteBoundary>
+              <BusinessTypePage queryClient={runtime.queryClient} />
             </RouteBoundary>
           }
         />

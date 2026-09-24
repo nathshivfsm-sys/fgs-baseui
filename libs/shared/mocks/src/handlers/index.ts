@@ -1,4 +1,5 @@
 import { attachmentHandlers } from './attachment';
+import { businessTypeHandlers } from './business-type';
 import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
 import { glBreakHandlers } from './gl-break';
@@ -30,5 +31,6 @@ export const handlers = [
   ...glBreakHandlers,
   ...techTradeHandlers,
   ...techSkillLevelHandlers,
+  ...businessTypeHandlers,
   ...attachmentHandlers,
 ];

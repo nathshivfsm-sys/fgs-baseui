@@ -4,6 +4,10 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
+  businessTypeKeys,
+  businessTypeListQueryOptions,
+  businessTypeLookupQueryOptions,
+  createBusinessTypeMutationOptions,
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createNonWorkingDateMutationOptions,
@@ -44,6 +48,9 @@ import {
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import {
+  businessTypeDetailResponseFixture,
+  businessTypeListResponseFixture,
+  businessTypeLookupResponseFixture,
   glBreakDetailResponseFixture,
   glBreakListResponseFixture,
   glBreakLookupResponseFixture,
@@ -650,6 +657,75 @@ describe('tech skill level through customFetch', () => {
     expect(
       client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
     ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('business type through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(businessTypeListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(businessTypeLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      businessTypeListQueryOptions({ code: 'RES', name: 'Residential' }),
+    );
+    const lookup = await client.fetchQuery(
+      businessTypeLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.code).toBe('RES');
+    expect(lookup[0]?.name).toBe('Residential');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/businesstype?code=RES&name=Residential',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/businesstype/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates business type queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(businessTypeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(businessTypeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createBusinessTypeMutationOptions(client));
+    await mutation.execute({
+      code: 'RES',
+      name: 'Residential',
+      description: 'Homes and apartments',
+      displayOrder: 1,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/businesstype');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(businessTypeKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+
+  it('requests the full catalog in one page of 1000', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(businessTypeListResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await client.fetchQuery(
+      businessTypeListQueryOptions({ page: 1, pageSize: 1000 }),
+    );
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/businesstype?page=1&pageSize=1000',
+    );
     disposeCmsQueryClient(client);
   });
 });

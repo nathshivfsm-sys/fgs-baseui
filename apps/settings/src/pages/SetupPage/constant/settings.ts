@@ -70,6 +70,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Define the business types supported by your company.',
       icon: 'SettingsBusinessTypeIcon',
       totalSettings: { count: 8, label: 'Types' },
+      href: 'company/business-type',
     },
   ],
 

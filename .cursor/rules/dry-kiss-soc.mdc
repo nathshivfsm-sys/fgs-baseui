@@ -1,0 +1,36 @@
+---
+description: Keep code DRY, simple, and split by responsibility
+alwaysApply: true
+---
+
+# DRY, KISS, and separation of concerns
+
+Do not copy a behavior that already exists. Share the mechanism once. Keep each file to one job. Prefer the smallest change that matches an existing helper.
+
+## DRY
+
+- A second copy of the same branch, mapper, or request flow belongs in `shared/` (apps) or the owning lib (libs), not in another page file.
+- Resource-specific text stays at the call site. Shared code takes that text as data.
+
+```ts
+// ❌ BAD — same status switch in every page
+if (error instanceof ApiError) {
+  switch (error.status) {
+    case 401:
+      return 'Your session has expired. Sign in again.';
+  }
+}
+
+// ✅ GOOD
+describeCatalogError(error, { forbidden, notFound, conflict, invalid, unreachable });
+```
+
+## KISS
+
+- One function, one obvious path. No extra wrapper, flag, or layer unless a second caller needs it.
+- Do not generalize a helper for a case that does not exist yet.
+
+## Separation of concerns
+
+- Wire shapes stay in `@cms/<mfe>-contract`. Fetch and cache stay in data-access. Screens stay in the page.
+- A page file names its resource. It does not reimplement transport, status mapping, or another page's layout.

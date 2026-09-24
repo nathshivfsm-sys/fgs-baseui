@@ -14,11 +14,13 @@ export {
   SETUP_USERS_PAYROLL_TAB,
 } from './constant';
 export {
+  describeCatalogError,
   useGeoLookupOptions,
   type GeoLookupOptions,
   type GeoLookupOptionsParams,
 } from './util';
 export type {
+  CatalogErrorCopy,
   CatalogNavCardProps,
   CatalogStatusFilter,
   CatalogStatusTabBarProps,

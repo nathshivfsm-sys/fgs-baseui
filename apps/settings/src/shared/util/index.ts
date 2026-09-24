@@ -1,3 +1,4 @@
+export { describeCatalogError } from './describe-catalog-error';
 export {
   toCitySelectOptions,
   toCountrySelectOptions,
