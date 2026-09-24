@@ -37,6 +37,7 @@ import {
   SettingsWorkOrderBookingIcon,
   SettingsZoneIcon,
   TrendingUpIcon,
+  UsersIcon,
   type FigmaIconProps,
   type SettingCardTone,
 } from '@cms/ui';
@@ -56,6 +57,7 @@ export const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
 
   // Users & Payroll — traced from Figma
   SettingsUserIcon,
+  UsersIcon,
   SettingsRoleIcon,
   SettingsPayPeriodIcon,
   SettingsTimeAttendanceIcon,
