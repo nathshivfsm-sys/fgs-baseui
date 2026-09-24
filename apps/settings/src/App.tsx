@@ -43,6 +43,11 @@ const UsersPage = lazy(() =>
     default: module.UsersPage,
   })),
 );
+const EmployeesPage = lazy(() =>
+  import('./pages/EmployeesPage').then((module) => ({
+    default: module.EmployeesPage,
+  })),
+);
 
 export interface AppProps {
   runtime: CmsRuntime;
@@ -121,6 +126,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="users-and-payroll/users"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <EmployeesPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="users-and-payroll/employees"
         />
       </Routes>
     </div>

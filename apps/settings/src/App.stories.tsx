@@ -289,6 +289,10 @@ export const SwitchTab: Story = {
     await userEvent.click(
       await canvas.findByRole('tab', { name: 'Users & Payroll' }, LAZY_PAGE),
     );
+    await expect(canvas.getByRole('button', { name: /^Users/ })).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: /^Employees/ }),
+    ).toBeVisible();
     await expect(canvas.getByRole('button', { name: /^Roles/ })).toBeVisible();
     await expect(
       canvas.queryByRole('button', { name: /^General Info/ }),
