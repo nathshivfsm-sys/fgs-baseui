@@ -151,6 +151,7 @@ export const UsersPage = ({ queryClient }: UsersPageProps) => {
           onAdd={handleAddUser}
           onEdit={handleEditUser}
           queryClient={queryClient}
+          roles={rolesQuery.data}
         />
       </div>
 

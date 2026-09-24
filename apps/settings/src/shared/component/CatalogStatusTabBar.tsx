@@ -15,6 +15,7 @@ import type {
 export const CatalogStatusTabBar = ({
   activeCount,
   addLabel,
+  filter,
   inactiveCount,
   onAdd,
   onFilterClick,
@@ -54,17 +55,18 @@ export const CatalogStatusTabBar = ({
             value={searchValue ?? ''}
           />
         ) : null}
-        {onFilterClick ? (
-          <Button
-            className="shrink-0"
-            onClick={handleFilterClick}
-            type="button"
-            variant="outline"
-          >
-            <FilterIcon className="size-3.5" />
-            Filter
-          </Button>
-        ) : null}
+        {filter ??
+          (onFilterClick ? (
+            <Button
+              className="shrink-0"
+              onClick={handleFilterClick}
+              type="button"
+              variant="outline"
+            >
+              <FilterIcon className="size-3.5" />
+              Filter
+            </Button>
+          ) : null)}
         <Button className="shrink-0" onClick={onAdd} type="button">
           <PlusIcon className="size-3.5" />
           {addLabel}
