@@ -127,6 +127,7 @@ export default tseslint.config(
               onlyDependOnLibsWithTags: [
                 'scope:settings',
                 'scope:shared',
+                'scope:user',
                 'type:contract',
               ],
             },

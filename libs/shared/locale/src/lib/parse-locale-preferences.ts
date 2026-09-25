@@ -16,11 +16,11 @@ export const parseLocalePreferences = (
 ): LocalePreferences | null => {
   if (!isRecord(input)) return null;
 
-  const timeZone = input.timeZone;
-  const locale = input.locale;
-  const dateFormat = input.dateFormat;
-  const currencyCode = input.currencyCode;
-  const mobileFormat = input.mobileFormat;
+  const timeZone = input['timeZone'];
+  const locale = input['locale'];
+  const dateFormat = input['dateFormat'];
+  const currencyCode = input['currencyCode'];
+  const mobileFormat = input['mobileFormat'];
 
   if (typeof timeZone !== 'string' || !timeZone.trim()) return null;
   if (typeof locale !== 'string' || !locale.trim()) return null;
@@ -28,16 +28,16 @@ export const parseLocalePreferences = (
   if (typeof currencyCode !== 'string' || currencyCode.length !== 3) {
     return null;
   }
-  if (!isRecord(mobileFormat) || typeof mobileFormat.region !== 'string') {
+  if (!isRecord(mobileFormat) || typeof mobileFormat['region'] !== 'string') {
     return null;
   }
-  if (!mobileFormat.region.trim()) return null;
+  if (!mobileFormat['region'].trim()) return null;
 
   return {
     timeZone: timeZone.trim(),
     locale: locale.trim(),
     dateFormat,
     currencyCode: currencyCode.toUpperCase(),
-    mobileFormat: { region: mobileFormat.region.trim() },
+    mobileFormat: { region: mobileFormat['region'].trim() },
   };
 };

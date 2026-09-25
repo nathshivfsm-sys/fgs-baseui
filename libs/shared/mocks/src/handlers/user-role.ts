@@ -78,7 +78,8 @@ export const userRoleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userRoleUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -89,7 +90,8 @@ export const userRoleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userRolePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -104,7 +106,8 @@ export const userRoleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userRoleCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const duplicate = userRoles.find(
       (record) =>
         record.userId === parsed.data.userId &&
@@ -126,13 +129,14 @@ export const userRoleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userRoleSyncDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     for (let index = userRoles.length - 1; index >= 0; index -= 1) {
       if (userRoles[index]?.userId === parsed.data.userId) {
         userRoles.splice(index, 1);
       }
     }
-    const synced = (parsed.data.fgsRoleIds ?? []).map((fgsRoleId) => {
+    const synced = (parsed.data.fgsRoleIds ?? []).map((fgsRoleId: number) => {
       const created: UserRoleDetailDto = {
         id: nextId(userRoles),
         userId: parsed.data.userId,

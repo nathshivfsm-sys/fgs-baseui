@@ -174,9 +174,6 @@ importers:
       '@cms/settings-contract':
         specifier: workspace:*
         version: link:../../libs/settings/contract
-      '@cms/user-contract':
-        specifier: workspace:*
-        version: link:../../libs/user/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
@@ -189,6 +186,9 @@ importers:
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
+      '@cms/user-contract':
+        specifier: workspace:*
+        version: link:../../libs/user/contract
       '@tanstack/react-query':
         specifier: 5.101.4
         version: 5.101.4(react@19.2.8)
@@ -213,9 +213,6 @@ importers:
       '@cms/settings-contract':
         specifier: workspace:*
         version: link:../../libs/settings/contract
-      '@cms/user-contract':
-        specifier: workspace:*
-        version: link:../../libs/user/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
@@ -228,6 +225,9 @@ importers:
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
+      '@cms/user-contract':
+        specifier: workspace:*
+        version: link:../../libs/user/contract
       '@tanstack/react-query':
         specifier: 5.101.4
         version: 5.101.4(react@19.2.8)
@@ -273,9 +273,6 @@ importers:
       '@cms/user-contract':
         specifier: workspace:*
         version: link:../../libs/user/contract
-      '@cms/user-data-access':
-        specifier: workspace:*
-        version: link:../../libs/user/data-access
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.66.1(react@19.2.8))
@@ -354,9 +351,6 @@ importers:
       '@cms/settings-contract':
         specifier: workspace:*
         version: link:../../libs/settings/contract
-      '@cms/user-contract':
-        specifier: workspace:*
-        version: link:../../libs/user/contract
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../libs/shared/api
@@ -369,6 +363,9 @@ importers:
       '@cms/ui':
         specifier: workspace:*
         version: link:../../libs/ui
+      '@cms/user-contract':
+        specifier: workspace:*
+        version: link:../../libs/user/contract
       '@cms/workorder-data-access':
         specifier: workspace:*
         version: link:../../libs/workorder/data-access
@@ -426,6 +423,12 @@ importers:
       '@cms/shared-api':
         specifier: workspace:*
         version: link:../../shared/api
+      '@cms/user-contract':
+        specifier: workspace:*
+        version: link:../../user/contract
+      '@cms/user-data-access':
+        specifier: workspace:*
+        version: link:../../user/data-access
       '@tanstack/react-query':
         specifier: 5.101.4
         version: 5.101.4(react@19.2.8)

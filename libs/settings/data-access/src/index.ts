@@ -9,4 +9,9 @@ export * from './lib/tech-trade';
 export * from './lib/tech-skill-level';
 export * from './lib/business-type';
 export * from './lib/employee';
-export type { PagedResult, SetupListParams, SortDirection } from '@cms/settings-contract';
+export * from './lib/user-service';
+export type {
+  PagedResult,
+  SetupListParams,
+  SortDirection,
+} from '@cms/settings-contract';

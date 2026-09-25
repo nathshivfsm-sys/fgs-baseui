@@ -6,7 +6,7 @@ import {
   roleLookupQueryOptions,
   updateUserMutationOptions,
   userListQueryOptions,
-} from '@cms/user-data-access';
+} from '@cms/settings-data-access';
 import { alert } from '@cms/ui';
 import {
   EditUserDialog,

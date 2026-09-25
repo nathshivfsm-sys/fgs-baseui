@@ -288,6 +288,11 @@ type CompanyScalarPatch = Omit<
   'billingAddress' | 'physicalAddress'
 >;
 
+const scalarDirtyFields = (
+  dirtyFields: CompanyDirtyFields,
+): Partial<Record<keyof CompanyScalarPatch, boolean>> =>
+  dirtyFields as Partial<Record<keyof CompanyScalarPatch, boolean>>;
+
 /**
  * Builds a PATCH body holding only the fields the user changed. A cleared optional
  * field is sent as `null`, never as `''`. Addresses are included when the modal
@@ -308,10 +313,14 @@ export function toCompanyPatch(
     timeZone: values.timeZone,
     isActive: values.isActive,
   };
+  const dirty = scalarDirtyFields(dirtyFields);
   const patch = Object.fromEntries(
-    Object.entries(wire).filter(
-      ([key]) => dirtyFields[key as keyof CompanyScalarPatch],
-    ),
+    (
+      Object.entries(wire) as [
+        keyof CompanyScalarPatch,
+        CompanyScalarPatch[keyof CompanyScalarPatch],
+      ][]
+    ).filter(([key]) => dirty[key]),
   ) as CompanyPatchDto;
   if (dirtyFields.physicalAddress) {
     patch.physicalAddress = toStoredAddressDto(values.physicalAddress);

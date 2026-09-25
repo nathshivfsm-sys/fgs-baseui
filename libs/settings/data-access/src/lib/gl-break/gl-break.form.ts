@@ -4,6 +4,7 @@ import type {
   GlBreakDetailDto,
   GlBreakLocationWriteDto,
   GlBreakSummaryDto,
+  GlBreakTradeDto,
   GlBreakUpdateDto,
 } from '@cms/settings-contract';
 
@@ -12,17 +13,9 @@ export const glBreakFormSchema = z.object({
   code: z.string().trim().min(1, 'Code is required').max(32),
   tradeCodes: z.array(z.string()),
   breakLabel: z.string().trim().max(100),
-  addressLine1: z
-    .string()
-    .trim()
-    .min(1, 'Address line 1 is required')
-    .max(120),
+  addressLine1: z.string().trim().min(1, 'Address line 1 is required').max(120),
   addressLine2: z.string().trim().max(120),
-  postalCode: z
-    .string()
-    .trim()
-    .min(1, 'Zip/Postal code is required')
-    .max(20),
+  postalCode: z.string().trim().min(1, 'Zip/Postal code is required').max(20),
   city: z.string().trim().min(1, 'City is required').max(80),
   state: z.string().trim().min(1, 'State is required').max(40),
   country: z.string().trim().min(1, 'Country is required').max(40),
@@ -52,8 +45,8 @@ const tradeCodesFromRecord = (
     return [];
   }
   return record.trades
-    .map((trade) => trade.tradeCode)
-    .filter((code): code is string => Boolean(code));
+    .map((trade: GlBreakTradeDto) => trade.tradeCode)
+    .filter((code: string | null | undefined): code is string => Boolean(code));
 };
 
 export const toGlBreakFormValues = (
