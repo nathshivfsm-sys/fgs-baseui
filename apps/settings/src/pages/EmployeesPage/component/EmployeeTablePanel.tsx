@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react';
-import type { QueryClient } from '@tanstack/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { formatLocaleMobile } from '@cms/shared-locale';
-import type { RoleLookupDto, UserSummaryDto } from '@cms/user-contract';
+import type { EmployeeSummaryDto } from '@cms/settings-contract';
 import {
-  patchUserMutationOptions,
-  userListQueryOptions,
-  type UserListParams,
-} from '@cms/user-data-access';
+  employeeListQueryOptions,
+  patchEmployeeMutationOptions,
+  type EmployeeListParams,
+} from '@cms/settings-data-access';
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -16,39 +15,36 @@ import {
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
 import {
-  ADD_USER_LABEL,
-  LOAD_USERS_ERROR_TITLE,
-  LOAD_USERS_ERROR_TOAST_ID,
-  NO_USERS_FOUND,
-  SEARCH_USERS_PLACEHOLDER,
+  ADD_EMPLOYEE_LABEL,
+  LOAD_EMPLOYEES_ERROR_TITLE,
+  LOAD_EMPLOYEES_ERROR_TOAST_ID,
+  NO_EMPLOYEES_FOUND,
+  SEARCH_EMPLOYEES_PLACEHOLDER,
 } from '../constant';
-import type { UserStatusFilter } from '../types';
-import { describeUserError, formatUserLastLogin } from '../util';
-import { useUserListLoadToast } from './use-user-list-load-toast';
-import { UserListAvatar } from './UserListAvatar';
-import { UserListRoleFilter } from './UserListRoleFilter';
-import { UserRoleBadge } from './UserRoleBadge';
+import type { EmployeeStatusFilter, EmployeeTablePanelProps } from '../types';
+import {
+  describeEmployeeError,
+  employeeListEmail,
+  employeeListPhone,
+  formatEmployeeLastLogin,
+  formatExternalName,
+} from '../util';
+import { EmployeeListAvatar } from './EmployeeListAvatar';
+import { EmployeeListRoleFilter } from './EmployeeListRoleFilter';
+import { EmployeeRoleBadge } from './EmployeeRoleBadge';
+import { useEmployeeListLoadToast } from './use-employee-list-load-toast';
 
-const column = createDataTableColumnHelper<UserSummaryDto>();
+const column = createDataTableColumnHelper<EmployeeSummaryDto>();
 
-export interface UserTablePanelProps {
-  activeCount: number;
-  inactiveCount: number;
-  onAdd: () => void;
-  onEdit: (user: UserSummaryDto) => void;
-  queryClient: QueryClient;
-  roles: readonly RoleLookupDto[] | undefined;
-}
-
-export const UserTablePanel = ({
+export const EmployeeTablePanel = ({
   activeCount,
   inactiveCount,
   onAdd,
   onEdit,
   queryClient,
   roles,
-}: UserTablePanelProps) => {
-  const [status, setStatus] = useState<UserStatusFilter>('active');
+}: EmployeeTablePanelProps) => {
+  const [status, setStatus] = useState<EmployeeStatusFilter>('active');
   const [appliedRoleIds, setAppliedRoleIds] = useState<string[]>([]);
   const [pagination, setPagination] = useState<DataTableState['pagination']>({
     pageIndex: 0,
@@ -59,7 +55,7 @@ export const UserTablePanel = ({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const params: UserListParams = {
+  const params: EmployeeListParams = {
     page: pagination.pageIndex + 1,
     pageSize: pagination.pageSize,
     isActive: status === 'active',
@@ -72,52 +68,74 @@ export const UserTablePanel = ({
         : undefined,
   };
 
-  const query = useQuery(userListQueryOptions(params), queryClient);
+  const query = useQuery(employeeListQueryOptions(params), queryClient);
   const patchMutation = useMutation(
-    patchUserMutationOptions(queryClient),
+    patchEmployeeMutationOptions(queryClient),
     queryClient,
   );
-  useUserListLoadToast(
+  useEmployeeListLoadToast(
     query,
-    LOAD_USERS_ERROR_TITLE,
-    describeUserError,
-    LOAD_USERS_ERROR_TOAST_ID,
+    LOAD_EMPLOYEES_ERROR_TITLE,
+    describeEmployeeError,
+    LOAD_EMPLOYEES_ERROR_TOAST_ID,
   );
 
   const columns = useMemo(
     () => [
       column.accessor('displayName', {
-        header: 'Name',
-        meta: { label: 'Name' },
+        header: 'Employee',
+        meta: { label: 'Employee' },
         cell: ({ getValue, row }) => (
           <div className="flex min-w-0 items-center gap-2.5">
-            <UserListAvatar
+            <EmployeeListAvatar
               displayName={getValue()}
-              userId={row.original.id}
+              employeeId={row.original.id}
             />
-            <span className="truncate text-control font-semibold text-action">
-              {getValue() ?? '—'}
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate text-control font-semibold text-action">
+                {getValue() ?? '—'}
+              </span>
+              <span className="truncate text-caption text-foreground-subtle">
+                {row.original.employeeNumber ?? '—'}
+              </span>
             </span>
           </div>
         ),
       }),
+      column.accessor(
+        (row) => formatExternalName(row.legalFirstName, row.legalLastName),
+        {
+          id: 'legalLastName',
+          header: 'External Name',
+          meta: { label: 'External Name' },
+          cell: ({ row }) =>
+            formatExternalName(
+              row.original.legalFirstName,
+              row.original.legalLastName,
+            ),
+        },
+      ),
       column.accessor('roleName', {
         header: 'Role',
         meta: { label: 'Role' },
-        cell: ({ getValue }) => <UserRoleBadge roleName={getValue()} />,
+        cell: ({ getValue }) => <EmployeeRoleBadge roleName={getValue()} />,
       }),
-      column.accessor('email', {
+      column.accessor((row) => employeeListEmail(row) ?? '', {
+        id: 'officeEmail',
         header: 'Email',
         meta: { label: 'Email' },
-        cell: ({ getValue }) => (
-          <span className="truncate">{getValue() ?? '—'}</span>
+        cell: ({ row }) => (
+          <span className="truncate">
+            {employeeListEmail(row.original) ?? '—'}
+          </span>
         ),
       }),
-      column.accessor('phoneNumber', {
+      column.accessor((row) => employeeListPhone(row) ?? '', {
+        id: 'personalPhone',
         header: 'Phone',
         meta: { label: 'Phone' },
-        cell: ({ getValue }) => {
-          const raw = getValue();
+        cell: ({ row }) => {
+          const raw = employeeListPhone(row.original);
           if (!raw) return '—';
           return formatLocaleMobile(raw) || raw;
         },
@@ -125,7 +143,7 @@ export const UserTablePanel = ({
       column.accessor('lastLoginOn', {
         header: 'Last Login',
         meta: { label: 'Last Login' },
-        cell: ({ getValue }) => formatUserLastLogin(getValue()),
+        cell: ({ getValue }) => formatEmployeeLastLogin(getValue()),
       }),
       column.display({
         id: 'actions',
@@ -134,10 +152,12 @@ export const UserTablePanel = ({
         enableSorting: false,
         meta: { align: 'center', label: 'Actions' },
         cell: function ActionsCell({ row }) {
+          const isActiveTab = status === 'active';
+
           const handleToggle = () => {
             patchMutation.mutate({
               id: row.original.id,
-              body: { isActive: !row.original.isActive },
+              body: { isActive: !isActiveTab },
             });
           };
 
@@ -149,18 +169,18 @@ export const UserTablePanel = ({
             <DataTableRowActions
               actions={[
                 {
-                  label: row.original.isActive ? 'Deactivate' : 'Activate',
+                  label: isActiveTab ? 'Deactivate' : 'Activate',
                   onSelect: handleToggle,
                 },
               ]}
-              editLabel={`Edit ${row.original.displayName ?? 'user'}`}
+              editLabel={`Edit ${row.original.displayName ?? 'employee'}`}
               onEdit={handleEdit}
             />
           );
         },
       }),
     ],
-    [onEdit, patchMutation],
+    [onEdit, patchMutation, status],
   );
 
   const items = query.data?.items ?? [];
@@ -173,7 +193,7 @@ export const UserTablePanel = ({
         ? 'error'
         : 'idle';
 
-  const handleStatusChange = (next: UserStatusFilter) => {
+  const handleStatusChange = (next: EmployeeStatusFilter) => {
     setStatus(next);
     setPagination((current) => ({ ...current, pageIndex: 0 }));
   };
@@ -197,9 +217,9 @@ export const UserTablePanel = ({
     <div className="flex min-w-0 flex-1 flex-col">
       <CatalogStatusTabBar
         activeCount={activeCount}
-        addLabel={ADD_USER_LABEL}
+        addLabel={ADD_EMPLOYEE_LABEL}
         filter={
-          <UserListRoleFilter
+          <EmployeeListRoleFilter
             appliedRoleIds={appliedRoleIds}
             onApply={handleRoleFilterApply}
             onClear={handleRoleFilterClear}
@@ -210,7 +230,7 @@ export const UserTablePanel = ({
         onAdd={onAdd}
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
-        searchPlaceholder={SEARCH_USERS_PLACEHOLDER}
+        searchPlaceholder={SEARCH_EMPLOYEES_PLACEHOLDER}
         searchValue={globalFilter}
         status={status}
       />
@@ -220,10 +240,10 @@ export const UserTablePanel = ({
           className="rounded-none border-0"
           columns={columns}
           data={items}
-          emptyState={NO_USERS_FOUND}
+          emptyState={NO_EMPLOYEES_FOUND}
           enableRowSelection={false}
           enableSearch={false}
-          getRowId={(row) => row.id}
+          getRowId={(row) => String(row.id)}
           manual={{
             pagination: true,
             sorting: true,
@@ -236,11 +256,11 @@ export const UserTablePanel = ({
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}
-          rowLabel="users"
+          rowLabel="employees"
           showColumnVisibility={false}
           state={{ globalFilter, pagination, sorting }}
           status={tableStatus}
-          tableLabel="Users"
+          tableLabel="Employees"
         />
       </div>
     </div>

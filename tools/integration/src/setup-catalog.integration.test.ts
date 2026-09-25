@@ -8,6 +8,7 @@ import {
   businessTypeListQueryOptions,
   businessTypeLookupQueryOptions,
   createBusinessTypeMutationOptions,
+  createEmployeeMutationOptions,
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createNonWorkingDateMutationOptions,
@@ -20,6 +21,10 @@ import {
   glBreakKeys,
   glBreakListQueryOptions,
   glBreakLookupQueryOptions,
+  employeeDetailQueryOptions,
+  employeeKeys,
+  employeeListQueryOptions,
+  employeeLookupQueryOptions,
   deleteTechTradeMutationOptions,
   deleteTechSkillLevelMutationOptions,
   nonWorkingDateDetailQueryOptions,
@@ -51,6 +56,9 @@ import {
   businessTypeDetailResponseFixture,
   businessTypeListResponseFixture,
   businessTypeLookupResponseFixture,
+  employeeDetailResponseFixture,
+  employeeListResponseFixture,
+  employeeLookupResponseFixture,
   glBreakDetailResponseFixture,
   glBreakListResponseFixture,
   glBreakLookupResponseFixture,
@@ -644,6 +652,7 @@ describe('tech skill level through customFetch', () => {
   });
 
   it('DELETEs a skill level and invalidates tech skill level queries', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
     const client = createCmsQueryClient();
     client.setQueryData(techSkillLevelKeys.list({}), { items: [], page: 1 });
 
@@ -871,6 +880,80 @@ describe('user role through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/userrole');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(client.getQueryState(userRoleKeys.lookup({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('employee through customFetch', () => {
+  it('GETs the paged list with filters and summary', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(employeeListResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      employeeListQueryOptions({
+        page: 2,
+        search: 'jordan',
+        isActive: true,
+        employeeNumber: 'E-1001',
+        includeSummary: true,
+        techTradeIds: [10],
+      }),
+    );
+
+    expect(page.items).toHaveLength(1);
+    expect(page.summary?.activeEmployees).toBe(1);
+    expect(page.items[0]?.hasTechnicianProfile).toBe(true);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/employee?page=2&search=jordan&isActive=true&employeeNumber=E-1001&includeSummary=true&techTradeIds=10',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs a detail record and lookup rows', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(employeeDetailResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(employeeLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const detail = await client.fetchQuery(employeeDetailQueryOptions(81));
+    const lookup = await client.fetchQuery(employeeLookupQueryOptions(false));
+
+    expect(detail.technicianProfile?.techTradeId).toBe(10);
+    expect(lookup[0]?.employeeNumber).toBe('E-1001');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/employee/81');
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/employee/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates employee queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(employeeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(employeeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createEmployeeMutationOptions(client));
+    await mutation.execute({
+      employeeNumber: 'E-1001',
+      employeeTypeId: 1,
+      displayName: 'Jordan Reed',
+      statusId: 1,
+      isPurchaser: false,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/employee');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(employeeKeys.list({}))?.isInvalidated).toBe(
       true,
     );
     disposeCmsQueryClient(client);

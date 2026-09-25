@@ -11,6 +11,14 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       href: 'users-and-payroll/users',
     },
     {
+      title: 'Employees',
+      description:
+        'Manage system employees, status, assignments, and defaults.',
+      icon: 'UsersIcon',
+      totalSettings: { count: 128, label: 'Employees' },
+      href: 'users-and-payroll/employees',
+    },
+    {
       title: 'Roles & Permissions',
       description: 'Define roles and control access across the system.',
       icon: 'SettingsRoleIcon',

@@ -5,6 +5,13 @@ export const PAGE_DESCRIPTION =
 export const ADD_USER_LABEL = 'Add User';
 export const SEARCH_USERS_PLACEHOLDER = 'Search user';
 
+export const FILTER_LABEL = 'Filter';
+export const FILTER_ROLE_LABEL = 'Role';
+export const FILTER_ROLE_PLACEHOLDER = 'Select roles';
+export const FILTER_APPLY_LABEL = 'Apply';
+export const FILTER_CLEAR_LABEL = 'Clear';
+export const NO_USERS_FOUND = 'No users found.';
+
 export const INVITE_USER_TITLE = 'Invite user';
 export const INVITE_USER_DESCRIPTION =
   'Enter basic details to invite user';
@@ -31,4 +38,3 @@ export const METRIC_PENDING_INVITATION = 'Pending invitation';
 export const METRIC_ADMINS = 'Admins';
 
 export const METRIC_ACROSS_LOCATIONS = 'Across all locations';
-export const NEVER_LOGGED_IN_LABEL = 'Never Logged In';

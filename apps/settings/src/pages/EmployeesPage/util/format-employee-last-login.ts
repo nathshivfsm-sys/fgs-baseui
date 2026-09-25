@@ -1,9 +1,10 @@
 import { formatLocaleDateTime } from '@cms/shared-locale';
+import { NEVER_LOGGED_IN } from '../constant';
 
-export const formatUserLastLogin = (
+export const formatEmployeeLastLogin = (
   lastLoginOn: string | null | undefined,
 ): string => {
-  if (!lastLoginOn) return '—';
+  if (!lastLoginOn) return NEVER_LOGGED_IN;
   const formatted = formatLocaleDateTime(lastLoginOn);
-  return formatted || '—';
+  return formatted || NEVER_LOGGED_IN;
 };
