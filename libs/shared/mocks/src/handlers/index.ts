@@ -1,4 +1,5 @@
 import { attachmentHandlers } from './attachment';
+import { businessTypeHandlers } from './business-type';
 import { employeeHandlers } from './employee';
 import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
@@ -32,5 +33,6 @@ export const handlers = [
   ...employeeHandlers,
   ...techTradeHandlers,
   ...techSkillLevelHandlers,
+  ...businessTypeHandlers,
   ...attachmentHandlers,
 ];

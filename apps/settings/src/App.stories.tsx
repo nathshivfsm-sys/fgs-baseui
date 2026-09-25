@@ -329,6 +329,26 @@ export const SearchNoResults: Story = {
   },
 };
 
+export const SearchMatchesOtherTab: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(
+      await canvas.findByLabelText('Search settings', {}, LAZY_PAGE),
+      'trade',
+    );
+    await expect(
+      canvas.getByText('No settings match "trade" in Company. Try another tab:'),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole('button', { name: 'Operations (1)' }),
+    ).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Operations (1)' }));
+    await expect(
+      canvas.getByRole('button', { name: /^Trade & Skills/ }),
+    ).toBeVisible();
+  },
+};
+
 export const GeneralInfo: Story = {
   args: { initialPath: '/settings/company/general-info' },
   beforeEach: () => api.install(loadsCompany),
@@ -2181,5 +2201,147 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
         country: 'US',
       },
     });
+  },
+};
+
+type StoryBusinessType = {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  displayOrder: number;
+  isActive: boolean;
+};
+
+function businessTypeHandlers(): ApiHandlers {
+  const items: StoryBusinessType[] = [
+    {
+      id: 71,
+      code: 'HVAC',
+      name: 'HVAC',
+      description: 'Heating and cooling',
+      displayOrder: 1,
+      isActive: true,
+    },
+    {
+      id: 72,
+      code: 'PLMB',
+      name: 'Plumbing',
+      description: 'Pipes and fixtures',
+      displayOrder: 2,
+      isActive: true,
+    },
+    {
+      id: 73,
+      code: 'PEST',
+      name: 'Pest Control',
+      description: 'Pest inspection and treatment',
+      displayOrder: 3,
+      isActive: true,
+    },
+    {
+      id: 74,
+      code: 'ELEC',
+      name: 'Electrical',
+      description: 'Electrical service',
+      displayOrder: 4,
+      isActive: true,
+    },
+    {
+      id: 75,
+      code: 'CLEAN',
+      name: 'Home Cleaning',
+      description: 'Residential cleaning',
+      displayOrder: 5,
+      isActive: true,
+    },
+    {
+      id: 76,
+      code: 'JUNK',
+      name: 'Junk Removal',
+      description: 'Haul-away and cleanup',
+      displayOrder: 6,
+      isActive: true,
+    },
+    {
+      id: 77,
+      code: 'GARDEN',
+      name: 'Garden Management',
+      description: 'Lawn and garden',
+      displayOrder: 7,
+      isActive: false,
+    },
+  ];
+  const handlers: ApiHandlers = {
+    'GET /businesstype': () =>
+      jsonResponse(
+        setupEnvelope({
+          items,
+          page: 1,
+          pageSize: 1000,
+          totalCount: items.length,
+        }),
+      ),
+  };
+  for (const item of items) {
+    handlers[`PATCH /businesstype/${item.id}`] = async (request) => {
+      const body = (await request.json()) as { isActive?: boolean };
+      if (typeof body.isActive === 'boolean') item.isActive = body.isActive;
+      return jsonResponse(setupEnvelope(item));
+    };
+  }
+  return handlers;
+}
+
+export const BusinessTypeListing: Story = {
+  args: { initialPath: '/settings/company/business-type' },
+  beforeEach: () => api.install(businessTypeHandlers()),
+  play: async ({ canvasElement }) => {
+    alert.remove();
+    const canvas = within(canvasElement);
+    await expect(
+      await canvas.findByRole('heading', { name: 'Business Type' }, LAZY_PAGE),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('HVAC', {}, LAZY_PAGE),
+    ).toBeVisible();
+    await expect(canvas.getByRole('switch', { name: 'HVAC' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    const garden = canvas.getByRole('switch', { name: 'Garden Management' });
+    await expect(garden).toBeEnabled();
+    await userEvent.click(garden);
+    await expect(
+      await within(document.body).findByText(
+        'Business Type enabled successfully.',
+        {},
+        LAZY_PAGE,
+      ),
+    ).toBeVisible();
+    const patch = api.requests.find((request) => request.method === 'PATCH');
+    await expect(patch?.endpoint).toBe('/businesstype/77');
+    await expect(patch?.body).toEqual({ isActive: true });
+    await waitFor(() => {
+      expect(
+        canvas.getByRole('switch', { name: 'Garden Management' }),
+      ).toHaveAttribute('aria-disabled', 'true');
+    }, LAZY_PAGE);
+  },
+};
+
+export const BusinessTypeFromGrid: Story = {
+  beforeEach: () => api.install(businessTypeHandlers()),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(
+      await canvas.findByRole('button', { name: /^Business Type/ }, LAZY_PAGE),
+    );
+    await expect(
+      await canvas.findByRole('heading', { name: 'Business Type' }, LAZY_PAGE),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('Plumbing', {}, LAZY_PAGE),
+    ).toBeVisible();
   },
 };

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node tools/hooks/pre-commit-gate.mjs cursor build",
+        "matcher": "\\bgit(?:\\.exe)?(?:\\s+-[cC]\\s+\\S+)*\\s+commit(?!-)",
+        "timeout": 1800,
+        "failClosed": true
+      },
+      {
+        "command": "node tools/hooks/pre-commit-gate.mjs cursor lint",
+        "matcher": "\\bgit(?:\\.exe)?(?:\\s+-[cC]\\s+\\S+)*\\s+commit(?!-)",
+        "timeout": 900,
+        "failClosed": true
+      }
+    ]
+  }
+}

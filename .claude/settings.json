@@ -1,0 +1,59 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git *)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/pre-commit-gate.mjs",
+              "claude",
+              "build"
+            ],
+            "timeout": 1800,
+            "statusMessage": "Checking pnpm build and pnpm pages:build"
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(git *)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/pre-commit-gate.mjs",
+              "claude",
+              "build"
+            ],
+            "timeout": 1800,
+            "statusMessage": "Checking pnpm build and pnpm pages:build"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git *)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/pre-commit-gate.mjs",
+              "claude",
+              "lint"
+            ],
+            "timeout": 900,
+            "statusMessage": "Checking Prettier and ESLint"
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(git *)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/pre-commit-gate.mjs",
+              "claude",
+              "lint"
+            ],
+            "timeout": 900,
+            "statusMessage": "Checking Prettier and ESLint"
+          }
+        ]
+      }
+    ]
+  }
+}

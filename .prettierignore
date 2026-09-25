@@ -1,7 +1,10 @@
 dist
 .nx
+.nxignore
 .storybook/dist
 coverage
 pnpm-lock.yaml
 package-lock.json
 .claude
+# EJS generator templates (not valid TS until `nx g` substitutes placeholders).
+tools/generators/**/files

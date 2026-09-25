@@ -1,3 +1,4 @@
+export type { CatalogErrorCopy } from './catalog-error.types';
 export type { CatalogNavCardProps } from './catalog-nav-card.types';
 export type {
   CatalogStatusFilter,

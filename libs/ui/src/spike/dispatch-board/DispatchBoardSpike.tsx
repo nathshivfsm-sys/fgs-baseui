@@ -416,10 +416,12 @@ export function DispatchBoardSpike({
                 snapDuration: '24:00:00',
                 slotMinTime: '00:00:00',
                 slotMaxTime: '24:00:00',
-                slotLabelFormat: {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
+                ...{
+                  slotLabelFormat: {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  },
                 },
               },
             }}

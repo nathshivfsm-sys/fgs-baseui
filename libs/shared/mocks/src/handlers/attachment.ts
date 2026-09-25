@@ -111,10 +111,8 @@ const attachments = seedAttachments();
 
 function nextAttachmentId(): number {
   return (
-    attachments.reduce(
-      (max, record) => Math.max(max, record.attachmentId),
-      0,
-    ) + 1
+    attachments.reduce((max, record) => Math.max(max, record.attachmentId), 0) +
+    1
   );
 }
 
@@ -177,7 +175,8 @@ function filterAttachments(url: URL): AttachmentMetadataDto[] {
     ) {
       return false;
     }
-    if (tags && !(record.tags ?? []).some((tag) => tag === tags)) return false;
+    if (tags && !(record.tags ?? []).some((tag: string) => tag === tags))
+      return false;
     if (
       isVisibleToCustomer !== undefined &&
       record.isVisibleToCustomer !== isVisibleToCustomer
@@ -219,7 +218,9 @@ function createFromUpload(
     contentType: file.type || 'application/octet-stream',
     fileExtension,
     fileSizeBytes: file.size,
-    tags: fields.tags ? fields.tags.split(',').map((tag) => tag.trim()) : null,
+    tags: fields.tags
+      ? fields.tags.split(',').map((tag: string) => tag.trim())
+      : null,
     description: fields.description ?? null,
     isVisibleToCustomer: fields.isVisibleToCustomer ?? true,
     isVisibleToFieldTechnician: fields.isVisibleToFieldTechnician ?? true,
@@ -271,14 +272,11 @@ export const attachmentHandlers = [
     },
   ),
 
-  http.get(
-    '/api/v1/attachment/:entityType/:attachmentId',
-    ({ params }) => {
-      const record = findAttachment(parseRouteId(params['attachmentId']));
-      if (!record) return setupError(404, 'Attachment not found.');
-      return binaryOk();
-    },
-  ),
+  http.get('/api/v1/attachment/:entityType/:attachmentId', ({ params }) => {
+    const record = findAttachment(parseRouteId(params['attachmentId']));
+    if (!record) return setupError(404, 'Attachment not found.');
+    return binaryOk();
+  }),
 
   http.delete('/api/v1/attachment/by-entity', ({ request }) => {
     const url = new URL(request.url);

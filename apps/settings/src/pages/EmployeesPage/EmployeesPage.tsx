@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { EmployeeSummaryDto } from '@cms/settings-contract';
-import { employeeListQueryOptions } from '@cms/settings-data-access';
-import { roleLookupQueryOptions } from '@cms/user-data-access';
+import {
+  employeeListQueryOptions,
+  roleLookupQueryOptions,
+} from '@cms/settings-data-access';
 import {
   EmployeeTablePanel,
   EmployeesHeader,
@@ -47,7 +49,8 @@ export const EmployeesPage = ({ queryClient }: EmployeesPageProps) => {
     summaryQuery.data?.summary,
   );
   const totalEmployees = summaryQuery.data?.summary?.totalEmployees ?? 0;
-  const admins = adminRoleIds.length > 0 ? (adminsQuery.data?.totalCount ?? 0) : 0;
+  const admins =
+    adminRoleIds.length > 0 ? (adminsQuery.data?.totalCount ?? 0) : 0;
 
   const handleAddEmployee = () => {
     return;

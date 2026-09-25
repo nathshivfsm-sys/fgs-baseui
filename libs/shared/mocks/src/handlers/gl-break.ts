@@ -322,7 +322,9 @@ function toAddressDetail(
   existingId?: string,
 ): GlBreakAddressDetailDto {
   return {
-    id: existingId ?? `aaaaaaaa-bbbb-cccc-dddd-${String(Date.now()).padStart(12, '0').slice(-12)}`,
+    id:
+      existingId ??
+      `aaaaaaaa-bbbb-cccc-dddd-${String(Date.now()).padStart(12, '0').slice(-12)}`,
     addressLine1: write.addressLine1 ?? null,
     addressLine2: write.addressLine2 ?? null,
     addressLine3: write.addressLine3 ?? null,
@@ -379,7 +381,10 @@ function filterGlBreaks(url: URL): GlBreakDetailDto[] {
     if (code && (record.code ?? '').toLowerCase() !== code.toLowerCase()) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
     if (breakLevel !== undefined && record.breakLevel !== breakLevel) {
@@ -388,7 +393,8 @@ function filterGlBreaks(url: URL): GlBreakDetailDto[] {
     if (
       tradeCode &&
       !(record.trades ?? []).some(
-        (trade) => (trade.tradeCode ?? '').toLowerCase() === tradeCode.toLowerCase(),
+        (trade: GlBreakTradeDto) =>
+          (trade.tradeCode ?? '').toLowerCase() === tradeCode.toLowerCase(),
       )
     ) {
       return false;
@@ -443,7 +449,8 @@ export const glBreakHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = glBreakCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     glBreaks.push(created);
     return setupOk(created, 201);
@@ -455,7 +462,8 @@ export const glBreakHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = glBreakUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     applyWrite(record, parsed.data);
     return setupOk(record);
   }),
@@ -466,7 +474,8 @@ export const glBreakHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = glBreakPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     applyWrite(record, parsed.data);
     return setupOk(record);
   }),

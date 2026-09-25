@@ -7,7 +7,7 @@ import {
   patchUserMutationOptions,
   userListQueryOptions,
   type UserListParams,
-} from '@cms/user-data-access';
+} from '@cms/settings-data-access';
 import {
   createDataTableColumnHelper,
   DataTable,
@@ -91,10 +91,7 @@ export const UserTablePanel = ({
         meta: { label: 'Name' },
         cell: ({ getValue, row }) => (
           <div className="flex min-w-0 items-center gap-2.5">
-            <UserListAvatar
-              displayName={getValue()}
-              userId={row.original.id}
-            />
+            <UserListAvatar displayName={getValue()} userId={row.original.id} />
             <span className="truncate text-control font-semibold text-action">
               {getValue() ?? '—'}
             </span>
@@ -227,10 +224,7 @@ export const UserTablePanel = ({
           manual={{
             pagination: true,
             sorting: true,
-            pageCount: Math.max(
-              1,
-              Math.ceil(totalCount / pagination.pageSize),
-            ),
+            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
             rowCount: totalCount,
           }}
           onGlobalFilterChange={setGlobalFilter}

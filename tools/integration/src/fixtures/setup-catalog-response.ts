@@ -373,6 +373,48 @@ export const techSkillLevelLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const businessTypeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 71,
+        code: 'RES',
+        name: 'Residential',
+        description: 'Homes and apartments',
+        displayOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const businessTypeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: businessTypeListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const businessTypeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 71,
+      code: 'RES',
+      name: 'Residential',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const userListResponseFixture = {
   success: true,
   statusCode: 200,

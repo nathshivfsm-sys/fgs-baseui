@@ -172,6 +172,25 @@ export {
   type TechSkillLevelUpdateDto,
 } from './lib/tech-skill-level.schema';
 export {
+  businessTypeCreateDtoSchema,
+  businessTypeDetailDtoSchema,
+  businessTypeDetailResponseSchema,
+  businessTypeListResponseSchema,
+  businessTypeLookupDtoSchema,
+  businessTypeLookupResponseSchema,
+  businessTypePatchDtoSchema,
+  businessTypeSummaryDtoSchema,
+  businessTypeUpdateDtoSchema,
+  type BusinessTypeCreateDto,
+  type BusinessTypeDetailDto,
+  type BusinessTypeListParams,
+  type BusinessTypeLookupDto,
+  type BusinessTypePatchDto,
+  type BusinessTypeSummaryDto,
+  type BusinessTypeUpdateDto,
+} from './lib/business-type.schema';
+
+export {
   employeeAddressDetailDtoSchema,
   employeeCreateDtoSchema,
   employeeDetailDtoSchema,

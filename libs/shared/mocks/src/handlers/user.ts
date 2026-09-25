@@ -78,7 +78,9 @@ function toSummary(record: UserRecord): UserSummaryDto {
 }
 
 function findUser(id: string | undefined): UserRecord | undefined {
-  return id === undefined ? undefined : users.find((record) => record.id === id);
+  return id === undefined
+    ? undefined
+    : users.find((record) => record.id === id);
 }
 
 function roleNameForId(roleId: number | null | undefined): string | null {
@@ -105,7 +107,9 @@ function filterUsers(url: URL): UserRecord[] {
     }
     if (
       displayName &&
-      !(record.displayName ?? '').toLowerCase().includes(displayName.toLowerCase())
+      !(record.displayName ?? '')
+        .toLowerCase()
+        .includes(displayName.toLowerCase())
     ) {
       return false;
     }
@@ -172,7 +176,8 @@ export const userHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     if (parsed.data.roleIds?.[0] !== undefined) {
       record.roleId = parsed.data.roleIds[0] ?? null;
@@ -187,7 +192,8 @@ export const userHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = userPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     if (parsed.data.roleIds?.[0] !== undefined) {
       record.roleId = parsed.data.roleIds[0] ?? null;
@@ -215,8 +221,9 @@ export const userHandlers = [
     const body = await readJsonBody(request);
     if (!body.ok) return body.response;
     const parsed = userInviteDtoSchema.array().safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
-    const created = parsed.data.map((invite, index) => {
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
+    const created = parsed.data.map((invite: UserInviteDto, index: number) => {
       const record = createFromInvite(invite, index);
       users.push(record);
       return record;
