@@ -1,5 +1,18 @@
 /** Wire envelopes shaped from the FGS Setup Service geo-lookup DTOs. */
 
+export const gloBillingCategoryTypeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      billingCategoryType: 'LABOR',
+      billingCategoryName: 'Labor',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const gloCountryLookupResponseFixture = {
   success: true,
   statusCode: 200,

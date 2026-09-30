@@ -1,4 +1,6 @@
 export {
+  gloBillingCategoryTypeLookupCollectionEndpoint,
+  gloBillingCategoryTypeLookupEndpoint,
   gloCountryLookupCollectionEndpoint,
   gloCountryLookupEndpoint,
   gloStateProvinceLookupCollectionEndpoint,
@@ -8,20 +10,26 @@ export {
 } from './geo-lookup.endpoints';
 export { geoLookupKeys } from './geo-lookup.keys';
 export {
+  gloBillingCategoryTypeLookupQueryOptions,
   gloCountryLookupQueryOptions,
   gloStateProvinceLookupQueryOptions,
+  loadGloBillingCategoryTypeLookup,
   loadGloCountryLookup,
   loadGloStateProvinceLookup,
   loadPostalCodeCities,
   postalCodeCitiesQueryOptions,
 } from './geo-lookup.queries';
 export {
+  gloBillingCategoryTypeLookupDtoSchema,
+  gloBillingCategoryTypeLookupResponseSchema,
   gloCountryLookupDtoSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupDtoSchema,
   gloStateProvinceLookupResponseSchema,
   postalCodeCityLookupDtoSchema,
   postalCodeCityLookupResponseSchema,
+  type GloBillingCategoryTypeLookupDto,
+  type GloBillingCategoryTypeLookupParams,
   type GloCountryLookupDto,
   type GloCountryLookupParams,
   type GloStateProvinceLookupDto,

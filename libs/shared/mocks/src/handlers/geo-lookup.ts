@@ -1,11 +1,15 @@
 import { http } from 'msw';
 import type {
+  GloBillingCategoryTypeLookupDto,
   GloCountryLookupDto,
   GloStateProvinceLookupDto,
   PostalCodeCityLookupDto,
 } from '@cms/shared-contract';
 import { readOptionalBoolean, setupOk } from './util';
 
+type BillingCategoryTypeRecord = GloBillingCategoryTypeLookupDto & {
+  isActive: boolean;
+};
 type CountryRecord = GloCountryLookupDto & { isActive: boolean };
 type StateProvinceRecord = GloStateProvinceLookupDto & { isActive: boolean };
 type CityRecord = PostalCodeCityLookupDto & {
@@ -13,6 +17,35 @@ type CityRecord = PostalCodeCityLookupDto & {
   stateProvinceCode: string;
   isActive: boolean;
 };
+
+function seedBillingCategoryTypes(): BillingCategoryTypeRecord[] {
+  return [
+    {
+      billingCategoryType: 'LABOR',
+      billingCategoryName: 'Labor',
+      displayOrder: 1,
+      isActive: true,
+    },
+    {
+      billingCategoryType: 'MATERIAL',
+      billingCategoryName: 'Materials',
+      displayOrder: 2,
+      isActive: true,
+    },
+    {
+      billingCategoryType: 'FEE',
+      billingCategoryName: 'Service Fee',
+      displayOrder: 3,
+      isActive: true,
+    },
+    {
+      billingCategoryType: 'LEGACY',
+      billingCategoryName: 'Legacy Type',
+      displayOrder: 99,
+      isActive: false,
+    },
+  ];
+}
 
 function seedCountries(): CountryRecord[] {
   return [
@@ -129,9 +162,20 @@ function seedCities(): CityRecord[] {
   ];
 }
 
+const billingCategoryTypes = seedBillingCategoryTypes();
 const countries = seedCountries();
 const stateProvinces = seedStateProvinces();
 const cities = seedCities();
+
+function toBillingCategoryTypeLookup(
+  record: BillingCategoryTypeRecord,
+): GloBillingCategoryTypeLookupDto {
+  return {
+    billingCategoryType: record.billingCategoryType,
+    billingCategoryName: record.billingCategoryName,
+    displayOrder: record.displayOrder,
+  };
+}
 
 function toCountryLookup(record: CountryRecord): GloCountryLookupDto {
   return {
@@ -165,12 +209,22 @@ function matchesCode(
 }
 
 /**
- * In-memory geo lookups (`/glo/country/lookup`, `/glo/stateprovince/lookup`,
- * `/postalcode/cities`). Request/response shapes come from `@cms/shared-contract`.
+ * In-memory geo lookups (`/glo/country/lookup`, `/glo/billingcategorytype/lookup`,
+ * `/glo/stateprovince/lookup`, `/postalcode/cities`). Request/response shapes come
+ * from `@cms/shared-contract`.
  * Register before `postalCodeHandlers` so `/postalcode/cities` is not swallowed
  * by `/postalcode/:id`.
  */
 export const geoLookupHandlers = [
+  http.get('/api/v1/glo/billingcategorytype/lookup', ({ request }) => {
+    const url = new URL(request.url);
+    const activeOnly = readOptionalBoolean(url, 'activeOnly') ?? true;
+    const items = billingCategoryTypes
+      .filter((record) => (activeOnly ? record.isActive : true))
+      .map(toBillingCategoryTypeLookup);
+    return setupOk(items);
+  }),
+
   http.get('/api/v1/glo/country/lookup', ({ request }) => {
     const url = new URL(request.url);
     const activeOnly = readOptionalBoolean(url, 'activeOnly') ?? true;

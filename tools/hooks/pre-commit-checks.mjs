@@ -5,6 +5,22 @@ import { fileURLToPath } from 'node:url';
 
 export const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 
+/** Keep pre-commit builds from spawning every MFE vite build at once (OOM on Windows). */
+function preCommitBuildEnv() {
+  const nodeOptions = [
+    process.env.NODE_OPTIONS,
+    '--max-old-space-size=8192',
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  return {
+    ...process.env,
+    NODE_OPTIONS: nodeOptions,
+    NX_PARALLEL: process.env.NX_PARALLEL ?? '2',
+  };
+}
+
 const PRETTIER_FILE = /\.(ts|tsx|js|jsx|json|md|css|mjs|cjs)$/i;
 const ESLINT_FILE = /\.(ts|tsx|js|jsx|mjs|cjs)$/i;
 
@@ -94,10 +110,14 @@ function tail(text) {
 }
 
 export function runPnpm(script, { inherit = false } = {}) {
+  const env =
+    script === 'build' || script === 'pages:build'
+      ? preCommitBuildEnv()
+      : process.env;
   const result = spawnSync('pnpm', [script], {
     cwd: repoRoot,
     encoding: 'utf8',
-    env: process.env,
+    env,
     shell: true,
     stdio: inherit ? 'inherit' : 'pipe',
     maxBuffer: 20 * 1024 * 1024,

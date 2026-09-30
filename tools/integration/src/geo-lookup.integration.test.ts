@@ -4,12 +4,14 @@ import {
   disposeCmsQueryClient,
 } from '@cms/platform-contract';
 import {
+  gloBillingCategoryTypeLookupQueryOptions,
   gloCountryLookupQueryOptions,
   gloStateProvinceLookupQueryOptions,
   postalCodeCitiesQueryOptions,
 } from '@cms/shared-data-access';
 import { configureCustomFetch } from '@cms/shared-api';
 import {
+  gloBillingCategoryTypeLookupResponseFixture,
   gloCountryLookupResponseFixture,
   gloStateProvinceLookupResponseFixture,
   postalCodeCitiesResponseFixture,
@@ -39,8 +41,11 @@ afterEach(() => {
 });
 
 describe('geo lookup through customFetch', () => {
-  it('GETs country, state/province, and city lookups with filters', async () => {
+  it('GETs billing category type, country, state/province, and city lookups with filters', async () => {
     fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(gloBillingCategoryTypeLookupResponseFixture),
+      )
       .mockResolvedValueOnce(jsonResponse(gloCountryLookupResponseFixture))
       .mockResolvedValueOnce(
         jsonResponse(gloStateProvinceLookupResponseFixture),
@@ -50,6 +55,9 @@ describe('geo lookup through customFetch', () => {
       defaultOptions: { queries: { retry: false } },
     });
 
+    const billingCategoryTypes = await client.fetchQuery(
+      gloBillingCategoryTypeLookupQueryOptions(false),
+    );
     const countries = await client.fetchQuery(gloCountryLookupQueryOptions());
     const states = await client.fetchQuery(
       gloStateProvinceLookupQueryOptions({
@@ -65,16 +73,20 @@ describe('geo lookup through customFetch', () => {
       }),
     );
 
+    expect(billingCategoryTypes[0]?.billingCategoryType).toBe('LABOR');
     expect(countries[0]?.countryCode).toBe('US');
     expect(states[0]?.stateProvinceCode).toBe('TX');
     expect(cities[0]?.city).toBe('Houston');
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      '/api/v1/glo/country/lookup?activeOnly=true',
+      '/api/v1/glo/billingcategorytype/lookup?activeOnly=false',
     );
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
-      '/api/v1/glo/stateprovince/lookup?countryCode=US&activeOnly=false',
+      '/api/v1/glo/country/lookup?activeOnly=true',
     );
     expect(fetchMock.mock.calls[2]?.[0]).toBe(
+      '/api/v1/glo/stateprovince/lookup?countryCode=US&activeOnly=false',
+    );
+    expect(fetchMock.mock.calls[3]?.[0]).toBe(
       '/api/v1/postalcode/cities?countryCode=US&stateProvinceCode=TX&activeOnly=false',
     );
     disposeCmsQueryClient(client);

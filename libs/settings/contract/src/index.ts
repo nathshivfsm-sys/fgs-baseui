@@ -172,6 +172,25 @@ export {
   type TechSkillLevelUpdateDto,
 } from './lib/tech-skill-level.schema';
 export {
+  billingCategoryCreateDtoSchema,
+  billingCategoryDetailDtoSchema,
+  billingCategoryDetailResponseSchema,
+  billingCategoryListResponseSchema,
+  billingCategoryLookupDtoSchema,
+  billingCategoryLookupResponseSchema,
+  billingCategoryPatchDtoSchema,
+  billingCategorySummaryDtoSchema,
+  billingCategoryUpdateDtoSchema,
+  type BillingCategoryCreateDto,
+  type BillingCategoryDetailDto,
+  type BillingCategoryListParams,
+  type BillingCategoryLookupDto,
+  type BillingCategoryLookupParams,
+  type BillingCategoryPatchDto,
+  type BillingCategorySummaryDto,
+  type BillingCategoryUpdateDto,
+} from './lib/billing-category.schema';
+export {
   businessTypeCreateDtoSchema,
   businessTypeDetailDtoSchema,
   businessTypeDetailResponseSchema,
