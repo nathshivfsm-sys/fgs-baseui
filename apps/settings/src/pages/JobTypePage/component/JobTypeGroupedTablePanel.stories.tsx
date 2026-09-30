@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { PLACEHOLDER_JOB_TYPE_GROUPS } from '../util';
 import { JobTypeGroupedTablePanel } from './JobTypeGroupedTablePanel';
 
 const meta = {
@@ -26,4 +27,16 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+const handleAdd = () => undefined;
+const handleEdit = () => undefined;
+
+export const Default: Story = {
+  args: {
+    activeCount: 6,
+    inactiveCount: 1,
+    onAdd: handleAdd,
+    onEdit: handleEdit,
+    rows: PLACEHOLDER_JOB_TYPE_GROUPS,
+    tableStatus: 'idle',
+  },
+};

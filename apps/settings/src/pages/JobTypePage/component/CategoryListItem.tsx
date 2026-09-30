@@ -1,9 +1,4 @@
-import {
-  DocumentEditIcon,
-  IconButton,
-  SettingsBillingCategoryIcon,
-  cn,
-} from '@cms/ui';
+import { EditIcon, IconButton, SettingsBillingCategoryIcon, cn } from '@cms/ui';
 import type { CategoryListEntry, CategoryListItemProps } from '../types';
 
 const iconToneClass: Record<CategoryListEntry['iconTone'], string> = {
@@ -50,8 +45,16 @@ export function CategoryListItem({
           aria-hidden="true"
           className={cn(
             'flex size-[2.125rem] shrink-0 items-center justify-center rounded-lg',
-            iconToneClass[entry.iconTone],
+            entry.backgroundColor ? undefined : iconToneClass[entry.iconTone],
           )}
+          style={
+            entry.backgroundColor
+              ? {
+                  backgroundColor: entry.backgroundColor,
+                  color: entry.textColor ?? undefined,
+                }
+              : undefined
+          }
         >
           <SettingsBillingCategoryIcon className="size-4" />
         </span>
@@ -79,7 +82,7 @@ export function CategoryListItem({
       </button>
       <IconButton
         className="shrink-0 rounded-md"
-        icon={<DocumentEditIcon className="size-3.5" />}
+        icon={<EditIcon className="size-3.5" />}
         label={`Edit ${entry.name}`}
         onClick={handleEdit}
         size="xs"

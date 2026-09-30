@@ -7,7 +7,20 @@ import {
   businessTypeKeys,
   businessTypeListQueryOptions,
   businessTypeLookupQueryOptions,
+  jobCategoryKeys,
+  jobCategoryListQueryOptions,
+  jobCategoryLookupQueryOptions,
+  jobTypeCountsQueryOptions,
+  jobTypeKeys,
+  jobTypeListQueryOptions,
+  jobTypeLookupQueryOptions,
+  subcategoryKeys,
+  subcategoryListQueryOptions,
+  subcategoryLookupQueryOptions,
   createBusinessTypeMutationOptions,
+  createJobCategoryMutationOptions,
+  createJobTypeMutationOptions,
+  createSubcategoryMutationOptions,
   createEmployeeMutationOptions,
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
@@ -56,6 +69,16 @@ import {
   businessTypeDetailResponseFixture,
   businessTypeListResponseFixture,
   businessTypeLookupResponseFixture,
+  jobCategoryDetailResponseFixture,
+  jobCategoryListResponseFixture,
+  jobCategoryLookupResponseFixture,
+  jobTypeCountsResponseFixture,
+  jobTypeDetailResponseFixture,
+  jobTypeListResponseFixture,
+  jobTypeLookupResponseFixture,
+  subcategoryDetailResponseFixture,
+  subcategoryListResponseFixture,
+  subcategoryLookupResponseFixture,
   employeeDetailResponseFixture,
   employeeListResponseFixture,
   employeeLookupResponseFixture,
@@ -183,7 +206,9 @@ describe('tax through customFetch', () => {
     const options = await client.fetchQuery(taxLookupQueryOptions(true));
 
     expect(options).toHaveLength(1);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/tax/lookup?activeOnly=true');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/tax/lookup?activeOnly=true',
+    );
     disposeCmsQueryClient(client);
   });
 
@@ -247,7 +272,9 @@ describe('tax authority through customFetch', () => {
   });
 
   it('PATCHes a record and invalidates the module keys', async () => {
-    fetchMock.mockResolvedValue(jsonResponse(taxAuthorityDetailResponseFixture));
+    fetchMock.mockResolvedValue(
+      jsonResponse(taxAuthorityDetailResponseFixture),
+    );
     const client = createCmsQueryClient();
     client.setQueryData(taxAuthorityKeys.detail(21), { code: 'stale' });
 
@@ -260,9 +287,9 @@ describe('tax authority through customFetch', () => {
     expect(url).toBe('/api/v1/taxauthority/21');
     expect(init?.method).toBe('PATCH');
     expect(JSON.parse(String(init?.body))).toEqual({ isActive: false });
-    expect(client.getQueryState(taxAuthorityKeys.detail(21))?.isInvalidated).toBe(
-      true,
-    );
+    expect(
+      client.getQueryState(taxAuthorityKeys.detail(21))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
@@ -382,7 +409,9 @@ describe('zone through customFetch', () => {
       defaultOptions: { queries: { retry: false } },
     });
 
-    const page = await client.fetchQuery(zoneListQueryOptions({ name: 'North' }));
+    const page = await client.fetchQuery(
+      zoneListQueryOptions({ name: 'North' }),
+    );
     const lookup = await client.fetchQuery(zoneLookupQueryOptions(false));
 
     expect(page.items[0]?.code).toBe('NORTH');
@@ -434,7 +463,9 @@ describe('postal code through customFetch', () => {
     expect(page.items[0]?.tripChargeAmount).toBe(10);
     expect(page.items[0]?.fgsSetupZoneId).toBe(31);
     expect(lookup[0]?.city).toBe('Houston');
-    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode?city=Houston');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/postalcode?city=Houston',
+    );
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
       '/api/v1/postalcode/lookup?activeOnly=false',
     );
@@ -463,9 +494,9 @@ describe('postal code through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/postalcode');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
-    expect(
-      client.getQueryState(postalCodeKeys.list({}))?.isInvalidated,
-    ).toBe(true);
+    expect(client.getQueryState(postalCodeKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
     disposeCmsQueryClient(client);
   });
 });
@@ -569,7 +600,9 @@ describe('GL break through customFetch', () => {
   });
 
   it('POSTs a create body and invalidates GL break queries', async () => {
-    fetchMock.mockResolvedValue(jsonResponse(glBreakDetailResponseFixture, 201));
+    fetchMock.mockResolvedValue(
+      jsonResponse(glBreakDetailResponseFixture, 201),
+    );
     const client = createCmsQueryClient();
     client.setQueryData(glBreakKeys.list({}), { items: [], page: 1 });
 
@@ -594,7 +627,9 @@ describe('GL break through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/glbreak');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
-    expect(client.getQueryState(glBreakKeys.list({}))?.isInvalidated).toBe(true);
+    expect(client.getQueryState(glBreakKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
     disposeCmsQueryClient(client);
   });
 });
@@ -716,9 +751,9 @@ describe('business type through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/businesstype');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
-    expect(
-      client.getQueryState(businessTypeKeys.list({}))?.isInvalidated,
-    ).toBe(true);
+    expect(client.getQueryState(businessTypeKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
     disposeCmsQueryClient(client);
   });
 
@@ -734,6 +769,209 @@ describe('business type through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       '/api/v1/businesstype?page=1&pageSize=1000',
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('job category through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(jobCategoryListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(jobCategoryLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      jobCategoryListQueryOptions({ categoryCode: 'INS', name: 'Install' }),
+    );
+    const lookup = await client.fetchQuery(
+      jobCategoryLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.categoryCode).toBe('INS');
+    expect(lookup[0]?.name).toBe('Install');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/jobcategory?categoryCode=INS&name=Install',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/jobcategory/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates job category queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(jobCategoryDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(jobCategoryKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createJobCategoryMutationOptions(client));
+    await mutation.execute({
+      categoryCode: 'INS',
+      name: 'Install',
+      displayOrder: 1,
+      backgroundColor: '#1F4E79',
+      textColor: '#FFFFFF',
+      isActive: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/jobcategory');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(jobCategoryKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('job type through customFetch', () => {
+  it('GETs the paged list, lookup, and counts', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(jobTypeListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(jobTypeLookupResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(jobTypeCountsResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      jobTypeListQueryOptions({
+        jobTypeCode: 'ACINST',
+        name: 'Install',
+        usedFor: 1,
+        jobTypeTaskId: 301,
+        businessUnit: 'HVAC',
+      }),
+    );
+    const lookup = await client.fetchQuery(jobTypeLookupQueryOptions(false));
+    const counts = await client.fetchQuery(
+      jobTypeCountsQueryOptions({
+        search: 'AC',
+        jobTypeCode: 'ACINST',
+        name: 'Install',
+        usedFor: 1,
+        jobTypeTaskId: 301,
+        businessUnit: 'HVAC',
+      }),
+    );
+
+    expect(page.items[0]?.jobTypeCode).toBe('ACINST');
+    expect(lookup[0]?.name).toBe('AC Install');
+    expect(counts.activeCount).toBe(3);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/jobtype?jobTypeCode=ACINST&name=Install&usedFor=1&jobTypeTaskId=301&businessUnit=HVAC',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/jobtype/lookup?activeOnly=false',
+    );
+    expect(fetchMock.mock.calls[2]?.[0]).toBe(
+      '/api/v1/jobtype/counts?search=AC&jobTypeCode=ACINST&name=Install&usedFor=1&jobTypeTaskId=301&businessUnit=HVAC',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates job type queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(jobTypeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(jobTypeKeys.list({}), { items: [], page: 1 });
+    client.setQueryData(jobTypeKeys.counts({}), {
+      activeCount: 0,
+      inactiveCount: 0,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createJobTypeMutationOptions(client));
+    const created = await mutation.execute({
+      jobTypeCode: 'ACINST',
+      name: 'AC Install',
+      usedFor: 1,
+      businessUnit: 'HVAC',
+      showToFieldTech: true,
+      showOnCustomerPortal: true,
+      displayOrder: 1,
+      subCategories: [{ jobTypeTaskId: 301, displayOrder: 1, isActive: true }],
+      isActive: true,
+    });
+
+    expect(created.subCategories?.[0]?.jobTypeTaskId).toBe(301);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/jobtype');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(jobTypeKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    expect(client.getQueryState(jobTypeKeys.counts({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('subcategory through customFetch', () => {
+  it('GETs the paged list and lookup from /jobtypetask', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(subcategoryListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(subcategoryLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      subcategoryListQueryOptions({
+        taskName: 'Condenser',
+        name: 'Install',
+        jobCategoryId: 101,
+        jobTypeId: 201,
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      subcategoryLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.taskName).toBe('Install condenser');
+    expect(lookup[0]?.name).toBe('Condenser install');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/jobtypetask?taskName=Condenser&name=Install&jobCategoryId=101&jobTypeId=201',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/jobtypetask/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates subcategory queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(subcategoryDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(subcategoryKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSubcategoryMutationOptions(client));
+    await mutation.execute({
+      jobCategoryId: 101,
+      tradeId: 51,
+      name: 'Condenser install',
+      priority: 1,
+      estimatedHours: 4,
+      displayOrder: 1,
+      taskName: 'Install condenser',
+      skillLevelId: 61,
+      isActive: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/jobtypetask');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(subcategoryKeys.list({}))?.isInvalidated).toBe(
+      true,
     );
     disposeCmsQueryClient(client);
   });
@@ -865,7 +1103,9 @@ describe('user role through customFetch', () => {
   });
 
   it('POSTs a user role and invalidates user role queries', async () => {
-    fetchMock.mockResolvedValue(jsonResponse(userRoleDetailResponseFixture, 201));
+    fetchMock.mockResolvedValue(
+      jsonResponse(userRoleDetailResponseFixture, 201),
+    );
     const client = createCmsQueryClient();
     client.setQueryData(userRoleKeys.lookup({}), []);
 
@@ -986,7 +1226,9 @@ describe('role through customFetch', () => {
 
     await client.fetchQuery(roleLookupQueryOptions(true));
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role/lookup?activeOnly=true');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/role/lookup?activeOnly=true',
+    );
     disposeCmsQueryClient(client);
   });
 
