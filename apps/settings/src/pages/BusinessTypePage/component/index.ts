@@ -1,5 +1,2 @@
 export { BusinessTypeHeader } from './BusinessTypeHeader';
-export {
-  BusinessTypeList,
-  BusinessTypeListSkeleton,
-} from './BusinessTypeList';
+export { BusinessTypeList, BusinessTypeListSkeleton } from './BusinessTypeList';

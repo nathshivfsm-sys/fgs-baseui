@@ -24,7 +24,9 @@ export function employeeListEndpoint(params: EmployeeListParams = {}): string {
   appendIdList(search, 'dispatchZoneIds', dispatchZoneIds);
   appendIdList(search, 'roleIds', roleIds);
   const query = search.toString();
-  return query ? `${employeeCollectionEndpoint}?${query}` : employeeCollectionEndpoint;
+  return query
+    ? `${employeeCollectionEndpoint}?${query}`
+    : employeeCollectionEndpoint;
 }
 
 export function employeeDetailEndpoint(id: number): string {

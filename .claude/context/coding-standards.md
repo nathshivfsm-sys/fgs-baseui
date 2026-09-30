@@ -133,6 +133,8 @@
   }
   ```
 
+A data table fills its panel: rows scroll inside the table, and pagination stays on the bottom edge. A side list in that panel scrolls in its own column. See `.claude/rules/table-scroll-layout.md`.
+
 ## Icons
 
 - All icons are hand-traced from Figma into `libs/ui/src/icons`, using the `createFigmaIcon`

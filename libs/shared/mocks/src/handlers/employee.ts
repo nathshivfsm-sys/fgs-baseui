@@ -264,10 +264,7 @@ function filterEmployees(url: URL): EmployeeRecord[] {
     ) {
       return false;
     }
-    if (
-      employeeTypeId &&
-      String(record.employeeTypeId) !== employeeTypeId
-    ) {
+    if (employeeTypeId && String(record.employeeTypeId) !== employeeTypeId) {
       return false;
     }
     if (statusId && String(record.statusId) !== statusId) return false;
@@ -277,9 +274,7 @@ function filterEmployees(url: URL): EmployeeRecord[] {
     if (!matchesId(record.technicianProfile?.techSkillId, techSkillIds)) {
       return false;
     }
-    if (
-      !matchesId(record.technicianProfile?.dispatchZoneId, dispatchZoneIds)
-    ) {
+    if (!matchesId(record.technicianProfile?.dispatchZoneId, dispatchZoneIds)) {
       return false;
     }
     if (!matchesId(record.roleId, roleIds)) return false;
@@ -411,7 +406,8 @@ export const employeeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = employeeUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     applyEmployeeWrite(record, parsed.data);
     return setupOk(toDetail(record));
   }),
@@ -422,7 +418,8 @@ export const employeeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = employeePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     applyEmployeeWrite(record, parsed.data);
     return setupOk(toDetail(record));
   }),
@@ -441,7 +438,8 @@ export const employeeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = employeeCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     employees.push(created);
     return setupOk(toDetail(created), 201);

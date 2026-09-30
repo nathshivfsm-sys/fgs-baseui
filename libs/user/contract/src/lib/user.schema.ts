@@ -41,7 +41,9 @@ export const userListSummaryDtoSchema = z.object({
   admins: z.number(),
 });
 
-export const userListResultDtoSchema = pagedResultSchema(userSummaryDtoSchema).extend({
+export const userListResultDtoSchema = pagedResultSchema(
+  userSummaryDtoSchema,
+).extend({
   summary: userListSummaryDtoSchema.nullish(),
 });
 
@@ -67,8 +69,11 @@ export const userPatchDtoSchema = z.object({
   isActive: z.boolean().nullish(),
 });
 
-export const userListResponseSchema = setupResponseSchema(userListResultDtoSchema);
-export const userDetailResponseSchema = setupResponseSchema(userDetailDtoSchema);
+export const userListResponseSchema = setupResponseSchema(
+  userListResultDtoSchema,
+);
+export const userDetailResponseSchema =
+  setupResponseSchema(userDetailDtoSchema);
 export const userCreateResponseSchema = setupResponseSchema(
   z.array(userDetailDtoSchema).nullish(),
 );

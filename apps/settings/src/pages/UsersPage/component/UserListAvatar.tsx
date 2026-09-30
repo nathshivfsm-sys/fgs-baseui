@@ -6,7 +6,10 @@ export interface UserListAvatarProps {
   userId: string;
 }
 
-export const UserListAvatar = ({ displayName, userId }: UserListAvatarProps) => {
+export const UserListAvatar = ({
+  displayName,
+  userId,
+}: UserListAvatarProps) => {
   const { foreground, surface } = userAvatarClassNames(userId);
 
   return (

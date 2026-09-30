@@ -64,18 +64,12 @@ export function storybookAliases(workspaceRoot: string) {
     },
     {
       find: '@cms/shared-data-access',
-      replacement: join(
-        workspaceRoot,
-        'libs/shared/data-access/src/index.ts',
-      ),
+      replacement: join(workspaceRoot, 'libs/shared/data-access/src/index.ts'),
     },
     {
       // Per-MFE contract libs. Add `@cms/<mfe>-contract` here when a remote grows one.
       find: '@cms/settings-contract',
-      replacement: join(
-        workspaceRoot,
-        'libs/settings/contract/src/index.ts',
-      ),
+      replacement: join(workspaceRoot, 'libs/settings/contract/src/index.ts'),
     },
     {
       find: '@cms/lead-data-access',
@@ -83,7 +77,10 @@ export function storybookAliases(workspaceRoot: string) {
     },
     {
       find: '@cms/workorder-data-access',
-      replacement: join(workspaceRoot, 'libs/workorder/data-access/src/index.ts'),
+      replacement: join(
+        workspaceRoot,
+        'libs/workorder/data-access/src/index.ts',
+      ),
     },
     {
       find: '@cms/settings-data-access',

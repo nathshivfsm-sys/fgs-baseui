@@ -16,10 +16,7 @@ import {
   type DataTableFeatures,
   type DataTableInstance,
 } from './data-table-features';
-import type {
-  DataTableColumnDefinition,
-  DataTableProps,
-} from './types';
+import type { DataTableColumnDefinition, DataTableProps } from './types';
 
 export type {
   DataTableAdvancedOptions,
@@ -99,11 +96,11 @@ export function DataTable<TData extends RowData>({
       : onGlobalFilterChange;
 
   const expandingEnabled =
-    enableExpanding ??
-    Boolean(renderExpandedRow || getSubRows);
+    enableExpanding ?? Boolean(renderExpandedRow || getSubRows);
 
   const resolvedShowExpandColumn =
-    showExpandColumn ?? (expandingEnabled && Boolean(renderExpandedRow || getSubRows));
+    showExpandColumn ??
+    (expandingEnabled && Boolean(renderExpandedRow || getSubRows));
 
   const [internalExpanded, setInternalExpanded] = useState(
     initialState?.expanded ?? {},
@@ -116,7 +113,9 @@ export function DataTable<TData extends RowData>({
     const pinnedLeading = columns.filter(
       (column) => column.meta?.pin === 'leading',
     );
-    const bodyColumns = columns.filter((column) => column.meta?.pin !== 'leading');
+    const bodyColumns = columns.filter(
+      (column) => column.meta?.pin !== 'leading',
+    );
     const prefix: DataTableColumnDefinition<TData>[] = [...pinnedLeading];
     if (resolvedShowExpandColumn) {
       prefix.push(
@@ -196,7 +195,7 @@ export function DataTable<TData extends RowData>({
   return (
     <div
       className={cn(
-        'flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface',
+        'flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface',
         className,
       )}
     >
@@ -221,6 +220,7 @@ export function DataTable<TData extends RowData>({
       />
 
       <Table
+        containerClassName="min-h-0 flex-1 overflow-auto"
         aria-busy={isBusy || undefined}
         aria-describedby={isBusy || isError ? statusId : undefined}
         aria-label={tableLabel ?? `${rowLabel} table`}
@@ -247,6 +247,7 @@ export function DataTable<TData extends RowData>({
 
       {enablePagination ? (
         <DataTablePagination
+          className="shrink-0"
           formatPageSizeOption={formatPageSizeOption}
           pageSizeLabel={pageSizeLabel}
           pageSizeOptions={pageSizeOptions}

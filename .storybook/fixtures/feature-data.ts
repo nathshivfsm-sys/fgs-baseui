@@ -1,3 +1,5 @@
+// Storybook fixtures are not an Nx project, so they have no project tags.
+/* eslint-disable @nx/enforce-module-boundaries */
 import type { Lead } from '@cms/lead-data-access';
 import type { CompanyDto } from '@cms/settings-data-access';
 import type { Workorder } from '@cms/workorder-data-access';
@@ -139,8 +141,6 @@ export const nonWorkingDateListItemsFixture = [
     isActive: false,
   },
 ] as const;
-
-
 
 export const postalCodeListItemsFixture = [
   {
@@ -507,7 +507,6 @@ export const taxLookupItemsFixture = [
     taxRate: 6.2,
   },
 ] as const;
-
 
 export const resolvedLoader =
   <Item>(items: readonly Item[]) =>

@@ -30,9 +30,7 @@
         "./libs/workorder/data-access/src/index.ts"
       ],
       "@cms/lead-data-access": ["./libs/lead/data-access/src/index.ts"],
-      "@cms/settings-data-access": [
-        "./libs/settings/data-access/src/index.ts"
-      ],
+      "@cms/settings-data-access": ["./libs/settings/data-access/src/index.ts"],
       "@cms/user-contract": ["./libs/user/contract/src/index.ts"],
       "@cms/user-data-access": ["./libs/user/data-access/src/index.ts"],
       "@cms/module-federation-shared": ["./tools/module-federation/shared.ts"]

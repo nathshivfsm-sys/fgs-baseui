@@ -26,7 +26,7 @@ async function bootstrap() {
         <BrowserRouter
           basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}
         >
-          <div className="mx-auto max-w-content p-4 sm:p-6">
+          <div className="mx-auto flex h-dvh min-h-0 max-w-content flex-col p-4 sm:p-6">
             <App runtime={standaloneRuntime} />
           </div>
           <Toaster />

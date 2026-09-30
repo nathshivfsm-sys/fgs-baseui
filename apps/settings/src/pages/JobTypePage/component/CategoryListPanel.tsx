@@ -27,7 +27,7 @@ export function CategoryListPanel({
   };
 
   return (
-    <div className="flex w-full shrink-0 flex-col border-b border-border bg-surface lg:w-[20rem] lg:border-r lg:border-b-0">
+    <div className="flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden border-b border-border bg-surface lg:w-[20rem] lg:border-r lg:border-b-0">
       <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3.5">
         <Body bold className="text-control leading-snug" color="heading">
           {title}

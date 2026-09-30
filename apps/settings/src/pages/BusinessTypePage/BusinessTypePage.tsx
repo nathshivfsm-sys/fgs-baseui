@@ -59,7 +59,10 @@ export const BusinessTypePage = ({ queryClient }: BusinessTypePageProps) => {
       <BusinessTypeHeader />
       {listQuery.isPending ? <BusinessTypeListSkeleton /> : null}
       {listQuery.isError ? (
-        <Callout title={describeBusinessTypeError(listQuery.error)} variant="error" />
+        <Callout
+          title={describeBusinessTypeError(listQuery.error)}
+          variant="error"
+        />
       ) : null}
       {listQuery.isSuccess && items.length === 0 ? (
         <Callout title={EMPTY_BUSINESS_TYPES_MESSAGE} />

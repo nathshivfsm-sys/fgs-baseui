@@ -116,7 +116,11 @@ function filterBusinessTypes(url: URL): BusinessTypeDetailDto[] {
     ) {
       return false;
     }
-    return matchesSearch(search, [record.code, record.name, record.description]);
+    return matchesSearch(search, [
+      record.code,
+      record.name,
+      record.description,
+    ]);
   });
 }
 
@@ -158,7 +162,8 @@ export const businessTypeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = businessTypeUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -169,7 +174,8 @@ export const businessTypeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = businessTypePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -183,7 +189,8 @@ export const businessTypeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = businessTypeCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     businessTypes.push(created);
     return setupOk(created, 201);

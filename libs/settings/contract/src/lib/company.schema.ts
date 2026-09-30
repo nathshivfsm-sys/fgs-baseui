@@ -51,7 +51,8 @@ export const companyPatchDtoSchema = z.object({
   billingAddress: companyAddressDtoSchema.nullish(),
 });
 
-export const companyDetailResponseSchema = setupResponseSchema(companyDtoSchema);
+export const companyDetailResponseSchema =
+  setupResponseSchema(companyDtoSchema);
 
 export type CompanyAddressDto = z.infer<typeof companyAddressDtoSchema>;
 export type CompanyDto = z.infer<typeof companyDtoSchema>;

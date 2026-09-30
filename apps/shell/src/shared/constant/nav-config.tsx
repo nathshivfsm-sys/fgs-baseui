@@ -18,7 +18,7 @@ import {
   ReturnIcon,
   ScheduleIcon,
   UsersIcon,
-  VendorIcon
+  VendorIcon,
 } from '@cms/ui';
 import type { ComponentType } from 'react';
 
@@ -39,7 +39,7 @@ export const PRIMARY_NAV_ITEMS: readonly NavItem[] = [
   { icon: BriefcaseIcon, label: 'Work Orders', path: '/workorders' },
   { icon: DispatchBoardIcon, label: 'Dispatch Board', path: '/dispatch-board' },
   { icon: UsersIcon, label: 'Customers', path: '/customers' },
-  { icon: PinIcon, label: 'Service Locations', path: '/service-locations' }
+  { icon: PinIcon, label: 'Service Locations', path: '/service-locations' },
 ];
 
 export const NAV_SECTIONS: readonly NavSection[] = [

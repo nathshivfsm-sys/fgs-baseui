@@ -6,8 +6,7 @@ export const PANEL_DESCRIPTION =
 export const ADD_LABEL = 'Add Non-Working Day';
 
 export const CREATE_TITLE = 'Create Non-Working Day';
-export const CREATE_DESCRIPTION =
-  'Add a company holiday or non-working day.';
+export const CREATE_DESCRIPTION = 'Add a company holiday or non-working day.';
 export const EDIT_TITLE = 'Edit Non-Working Day';
 export const EDIT_DESCRIPTION =
   'Update this company holiday or non-working day.';

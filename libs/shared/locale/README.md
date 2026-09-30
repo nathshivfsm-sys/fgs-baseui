@@ -7,14 +7,7 @@ single Zustand store. Values are **mutable at runtime** — hydrate from an API 
 ## Usage
 
 ```ts
-import {
-  formatLocaleCurrency,
-  formatLocaleDateTime,
-  formatLocaleMobile,
-  hydrateLocalePreferences,
-  localeStore,
-  useLocalePreferences,
-} from '@cms/shared-locale';
+import { formatLocaleCurrency, formatLocaleDateTime, formatLocaleMobile, hydrateLocalePreferences, localeStore, useLocalePreferences } from '@cms/shared-locale';
 
 // After GET /company/preferences (example)
 hydrateLocalePreferences(apiPayload);

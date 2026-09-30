@@ -11,10 +11,7 @@ export const taxAuthorityFormSchema = z.object({
     .string()
     .trim()
     .min(1, 'Rate is required')
-    .refine(
-      (value) => Number.isFinite(Number(value)),
-      'Enter a valid rate',
-    ),
+    .refine((value) => Number.isFinite(Number(value)), 'Enter a valid rate'),
   isActive: z.boolean(),
   effectiveFromDate: z
     .string()

@@ -3,14 +3,8 @@ export {
   companyDetailEndpoint,
 } from './company.endpoints';
 export { companyKeys } from './company.keys';
-export {
-  patchCompany,
-  patchCompanyMutationOptions,
-} from './company.mutations';
-export {
-  companyDetailQueryOptions,
-  loadCompany,
-} from './company.queries';
+export { patchCompany, patchCompanyMutationOptions } from './company.mutations';
+export { companyDetailQueryOptions, loadCompany } from './company.queries';
 export {
   companyAddressFormSchema,
   companyGeneralInfoFormSchema,

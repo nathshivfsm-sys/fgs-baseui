@@ -1,0 +1,27 @@
+---
+description: Pin table pagination to the panel bottom and scroll rows inside the table
+globs: "{apps/**/src/pages/**/*.tsx,libs/ui/src/components/ui/data-table/**/*.tsx}"
+alwaysApply: false
+---
+
+# Table scroll and pinned pagination
+
+A data table fills its panel. The toolbar and column header stay put, the rows scroll inside the table, and the pagination bar stays on the bottom edge of that panel. A side list in the same panel (category list, zone list) scrolls inside its own column the same way.
+
+## Height chain
+
+Every wrapper from the page section down to `DataTable` is a flex column that can shrink:
+
+```tsx
+<section className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+  <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <DataTable className="min-h-0 flex-1" />
+  </div>
+</section>
+```
+
+`DataTable` already grows with `h-full min-h-0 flex-1`, scrolls its rows, keeps the header sticky, and pins pagination with `shrink-0`. Do not add a min-height that makes the panel taller than the viewport.
+
+## Lists
+
+Give the list column `flex h-full min-h-0 flex-col overflow-hidden`. Put the rows in `ScrollArea` with `min-h-0 flex-1`. The header and search stay outside that scroll area.

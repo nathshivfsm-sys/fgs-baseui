@@ -25,7 +25,9 @@ export function toZoneFormValues(zone: ZoneSummaryDto): ZoneForm {
   };
 }
 
-export function toZoneWriteDto(values: ZoneForm): ZoneCreateDto & ZoneUpdateDto {
+export function toZoneWriteDto(
+  values: ZoneForm,
+): ZoneCreateDto & ZoneUpdateDto {
   return {
     code: values.code,
     name: values.name,

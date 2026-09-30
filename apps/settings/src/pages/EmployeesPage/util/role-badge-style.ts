@@ -25,7 +25,9 @@ const resolveRoleBadgeKey = (
   return 'neutral';
 };
 
-export const formatRoleLabel = (roleName: string | null | undefined): string => {
+export const formatRoleLabel = (
+  roleName: string | null | undefined,
+): string => {
   const trimmed = (roleName ?? '').trim();
   if (!trimmed) return '—';
   if (/administrator/i.test(trimmed)) return 'Admin';
@@ -36,7 +38,8 @@ export const roleBadgeClassName = (
   roleName: string | null | undefined,
 ): string => ROLE_BADGE_STYLES[resolveRoleBadgeKey(roleName)];
 
-export const isAdminRole = (
-  role: { name?: string | null; roleCode?: string | null },
-): boolean =>
+export const isAdminRole = (role: {
+  name?: string | null;
+  roleCode?: string | null;
+}): boolean =>
   /admin/i.test(role.name ?? '') || /admin/i.test(role.roleCode ?? '');

@@ -7,10 +7,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@cms/ui';
-import type {
-  CatalogStatusFilter,
-  CatalogStatusTabBarProps,
-} from '../types';
+import type { CatalogStatusFilter, CatalogStatusTabBarProps } from '../types';
 
 export const CatalogStatusTabBar = ({
   activeCount,
@@ -35,7 +32,11 @@ export const CatalogStatusTabBar = ({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6">
-      <Tabs className="self-end" onValueChange={handleStatusChange} value={status}>
+      <Tabs
+        className="self-end"
+        onValueChange={handleStatusChange}
+        value={status}
+      >
         <TabsList>
           <TabsTrigger size="default" tone="action" value="active">
             Active ({activeCount})

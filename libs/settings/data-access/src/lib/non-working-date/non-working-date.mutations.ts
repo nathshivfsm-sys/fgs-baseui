@@ -26,11 +26,14 @@ export const createNonWorkingDate = async (
   body: NonWorkingDateCreateDto,
   context?: QueryRequestContext,
 ): Promise<NonWorkingDateDetailDto> => {
-  const response = await customFetch<unknown>(nonWorkingDateCollectionEndpoint, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    nonWorkingDateCollectionEndpoint,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseNonWorkingDateDetail(response);
 };
 
@@ -39,11 +42,14 @@ export const updateNonWorkingDate = async (
   body: NonWorkingDateUpdateDto,
   context?: QueryRequestContext,
 ): Promise<NonWorkingDateDetailDto> => {
-  const response = await customFetch<unknown>(nonWorkingDateDetailEndpoint(id), {
-    method: 'PUT',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    nonWorkingDateDetailEndpoint(id),
+    {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseNonWorkingDateDetail(response);
 };
 
@@ -52,11 +58,14 @@ export const patchNonWorkingDate = async (
   body: NonWorkingDatePatchDto,
   context?: QueryRequestContext,
 ): Promise<NonWorkingDateDetailDto> => {
-  const response = await customFetch<unknown>(nonWorkingDateDetailEndpoint(id), {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    nonWorkingDateDetailEndpoint(id),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseNonWorkingDateDetail(response);
 };
 
@@ -70,7 +79,10 @@ export const deleteNonWorkingDate = async (
   });
 };
 
-function byDate(left: NonWorkingDateSummaryDto, right: NonWorkingDateSummaryDto) {
+function byDate(
+  left: NonWorkingDateSummaryDto,
+  right: NonWorkingDateSummaryDto,
+) {
   return left.nonWorkingDate.localeCompare(right.nonWorkingDate);
 }
 
@@ -129,26 +141,16 @@ export const createNonWorkingDateMutationOptions = (queryClient: QueryClient) =>
 
 export const updateNonWorkingDateMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: NonWorkingDateUpdateDto;
-    }) => updateNonWorkingDate(id, body),
+    mutationFn: ({ id, body }: { id: number; body: NonWorkingDateUpdateDto }) =>
+      updateNonWorkingDate(id, body),
     meta: { feature: 'non-working-date', operation: 'update' },
     onSuccess: (updated) => applyWriteToCache(queryClient, updated, 'update'),
   });
 
 export const patchNonWorkingDateMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: NonWorkingDatePatchDto;
-    }) => patchNonWorkingDate(id, body),
+    mutationFn: ({ id, body }: { id: number; body: NonWorkingDatePatchDto }) =>
+      patchNonWorkingDate(id, body),
     meta: { feature: 'non-working-date', operation: 'patch' },
     onSuccess: (updated) => applyWriteToCache(queryClient, updated, 'update'),
   });

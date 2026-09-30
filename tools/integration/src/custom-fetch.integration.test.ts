@@ -194,7 +194,9 @@ describe('customFetch 401 session refresh', () => {
     configureCustomFetch({ baseUrl: '', refreshSession });
     fetchMock.mockResolvedValue(jsonResponse({ message: 'Unauthorized' }, 401));
 
-    await expect(customFetch('/auth/refresh', { method: 'POST' })).rejects.toMatchObject({
+    await expect(
+      customFetch('/auth/refresh', { method: 'POST' }),
+    ).rejects.toMatchObject({
       status: 401,
     });
 

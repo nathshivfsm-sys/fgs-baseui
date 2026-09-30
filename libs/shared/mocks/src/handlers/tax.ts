@@ -149,7 +149,9 @@ function toLookup(record: TaxRecord): TaxLookupDto {
 }
 
 function findTax(id: number | undefined): TaxRecord | undefined {
-  return id === undefined ? undefined : taxes.find((record) => record.id === id);
+  return id === undefined
+    ? undefined
+    : taxes.find((record) => record.id === id);
 }
 
 function filterTaxes(url: URL): TaxRecord[] {
@@ -159,10 +161,16 @@ function filterTaxes(url: URL): TaxRecord[] {
   const search = url.searchParams.get('search');
   return taxes.filter((record) => {
     if (isActive !== undefined && record.isActive !== isActive) return false;
-    if (taxCode && (record.taxCode ?? '').toLowerCase() !== taxCode.toLowerCase()) {
+    if (
+      taxCode &&
+      (record.taxCode ?? '').toLowerCase() !== taxCode.toLowerCase()
+    ) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
     return matchesSearch(search, [
@@ -225,7 +233,8 @@ export const taxHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     taxes.push(created);
     return setupOk(created, 201);
@@ -237,7 +246,8 @@ export const taxHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -248,7 +258,8 @@ export const taxHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),

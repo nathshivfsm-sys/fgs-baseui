@@ -12,7 +12,7 @@ export function DataTableHeader<TData extends RowData>({
   table,
 }: DataTableHeaderProps<TData>) {
   return (
-    <TableHeader>
+    <TableHeader className="sticky top-0 z-10">
       {headerGroups.map((headerGroup) => (
         <TableRow className="hover:bg-transparent" key={headerGroup.id}>
           {headerGroup.headers.map((header) => {

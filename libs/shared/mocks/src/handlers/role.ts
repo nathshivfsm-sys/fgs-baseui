@@ -85,7 +85,9 @@ function toLookup(record: RoleRecord): RoleLookupDto {
 }
 
 function findRole(id: number | undefined): RoleRecord | undefined {
-  return id === undefined ? undefined : roles.find((record) => record.id === id);
+  return id === undefined
+    ? undefined
+    : roles.find((record) => record.id === id);
 }
 
 function filterRoles(url: URL): RoleRecord[] {
@@ -103,10 +105,17 @@ function filterRoles(url: URL): RoleRecord[] {
     ) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
-    return matchesSearch(search, [record.roleCode, record.name, record.description]);
+    return matchesSearch(search, [
+      record.roleCode,
+      record.name,
+      record.description,
+    ]);
   });
 }
 
@@ -139,7 +148,8 @@ export const roleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = roleCloneDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const cloned: RoleRecord = {
       id: nextId(roles),
       roleCode: parsed.data.roleCode ?? `${source.roleCode}-COPY`,
@@ -166,7 +176,8 @@ export const roleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = roleUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -177,7 +188,8 @@ export const roleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = rolePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -191,7 +203,8 @@ export const roleHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = roleCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     roles.push(created);
     return setupOk(created, 201);

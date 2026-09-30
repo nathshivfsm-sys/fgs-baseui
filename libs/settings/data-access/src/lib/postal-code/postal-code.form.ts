@@ -44,7 +44,9 @@ export function toPostalCodeFormValues(
     countryCode: postalCode.countryCode ?? '',
     state: postalCode.stateProvinceCode ?? '',
     fgsSetupZoneId:
-      postalCode.fgsSetupZoneId == null ? '' : String(postalCode.fgsSetupZoneId),
+      postalCode.fgsSetupZoneId == null
+        ? ''
+        : String(postalCode.fgsSetupZoneId),
     fgsSetupTaxId:
       postalCode.fgsSetupTaxId == null ? '' : String(postalCode.fgsSetupTaxId),
     tripCharge:

@@ -105,21 +105,13 @@ export function DataTableBody<TData extends RowData>({
               onClick={
                 rowActivation && depth === 0
                   ? (event) =>
-                      activateDataTableRow(
-                        event,
-                        row.original,
-                        rowActivation,
-                      )
+                      activateDataTableRow(event, row.original, rowActivation)
                   : undefined
               }
               onKeyDown={
                 rowActivation && depth === 0
                   ? (event) =>
-                      activateDataTableRow(
-                        event,
-                        row.original,
-                        rowActivation,
-                      )
+                      activateDataTableRow(event, row.original, rowActivation)
                   : undefined
               }
               tabIndex={rowActivation && depth === 0 ? 0 : undefined}

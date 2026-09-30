@@ -96,8 +96,12 @@ export async function customFetch<T>(
   endpoint: string,
   options: CustomFetchOptions = {},
 ): Promise<T> {
-  const { responseType = 'json', headers: optionHeaders, _authRetry, ...requestInit } =
-    options;
+  const {
+    responseType = 'json',
+    headers: optionHeaders,
+    _authRetry,
+    ...requestInit
+  } = options;
   const token = currentConfig.getAuthToken?.();
   const tenantId = currentConfig.getTenantId?.();
   const companyId = currentConfig.getCompanyId?.();

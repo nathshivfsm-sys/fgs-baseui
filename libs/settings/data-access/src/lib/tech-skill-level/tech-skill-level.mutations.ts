@@ -90,13 +90,8 @@ export const createTechSkillLevelMutationOptions = (queryClient: QueryClient) =>
 
 export const updateTechSkillLevelMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: TechSkillLevelUpdateDto;
-    }) => updateTechSkillLevel(id, body),
+    mutationFn: ({ id, body }: { id: number; body: TechSkillLevelUpdateDto }) =>
+      updateTechSkillLevel(id, body),
     meta: { feature: 'tech-skill-level', operation: 'update' },
     onSuccess: () => invalidateTechSkillLevels(queryClient),
   });

@@ -241,9 +241,9 @@ describe('company settings through customFetch', () => {
     await mutation.execute({ website: 'www.acme.example.com' });
 
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('PATCH');
-    expect(
-      client.getQueryState(companyKeys.detail('1'))?.isInvalidated,
-    ).toBe(true);
+    expect(client.getQueryState(companyKeys.detail('1'))?.isInvalidated).toBe(
+      true,
+    );
     disposeCmsQueryClient(client);
   });
 });

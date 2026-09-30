@@ -12,10 +12,7 @@ export type {
   CompanySettingsPageProps,
   FormSectionProps,
 } from './company-settings.types';
-export type {
-  FormSelectFieldProps,
-  FormTextInputProps,
-} from './form.types';
+export type { FormSelectFieldProps, FormTextInputProps } from './form.types';
 export type {
   DialogFooterActionsProps,
   NonWorkingDayDeleteDialogProps,

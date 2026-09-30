@@ -64,7 +64,8 @@ export const roleCloneDtoSchema = z.object({
 export const roleListResponseSchema = setupResponseSchema(
   pagedResultSchema(roleSummaryDtoSchema),
 );
-export const roleDetailResponseSchema = setupResponseSchema(roleDetailDtoSchema);
+export const roleDetailResponseSchema =
+  setupResponseSchema(roleDetailDtoSchema);
 export const roleLookupResponseSchema = setupResponseSchema(
   z.array(roleLookupDtoSchema),
 );

@@ -17,7 +17,5 @@ export function RouteLoadingFallback() {
 
 /** Per-route Suspense so navigation shows a fallback while lazy chunks load. */
 export function RouteBoundary({ children }: { children: ReactNode }) {
-  return (
-    <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>
-  );
+  return <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>;
 }

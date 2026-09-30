@@ -191,10 +191,7 @@ export function TaxAuthorityTablePanel({
           manual={{
             pagination: true,
             sorting: true,
-            pageCount: Math.max(
-              1,
-              Math.ceil(totalCount / pagination.pageSize),
-            ),
+            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
             rowCount: totalCount,
           }}
           onGlobalFilterChange={setGlobalFilter}

@@ -71,13 +71,8 @@ export const createBusinessTypeMutationOptions = (queryClient: QueryClient) =>
 
 export const updateBusinessTypeMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: BusinessTypeUpdateDto;
-    }) => updateBusinessType(id, body),
+    mutationFn: ({ id, body }: { id: number; body: BusinessTypeUpdateDto }) =>
+      updateBusinessType(id, body),
     meta: { feature: 'business-type', operation: 'update' },
     onSuccess: () => invalidateBusinessTypes(queryClient),
   });

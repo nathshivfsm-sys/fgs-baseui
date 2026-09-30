@@ -14,7 +14,9 @@ import {
 } from './tech-trade.endpoints';
 import { techTradeKeys } from './tech-trade.keys';
 
-async function parseTechTradeDetail(body: unknown): Promise<TechTradeDetailDto> {
+async function parseTechTradeDetail(
+  body: unknown,
+): Promise<TechTradeDetailDto> {
   return techTradeDetailResponseSchema.parse(body).data;
 }
 

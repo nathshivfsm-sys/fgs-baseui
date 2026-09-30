@@ -1,7 +1,4 @@
-import type {
-  FieldPathByValue,
-  FieldValues,
-} from 'react-hook-form';
+import type { FieldPathByValue, FieldValues } from 'react-hook-form';
 import type {
   MultiSelectFieldProps,
   SelectFieldProps,

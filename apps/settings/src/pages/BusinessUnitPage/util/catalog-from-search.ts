@@ -1,8 +1,5 @@
 import type { BusinessUnitCatalog } from '../types';
-import {
-  BREAK_TWO_BREAK_LEVEL,
-  BUSINESS_UNIT_BREAK_LEVEL,
-} from '../constant';
+import { BREAK_TWO_BREAK_LEVEL, BUSINESS_UNIT_BREAK_LEVEL } from '../constant';
 
 export const catalogFromSearch = (value: string | null): BusinessUnitCatalog =>
   value === 'break2' ? 'break-2' : 'business-units';

@@ -13,10 +13,7 @@ import {
   type SelectOption,
 } from '@cms/ui';
 import { FormTextInput } from '../../../shared/component/form';
-import {
-  INVITE_USER_DESCRIPTION,
-  INVITE_USER_TITLE,
-} from '../constant';
+import { INVITE_USER_DESCRIPTION, INVITE_USER_TITLE } from '../constant';
 import {
   emptyInviteUserForm,
   inviteUserFormSchema,

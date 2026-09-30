@@ -11,6 +11,8 @@ export function userRoleItemEndpoint(id: number): string {
   return `${userRoleCollectionEndpoint}/item/${id}`;
 }
 
-export function userRoleLookupEndpoint(params: UserRoleLookupParams = {}): string {
+export function userRoleLookupEndpoint(
+  params: UserRoleLookupParams = {},
+): string {
   return `${userRoleCollectionEndpoint}/lookup${toSearchParams(params)}`;
 }
