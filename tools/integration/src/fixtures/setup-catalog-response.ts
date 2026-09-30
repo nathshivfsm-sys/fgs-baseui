@@ -373,6 +373,51 @@ export const techSkillLevelLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const billingCategoryListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 101,
+        billingCategoryType: 'LABOR',
+        billingCategoryName: 'Labor',
+        description: 'Technician labor charges',
+        displayOrder: 1,
+        isSystemDefined: true,
+        showToFieldTech: true,
+        allowToPick: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const billingCategoryDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: billingCategoryListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const billingCategoryLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 101,
+      billingCategoryType: 'LABOR',
+      billingCategoryName: 'Labor',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const businessTypeListResponseFixture = {
   success: true,
   statusCode: 200,

@@ -17,6 +17,10 @@ import {
   subcategoryKeys,
   subcategoryListQueryOptions,
   subcategoryLookupQueryOptions,
+  billingCategoryKeys,
+  billingCategoryListQueryOptions,
+  billingCategoryLookupQueryOptions,
+  createBillingCategoryMutationOptions,
   createBusinessTypeMutationOptions,
   createJobCategoryMutationOptions,
   createJobTypeMutationOptions,
@@ -66,6 +70,9 @@ import {
 } from '@cms/settings-data-access';
 import { ApiError, configureCustomFetch } from '@cms/shared-api';
 import {
+  billingCategoryDetailResponseFixture,
+  billingCategoryListResponseFixture,
+  billingCategoryLookupResponseFixture,
   businessTypeDetailResponseFixture,
   businessTypeListResponseFixture,
   businessTypeLookupResponseFixture,
@@ -700,6 +707,69 @@ describe('tech skill level through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
     expect(
       client.getQueryState(techSkillLevelKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('billing category through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(billingCategoryListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(billingCategoryLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      billingCategoryListQueryOptions({
+        billingCategoryType: 'LABOR',
+        billingCategoryName: 'Labor',
+        showToFieldTech: true,
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      billingCategoryLookupQueryOptions({
+        activeOnly: false,
+        allowToPick: true,
+      }),
+    );
+
+    expect(page.items[0]?.billingCategoryType).toBe('LABOR');
+    expect(lookup[0]?.billingCategoryName).toBe('Labor');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/billingcategory?billingCategoryType=LABOR&billingCategoryName=Labor&showToFieldTech=true',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/billingcategory/lookup?activeOnly=false&allowToPick=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates billing category queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(billingCategoryDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(billingCategoryKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createBillingCategoryMutationOptions(client));
+    await mutation.execute({
+      billingCategoryType: 'LABOR',
+      billingCategoryName: 'Labor',
+      description: 'Technician labor charges',
+      displayOrder: 1,
+      isSystemDefined: false,
+      showToFieldTech: true,
+      allowToPick: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/billingcategory');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(billingCategoryKeys.list({}))?.isInvalidated,
     ).toBe(true);
     disposeCmsQueryClient(client);
   });

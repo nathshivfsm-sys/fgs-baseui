@@ -3,7 +3,8 @@ import { apiResponseSchema, nullableText } from './envelope.schema';
 
 /**
  * Wire shapes of Setup Service geo lookups: `/glo/country/lookup`,
- * `/glo/stateprovince/lookup`, and `/postalcode/cities`.
+ * `/glo/stateprovince/lookup`, `/glo/billingcategorytype/lookup`, and
+ * `/postalcode/cities`.
  */
 
 export const gloCountryLookupDtoSchema = z.object({
@@ -23,6 +24,12 @@ export const postalCodeCityLookupDtoSchema = z.object({
   city: nullableText,
 });
 
+export const gloBillingCategoryTypeLookupDtoSchema = z.object({
+  billingCategoryType: nullableText,
+  billingCategoryName: nullableText,
+  displayOrder: z.number(),
+});
+
 export const gloCountryLookupResponseSchema = apiResponseSchema(
   z.array(gloCountryLookupDtoSchema),
 );
@@ -32,6 +39,9 @@ export const gloStateProvinceLookupResponseSchema = apiResponseSchema(
 export const postalCodeCityLookupResponseSchema = apiResponseSchema(
   z.array(postalCodeCityLookupDtoSchema),
 );
+export const gloBillingCategoryTypeLookupResponseSchema = apiResponseSchema(
+  z.array(gloBillingCategoryTypeLookupDtoSchema),
+);
 
 export type GloCountryLookupDto = z.infer<typeof gloCountryLookupDtoSchema>;
 export type GloStateProvinceLookupDto = z.infer<
@@ -40,8 +50,15 @@ export type GloStateProvinceLookupDto = z.infer<
 export type PostalCodeCityLookupDto = z.infer<
   typeof postalCodeCityLookupDtoSchema
 >;
+export type GloBillingCategoryTypeLookupDto = z.infer<
+  typeof gloBillingCategoryTypeLookupDtoSchema
+>;
 
 export type GloCountryLookupParams = {
+  activeOnly?: boolean;
+};
+
+export type GloBillingCategoryTypeLookupParams = {
   activeOnly?: boolean;
 };
 

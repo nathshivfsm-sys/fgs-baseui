@@ -1,4 +1,5 @@
 import { attachmentHandlers } from './attachment';
+import { billingCategoryHandlers } from './billing-category';
 import { businessTypeHandlers } from './business-type';
 import { jobCategoryHandlers } from './job-category';
 import { jobTypeHandlers } from './job-type';
@@ -36,6 +37,7 @@ export const handlers = [
   ...employeeHandlers,
   ...techTradeHandlers,
   ...techSkillLevelHandlers,
+  ...billingCategoryHandlers,
   ...businessTypeHandlers,
   ...jobCategoryHandlers,
   ...jobTypeHandlers,

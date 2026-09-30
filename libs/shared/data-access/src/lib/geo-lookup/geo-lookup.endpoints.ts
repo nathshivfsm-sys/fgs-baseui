@@ -6,12 +6,20 @@ import { toSearchParams } from '../util';
 
 /** Relative to `customFetch`'s `baseUrl`, which already carries `/api/v1`. */
 export const gloCountryLookupCollectionEndpoint = '/glo/country/lookup';
+export const gloBillingCategoryTypeLookupCollectionEndpoint =
+  '/glo/billingcategorytype/lookup';
 export const gloStateProvinceLookupCollectionEndpoint =
   '/glo/stateprovince/lookup';
 export const postalCodeCitiesCollectionEndpoint = '/postalcode/cities';
 
 export function gloCountryLookupEndpoint(activeOnly = true): string {
   return `${gloCountryLookupCollectionEndpoint}${toSearchParams({ activeOnly })}`;
+}
+
+export function gloBillingCategoryTypeLookupEndpoint(activeOnly = true): string {
+  return `${gloBillingCategoryTypeLookupCollectionEndpoint}${toSearchParams({
+    activeOnly,
+  })}`;
 }
 
 export function gloStateProvinceLookupEndpoint(

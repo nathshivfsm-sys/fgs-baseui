@@ -21,12 +21,16 @@ export {
   type AttachmentMetadataDto,
 } from './lib/attachment.schema';
 export {
+  gloBillingCategoryTypeLookupDtoSchema,
+  gloBillingCategoryTypeLookupResponseSchema,
   gloCountryLookupDtoSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupDtoSchema,
   gloStateProvinceLookupResponseSchema,
   postalCodeCityLookupDtoSchema,
   postalCodeCityLookupResponseSchema,
+  type GloBillingCategoryTypeLookupDto,
+  type GloBillingCategoryTypeLookupParams,
   type GloCountryLookupDto,
   type GloCountryLookupParams,
   type GloStateProvinceLookupDto,

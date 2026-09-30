@@ -8,6 +8,10 @@ export const geoLookupKeys = {
   countries: () => [...geoLookupKeys.all, 'country'] as const,
   country: (activeOnly: boolean) =>
     [...geoLookupKeys.countries(), { activeOnly }] as const,
+  billingCategoryTypes: () =>
+    [...geoLookupKeys.all, 'billing-category-type'] as const,
+  billingCategoryType: (activeOnly: boolean) =>
+    [...geoLookupKeys.billingCategoryTypes(), { activeOnly }] as const,
   stateProvinces: () => [...geoLookupKeys.all, 'state-province'] as const,
   stateProvince: (params: GloStateProvinceLookupParams = {}) =>
     [...geoLookupKeys.stateProvinces(), params] as const,

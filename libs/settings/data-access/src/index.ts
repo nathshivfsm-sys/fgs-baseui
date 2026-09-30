@@ -7,6 +7,7 @@ export * from './lib/zone';
 export * from './lib/gl-break';
 export * from './lib/tech-trade';
 export * from './lib/tech-skill-level';
+export * from './lib/billing-category';
 export * from './lib/business-type';
 export * from './lib/job-category';
 export * from './lib/job-type';

@@ -2,9 +2,11 @@ import { queryOptions } from '@tanstack/react-query';
 import type { QueryRequestContext } from '@cms/platform-contract';
 import { customFetch } from '@cms/shared-api';
 import {
+  gloBillingCategoryTypeLookupResponseSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupResponseSchema,
   postalCodeCityLookupResponseSchema,
+  type GloBillingCategoryTypeLookupDto,
   type GloCountryLookupDto,
   type GloStateProvinceLookupDto,
   type GloStateProvinceLookupParams,
@@ -12,11 +14,23 @@ import {
   type PostalCodeCityLookupParams,
 } from '@cms/shared-contract';
 import {
+  gloBillingCategoryTypeLookupEndpoint,
   gloCountryLookupEndpoint,
   gloStateProvinceLookupEndpoint,
   postalCodeCitiesEndpoint,
 } from './geo-lookup.endpoints';
 import { geoLookupKeys } from './geo-lookup.keys';
+
+export const loadGloBillingCategoryTypeLookup = async (
+  activeOnly: boolean,
+  { signal }: QueryRequestContext,
+): Promise<readonly GloBillingCategoryTypeLookupDto[]> => {
+  const body = await customFetch<unknown>(
+    gloBillingCategoryTypeLookupEndpoint(activeOnly),
+    { signal },
+  );
+  return gloBillingCategoryTypeLookupResponseSchema.parse(body).data;
+};
 
 export const loadGloCountryLookup = async (
   activeOnly: boolean,
@@ -49,6 +63,18 @@ export const loadPostalCodeCities = async (
   });
   return postalCodeCityLookupResponseSchema.parse(body).data;
 };
+
+export const gloBillingCategoryTypeLookupQueryOptions = (activeOnly = true) =>
+  queryOptions({
+    queryKey: geoLookupKeys.billingCategoryType(activeOnly),
+    queryFn: ({ signal }) =>
+      loadGloBillingCategoryTypeLookup(activeOnly, { signal }),
+    staleTime: 5 * 60 * 1000,
+    meta: {
+      feature: 'geo-lookup',
+      operation: 'billing-category-type-lookup',
+    },
+  });
 
 export const gloCountryLookupQueryOptions = (activeOnly = true) =>
   queryOptions({
