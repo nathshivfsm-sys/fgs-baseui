@@ -150,7 +150,7 @@ export function SubcategoryTablePanel({
   const getRowId = (row: SubcategoryRow) => row.id;
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <CatalogStatusTabBar
         activeCount={activeCount}
         addLabel={ADD_SUBCATEGORY_LABEL}
@@ -162,9 +162,9 @@ export function SubcategoryTablePanel({
         searchValue={globalFilter}
         status={status}
       />
-      <div className="min-w-0 flex-1 px-2 pt-2 sm:px-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col px-2 pt-2 sm:px-4">
         <DataTable
-          className="rounded-none border-0"
+          className="min-h-0 flex-1 rounded-none border-0"
           columns={columns}
           data={pageRows}
           enableRowSelection={false}

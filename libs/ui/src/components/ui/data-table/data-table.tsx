@@ -196,7 +196,7 @@ export function DataTable<TData extends RowData>({
   return (
     <div
       className={cn(
-        'flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface',
+        'flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface',
         className,
       )}
     >
@@ -221,6 +221,7 @@ export function DataTable<TData extends RowData>({
       />
 
       <Table
+        containerClassName="min-h-0 flex-1 overflow-auto"
         aria-busy={isBusy || undefined}
         aria-describedby={isBusy || isError ? statusId : undefined}
         aria-label={tableLabel ?? `${rowLabel} table`}
@@ -247,6 +248,7 @@ export function DataTable<TData extends RowData>({
 
       {enablePagination ? (
         <DataTablePagination
+          className="shrink-0"
           formatPageSizeOption={formatPageSizeOption}
           pageSizeLabel={pageSizeLabel}
           pageSizeOptions={pageSizeOptions}

@@ -52,12 +52,12 @@ export const JobTypePage = ({ queryClient }: JobTypePageProps) => {
 
   return (
     <section
-      className="flex min-h-0 flex-1 flex-col gap-4"
+      className="flex h-full min-h-0 flex-1 flex-col gap-4 overflow-hidden"
       data-testid="job-type-setup"
     >
       <JobTypeHeader />
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:min-h-[32rem] lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:flex-row">
         <JobTypeCatalogNavPanel
           catalog={catalog}
           categoryActiveCount={

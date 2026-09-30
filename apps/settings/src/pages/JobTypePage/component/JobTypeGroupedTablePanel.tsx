@@ -332,7 +332,7 @@ export function JobTypeGroupedTablePanel({
       : `Expand ${row.jobType} subcategories`;
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col bg-surface">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface">
       <CatalogStatusTabBar
         activeCount={activeCount}
         addLabel={ADD_JOB_TYPE_LABEL}
@@ -346,7 +346,7 @@ export function JobTypeGroupedTablePanel({
         status={status}
       />
       <DataTable
-        className="rounded-none border-0 shadow-none"
+        className="min-h-0 flex-1 rounded-none border-0 shadow-none"
         columns={columns}
         data={filteredRows}
         defaultPageSize={10}
