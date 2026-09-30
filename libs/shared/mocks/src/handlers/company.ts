@@ -1,5 +1,8 @@
 import { http } from 'msw';
-import { companyPatchDtoSchema, type CompanyAddressDto } from '@cms/settings-contract';
+import {
+  companyPatchDtoSchema,
+  type CompanyAddressDto,
+} from '@cms/settings-contract';
 import {
   assignDefined,
   firstIssueMessage,
@@ -125,7 +128,8 @@ export const companyHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = companyPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const { billingAddress, physicalAddress, ...scalar } = parsed.data;
     assignDefined(record, scalar);
     if (physicalAddress != null) {

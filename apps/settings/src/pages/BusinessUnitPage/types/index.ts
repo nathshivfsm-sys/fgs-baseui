@@ -1,7 +1,4 @@
-export type {
-  BusinessUnitCatalog,
-  CatalogStatusFilter,
-} from './catalog.types';
+export type { BusinessUnitCatalog, CatalogStatusFilter } from './catalog.types';
 export type {
   BusinessUnitHeaderProps,
   BusinessUnitNavPanelProps,

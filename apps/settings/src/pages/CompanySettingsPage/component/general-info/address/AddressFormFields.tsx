@@ -31,9 +31,7 @@ export const AddressFormFields = ({
     },
   );
 
-  const handleSameAsPhysicalChange = (
-    checked: boolean | 'indeterminate',
-  ) => {
+  const handleSameAsPhysicalChange = (checked: boolean | 'indeterminate') => {
     const isChecked = checked === true;
     form.setValue('sameAsPhysical', isChecked, { shouldDirty: true });
     if (!isChecked) return;

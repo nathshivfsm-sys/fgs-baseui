@@ -28,8 +28,7 @@ export const CREATE_BUSINESS_UNIT_TITLE = 'Create Business Unit';
 export const CREATE_BUSINESS_UNIT_DESCRIPTION =
   'Add a new service location for an AR customer.';
 export const EDIT_BUSINESS_UNIT_TITLE = 'Edit Business Unit';
-export const EDIT_BUSINESS_UNIT_DESCRIPTION =
-  'Update this service location.';
+export const EDIT_BUSINESS_UNIT_DESCRIPTION = 'Update this service location.';
 
 export const CREATE_BREAK_TWO_TITLE = 'Create Break 2';
 export const CREATE_BREAK_TWO_DESCRIPTION =

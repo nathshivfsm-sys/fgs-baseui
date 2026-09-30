@@ -43,7 +43,8 @@ export const zonePatchDtoSchema = z.object({
 export const zoneListResponseSchema = setupResponseSchema(
   pagedResultSchema(zoneSummaryDtoSchema),
 );
-export const zoneDetailResponseSchema = setupResponseSchema(zoneDetailDtoSchema);
+export const zoneDetailResponseSchema =
+  setupResponseSchema(zoneDetailDtoSchema);
 export const zoneLookupResponseSchema = setupResponseSchema(
   z.array(zoneLookupDtoSchema),
 );

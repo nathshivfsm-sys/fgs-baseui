@@ -61,9 +61,7 @@ export const loadAttachmentThumbnail = async (
   );
 };
 
-export const attachmentListQueryOptions = (
-  params: AttachmentListParams = {},
-) =>
+export const attachmentListQueryOptions = (params: AttachmentListParams = {}) =>
   queryOptions({
     queryKey: attachmentKeys.list(params),
     queryFn: ({ signal }) => loadAttachments(params, { signal }),

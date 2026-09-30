@@ -6,9 +6,7 @@ export const userCollectionEndpoint = '/user';
 
 export function userListEndpoint(params: UserListParams = {}): string {
   const { roleIds, ...rest } = params;
-  const search = new URLSearchParams(
-    toSearchParams(rest).replace(/^\?/, ''),
-  );
+  const search = new URLSearchParams(toSearchParams(rest).replace(/^\?/, ''));
   if (roleIds?.length) {
     for (const roleId of roleIds) {
       search.append('roleIds', String(roleId));

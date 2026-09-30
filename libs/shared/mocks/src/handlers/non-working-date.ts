@@ -90,14 +90,19 @@ function filterNonWorkingDates(url: URL): NonWorkingDateDetailDto[] {
     if (nonWorkingDate && record.nonWorkingDate !== nonWorkingDate) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
     return matchesSearch(search, [record.nonWorkingDate, record.name]);
   });
 }
 
-function createFromBody(body: NonWorkingDateCreateDto): NonWorkingDateDetailDto {
+function createFromBody(
+  body: NonWorkingDateCreateDto,
+): NonWorkingDateDetailDto {
   return {
     id: nextId(nonWorkingDates),
     nonWorkingDate: body.nonWorkingDate,
@@ -136,7 +141,8 @@ export const nonWorkingDateHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = nonWorkingDateCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     nonWorkingDates.push(created);
     return setupOk(created, 201);
@@ -148,7 +154,8 @@ export const nonWorkingDateHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = nonWorkingDateUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -159,7 +166,8 @@ export const nonWorkingDateHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = nonWorkingDatePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),

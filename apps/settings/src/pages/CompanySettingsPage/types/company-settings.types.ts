@@ -1,6 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import type { CompanyPatchDto, CompanyProfile } from '@cms/settings-data-access';
+import type {
+  CompanyPatchDto,
+  CompanyProfile,
+} from '@cms/settings-data-access';
 
 export interface CompanySettingsPageProps {
   /** From the login response; absent for sessions stored before it was captured. */

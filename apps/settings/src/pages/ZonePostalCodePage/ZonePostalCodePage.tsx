@@ -120,8 +120,7 @@ export function ZonePostalCodePage({ queryClient }: ZonePostalCodePageProps) {
     [allZoneLookup.data],
   );
   const taxRatesById = useMemo(
-    () =>
-      new Map((taxLookup.data ?? []).map((tax) => [tax.id, tax.taxRate])),
+    () => new Map((taxLookup.data ?? []).map((tax) => [tax.id, tax.taxRate])),
     [taxLookup.data],
   );
 

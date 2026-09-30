@@ -48,7 +48,8 @@ function replaceOnce(
   // EOL the file actually uses, so multi-line anchors match and we don't leave the
   // file with mixed line endings.
   const eol = content.includes('\r\n') ? '\r\n' : '\n';
-  const normalizedSearch = eol === '\r\n' ? search.replace(/\n/g, '\r\n') : search;
+  const normalizedSearch =
+    eol === '\r\n' ? search.replace(/\n/g, '\r\n') : search;
   if (!content.includes(normalizedSearch)) {
     throw new Error(
       `remote-app generator: expected anchor text not found in ${filePath}. ` +
@@ -57,7 +58,8 @@ function replaceOnce(
         `Anchor: ${JSON.stringify(search)}`,
     );
   }
-  const normalizedReplace = eol === '\r\n' ? replace.replace(/\n/g, '\r\n') : replace;
+  const normalizedReplace =
+    eol === '\r\n' ? replace.replace(/\n/g, '\r\n') : replace;
   tree.write(filePath, content.replace(normalizedSearch, normalizedReplace));
 }
 
@@ -193,7 +195,9 @@ export default async function remoteAppGenerator(
 ) {
   const { name, className } = names(options.name);
   if (name === 'shell') {
-    throw new Error('remote-app generator: "shell" is reserved for the host app.');
+    throw new Error(
+      'remote-app generator: "shell" is reserved for the host app.',
+    );
   }
   if (tree.exists(`apps/${name}`)) {
     throw new Error(`remote-app generator: apps/${name} already exists.`);
@@ -226,7 +230,6 @@ export default async function remoteAppGenerator(
 
   return () => {
     installPackagesTask(tree);
-    // eslint-disable-next-line no-console
     console.log(
       `\nremote-app "${name}" created on port ${port}.\n\n` +
         `Run it:\n` +

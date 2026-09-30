@@ -13,10 +13,7 @@ import {
   type SelectOption,
 } from '@cms/ui';
 import { FormTextInput } from '../../../shared/component/form';
-import {
-  EDIT_USER_DESCRIPTION,
-  EDIT_USER_TITLE,
-} from '../constant';
+import { EDIT_USER_DESCRIPTION, EDIT_USER_TITLE } from '../constant';
 import {
   editUserFormSchema,
   emptyEditUserForm,

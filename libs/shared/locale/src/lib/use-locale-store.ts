@@ -1,5 +1,8 @@
 import { useStore } from 'zustand';
-import type { LocalePreferences, LocaleStoreState } from './locale-preferences.types';
+import type {
+  LocalePreferences,
+  LocaleStoreState,
+} from './locale-preferences.types';
 import { localeStore } from './locale-store';
 
 export const useLocaleStore = <Selected>(

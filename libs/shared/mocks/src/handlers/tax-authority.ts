@@ -132,7 +132,9 @@ function toLookup(record: TaxAuthorityDetailDto): TaxAuthorityLookupDto {
   };
 }
 
-function findAuthority(id: number | undefined): TaxAuthorityDetailDto | undefined {
+function findAuthority(
+  id: number | undefined,
+): TaxAuthorityDetailDto | undefined {
   return id === undefined
     ? undefined
     : authorities.find((record) => record.id === id);
@@ -148,7 +150,10 @@ function filterAuthorities(url: URL): TaxAuthorityDetailDto[] {
     if (code && (record.code ?? '').toLowerCase() !== code.toLowerCase()) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
     return matchesSearch(search, [
@@ -205,7 +210,8 @@ export const taxAuthorityHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxAuthorityCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     authorities.push(created);
     return setupOk(created, 201);
@@ -217,7 +223,8 @@ export const taxAuthorityHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxAuthorityUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -228,7 +235,8 @@ export const taxAuthorityHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = taxAuthorityPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),

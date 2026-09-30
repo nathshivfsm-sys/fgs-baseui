@@ -16,10 +16,7 @@ import {
   type DataTableFeatures,
   type DataTableInstance,
 } from './data-table-features';
-import type {
-  DataTableColumnDefinition,
-  DataTableProps,
-} from './types';
+import type { DataTableColumnDefinition, DataTableProps } from './types';
 
 export type {
   DataTableAdvancedOptions,
@@ -99,11 +96,11 @@ export function DataTable<TData extends RowData>({
       : onGlobalFilterChange;
 
   const expandingEnabled =
-    enableExpanding ??
-    Boolean(renderExpandedRow || getSubRows);
+    enableExpanding ?? Boolean(renderExpandedRow || getSubRows);
 
   const resolvedShowExpandColumn =
-    showExpandColumn ?? (expandingEnabled && Boolean(renderExpandedRow || getSubRows));
+    showExpandColumn ??
+    (expandingEnabled && Boolean(renderExpandedRow || getSubRows));
 
   const [internalExpanded, setInternalExpanded] = useState(
     initialState?.expanded ?? {},
@@ -116,7 +113,9 @@ export function DataTable<TData extends RowData>({
     const pinnedLeading = columns.filter(
       (column) => column.meta?.pin === 'leading',
     );
-    const bodyColumns = columns.filter((column) => column.meta?.pin !== 'leading');
+    const bodyColumns = columns.filter(
+      (column) => column.meta?.pin !== 'leading',
+    );
     const prefix: DataTableColumnDefinition<TData>[] = [...pinnedLeading];
     if (resolvedShowExpandColumn) {
       prefix.push(

@@ -119,14 +119,23 @@ function filterTechSkillLevels(url: URL): TechSkillLevelDetailDto[] {
     if (code && (record.code ?? '').toLowerCase() !== code.toLowerCase()) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
-    return matchesSearch(search, [record.code, record.name, record.description]);
+    return matchesSearch(search, [
+      record.code,
+      record.name,
+      record.description,
+    ]);
   });
 }
 
-function createFromBody(body: TechSkillLevelCreateDto): TechSkillLevelDetailDto {
+function createFromBody(
+  body: TechSkillLevelCreateDto,
+): TechSkillLevelDetailDto {
   return {
     id: nextId(techSkillLevels),
     code: body.code ?? null,
@@ -167,7 +176,8 @@ export const techSkillLevelHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techSkillLevelCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     techSkillLevels.push(created);
     return setupOk(created, 201);
@@ -179,7 +189,8 @@ export const techSkillLevelHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techSkillLevelUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -190,7 +201,8 @@ export const techSkillLevelHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techSkillLevelPatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),

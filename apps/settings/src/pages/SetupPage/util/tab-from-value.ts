@@ -5,7 +5,9 @@ const TAB_KEYS = new Set<string>(SETTING_TABS.map((tab) => tab.key));
 
 export const DEFAULT_SETTINGS_TAB: SettingsTabKey = 'company';
 
-export const tabFromValue = (value: string | null | undefined): SettingsTabKey => {
+export const tabFromValue = (
+  value: string | null | undefined,
+): SettingsTabKey => {
   if (value && TAB_KEYS.has(value)) {
     return value as SettingsTabKey;
   }

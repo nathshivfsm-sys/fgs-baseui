@@ -24,8 +24,5 @@ export const withCurrentOptions = (
   if (missing.length === 0) {
     return options;
   }
-  return [
-    ...options,
-    ...missing.map((value) => ({ value, label: value })),
-  ];
+  return [...options, ...missing.map((value) => ({ value, label: value }))];
 };

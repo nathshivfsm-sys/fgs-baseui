@@ -130,7 +130,10 @@ function filterTechTrades(url: URL): TechTradeDetailDto[] {
     ) {
       return false;
     }
-    if (name && !(record.name ?? '').toLowerCase().includes(name.toLowerCase())) {
+    if (
+      name &&
+      !(record.name ?? '').toLowerCase().includes(name.toLowerCase())
+    ) {
       return false;
     }
     return matchesSearch(search, [
@@ -183,7 +186,8 @@ export const techTradeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techTradeCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     techTrades.push(created);
     return setupOk(created, 201);
@@ -195,7 +199,8 @@ export const techTradeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techTradeUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -206,7 +211,8 @@ export const techTradeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = techTradePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),

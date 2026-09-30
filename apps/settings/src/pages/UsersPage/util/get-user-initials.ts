@@ -1,4 +1,6 @@
-export const getUserInitials = (displayName: string | null | undefined): string => {
+export const getUserInitials = (
+  displayName: string | null | undefined,
+): string => {
   const trimmed = (displayName ?? '').trim();
   if (!trimmed) return '?';
   const parts = trimmed.split(/\s+/).filter(Boolean);

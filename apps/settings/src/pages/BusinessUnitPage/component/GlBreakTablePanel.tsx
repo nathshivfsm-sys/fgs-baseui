@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { GlBreakListParams, GlBreakSummaryDto } from '@cms/settings-contract';
+import type {
+  GlBreakListParams,
+  GlBreakSummaryDto,
+} from '@cms/settings-contract';
 import {
   glBreakListQueryOptions,
   patchGlBreakMutationOptions,
@@ -163,7 +166,10 @@ export const GlBreakTablePanel = ({
 
       {query.isError ? (
         <div className="p-6">
-          <Callout title={`Unable to load ${tableLabel.toLowerCase()}`} variant="error">
+          <Callout
+            title={`Unable to load ${tableLabel.toLowerCase()}`}
+            variant="error"
+          >
             {describeGlBreakError(query.error)}
           </Callout>
         </div>

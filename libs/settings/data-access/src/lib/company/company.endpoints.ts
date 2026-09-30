@@ -4,4 +4,3 @@ export const companyCollectionEndpoint = '/company';
 export function companyDetailEndpoint(companyId: string): string {
   return `${companyCollectionEndpoint}/${encodeURIComponent(companyId)}`;
 }
-

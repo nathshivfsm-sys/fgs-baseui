@@ -50,9 +50,7 @@ export const loadPostalCodeLookup = async (
   return postalCodeLookupResponseSchema.parse(body).data;
 };
 
-export const postalCodeListQueryOptions = (
-  params: PostalCodeListParams = {},
-) =>
+export const postalCodeListQueryOptions = (params: PostalCodeListParams = {}) =>
   queryOptions({
     queryKey: postalCodeKeys.list(params),
     queryFn: ({ signal }) => loadPostalCodes(params, { signal }),

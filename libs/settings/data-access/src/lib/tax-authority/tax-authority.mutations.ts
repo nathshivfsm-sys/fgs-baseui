@@ -71,13 +71,8 @@ export const createTaxAuthorityMutationOptions = (queryClient: QueryClient) =>
 
 export const updateTaxAuthorityMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: TaxAuthorityUpdateDto;
-    }) => updateTaxAuthority(id, body),
+    mutationFn: ({ id, body }: { id: number; body: TaxAuthorityUpdateDto }) =>
+      updateTaxAuthority(id, body),
     meta: { feature: 'tax-authority', operation: 'update' },
     onSuccess: () => invalidateTaxAuthorities(queryClient),
   });

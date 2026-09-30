@@ -8,10 +8,7 @@ import {
   type TaxPatchDto,
   type TaxUpdateDto,
 } from '@cms/settings-contract';
-import {
-  taxCollectionEndpoint,
-  taxDetailEndpoint,
-} from './tax.endpoints';
+import { taxCollectionEndpoint, taxDetailEndpoint } from './tax.endpoints';
 import { taxKeys } from './tax.keys';
 
 async function parseTaxDetail(body: unknown): Promise<TaxDetailDto> {

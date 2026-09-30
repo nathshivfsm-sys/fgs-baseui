@@ -1,7 +1,4 @@
-import {
-  useFormContext,
-  type FieldValues,
-} from 'react-hook-form';
+import { useFormContext, type FieldValues } from 'react-hook-form';
 import { TextInput } from '@cms/ui';
 import type { FormTextInputProps } from '../../types';
 

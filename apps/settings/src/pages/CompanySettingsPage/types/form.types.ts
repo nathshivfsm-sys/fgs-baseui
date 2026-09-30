@@ -1,7 +1,4 @@
-import type {
-  FieldPathByValue,
-  FieldValues,
-} from 'react-hook-form';
+import type { FieldPathByValue, FieldValues } from 'react-hook-form';
 import type { SelectFieldProps, SelectOption, TextInputProps } from '@cms/ui';
 
 export interface FormTextInputProps<Values extends FieldValues>

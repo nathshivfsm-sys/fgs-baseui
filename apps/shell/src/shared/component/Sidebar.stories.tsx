@@ -5,7 +5,11 @@ import { expect, userEvent, within } from 'storybook/test';
 import { Sidebar } from './Sidebar';
 
 /** The real shell owns the collapsed flag, so the round-trip needs a host. */
-function CollapsibleSidebar({ initialCollapsed }: { initialCollapsed: boolean }) {
+function CollapsibleSidebar({
+  initialCollapsed,
+}: {
+  initialCollapsed: boolean;
+}) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   return (
     <Sidebar

@@ -59,7 +59,9 @@ export const attachmentMetadataResponseSchema = apiResponseSchema(
 );
 
 export type AttachmentMetadataDto = z.infer<typeof attachmentMetadataDtoSchema>;
-export type AttachmentCreateFields = z.infer<typeof attachmentCreateFieldsSchema>;
+export type AttachmentCreateFields = z.infer<
+  typeof attachmentCreateFieldsSchema
+>;
 export type AttachmentCreateDto = AttachmentCreateFields & {
   file: Blob;
 };

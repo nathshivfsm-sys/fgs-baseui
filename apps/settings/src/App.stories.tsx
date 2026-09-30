@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { configure, expect, fireEvent, userEvent, waitFor, within } from 'storybook/test';
+import {
+  configure,
+  expect,
+  fireEvent,
+  userEvent,
+  waitFor,
+  within,
+} from 'storybook/test';
 import { alert } from '@cms/ui';
 import type { GlBreakDetailDto } from '@cms/settings-contract';
 import {
@@ -337,12 +344,16 @@ export const SearchMatchesOtherTab: Story = {
       'trade',
     );
     await expect(
-      canvas.getByText('No settings match "trade" in Company. Try another tab:'),
+      canvas.getByText(
+        'No settings match "trade" in Company. Try another tab:',
+      ),
     ).toBeVisible();
     await expect(
       canvas.getByRole('button', { name: 'Operations (1)' }),
     ).toBeVisible();
-    await userEvent.click(canvas.getByRole('button', { name: 'Operations (1)' }));
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Operations (1)' }),
+    );
     await expect(
       canvas.getByRole('button', { name: /^Trade & Skills/ }),
     ).toBeVisible();
@@ -381,9 +392,13 @@ export const GeneralInfoSave: Story = {
   beforeEach: () => api.install(savesCompany),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const website = await canvas.findByRole('textbox', {
-      name: 'Website',
-    }, LAZY_PAGE);
+    const website = await canvas.findByRole(
+      'textbox',
+      {
+        name: 'Website',
+      },
+      LAZY_PAGE,
+    );
     await userEvent.clear(website);
     await userEvent.type(website, 'www.acme.example.com');
     await userEvent.click(canvas.getByRole('button', { name: 'Save' }));
@@ -1089,10 +1104,12 @@ export const BusinessUnitAdd: Story = {
       (request) => request.method === 'POST',
     );
     await expect(
-      api.requests.slice(postIndex + 1).some(
-        (request) =>
-          request.method === 'GET' && request.endpoint === '/glbreak',
-      ),
+      api.requests
+        .slice(postIndex + 1)
+        .some(
+          (request) =>
+            request.method === 'GET' && request.endpoint === '/glbreak',
+        ),
     ).toBe(true);
   },
 };
@@ -1155,11 +1172,7 @@ export const BusinessUnitFromGrid: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(
-      await canvas.findByRole(
-        'button',
-        { name: /^Business Unit/ },
-        LAZY_PAGE,
-      ),
+      await canvas.findByRole('button', { name: /^Business Unit/ }, LAZY_PAGE),
     );
     await expect(
       await canvas.findByRole('heading', { name: 'Business Units & Break 2' }),
@@ -1374,7 +1387,9 @@ export const TradeSkillsAdd: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Add Trade' }));
     const dialog = await within(document.body).findByRole('dialog');
     const withinDialog = within(dialog);
-    const tradeCode = withinDialog.getByRole('textbox', { name: /trade code/i });
+    const tradeCode = withinDialog.getByRole('textbox', {
+      name: /trade code/i,
+    });
     const name = withinDialog.getByRole('textbox', { name: /^name/i });
     await fillTextbox(tradeCode, 'GAS');
     await fillTextbox(name, 'Gas Fitting');
@@ -1598,7 +1613,9 @@ export const TradeSkillsDeleteSkill: Story = {
     alert.remove();
     const canvas = within(canvasElement);
     await canvas.findByText('Repair');
-    await userEvent.click(canvas.getByRole('button', { name: 'Delete Repair' }));
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Delete Repair' }),
+    );
     const dialog = await within(document.body).findByRole('dialog');
     const withinDialog = within(dialog);
     await expect(
@@ -1832,7 +1849,9 @@ export const TaxSetupCatalog: Story = {
     await expect(
       canvas.getByRole('columnheader', { name: 'County' }),
     ).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'City' })).toBeVisible();
+    await expect(
+      canvas.getByRole('columnheader', { name: 'City' }),
+    ).toBeVisible();
     await expect(
       canvas.getByRole('columnheader', { name: 'Status' }),
     ).toBeVisible();
@@ -2044,7 +2063,9 @@ export const GeneralInfoEditNonWorkingDay: Story = {
     await expect(
       withinDialog.getByRole('heading', { name: 'Edit Non-Working Day' }),
     ).toBeVisible();
-    await expect(withinDialog.getByLabelText(/date/i)).toHaveValue('2025-01-01');
+    await expect(withinDialog.getByLabelText(/date/i)).toHaveValue(
+      '2025-01-01',
+    );
     const description = withinDialog.getByRole('textbox', {
       name: /description/i,
     });
@@ -2120,7 +2141,9 @@ export const GeneralInfoEditPhysicalAddress: Story = {
     await chooseSelectOption(withinDialog, /^city$/i, 'Houston');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
-      expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
+      expect(
+        within(document.body).queryByRole('dialog'),
+      ).not.toBeInTheDocument(),
     );
     await expect(canvas.getByText('Houston, TX 78701')).toBeVisible();
     await expect(
@@ -2177,7 +2200,9 @@ export const GeneralInfoBillingSameAsPhysical: Story = {
     ).toHaveTextContent('Austin');
     await userEvent.click(withinDialog.getByRole('button', { name: 'Save' }));
     await waitFor(() =>
-      expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument(),
+      expect(
+        within(document.body).queryByRole('dialog'),
+      ).not.toBeInTheDocument(),
     );
     await expect(
       canvas.queryByText('No address on file'),
@@ -2302,9 +2327,7 @@ export const BusinessTypeListing: Story = {
     await expect(
       await canvas.findByRole('heading', { name: 'Business Type' }, LAZY_PAGE),
     ).toBeVisible();
-    await expect(
-      await canvas.findByText('HVAC', {}, LAZY_PAGE),
-    ).toBeVisible();
+    await expect(await canvas.findByText('HVAC', {}, LAZY_PAGE)).toBeVisible();
     await expect(canvas.getByRole('switch', { name: 'HVAC' })).toHaveAttribute(
       'aria-disabled',
       'true',

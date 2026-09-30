@@ -100,7 +100,8 @@ export const TradeTablePanel = ({
         header: 'Associated Skill',
         enableSorting: false,
         meta: { label: 'Associated Skill' },
-        cell: ({ row }) => joinLabelsByIds(row.original.skillIds, skillLabelsById),
+        cell: ({ row }) =>
+          joinLabelsByIds(row.original.skillIds, skillLabelsById),
       }),
       column.display({
         id: 'actions',

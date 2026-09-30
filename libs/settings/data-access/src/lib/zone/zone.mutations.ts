@@ -8,10 +8,7 @@ import {
   type ZonePatchDto,
   type ZoneUpdateDto,
 } from '@cms/settings-contract';
-import {
-  zoneCollectionEndpoint,
-  zoneDetailEndpoint,
-} from './zone.endpoints';
+import { zoneCollectionEndpoint, zoneDetailEndpoint } from './zone.endpoints';
 import { zoneKeys } from './zone.keys';
 
 async function parseZoneDetail(body: unknown): Promise<ZoneDetailDto> {

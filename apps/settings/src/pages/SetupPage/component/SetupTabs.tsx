@@ -54,12 +54,7 @@ export function SetupTabs({
               <span className="inline-flex items-center gap-1.5">
                 <span>{tab.label}</span>
                 {hasSearch && matchCount > 0 ? (
-                  <Badge
-                    aria-hidden
-                    size="sm"
-                    tone="action"
-                    variant="soft"
-                  >
+                  <Badge aria-hidden size="sm" tone="action" variant="soft">
                     {matchCount}
                   </Badge>
                 ) : null}
@@ -75,13 +70,11 @@ export function SetupTabs({
         if (tab.key !== activeTab) {
           return <TabsContent key={tab.key} value={tab.key} />;
         }
-        const filteredCategories = filterSettings(
-          allSettings[tab.key],
-          query,
-        );
+        const filteredCategories = filterSettings(allSettings[tab.key], query);
         const otherTabMatches = SETTING_TABS.filter(
           (candidate) =>
-            candidate.key !== activeTab && (matchCounts[candidate.key] ?? 0) > 0,
+            candidate.key !== activeTab &&
+            (matchCounts[candidate.key] ?? 0) > 0,
         ).map((candidate) => ({
           tabKey: candidate.key,
           label: candidate.label,

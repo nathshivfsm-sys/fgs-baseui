@@ -17,30 +17,30 @@ corepack enable
 pnpm install
 pnpm run dev
 ```
+
 Then open 'http://127.0.0.1:4200'.
 
 The shell loads remote URLs from 'apps/shell/public/config.json'
 
-
 ## Architecture at a glance
-Project	Port	Responsibility
-shell	4200	Layout, routing, runtime configuration, Zustand store, and QueryClient
-workorder	5101	Independently built federated remote
-lead	5102	Independently built federated remote
-invoice	5103	Independently built federated remote
-settings	5104	Independently built federated remote
-'@cms/ui'	—	Publishable shadcn-style React UI library with Tailwind v4
-'@cms/platform-contract'	—	Shell/remote runtime contract and QueryClient factory
-'@cms/shared-api'	—	customFetch wrapper and typed ApiError
-'@cms/settings-contract'	—	Settings catalog wire DTOs
-'@cms/settings-data-access'	—	Settings query and mutation factories
-'@cms/workorder-data-access'	—	Work order query and mutation factories
-'@cms/lead-data-access'	—	Lead query and mutation factories
+
+Project Port Responsibility
+shell 4200 Layout, routing, runtime configuration, Zustand store, and QueryClient
+workorder 5101 Independently built federated remote
+lead 5102 Independently built federated remote
+invoice 5103 Independently built federated remote
+settings 5104 Independently built federated remote
+'@cms/ui' — Publishable shadcn-style React UI library with Tailwind v4
+'@cms/platform-contract' — Shell/remote runtime contract and QueryClient factory
+'@cms/shared-api' — customFetch wrapper and typed ApiError
+'@cms/settings-contract' — Settings catalog wire DTOs
+'@cms/settings-data-access' — Settings query and mutation factories
+'@cms/workorder-data-access' — Work order query and mutation factories
+'@cms/lead-data-access' — Lead query and mutation factories
 
 Feature-specific contracts follow this convention:
 
 'libs/<mfe>/contract' → '@cms/<mfe>-contract'
-
 
 'libs/<mfe>/contract' → '@cms/<mfe>-contract'
 Wire request and response types belong in the owning MFE's contract library.
@@ -50,7 +50,6 @@ They are not API DTOs in '@cms/platform-contract'
 
 Generate a new remote with:
 pnpm exec nx g './tools/generators/remote-app:remote-app' <name>
-
 
 The generator creates the application and prints the sidebar wiring that must be
 applied manually.
@@ -64,9 +63,8 @@ Add its data-access library if the remote owns API queries or mutations.
 Add deployment configuration for the remote.
 Run the validation commands described below.
 
-
-
 ## Hosted and standalone MFEs
+
 A hosted MFE runs inside the shell and receives the shell's CmsRuntime.
 It uses the shell's Zustand store and TanStack QueryClient.
 
@@ -75,21 +73,20 @@ QueryClient for the lifetime of its page.
 
 Hosted MFEs must not clear the shell's QueryClient when they unmount.
 
-
 ## Styling architecture
+
 Tailwind CSS v4 is configured in CSS rather than in a JavaScript configuration
 file.
 
 Shared semantic tokens and base styles live under
 'libs/ui/src/styles' [blocked]. Each independently built application
-keeps a small compiler entry in apps/*/src/styles.css, allowing it to run
+keeps a small compiler entry in apps/\*/src/styles.css, allowing it to run
 standalone or through Module Federation.
 
 The UI JavaScript barrel has no global CSS side effects.
 
-
-
 ## Design tokens
+
 Design tokens have two layers.
 
 tokens.css first declares primitives: generic palettes named by hue family and
@@ -119,9 +116,8 @@ No token is named after a component. The
 as TypeScript unions and provides themeVar accessors for cases where a utility
 class cannot be used.
 
-
-
 ## Color roles
+
 primary is both the brand color and the main interaction color. Use the
 following related roles for its states:
 
@@ -139,6 +135,7 @@ the interaction color so the top bar can be re-themed without changing the
 primary interaction color.
 
 ## Spacing
+
 Spacing has no named tokens. Tailwind derives every spacing step from
 --spacing, which is 4px.
 
@@ -146,7 +143,6 @@ For example:
 
 h-9 is 36px
 w-56 is 224px
-
 
 ## Typography
 
@@ -179,8 +175,8 @@ rather than a type size.
 Figma light values and intentionally derived dark values are maintained together
 in tokens.css.
 
-
 ## Data-fetching architecture
+
 'libs/platform-contract/src/lib/query-client.ts' [blocked]
 is the single source of React Query client defaults and lifecycle helpers.
 
@@ -196,8 +192,8 @@ page.
 
 Storybook and tests create isolated clients and clear them during teardown.
 
-
 ## Shared QueryClient defaults
+
 The shared defaults are:
 
 30 seconds of stale time
@@ -212,8 +208,8 @@ responsible for user-facing error states.
 Endpoint-specific behavior belongs in a feature-local queryOptions factory,
 not in another QueryClient.
 
-
 ## Query keys and factories
+
 Query keys must:
 
 Start with a unique feature scope.
@@ -232,6 +228,7 @@ Query functions receive TanStack Query's AbortSignal and must pass it to
 network clients that support cancellation.
 
 ## SSR status
+
 SSR is planned but not implemented.
 
 There is currently no server entry, renderToString call, or
@@ -240,7 +237,7 @@ runs client-side.
 
 Run the following command to verify shared query behavior:
 
-```bash
+````bash
 pnpm run test:query
 
 The query tests cover:
@@ -289,9 +286,10 @@ by 'apps/shell/src/config.ts' [blocked].
     }
   }
 }
-```
+````
 
 ## Staging
+
 Use versioned, immutable remote entry URLs for staging deployments:
 
 ```json
@@ -316,15 +314,13 @@ Use versioned, immutable remote entry URLs for staging deployments:
     }
   }
 }
-
 ```
 
 ## Production
+
 Use the same configuration shape with production hosts and versions:
 
 ```json
-
-
 {
   "environment": "production",
   "remotes": {
@@ -346,17 +342,16 @@ Use the same configuration shape with production hosts and versions:
     }
   }
 }
-
 ```
 
 Replace the shell's config.json with the environment-specific version as part
 of deploying the shell, alongside each remote's own dist directory.
 
-
 ## Validation
+
 Run the complete validation suite with:
 
-````bash
+``````bash
 pnpm run format:check
 pnpm run lint
 pnpm run typecheck
@@ -505,3 +500,4 @@ starting.
 - Do not add @cms/* aliases to Vite configuration.
 - Keep global styles in the shared style entry points, not in the UI JavaScript barrel.
 - Use font-sans for typography and tabular-figures for aligned numeric data.
+``````

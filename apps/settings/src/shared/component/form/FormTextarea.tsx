@@ -1,7 +1,4 @@
-import {
-  useFormContext,
-  type FieldValues,
-} from 'react-hook-form';
+import { useFormContext, type FieldValues } from 'react-hook-form';
 import { Textarea } from '@cms/ui';
 import type { FormTextareaProps } from '../../types';
 

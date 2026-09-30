@@ -13,8 +13,7 @@ export const FILTER_CLEAR_LABEL = 'Clear';
 export const NO_USERS_FOUND = 'No users found.';
 
 export const INVITE_USER_TITLE = 'Invite user';
-export const INVITE_USER_DESCRIPTION =
-  'Enter basic details to invite user';
+export const INVITE_USER_DESCRIPTION = 'Enter basic details to invite user';
 
 export const EDIT_USER_TITLE = 'Edit user';
 export const EDIT_USER_DESCRIPTION = 'Update user details and role assignment';

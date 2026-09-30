@@ -135,7 +135,10 @@ function filterPostalCodes(url: URL): PostalCodeDetailDto[] {
     ) {
       return false;
     }
-    if (city && !(record.city ?? '').toLowerCase().includes(city.toLowerCase())) {
+    if (
+      city &&
+      !(record.city ?? '').toLowerCase().includes(city.toLowerCase())
+    ) {
       return false;
     }
     if (
@@ -222,7 +225,8 @@ export const postalCodeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = postalCodeCreateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     const created = createFromBody(parsed.data);
     postalCodes.push(created);
     return setupOk(created, 201);
@@ -234,7 +238,8 @@ export const postalCodeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = postalCodeUpdateDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     applyWrite(record, parsed.data);
     return setupOk(record);
   }),
@@ -245,7 +250,8 @@ export const postalCodeHandlers = [
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = postalCodePatchDtoSchema.safeParse(body.value);
-    if (!parsed.success) return setupError(400, firstIssueMessage(parsed.error));
+    if (!parsed.success)
+      return setupError(400, firstIssueMessage(parsed.error));
     assignDefined(record, summaryFieldsFromWrite(parsed.data));
     return setupOk(record);
   }),

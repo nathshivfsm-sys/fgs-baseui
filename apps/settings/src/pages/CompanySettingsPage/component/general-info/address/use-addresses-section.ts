@@ -29,8 +29,7 @@ export const useAddressesSection = () => {
 
   const handleSubmit = (values: CompanyAddressForm) => {
     if (!kind) return;
-    const field =
-      kind === 'physical' ? 'physicalAddress' : 'billingAddress';
+    const field = kind === 'physical' ? 'physicalAddress' : 'billingAddress';
     form.setValue(field, toCompanyAddressValue(values), {
       shouldDirty: true,
       shouldTouch: true,
