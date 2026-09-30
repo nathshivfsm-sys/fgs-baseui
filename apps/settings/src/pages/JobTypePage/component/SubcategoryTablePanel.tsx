@@ -25,6 +25,7 @@ export function SubcategoryTablePanel({
   onAdd,
   onEdit,
   rows,
+  tableStatus = 'idle',
 }: SubcategoryTablePanelProps) {
   const [status, setStatus] = useState<CatalogStatusFilter>('active');
   const [globalFilter, setGlobalFilter] = useState('');
@@ -45,6 +46,7 @@ export function SubcategoryTablePanel({
       return (
         row.subcategory.toLowerCase().includes(normalized) ||
         row.trade.toLowerCase().includes(normalized) ||
+        (row.skill ?? '').toLowerCase().includes(normalized) ||
         row.taskName.toLowerCase().includes(normalized)
       );
     });
@@ -78,6 +80,12 @@ export function SubcategoryTablePanel({
         header: 'Est. Time',
         cell: ({ getValue }) => (
           <span className="text-foreground-muted">{getValue()}</span>
+        ),
+      }),
+      column.accessor('skill', {
+        header: 'Skill',
+        cell: ({ getValue }) => (
+          <span className="text-foreground-muted">{getValue() ?? ''}</span>
         ),
       }),
       column.accessor('priority', {
@@ -171,7 +179,7 @@ export function SubcategoryTablePanel({
           rowLabel="entries"
           showColumnVisibility={false}
           state={{ globalFilter, pagination, sorting: [] }}
-          status="idle"
+          status={tableStatus}
           tableLabel="Subcategories"
         />
       </div>

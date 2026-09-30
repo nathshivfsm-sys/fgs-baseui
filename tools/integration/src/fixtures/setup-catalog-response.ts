@@ -415,6 +415,159 @@ export const businessTypeLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const jobCategoryListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 101,
+        categoryCode: 'INS',
+        name: 'Install',
+        backgroundColor: '#1F4E79',
+        textColor: '#FFFFFF',
+        displayOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const jobCategoryDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: jobCategoryListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const jobCategoryLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 101,
+      categoryCode: 'INS',
+      name: 'Install',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const jobTypeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 201,
+        jobTypeCode: 'ACINST',
+        name: 'AC Install',
+        usedFor: 1,
+        businessUnit: 'HVAC',
+        showToFieldTech: true,
+        showOnCustomerPortal: true,
+        displayOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const jobTypeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    ...jobTypeListResponseFixture.data.items[0],
+    subCategories: [
+      {
+        categoryId: 101,
+        categoryName: 'Install',
+        jobTypeTaskId: 301,
+        name: 'Condenser install',
+      },
+    ],
+  },
+  errors: [] as string[],
+};
+
+export const jobTypeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 201,
+      jobTypeCode: 'ACINST',
+      name: 'AC Install',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const jobTypeCountsResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    activeCount: 3,
+    inactiveCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const subcategoryListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 301,
+        jobCategoryId: 101,
+        tradeId: 51,
+        skillLevelId: 61,
+        name: 'Condenser install',
+        taskName: 'Install condenser',
+        priority: 1,
+        estimatedHours: 4,
+        displayOrder: 1,
+        isActive: true,
+        categoryName: 'Install',
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const subcategoryDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: subcategoryListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const subcategoryLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 301,
+      name: 'Condenser install',
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const userListResponseFixture = {
   success: true,
   statusCode: 200,

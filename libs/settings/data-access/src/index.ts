@@ -8,6 +8,9 @@ export * from './lib/gl-break';
 export * from './lib/tech-trade';
 export * from './lib/tech-skill-level';
 export * from './lib/business-type';
+export * from './lib/job-category';
+export * from './lib/job-type';
+export * from './lib/subcategory';
 export * from './lib/employee';
 export * from './lib/user-service';
 export type {

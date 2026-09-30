@@ -40,7 +40,9 @@ const TradeSkillsPage = lazy(() =>
   })),
 );
 const JobTypePage = lazy(() =>
-  import('./pages/JobTypePage').then((module) => ({ default: module.JobTypePage })),
+  import('./pages/JobTypePage').then((module) => ({
+    default: module.JobTypePage,
+  })),
 );
 
 const UsersPage = lazy(() =>
@@ -119,7 +121,7 @@ export const App = ({ runtime }: AppProps) => (
         <Route
           element={
             <RouteBoundary>
-              <JobTypePage />
+              <JobTypePage queryClient={runtime.queryClient} />
             </RouteBoundary>
           }
           path="operations/job-type"

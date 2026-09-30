@@ -9,16 +9,13 @@ import {
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
-import {
-  ADD_JOB_TYPE_LABEL,
-  SEARCH_JOB_TYPES_PLACEHOLDER,
-} from '../constant';
+import { ADD_JOB_TYPE_LABEL, SEARCH_JOB_TYPES_PLACEHOLDER } from '../constant';
 import type {
   CatalogStatusFilter,
   JobTypeGroupRow,
+  JobTypeGroupedTablePanelProps,
   SubcategoryRow,
 } from '../types';
-import { PLACEHOLDER_JOB_TYPE_GROUPS } from '../util';
 
 const jobTypeColumn = createDataTableColumnHelper<JobTypeGroupRow>();
 const subcategoryColumn = createDataTableColumnHelper<SubcategoryRow>();
@@ -72,6 +69,13 @@ function JobTypeSubcategoryDetail({
       }),
       subcategoryColumn.accessor('trade', {
         header: 'Trade',
+        meta: {
+          headerClassName: subcategoryHeaderClassName,
+          cellClassName: cn(subcategoryCellClassName, 'text-foreground-muted'),
+        },
+      }),
+      subcategoryColumn.accessor('skill', {
+        header: 'Skill',
         meta: {
           headerClassName: subcategoryHeaderClassName,
           cellClassName: cn(subcategoryCellClassName, 'text-foreground-muted'),
@@ -157,26 +161,48 @@ function JobTypeSubcategoryDetail({
   );
 }
 
-const handleJobTypeEdit = () => {
-  // Dialog wiring follows catalog API integration.
+const handleJobTypeDelete = () => {
+  // Swagger has no DELETE for /jobtype.
 };
 
-const handleJobTypeDelete = () => {
-  // Dialog wiring follows catalog API integration.
-};
+function JobTypeActions({
+  onEdit,
+  row,
+}: {
+  onEdit: (row: JobTypeGroupRow) => void;
+  row: JobTypeGroupRow;
+}) {
+  const handleEdit = () => {
+    onEdit(row);
+  };
+
+  return (
+    <DataTableRowActions
+      actions={[]}
+      editLabel={`Edit ${row.jobType}`}
+      onDelete={handleJobTypeDelete}
+      onEdit={handleEdit}
+    />
+  );
+}
 
 const formatPageSizeOption = (pageSize: number) => `${pageSize} per page`;
 
-export function JobTypeGroupedTablePanel() {
+export function JobTypeGroupedTablePanel({
+  activeCount,
+  inactiveCount,
+  onAdd,
+  onEdit,
+  rows,
+  tableStatus = 'idle',
+}: JobTypeGroupedTablePanelProps) {
   const [status, setStatus] = useState<CatalogStatusFilter>('active');
   const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState<DataTableState['expanded']>({
-    maintenance: true,
-  });
+  const [expanded, setExpanded] = useState<DataTableState['expanded']>({});
 
   const filteredRows = useMemo(() => {
     const normalized = search.trim().toLowerCase();
-    return PLACEHOLDER_JOB_TYPE_GROUPS.filter((row) => {
+    return rows.filter((row) => {
       if (row.isActive !== (status === 'active')) {
         return false;
       }
@@ -186,17 +212,11 @@ export function JobTypeGroupedTablePanel() {
       return (
         row.jobType.toLowerCase().includes(normalized) ||
         row.category.toLowerCase().includes(normalized) ||
-        row.glAccount.toLowerCase().includes(normalized)
+        row.businessUnit.toLowerCase().includes(normalized) ||
+        row.usedFor.toLowerCase().includes(normalized)
       );
     });
-  }, [search, status]);
-
-  const activeCount = PLACEHOLDER_JOB_TYPE_GROUPS.filter(
-    (row) => row.isActive,
-  ).length;
-  const inactiveCount = PLACEHOLDER_JOB_TYPE_GROUPS.filter(
-    (row) => !row.isActive,
-  ).length;
+  }, [rows, search, status]);
 
   const columns = useMemo(
     () => [
@@ -267,16 +287,11 @@ export function JobTypeGroupedTablePanel() {
           cellClassName: jobTypeCellClassName,
         },
         cell: ({ row }) => (
-          <DataTableRowActions
-            actions={[]}
-            editLabel={`Edit ${row.original.jobType}`}
-            onDelete={handleJobTypeDelete}
-            onEdit={handleJobTypeEdit}
-          />
+          <JobTypeActions onEdit={onEdit} row={row.original} />
         ),
       }),
     ],
-    [],
+    [onEdit],
   );
 
   const handleStatusChange = (next: CatalogStatusFilter) => {
@@ -288,7 +303,7 @@ export function JobTypeGroupedTablePanel() {
   };
 
   const handleAdd = () => {
-    // Dialog wiring follows catalog API integration.
+    onAdd();
   };
 
   const handleFilterClick = () => {
@@ -346,7 +361,7 @@ export function JobTypeGroupedTablePanel() {
         renderExpandedRow={renderExpandedRow}
         rowLabel="entries"
         state={{ expanded }}
-        status="idle"
+        status={tableStatus}
         tableLabel="Job types"
       />
     </div>

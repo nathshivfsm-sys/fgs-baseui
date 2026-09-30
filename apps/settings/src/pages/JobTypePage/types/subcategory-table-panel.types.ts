@@ -6,4 +6,5 @@ export interface SubcategoryTablePanelProps {
   onAdd: () => void;
   onEdit: (row: SubcategoryRow) => void;
   rows: readonly SubcategoryRow[];
+  tableStatus?: 'idle' | 'loading' | 'error';
 }

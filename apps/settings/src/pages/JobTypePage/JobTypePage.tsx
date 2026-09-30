@@ -1,54 +1,39 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import {
-  ADD_CATEGORY_LABEL,
-  CATEGORY_PANEL_TITLE,
-  SEARCH_CATEGORIES_PLACEHOLDER,
-} from './constant';
+  jobCategoryListQueryOptions,
+  jobTypeCountsQueryOptions,
+} from '@cms/settings-data-access';
+import { CATALOG_LIST_PAGE_SIZE } from './constant';
 import {
-  CategoryListPanel,
+  JobCategoryCatalog,
+  JobTypeCatalog as JobTypeCatalogView,
   JobTypeCatalogNavPanel,
-  JobTypeGroupedTablePanel,
   JobTypeHeader,
-  SubcategoryTablePanel,
 } from './component';
-import type { JobTypeCatalog } from './types';
-import {
-  catalogFromSearch,
-  filterCategories,
-  PLACEHOLDER_CATEGORIES,
-  PLACEHOLDER_SUBCATEGORIES,
-} from './util';
+import type { JobTypeCatalog, JobTypePageProps } from './types';
+import { catalogFromSearch } from './util';
 
-export function JobTypePage() {
+export const JobTypePage = ({ queryClient }: JobTypePageProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const catalog = catalogFromSearch(searchParams.get('catalog'));
-  const [categorySearch, setCategorySearch] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    PLACEHOLDER_CATEGORIES[0]?.id ?? null,
+  const categoriesQuery = useQuery(
+    jobCategoryListQueryOptions({
+      page: 1,
+      pageSize: CATALOG_LIST_PAGE_SIZE,
+    }),
+    queryClient,
   );
-  const listEntries = PLACEHOLDER_CATEGORIES;
-  const filteredList = useMemo(
-    () => filterCategories(listEntries, categorySearch),
-    [categorySearch, listEntries],
-  );
-  const selectedListId = selectedCategoryId;
-
-  const subcategoryRows = useMemo(() => {
-    if (catalog !== 'category' || !selectedCategoryId) {
-      return [];
+  const countsQuery = useQuery(jobTypeCountsQueryOptions(), queryClient);
+  const categories = categoriesQuery.data?.items ?? [];
+  const categoryCounts = useMemo(() => {
+    let active = 0;
+    for (const category of categories) {
+      if (category.isActive) active += 1;
     }
-    return PLACEHOLDER_SUBCATEGORIES.filter(
-      (row) => row.categoryId === selectedCategoryId,
-    );
-  }, [catalog, selectedCategoryId]);
-
-  const subcategoryActiveCount = subcategoryRows.filter(
-    (row) => row.isActive,
-  ).length;
-  const subcategoryInactiveCount = subcategoryRows.filter(
-    (row) => !row.isActive,
-  ).length;
+    return { active, inactive: categories.length - active };
+  }, [categories]);
 
   const handleCatalogChange = (next: JobTypeCatalog) => {
     setSearchParams(
@@ -63,31 +48,6 @@ export function JobTypePage() {
       },
       { replace: true },
     );
-    setCategorySearch('');
-  };
-
-  const handleCategorySelect = (id: string) => {
-    setSelectedCategoryId(id);
-  };
-
-  const handleCategoryEdit = (_categoryId: string) => {
-    // Dialog wiring follows catalog API integration.
-  };
-
-  const handleAddCategory = () => {
-    // Dialog wiring follows catalog API integration.
-  };
-
-  const handleAddSubcategory = () => {
-    // Dialog wiring follows catalog API integration.
-  };
-
-  const handleSubcategoryEdit = (_row: (typeof PLACEHOLDER_SUBCATEGORIES)[number]) => {
-    // Dialog wiring follows catalog API integration.
-  };
-
-  const handleSearchChange = (value: string) => {
-    setCategorySearch(value);
   };
 
   return (
@@ -100,34 +60,35 @@ export function JobTypePage() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface lg:min-h-[32rem] lg:flex-row">
         <JobTypeCatalogNavPanel
           catalog={catalog}
+          categoryActiveCount={
+            categoriesQuery.isSuccess ? categoryCounts.active : undefined
+          }
+          categoryInactiveCount={
+            categoriesQuery.isSuccess ? categoryCounts.inactive : undefined
+          }
+          jobTypeActiveCount={
+            countsQuery.isSuccess ? countsQuery.data.activeCount : undefined
+          }
+          jobTypeInactiveCount={
+            countsQuery.isSuccess ? countsQuery.data.inactiveCount : undefined
+          }
           onCatalogChange={handleCatalogChange}
         />
         {catalog === 'category' ? (
-          <>
-            <CategoryListPanel
-              addLabel={ADD_CATEGORY_LABEL}
-              categories={filteredList}
-              onAdd={handleAddCategory}
-              onCategoryEdit={handleCategoryEdit}
-              onCategorySelect={handleCategorySelect}
-              onSearchChange={handleSearchChange}
-              searchPlaceholder={SEARCH_CATEGORIES_PLACEHOLDER}
-              searchValue={categorySearch}
-              selectedCategoryId={selectedListId}
-              title={CATEGORY_PANEL_TITLE}
-            />
-            <SubcategoryTablePanel
-              activeCount={subcategoryActiveCount}
-              inactiveCount={subcategoryInactiveCount}
-              onAdd={handleAddSubcategory}
-              onEdit={handleSubcategoryEdit}
-              rows={subcategoryRows}
-            />
-          </>
+          <JobCategoryCatalog
+            categories={categories}
+            isError={categoriesQuery.isError}
+            isPending={categoriesQuery.isPending}
+            loadError={categoriesQuery.error}
+            queryClient={queryClient}
+          />
         ) : (
-          <JobTypeGroupedTablePanel />
+          <JobTypeCatalogView
+            categories={categories}
+            queryClient={queryClient}
+          />
         )}
       </div>
     </section>
   );
-}
+};

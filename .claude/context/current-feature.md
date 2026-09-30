@@ -2,6 +2,38 @@
 
 ## Status
 
+**Job type listing and create** — implemented on `feature/jobtype`. The Job Type
+catalog loads `GET /jobtype` and each detail for category, task count, and the
+expanded subcategory rows. Nav counts come from `GET /jobtype/counts`. Create
+posts to `/jobtype`. Edit reuses the same dialog and patches. GL account is not
+on the form. The filter button stays unwired. Delete is not in swagger.
+
+Verified in the standalone app with MSW: active/inactive tabs, search, expand
+and collapse, and creating Tune up (Service / Diagnostic / Preventive).
+
+- Spec: [features/job-category-subcategory-screen-prd.md](features/job-category-subcategory-screen-prd.md)
+
+## History
+
+**Job category and subcategory screen** — implemented on `feature/jobtype` and
+checked in the standalone Settings app with MSW (`/operations/job-type`).
+The Category catalog lists job categories, loads subcategories for the selected
+category, and creates and edits both through the existing dialog pattern.
+Create uses POST. Edit uses PATCH so `isActive` is saved. The Job Type tab and
+the category filter popover stay placeholders.
+
+- Spec: [features/job-category-subcategory-screen-prd.md](features/job-category-subcategory-screen-prd.md)
+- API specs: [features/job-category-catalog-api-prd.md](features/job-category-catalog-api-prd.md),
+  [features/job-type-catalog-api-prd.md](features/job-type-catalog-api-prd.md),
+  [features/subcategory-catalog-api-prd.md](features/subcategory-catalog-api-prd.md)
+
+Verified in the browser against MSW: category list and nav counts, subcategory
+table (skill, priority, `Hh MMm`), create and edit for both resources, category
+search, and the inactive subcategory tab. `test:query` 79/79 from the catalog
+API pass. Lint and typecheck clean for `settings` and `settings-data-access`.
+
+## History
+
 **Geo lookups (country, state/province, postal-code cities)** — wired into
 Settings forms. Cascading selects use `@cms/shared-data-access` GET factories:
 country → state → city. Changing or clearing a parent field resets dependents.
