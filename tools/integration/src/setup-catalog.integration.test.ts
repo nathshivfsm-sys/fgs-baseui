@@ -716,7 +716,9 @@ describe('billing category through customFetch', () => {
   it('GETs the paged list and lookup', async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(billingCategoryListResponseFixture))
-      .mockResolvedValueOnce(jsonResponse(billingCategoryLookupResponseFixture));
+      .mockResolvedValueOnce(
+        jsonResponse(billingCategoryLookupResponseFixture),
+      );
     const client = createCmsQueryClient({
       defaultOptions: { queries: { retry: false } },
     });

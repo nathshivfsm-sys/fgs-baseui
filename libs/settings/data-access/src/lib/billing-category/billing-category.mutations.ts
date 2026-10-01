@@ -24,11 +24,14 @@ export const createBillingCategory = async (
   body: BillingCategoryCreateDto,
   context?: QueryRequestContext,
 ): Promise<BillingCategoryDetailDto> => {
-  const response = await customFetch<unknown>(billingCategoryCollectionEndpoint, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    billingCategoryCollectionEndpoint,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseBillingCategoryDetail(response);
 };
 
@@ -37,11 +40,14 @@ export const updateBillingCategory = async (
   body: BillingCategoryUpdateDto,
   context?: QueryRequestContext,
 ): Promise<BillingCategoryDetailDto> => {
-  const response = await customFetch<unknown>(billingCategoryDetailEndpoint(id), {
-    method: 'PUT',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    billingCategoryDetailEndpoint(id),
+    {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseBillingCategoryDetail(response);
 };
 
@@ -50,11 +56,14 @@ export const patchBillingCategory = async (
   body: BillingCategoryPatchDto,
   context?: QueryRequestContext,
 ): Promise<BillingCategoryDetailDto> => {
-  const response = await customFetch<unknown>(billingCategoryDetailEndpoint(id), {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-    signal: context?.signal,
-  });
+  const response = await customFetch<unknown>(
+    billingCategoryDetailEndpoint(id),
+    {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      signal: context?.signal,
+    },
+  );
   return parseBillingCategoryDetail(response);
 };
 
@@ -86,17 +95,10 @@ export const updateBillingCategoryMutationOptions = (
     onSuccess: () => invalidateBillingCategories(queryClient),
   });
 
-export const patchBillingCategoryMutationOptions = (
-  queryClient: QueryClient,
-) =>
+export const patchBillingCategoryMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
-    mutationFn: ({
-      id,
-      body,
-    }: {
-      id: number;
-      body: BillingCategoryPatchDto;
-    }) => patchBillingCategory(id, body),
+    mutationFn: ({ id, body }: { id: number; body: BillingCategoryPatchDto }) =>
+      patchBillingCategory(id, body),
     meta: { feature: 'billing-category', operation: 'patch' },
     onSuccess: () => invalidateBillingCategories(queryClient),
   });

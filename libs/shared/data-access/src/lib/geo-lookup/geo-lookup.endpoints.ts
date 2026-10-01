@@ -16,7 +16,9 @@ export function gloCountryLookupEndpoint(activeOnly = true): string {
   return `${gloCountryLookupCollectionEndpoint}${toSearchParams({ activeOnly })}`;
 }
 
-export function gloBillingCategoryTypeLookupEndpoint(activeOnly = true): string {
+export function gloBillingCategoryTypeLookupEndpoint(
+  activeOnly = true,
+): string {
   return `${gloBillingCategoryTypeLookupCollectionEndpoint}${toSearchParams({
     activeOnly,
   })}`;

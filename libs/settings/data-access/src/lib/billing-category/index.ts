@@ -22,6 +22,14 @@ export {
   loadBillingCategories,
 } from './billing-category.queries';
 export {
+  billingCategoryFormSchema,
+  emptyBillingCategoryForm,
+  toBillingCategoryCreateDto,
+  toBillingCategoryFormValues,
+  toBillingCategoryUpdateDto,
+  type BillingCategoryForm,
+} from './billing-category.form';
+export {
   billingCategoryCreateDtoSchema,
   billingCategoryDetailDtoSchema,
   billingCategoryDetailResponseSchema,
