@@ -110,6 +110,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Configure billing categories used for services and parts.',
       icon: 'SettingsBillingCategoryIcon',
       totalSettings: { count: 16, label: 'Categories' },
+      href: 'operations/billing-category',
     },
     {
       title: 'Timeslots',

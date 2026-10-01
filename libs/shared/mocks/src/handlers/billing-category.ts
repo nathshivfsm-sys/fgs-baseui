@@ -71,9 +71,7 @@ function seedBillingCategories(): BillingCategoryDetailDto[] {
 
 const billingCategories = seedBillingCategories();
 
-function toLookup(
-  record: BillingCategoryDetailDto,
-): BillingCategoryLookupDto {
+function toLookup(record: BillingCategoryDetailDto): BillingCategoryLookupDto {
   return {
     id: record.id,
     billingCategoryType: record.billingCategoryType,
@@ -138,6 +136,32 @@ function filterBillingCategories(url: URL): BillingCategoryDetailDto[] {
   });
 }
 
+function normalizeBillingCategoryKey(
+  billingCategoryType: string | null | undefined,
+  billingCategoryName: string | null | undefined,
+): string {
+  return `${(billingCategoryType ?? '').trim().toLowerCase()}::${(billingCategoryName ?? '').trim().toLowerCase()}`;
+}
+
+function findDuplicateBillingCategory(
+  billingCategoryType: string | null | undefined,
+  billingCategoryName: string | null | undefined,
+  excludeId?: number,
+): BillingCategoryDetailDto | undefined {
+  const key = normalizeBillingCategoryKey(
+    billingCategoryType,
+    billingCategoryName,
+  );
+  return billingCategories.find(
+    (record) =>
+      record.id !== excludeId &&
+      normalizeBillingCategoryKey(
+        record.billingCategoryType,
+        record.billingCategoryName,
+      ) === key,
+  );
+}
+
 function createFromBody(
   body: BillingCategoryCreateDto,
 ): BillingCategoryDetailDto {
@@ -190,25 +214,66 @@ export const billingCategoryHandlers = [
   }),
 
   http.put('/api/v1/billingcategory/:id', async ({ params, request }) => {
-    const record = findBillingCategory(parseRouteId(params['id']));
+    const id = parseRouteId(params['id']);
+    const record = findBillingCategory(id);
     if (!record) return setupError(404, 'Billing category not found.');
+    if (record.isSystemDefined) {
+      return setupError(
+        403,
+        'System defined billing categories cannot be edited.',
+      );
+    }
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = billingCategoryUpdateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    const duplicate = findDuplicateBillingCategory(
+      parsed.data.billingCategoryType,
+      parsed.data.billingCategoryName,
+      id,
+    );
+    if (duplicate) {
+      return setupError(
+        409,
+        'A billing category with this type and name already exists.',
+      );
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
 
   http.patch('/api/v1/billingcategory/:id', async ({ params, request }) => {
-    const record = findBillingCategory(parseRouteId(params['id']));
+    const id = parseRouteId(params['id']);
+    const record = findBillingCategory(id);
     if (!record) return setupError(404, 'Billing category not found.');
     const body = await readJsonObject(request);
     if (!body.ok) return body.response;
     const parsed = billingCategoryPatchDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (record.isSystemDefined && parsed.data.isActive === false) {
+      return setupError(
+        403,
+        'System defined billing categories cannot be deactivated.',
+      );
+    }
+    if (
+      parsed.data.billingCategoryType !== undefined ||
+      parsed.data.billingCategoryName !== undefined
+    ) {
+      const duplicate = findDuplicateBillingCategory(
+        parsed.data.billingCategoryType ?? record.billingCategoryType,
+        parsed.data.billingCategoryName ?? record.billingCategoryName,
+        id,
+      );
+      if (duplicate) {
+        return setupError(
+          409,
+          'A billing category with this type and name already exists.',
+        );
+      }
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -224,6 +289,16 @@ export const billingCategoryHandlers = [
     const parsed = billingCategoryCreateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    const duplicate = findDuplicateBillingCategory(
+      parsed.data.billingCategoryType,
+      parsed.data.billingCategoryName,
+    );
+    if (duplicate) {
+      return setupError(
+        409,
+        'A billing category with this type and name already exists.',
+      );
+    }
     const created = createFromBody(parsed.data);
     billingCategories.push(created);
     return setupOk(created, 201);

@@ -44,6 +44,11 @@ const JobTypePage = lazy(() =>
     default: module.JobTypePage,
   })),
 );
+const BillingCategoryPage = lazy(() =>
+  import('./pages/BillingCategoryPage').then((module) => ({
+    default: module.BillingCategoryPage,
+  })),
+);
 
 const UsersPage = lazy(() =>
   import('./pages/UsersPage').then((module) => ({
@@ -125,6 +130,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/job-type"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <BillingCategoryPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/billing-category"
         />
         <Route
           element={
