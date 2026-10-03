@@ -68,10 +68,12 @@ export const CatalogStatusTabBar = ({
               Filter
             </Button>
           ) : null)}
-        <Button className="shrink-0" onClick={onAdd} type="button">
-          <PlusIcon className="size-3.5" />
-          {addLabel}
-        </Button>
+        {onAdd ? (
+          <Button className="shrink-0" onClick={onAdd} type="button">
+            <PlusIcon className="size-3.5" />
+            {addLabel}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

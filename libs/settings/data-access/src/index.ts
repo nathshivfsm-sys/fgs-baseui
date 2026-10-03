@@ -13,6 +13,8 @@ export * from './lib/job-category';
 export * from './lib/job-type';
 export * from './lib/subcategory';
 export * from './lib/employee';
+export * from './lib/resolution-code';
+export * from './lib/timeslot';
 export * from './lib/user-service';
 export type {
   PagedResult,
