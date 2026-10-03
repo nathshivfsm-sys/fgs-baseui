@@ -9,9 +9,11 @@ import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
 import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
+import { resolutionCodeHandlers } from './resolution-code';
 import { companyHandlers } from './company';
 import { nonWorkingDateHandlers } from './non-working-date';
 import { taxHandlers } from './tax';
+import { timeslotHandlers } from './timeslot';
 import { taxAuthorityHandlers } from './tax-authority';
 import { techSkillLevelHandlers } from './tech-skill-level';
 import { techTradeHandlers } from './tech-trade';
@@ -28,9 +30,11 @@ export const handlers = [
   ...userRoleHandlers,
   ...roleHandlers,
   ...taxHandlers,
+  ...timeslotHandlers,
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,
   ...postalCodeHandlers,
+  ...resolutionCodeHandlers,
   ...nonWorkingDateHandlers,
   ...zoneHandlers,
   ...glBreakHandlers,

@@ -49,6 +49,16 @@ const BillingCategoryPage = lazy(() =>
     default: module.BillingCategoryPage,
   })),
 );
+const ResolutionCodePage = lazy(() =>
+  import('./pages/ResolutionCodePage').then((module) => ({
+    default: module.ResolutionCodePage,
+  })),
+);
+const TimeslotPage = lazy(() =>
+  import('./pages/TimeslotPage').then((module) => ({
+    default: module.TimeslotPage,
+  })),
+);
 
 const UsersPage = lazy(() =>
   import('./pages/UsersPage').then((module) => ({
@@ -138,6 +148,22 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/billing-category"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <ResolutionCodePage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/resolution-codes"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <TimeslotPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/timeslots"
         />
         <Route
           element={

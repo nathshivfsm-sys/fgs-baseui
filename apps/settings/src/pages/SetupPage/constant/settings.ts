@@ -117,6 +117,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Create and manage customer booking windows.',
       icon: 'SettingsTimeslotsIcon',
       totalSettings: { count: 28, label: 'Timeslots' },
+      href: 'operations/timeslots',
     },
     {
       title: 'Zone',
@@ -131,6 +132,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Manage standard resolution outcomes for completed work.',
       icon: 'SettingsResolutionCodesIcon',
       totalSettings: { count: 52, label: 'Codes' },
+      href: 'operations/resolution-codes',
     },
     {
       title: 'Tags',

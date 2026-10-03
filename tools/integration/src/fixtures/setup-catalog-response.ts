@@ -847,6 +847,95 @@ export const employeeLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const timeslotListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 201,
+        fgsSetupZoneId: 1,
+        code: 'AM',
+        name: 'Morning',
+        beginTime: '08:00:00',
+        endTime: '12:00:00',
+        markTechArrivedLateAfter: '00:15:00',
+        markWorkOrderDelayedCompletionAfter: '01:00:00',
+        isMobileVisible: true,
+        isCustomerPortalVisible: true,
+        includeInCapacityPlanning: true,
+        showToExternalSystem: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const timeslotDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: timeslotListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const timeslotLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 201,
+      code: 'AM',
+      name: 'Morning',
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const resolutionCodeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 301,
+        gloResolutionTypeId: 1,
+        resolutionCode: 'COMP',
+        resolutionName: 'Completed',
+        isMobileVisible: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const resolutionCodeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: resolutionCodeListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const resolutionCodeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 301,
+      resolutionCode: 'COMP',
+      resolutionName: 'Completed',
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const roleLookupResponseFixture = {
   success: true,
   statusCode: 200,

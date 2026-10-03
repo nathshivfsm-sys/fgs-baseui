@@ -28,6 +28,8 @@ import {
   createEmployeeMutationOptions,
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
+  createResolutionCodeMutationOptions,
+  createTimeslotMutationOptions,
   createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
   createTechSkillLevelMutationOptions,
@@ -49,11 +51,17 @@ import {
   nonWorkingDateListQueryOptions,
   nonWorkingDateLookupQueryOptions,
   patchTaxAuthorityMutationOptions,
+  resolutionCodeKeys,
+  resolutionCodeListQueryOptions,
+  resolutionCodeLookupQueryOptions,
   postalCodeKeys,
   postalCodeListQueryOptions,
   postalCodeLookupQueryOptions,
   taxAuthorityKeys,
   taxAuthorityListQueryOptions,
+  timeslotKeys,
+  timeslotListQueryOptions,
+  timeslotLookupQueryOptions,
   techSkillLevelKeys,
   techSkillLevelListQueryOptions,
   techSkillLevelLookupQueryOptions,
@@ -92,6 +100,9 @@ import {
   glBreakDetailResponseFixture,
   glBreakListResponseFixture,
   glBreakLookupResponseFixture,
+  resolutionCodeDetailResponseFixture,
+  resolutionCodeListResponseFixture,
+  resolutionCodeLookupResponseFixture,
   postalCodeDetailResponseFixture,
   postalCodeListResponseFixture,
   postalCodeLookupResponseFixture,
@@ -103,6 +114,9 @@ import {
   taxDetailResponseFixture,
   taxListResponseFixture,
   taxLookupResponseFixture,
+  timeslotDetailResponseFixture,
+  timeslotListResponseFixture,
+  timeslotLookupResponseFixture,
   techSkillLevelDetailResponseFixture,
   techSkillLevelListResponseFixture,
   techSkillLevelLookupResponseFixture,
@@ -1336,6 +1350,128 @@ describe('role through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(client.getQueryState(roleKeys.list({}))?.isInvalidated).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('timeslot through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(timeslotListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(timeslotLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      timeslotListQueryOptions({ code: 'AM', name: 'Morning' }),
+    );
+    const lookup = await client.fetchQuery(
+      timeslotLookupQueryOptions({
+        activeOnly: false,
+        isCustomerPortalVisible: true,
+      }),
+    );
+
+    expect(page.items[0]?.code).toBe('AM');
+    expect(lookup[0]?.name).toBe('Morning');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/timeslot?code=AM&name=Morning',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/timeslot/lookup?activeOnly=false&isCustomerPortalVisible=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates timeslot queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(timeslotDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(timeslotKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createTimeslotMutationOptions(client));
+    await mutation.execute({
+      fgsSetupZoneId: 1,
+      code: 'AM',
+      name: 'Morning',
+      beginTime: '08:00:00',
+      endTime: '12:00:00',
+      markTechArrivedLateAfter: '00:15:00',
+      markWorkOrderDelayedCompletionAfter: '01:00:00',
+      isMobileVisible: true,
+      isCustomerPortalVisible: true,
+      includeInCapacityPlanning: true,
+      showToExternalSystem: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/timeslot');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(timeslotKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('resolution code through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(resolutionCodeListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(resolutionCodeLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      resolutionCodeListQueryOptions({
+        resolutionCode: 'COMP',
+        resolutionName: 'Completed',
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      resolutionCodeLookupQueryOptions({
+        activeOnly: false,
+        isMobileVisible: true,
+      }),
+    );
+
+    expect(page.items[0]?.resolutionCode).toBe('COMP');
+    expect(lookup[0]?.resolutionName).toBe('Completed');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/resolutioncode?resolutionCode=COMP&resolutionName=Completed',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/resolutioncode/lookup?activeOnly=false&isMobileVisible=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates resolution code queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(resolutionCodeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(resolutionCodeKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createResolutionCodeMutationOptions(client));
+    await mutation.execute({
+      gloResolutionTypeId: 1,
+      resolutionCode: 'COMP',
+      resolutionName: 'Completed',
+      isMobileVisible: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/resolutioncode');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(resolutionCodeKeys.list({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
