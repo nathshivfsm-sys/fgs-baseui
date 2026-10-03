@@ -16,12 +16,10 @@ import {
   TabsTrigger,
   TextInput,
 } from '@cms/ui';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-
-interface LoginLocationState {
-  from?: { pathname: string };
-}
+import type { LoginLocationState, LoginPageProps } from './types';
+import { submitLoginEmail } from './util';
 
 type IdentifierTab = 'phone' | 'email';
 
@@ -31,17 +29,24 @@ type IdentifierTab = 'phone' | 'email';
  * design, but there is no SMS backend to send a code to, so its Next button
  * stays disabled and submits nothing.
  */
-export function LoginPage() {
-  const { isAuthenticated, login } = useAuth();
+export function LoginPage({ onEmailNext = submitLoginEmail }: LoginPageProps) {
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<IdentifierTab>('email');
   const [email, setEmail] = useState(DEMO_CREDENTIALS.email);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const locationState = location.state as LoginLocationState | null;
+
   // Set by RequireAuth when it intercepted a protected URL; '/' otherwise.
-  const from =
-    (location.state as LoginLocationState | null)?.from?.pathname ?? '/today';
+  const from = locationState?.from?.pathname ?? '/today';
+
+  useEffect(() => {
+    if (locationState?.authError) {
+      setError(locationState.authError);
+    }
+  }, [locationState?.authError]);
 
   // Declarative redirect rather than an imperative navigate() after login: a successful
   // login re-renders this component with a session, and this branch does the rest.
@@ -49,21 +54,31 @@ export function LoginPage() {
     return <Navigate to={from} replace />;
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleTabValueChange = (value: string | null) => {
+    if (value === 'phone' || value === 'email') {
+      setActiveTab(value);
+    }
+  };
+
+  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (activeTab === 'phone') return;
+    if (activeTab === 'phone') {
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
 
-    // The design carries no password field, but `login()` still requires one —
-    // the demo password is supplied invisibly rather than changing that contract.
-    const result = await login({ email, password: DEMO_CREDENTIALS.password });
+    const result = await onEmailNext(email);
     if (!result.ok) {
       setSubmitting(false);
       setError(result.message);
     }
-  }
+  };
 
   return (
     // flex-1 rather than min-h-full: PageContainer owns the gutters and is the
@@ -79,12 +94,7 @@ export function LoginPage() {
         </BodySmall>
 
         <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
-          <Tabs
-            onValueChange={(value: string | null) => {
-              if (value === 'phone' || value === 'email') setActiveTab(value);
-            }}
-            value={activeTab}
-          >
+          <Tabs onValueChange={handleTabValueChange} value={activeTab}>
             <TabsList
               aria-label="Sign-in method"
               className="w-full"
@@ -118,7 +128,7 @@ export function LoginPage() {
                 aria-label="Email address"
                 autoComplete="email"
                 className="border-input"
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={handleEmailChange}
                 placeholder="Enter email address"
                 required
                 size="lg"

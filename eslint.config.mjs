@@ -53,7 +53,7 @@ export default tseslint.config(
       '**/.storybook/dist',
       '**/coverage',
       '**/node_modules',
-      '**/*.d.ts',
+      // '**/*.d.ts',
       '**/mockServiceWorker.js',
       // EJS-templated source used by `nx g ./tools/generators/remote-app` —
       // contains `<%= %>` placeholders that aren't valid TS/JSON syntax.

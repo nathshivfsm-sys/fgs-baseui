@@ -1,9 +1,30 @@
-import { AuthProvider, DEMO_CREDENTIALS, RequireAuth } from '@cms/shared-auth';
+import {
+  AuthProvider,
+  DEMO_CREDENTIALS,
+  RequireAuth,
+  useAuth,
+} from '@cms/shared-auth';
 import { Body } from '@cms/ui';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { expect, userEvent, within } from 'storybook/test';
 import { LoginPage } from '.';
+import type { EmailNextResult } from './types';
+
+function StoryLoginPage() {
+  const { login } = useAuth();
+
+  const handleStoryEmailNext = async (
+    email: string,
+  ): Promise<EmailNextResult> => {
+    return login({
+      email,
+      password: DEMO_CREDENTIALS.password,
+    });
+  };
+
+  return <LoginPage onEmailNext={handleStoryEmailNext} />;
+}
 
 /**
  * Rendered inside a real router with a protected destination, so the stories exercise
@@ -14,7 +35,7 @@ function LoginFlow({ initialPath }: { initialPath: string }) {
     <MemoryRouter initialEntries={[initialPath]}>
       <AuthProvider initialSession={null}>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<StoryLoginPage />} />
           <Route element={<RequireAuth />}>
             <Route path="/" element={<Body>Home page (protected)</Body>} />
             <Route path="/today" element={<Body>Home page (protected)</Body>} />

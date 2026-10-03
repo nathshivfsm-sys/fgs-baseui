@@ -5,7 +5,7 @@ import { AuthProvider } from '@cms/shared-auth';
 import { Toaster } from '@cms/ui';
 import { BrowserRouter } from 'react-router-dom';
 import { loadRuntimeConfig } from './config';
-import { authenticateWithApi } from './util';
+import { AuthReturnHandler } from './shared/component/AuthReturnHandler';
 import { registerProviders } from './mf';
 import { cmsRuntime } from './runtime';
 import './styles.css';
@@ -32,9 +32,11 @@ async function bootstrap() {
   createRoot(container).render(
     <StrictMode>
       <QueryClientProvider client={cmsRuntime.queryClient}>
-        <AuthProvider authenticate={authenticateWithApi}>
+        <AuthProvider>
           <BrowserRouter basename={basename}>
-            <App />
+            <AuthReturnHandler>
+              <App />
+            </AuthReturnHandler>
             <Toaster />
           </BrowserRouter>
         </AuthProvider>

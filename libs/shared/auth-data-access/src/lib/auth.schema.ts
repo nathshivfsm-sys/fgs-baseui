@@ -45,6 +45,26 @@ export const refreshResponseSchema = z.object({
   }),
 });
 
+const apiEnvelopeSchema = z.object({
+  success: z.boolean(),
+  statusCode: z.number(),
+  errors: z.array(z.string()).optional().default([]),
+});
+
+/** Success payload for `POST /auth/login`. */
+export const loginRedirectDataSchema = z.object({
+  redirectUrl: z.string().min(1),
+});
+
+/**
+ * The login endpoint returns either a redirect URL object on success or a string
+ * message in `data` when sign-in cannot proceed.
+ */
+export const loginResponseSchema = apiEnvelopeSchema.extend({
+  data: z.union([loginRedirectDataSchema, z.string()]),
+});
+
 export type AuthUserDto = z.infer<typeof authUserSchema>;
 export type RefreshResponseDto = z.infer<typeof refreshResponseSchema>;
 export type AuthSessionDto = RefreshResponseDto['data'];
+export type LoginResponseDto = z.infer<typeof loginResponseSchema>;
