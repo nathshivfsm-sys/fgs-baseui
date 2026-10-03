@@ -7,8 +7,10 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { ApiError } from '@cms/shared-api';
 import type { Authenticate, AuthResult, LoginCredentials } from './auth-types';
 import { authenticateDemoUser } from './demo-credentials';
+import { fetchAuthSessionFromRefreshToken } from './session-from-refresh-token';
 import {
   clearStoredSession,
   readStoredSession,
@@ -20,6 +22,8 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   user: UserDetails | null;
   login: (credentials: LoginCredentials) => Promise<AuthResult>;
+  /** Exchanges a refresh token (e.g. from the post-login redirect query string) for a session. */
+  signInWithRefreshToken: (refreshToken: string) => Promise<AuthResult>;
   logout: () => void;
 }
 
@@ -60,6 +64,33 @@ export function AuthProvider({
     [authenticate],
   );
 
+  const signInWithRefreshToken = useCallback(
+    async (refreshToken: string): Promise<AuthResult> => {
+      try {
+        const session = await fetchAuthSessionFromRefreshToken(refreshToken);
+        writeStoredSession(session);
+        setSession(session);
+        return { ok: true };
+      } catch (error) {
+        if (error instanceof ApiError) {
+          return {
+            ok: false,
+            message:
+              error.status === 401
+                ? 'Your sign-in link expired or was rejected. Try again from the login screen.'
+                : error.message,
+          };
+        }
+        return {
+          ok: false,
+          message:
+            'Could not complete sign-in: the authentication service is unreachable or returned an unexpected response.',
+        };
+      }
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
     clearStoredSession();
     setSession(null);
@@ -72,9 +103,10 @@ export function AuthProvider({
       isAuthenticated: session !== null,
       user: session?.user ?? null,
       login,
+      signInWithRefreshToken,
       logout,
     }),
-    [login, logout, session],
+    [login, logout, session, signInWithRefreshToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

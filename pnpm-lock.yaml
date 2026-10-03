@@ -453,6 +453,9 @@ importers:
       '@cms/platform-contract':
         specifier: workspace:*
         version: link:../../platform-contract
+      '@cms/shared-api':
+        specifier: workspace:*
+        version: link:../api
       react:
         specifier: 19.2.8
         version: 19.2.8

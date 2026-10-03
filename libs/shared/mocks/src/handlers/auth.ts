@@ -1,4 +1,7 @@
-import { AUTH_REFRESH_ENDPOINT } from '@cms/auth-data-access';
+import {
+  AUTH_LOGIN_ENDPOINT,
+  AUTH_REFRESH_ENDPOINT,
+} from '@cms/auth-data-access';
 import { http, HttpResponse } from 'msw';
 import { setupDelay } from './util';
 
@@ -38,6 +41,47 @@ function errorBody(statusCode: number, message: string) {
  * matches both `http://localhost:4200` and `http://127.0.0.1:4200`.
  */
 export const authHandlers = [
+  http.post(`/api/v1${AUTH_LOGIN_ENDPOINT}`, async ({ request }) => {
+    await setupDelay();
+    let email: unknown;
+    try {
+      const body: unknown = await request.json();
+      email =
+        typeof body === 'object' && body !== null && 'email' in body
+          ? body.email
+          : undefined;
+    } catch {
+      return HttpResponse.json(errorBody(400, 'email is required.'), {
+        status: 400,
+      });
+    }
+
+    if (typeof email !== 'string' || email.trim().length === 0) {
+      return HttpResponse.json(errorBody(400, 'email is required.'), {
+        status: 400,
+      });
+    }
+
+    if (email.trim().toLowerCase() !== 'demo.admin@example.com') {
+      return HttpResponse.json({
+        success: true,
+        statusCode: 400,
+        data: 'That email and password combination is not recognised.',
+        errors: ['That email and password combination is not recognised.'],
+      });
+    }
+
+    const origin = new URL(request.url).origin;
+    return HttpResponse.json({
+      success: true,
+      statusCode: 200,
+      data: {
+        redirectUrl: `${origin}/today?token=mock-refresh-token`,
+      },
+      errors: [],
+    });
+  }),
+
   http.post(`/api/v1${AUTH_REFRESH_ENDPOINT}`, async ({ request }) => {
     await setupDelay();
     let refreshToken: unknown;
