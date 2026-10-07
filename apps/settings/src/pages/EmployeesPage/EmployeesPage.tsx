@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import type { EmployeeSummaryDto } from '@cms/settings-contract';
 import {
@@ -14,6 +15,7 @@ import type { EmployeesPageProps } from './types';
 import { isAdminRole, tabCountsFromEmployeeSummary } from './util';
 
 export const EmployeesPage = ({ queryClient }: EmployeesPageProps) => {
+  const navigate = useNavigate();
   const rolesQuery = useQuery(roleLookupQueryOptions(true), queryClient);
   const summaryQuery = useQuery(
     employeeListQueryOptions({
@@ -53,7 +55,7 @@ export const EmployeesPage = ({ queryClient }: EmployeesPageProps) => {
     adminRoleIds.length > 0 ? (adminsQuery.data?.totalCount ?? 0) : 0;
 
   const handleAddEmployee = () => {
-    return;
+    navigate('new');
   };
 
   const handleEditEmployee = (_employee: EmployeeSummaryDto) => {

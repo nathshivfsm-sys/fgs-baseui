@@ -11,7 +11,9 @@ export const describeEmployeeError = (error: unknown): string => {
       case 404:
         return 'Employee not found.';
       case 409:
-        return 'This employee record was updated by another user.';
+        return error.message.includes('email')
+          ? 'An employee with this office email already exists.'
+          : 'This employee record was updated by another user.';
       default:
         return error.message;
     }
