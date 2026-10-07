@@ -347,8 +347,15 @@ function applyEmployeeWrite(
   record: EmployeeRecord,
   body: EmployeeCreateDto | EmployeeUpdateDto | EmployeePatchDto,
 ) {
-  const { address, technicianProfile, ...rest } = body;
+  const { address, technicianProfile, employeeTypeId, isPurchaser, ...rest } =
+    body;
   assignDefined(record, rest);
+  if (typeof employeeTypeId === 'number') {
+    record.employeeTypeId = employeeTypeId;
+  }
+  if (typeof isPurchaser === 'boolean') {
+    record.isPurchaser = isPurchaser;
+  }
   if (address) {
     record.address = toAddressDetail(
       address,

@@ -125,7 +125,11 @@ export const employeeListSummaryDtoSchema = z.object({
 const employeeCreateFields = {
   userId: z.uuid().nullish(),
   employeeNumber: nullableText,
-  employeeTypeId: z.number(),
+  /**
+   * 1 office, 2 technician. Optional on create and update.
+   * Summary and detail still return a number.
+   */
+  employeeTypeId: z.number().nullish(),
   displayName: nullableText,
   legalFirstName: nullableText,
   legalMiddleName: nullableText,
@@ -143,7 +147,8 @@ const employeeCreateFields = {
   regularRate: nullableNumber,
   laborBurdenTypeId: nullableNumber,
   laborBurdenValue: nullableNumber,
-  isPurchaser: z.boolean(),
+  /** Optional on create and update. The server defaults a new employee to false. */
+  isPurchaser: z.boolean().nullish(),
   notes: nullableText,
   technicianProfile: employeeTechnicianProfileWriteDtoSchema.nullish(),
 };

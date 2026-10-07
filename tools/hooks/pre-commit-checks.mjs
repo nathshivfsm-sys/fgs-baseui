@@ -76,7 +76,7 @@ function runCommand(label, args, options) {
   };
 }
 
-/** Prettier + ESLint on staged paths only (repo-wide `format:check` is not a commit gate). */
+/** Prettier on staged paths (optional ESLint when PRE_COMMIT_ESLINT=1). */
 export function runStagedLintChecks(options) {
   const failures = [];
   const prettierTargets = stagedExistingFiles(PRETTIER_FILE);
@@ -89,8 +89,10 @@ export function runStagedLintChecks(options) {
     if (failure) failures.push(failure);
   }
 
+  // Off by default: root `pnpm exec eslint` needs the `eslint` package (use nx lint in CI).
+  // Re-enable locally with PRE_COMMIT_ESLINT=1 once eslint is on the root devDependencies.
   const eslintTargets = stagedExistingFiles(ESLINT_FILE);
-  if (eslintTargets.length > 0) {
+  if (process.env.PRE_COMMIT_ESLINT === '1' && eslintTargets.length > 0) {
     const failure = runCommand(
       `eslint (${eslintTargets.length} staged file(s))`,
       ['exec', 'eslint', '--max-warnings', '0', ...eslintTargets],

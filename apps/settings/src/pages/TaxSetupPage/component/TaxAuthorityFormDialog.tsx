@@ -30,6 +30,7 @@ import {
   EDIT_AUTHORITY_DESCRIPTION,
   EDIT_AUTHORITY_TITLE,
 } from '../constant';
+import { FormDatePicker } from '../../../shared/component/form';
 import { FormTextInput } from './form';
 
 export interface TaxAuthorityFormDialogProps {
@@ -107,11 +108,11 @@ export function TaxAuthorityFormDialog({
                   placeholder={AUTHORITY_RATE_PLACEHOLDER}
                   required
                 />
-                <FormTextInput<TaxAuthorityForm>
+                <FormDatePicker<TaxAuthorityForm>
                   label="Effective Date"
                   name="effectiveFromDate"
+                  placeholder="Select date"
                   required
-                  type="date"
                 />
                 <Controller
                   control={form.control}

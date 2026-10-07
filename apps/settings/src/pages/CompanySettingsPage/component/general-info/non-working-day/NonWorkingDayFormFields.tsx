@@ -1,6 +1,7 @@
 import { SectionCard } from '@cms/ui';
 import type { NonWorkingDateForm } from '@cms/settings-data-access';
 import { DESCRIPTION_PLACEHOLDER } from '../../../constant';
+import { FormDatePicker } from '../../../../../shared/component/form';
 import { FormTextInput } from '../../form';
 
 export const NonWorkingDayFormFields = () => (
@@ -11,11 +12,11 @@ export const NonWorkingDayFormFields = () => (
     tone="soft"
   >
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <FormTextInput<NonWorkingDateForm>
+      <FormDatePicker<NonWorkingDateForm>
         label="Date"
         name="nonWorkingDate"
+        placeholder="Select date"
         required
-        type="date"
       />
       <FormTextInput<NonWorkingDateForm>
         label="Description"

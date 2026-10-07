@@ -16,7 +16,7 @@ import {
   DialogTitle,
   SectionCard,
 } from '@cms/ui';
-import { FormTextInput } from '../../../shared/component/form';
+import { FormTextInput, FormTimePicker } from '../../../shared/component/form';
 import {
   ADD_TIMESLOT_LABEL,
   CODE_PLACEHOLDER,
@@ -143,17 +143,17 @@ export const TimeslotFormDialog = ({
                   required
                 />
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormTextInput<TimeslotForm>
+                  <FormTimePicker<TimeslotForm>
                     label="Begin Time"
                     name="beginTime"
+                    placeholder="Select time"
                     required
-                    type="time"
                   />
-                  <FormTextInput<TimeslotForm>
+                  <FormTimePicker<TimeslotForm>
                     label="End Time"
                     name="endTime"
+                    placeholder="Select time"
                     required
-                    type="time"
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

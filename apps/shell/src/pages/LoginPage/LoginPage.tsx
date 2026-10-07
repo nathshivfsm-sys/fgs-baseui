@@ -14,6 +14,9 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  EmailInputField,
+  EMAIL_INVALID_MESSAGE,
+  isValidEmailAddress,
   TextInput,
 } from '@cms/ui';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
@@ -34,6 +37,7 @@ export function LoginPage({ onEmailNext = submitLoginEmail }: LoginPageProps) {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<IdentifierTab>('email');
   const [email, setEmail] = useState(DEMO_CREDENTIALS.email);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -62,6 +66,9 @@ export function LoginPage({ onEmailNext = submitLoginEmail }: LoginPageProps) {
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
+    if (emailError !== null) {
+      setEmailError(null);
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -70,10 +77,17 @@ export function LoginPage({ onEmailNext = submitLoginEmail }: LoginPageProps) {
       return;
     }
 
+    const trimmedEmail = email.trim();
+    if (!isValidEmailAddress(trimmedEmail)) {
+      setEmailError(EMAIL_INVALID_MESSAGE);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
+    setEmailError(null);
 
-    const result = await onEmailNext(email);
+    const result = await onEmailNext(trimmedEmail);
     if (!result.ok) {
       setSubmitting(false);
       setError(result.message);
@@ -124,16 +138,15 @@ export function LoginPage({ onEmailNext = submitLoginEmail }: LoginPageProps) {
               />
             </TabsContent>
             <TabsContent value="email">
-              <TextInput
+              <EmailInputField
                 aria-label="Email address"
-                autoComplete="email"
                 className="border-input"
+                error={emailError ?? undefined}
                 onChange={handleEmailChange}
                 placeholder="Enter email address"
                 required
                 size="lg"
                 startAdornment={<MailIcon className="size-4" />}
-                type="email"
                 value={email}
                 variant="soft"
               />

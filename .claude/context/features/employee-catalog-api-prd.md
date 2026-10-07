@@ -55,6 +55,12 @@ Detail adds `address` (`FgsEmployeeAddressDetailDto`) and `technicianProfile`
 Create omits `overtimeRate` and `doubleTimeRate`. Update and patch include them.
 Writes send `address` as `LocationWriteDto` and `technicianProfile` as the write DTO.
 
+Create and update treat `employeeTypeId` and `isPurchaser` as optional.
+Summary and detail still require both. A new employee defaults `isPurchaser`
+to false when the field is omitted. `employeeTypeId` is 1 (office) or 2
+(technician). `statusId` is 1 active, 2 inactive, 3 leave of absence,
+4 terminated. Technician `startLocationTypeId` is 1 (office) or 2 (home).
+
 List result is a paged summary plus `summary` (`totalEmployees`, `activeEmployees`,
 `inactiveEmployees`).
 

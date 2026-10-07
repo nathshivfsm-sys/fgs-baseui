@@ -1,16 +1,15 @@
 import type { CompanyGeneralInfo } from '@cms/settings-data-access';
+import { FormEmailInput } from '../../../../shared/component/form';
 import { FormTextInput } from '../form';
 import { FormSection } from './FormSection';
 
 export const ContactInformationSection = () => (
   <FormSection title="Contact Information">
-    <FormTextInput<CompanyGeneralInfo>
-      autoComplete="email"
+    <FormEmailInput<CompanyGeneralInfo>
       label="Email"
       name="email"
       placeholder="Enter email"
       required
-      type="email"
     />
     <FormTextInput<CompanyGeneralInfo>
       autoComplete="tel"
