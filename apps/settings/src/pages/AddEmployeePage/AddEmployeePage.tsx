@@ -9,8 +9,13 @@ import {
 } from '@cms/settings-data-access';
 import { alert } from '@cms/ui';
 import { describeEmployeeError } from '../EmployeesPage/util';
-import { AddEmployeeForm, AddEmployeeHeader } from './component';
 import {
+  AddEmployeeForm,
+  AddEmployeeFormFooter,
+  AddEmployeeHeader,
+} from './component';
+import {
+  ADD_EMPLOYEE_FORM_ID,
   EMPLOYEES_LIST_PATH,
   SAVE_ERROR_TITLE,
   SAVE_SUCCESS_MESSAGE,
@@ -78,15 +83,19 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
 
   return (
     <section
-      className="flex min-h-0 flex-1 flex-col gap-4"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden"
       data-testid="add-employee-page"
     >
-      <AddEmployeeHeader />
-      <AddEmployeeForm
+      <div className="shrink-0 px-8 pt-5">
+        <AddEmployeeHeader />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-8 pb-5 pt-4">
+        <AddEmployeeForm onSubmit={handleSubmit} queryClient={queryClient} />
+      </div>
+      <AddEmployeeFormFooter
+        formId={ADD_EMPLOYEE_FORM_ID}
         isPending={isPending}
         onCancel={handleCancel}
-        onSubmit={handleSubmit}
-        queryClient={queryClient}
       />
     </section>
   );

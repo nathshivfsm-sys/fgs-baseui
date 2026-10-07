@@ -2,6 +2,8 @@ export const PAGE_TITLE = 'Add Employee';
 export const PAGE_DESCRIPTION =
   'Enter employee details to create a new employee.';
 
+export const ADD_EMPLOYEE_FORM_ID = 'add-employee-form';
+
 export const SAVE_EMPLOYEE_LABEL = 'Save Employee';
 export const CANCEL_LABEL = 'Cancel';
 

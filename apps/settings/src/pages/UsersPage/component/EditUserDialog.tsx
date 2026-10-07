@@ -12,7 +12,7 @@ import {
   SectionCard,
   type SelectOption,
 } from '@cms/ui';
-import { FormTextInput } from '../../../shared/component/form';
+import { FormEmailInput, FormTextInput } from '../../../shared/component/form';
 import { EDIT_USER_DESCRIPTION, EDIT_USER_TITLE } from '../constant';
 import {
   editUserFormSchema,
@@ -106,13 +106,12 @@ export const EditUserDialog = ({
                   required
                 />
                 <div className="flex flex-col gap-1">
-                  <FormTextInput<EditUserForm>
+                  <FormEmailInput<EditUserForm>
                     disabled
                     label="Email"
                     name="email"
                     placeholder="Enter email"
                     required
-                    type="email"
                   />
                   <p className="text-[11px] leading-[16.5px] text-foreground-subtle">
                     Email cannot be changed after the user is created

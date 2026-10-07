@@ -8,6 +8,7 @@ export * from './capacity-icon';
 export * from './check-icon';
 export * from './circle-check-icon';
 export * from './circle-x-icon';
+export * from './clock-icon';
 export * from './chevron-down-icon';
 export * from './chevron-left-icon';
 export * from './chevron-right-icon';
