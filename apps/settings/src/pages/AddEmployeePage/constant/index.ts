@@ -1,4 +1,5 @@
 export { EMPLOYEES_LIST_LABEL } from './employees-list';
+export { ADD_EMPLOYEE_FORM_ID } from './copy';
 export {
   CANCEL_LABEL,
   EMPLOYEES_LIST_PATH,

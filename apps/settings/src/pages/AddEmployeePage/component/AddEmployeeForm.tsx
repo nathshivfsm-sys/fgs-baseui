@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -15,34 +15,44 @@ import {
 } from '@cms/settings-data-access';
 import { inventoryLocationLookupQueryOptions } from '@cms/shared-data-access';
 import {
-  BodySmall,
-  Button,
-  SectionCard,
-  SectionSubheading,
+  BriefcaseIcon,
+  ImportIcon,
+  MobileIcon,
+  PhoneLineIcon,
+  phoneDigitsOnly,
+  SelectField,
+  SettingsUserIcon,
   TextInput,
+  UsersIcon,
   type SelectOption,
 } from '@cms/ui';
-import { FormTextInput, FormTextarea } from '../../../shared/component/form';
-import { useGeoLookupOptions } from '../../../shared/util';
 import {
-  CANCEL_LABEL,
+  FormDatePicker,
+  FormEmailInput,
+  FormPhoneInput,
+  FormTextInput,
+  FormTextarea,
+  FormTimePicker,
+} from '../../../shared/component/form';
+import { useGeoLookupOptions } from '../../../shared/util';
+import { withCurrentOption } from '../../UsersPage/util/with-current-option';
+import {
+  ADD_EMPLOYEE_FORM_ID,
   LABOR_BURDEN_TYPE_OPTIONS,
   MOBILE_ACCESS_HELPER,
-  SAVE_EMPLOYEE_LABEL,
 } from '../constant';
+import { EmployeeFormSection } from './EmployeeFormSection';
 import { FormSelectField, FormSwitchField } from './form';
 
 export interface AddEmployeeFormProps {
-  isPending: boolean;
-  onCancel: () => void;
   onSubmit: (values: EmployeeCreateForm, profilePhotoFile: File | null) => void;
   queryClient: QueryClient;
 }
 
-const gridTwo = 'grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2';
-const gridThree = 'grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-3';
-const gridFour =
-  'grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2 xl:grid-cols-4';
+const gridTwo = 'grid grid-cols-1 gap-4 md:grid-cols-2';
+const gridThree = 'grid grid-cols-1 gap-4 md:grid-cols-3';
+const gridFour = 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4';
+const sectionFieldStack = 'gap-3.5';
 
 function toUserOptions(
   users: readonly UserSummaryDto[] | undefined,
@@ -69,8 +79,6 @@ function toLookupOptions(
 }
 
 export const AddEmployeeForm = ({
-  isPending,
-  onCancel,
   onSubmit,
   queryClient,
 }: AddEmployeeFormProps) => {
@@ -87,6 +95,7 @@ export const AddEmployeeForm = ({
   const mobileAccess = form.watch('mobileAccess');
   const country = form.watch('country');
   const state = form.watch('state');
+  const roleName = form.watch('roleName');
 
   const usersQuery = useQuery(
     userListQueryOptions({ page: 1, pageSize: 500, isActive: true }),
@@ -161,6 +170,11 @@ export const AddEmployeeForm = ({
     [trucksQuery.data],
   );
 
+  const roleOptions = useMemo(
+    () => withCurrentOption([], roleName),
+    [roleName],
+  );
+
   const handleCountryChange = () => {
     form.setValue('state', '', { shouldDirty: true, shouldValidate: true });
     form.setValue('city', '', { shouldDirty: true, shouldValidate: true });
@@ -184,7 +198,7 @@ export const AddEmployeeForm = ({
       form.setValue('officeEmail', user.email);
     }
     if (!form.getValues('officePhone').trim() && user.phoneNumber) {
-      form.setValue('officePhone', user.phoneNumber);
+      form.setValue('officePhone', phoneDigitsOnly(user.phoneNumber));
     }
   };
 
@@ -192,7 +206,7 @@ export const AddEmployeeForm = ({
     fileInputRef.current?.click();
   };
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     setProfilePhotoFile(file);
     setPhotoLabel(file?.name ?? 'Upload');
@@ -202,26 +216,17 @@ export const AddEmployeeForm = ({
     onSubmit(values, profilePhotoFile);
   };
 
-  const roleName = form.watch('roleName');
-
   return (
     <FormProvider {...form}>
       <form
-        className="flex min-h-0 flex-1 flex-col"
+        className="min-h-0 flex-1 overflow-y-auto rounded-[10px] border-[1.5px] border-border bg-surface"
+        id={ADD_EMPLOYEE_FORM_ID}
         noValidate
         onSubmit={form.handleSubmit(handleFormSubmit)}
       >
-        <SectionCard
-          className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto p-6"
-          padding="none"
-          radius="panel"
-          tone="soft"
-        >
-          <section className="flex flex-col gap-4">
-            <SectionSubheading className="text-action">
-              Select existing user
-            </SectionSubheading>
-            <div className={`${gridTwo} items-end`}>
+        <div className="flex flex-col gap-7 p-6">
+          <EmployeeFormSection icon={UsersIcon} title="Select existing user">
+            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-[258px_258px_minmax(0,1fr)] md:items-end">
               <FormSelectField<EmployeeCreateForm>
                 label="Select User"
                 name="userId"
@@ -229,34 +234,42 @@ export const AddEmployeeForm = ({
                 options={userOptions}
                 placeholder="Select existing user"
               />
-              <TextInput
+              <SelectField
+                disabled
                 label="Role"
-                readOnly
+                options={roleOptions}
+                placeholder="Select role"
                 required
                 value={roleName}
                 variant="soft"
-                placeholder="Select role"
               />
-              <FormSwitchField<EmployeeCreateForm>
-                label="Is Active"
-                name="isActive"
-              />
+              <div className="flex w-full items-center justify-end md:pb-0.5">
+                <FormSwitchField<EmployeeCreateForm>
+                  label="Is Active"
+                  name="isActive"
+                />
+              </div>
             </div>
-          </section>
+          </EmployeeFormSection>
 
-          <section className="flex flex-col gap-4">
-            <SectionSubheading className="text-action">
-              Personal information
-            </SectionSubheading>
+          <EmployeeFormSection
+            icon={SettingsUserIcon}
+            title="Personal information"
+          >
             <div className={gridFour}>
               <div className="flex flex-col gap-1">
-                <BodySmall color="foreground-muted">Image</BodySmall>
+                <span className="text-caption font-medium text-surface-foreground">
+                  Image
+                </span>
                 <button
-                  className="flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border bg-surface px-3 text-foreground-subtle transition-colors hover:border-action hover:text-action"
+                  className="flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border bg-surface px-3 text-foreground-subtle transition-colors hover:border-action hover:text-action"
                   onClick={handlePhotoClick}
                   type="button"
                 >
-                  <span className="text-caption">{photoLabel}</span>
+                  <ImportIcon aria-hidden className="size-[18px]" />
+                  <span className="text-[11px] leading-[16.5px]">
+                    {photoLabel}
+                  </span>
                 </button>
                 <input
                   accept="image/*"
@@ -278,38 +291,38 @@ export const AddEmployeeForm = ({
                 placeholder="Enter external name"
                 required
               />
-              <FormTextInput<EmployeeCreateForm>
+              <FormDatePicker<EmployeeCreateForm>
+                disableFutureDates
                 label="DOB"
                 name="birthDate"
-                type="date"
+                placeholder="Select date"
               />
             </div>
-          </section>
+          </EmployeeFormSection>
 
-          <section className="flex flex-col gap-4">
-            <SectionSubheading className="text-action">
-              Contact details
-            </SectionSubheading>
+          <EmployeeFormSection
+            contentClassName={sectionFieldStack}
+            icon={PhoneLineIcon}
+            title="Contact details"
+          >
             <div className={gridTwo}>
-              <FormTextInput<EmployeeCreateForm>
+              <FormEmailInput<EmployeeCreateForm>
                 label="Personal Email"
                 name="personalEmail"
                 placeholder="eg. dan@gmail.com"
-                type="email"
               />
-              <FormTextInput<EmployeeCreateForm>
+              <FormPhoneInput<EmployeeCreateForm>
                 label="Personal Phone"
                 name="personalPhone"
                 placeholder="eg. +91 454 455 56"
               />
-              <FormTextInput<EmployeeCreateForm>
+              <FormEmailInput<EmployeeCreateForm>
                 label="Office Email"
                 name="officeEmail"
                 placeholder="eg. dan@gmail.com"
                 required
-                type="email"
               />
-              <FormTextInput<EmployeeCreateForm>
+              <FormPhoneInput<EmployeeCreateForm>
                 label="Office Phone"
                 name="officePhone"
                 placeholder="eg. +91 454 455 56"
@@ -326,12 +339,38 @@ export const AddEmployeeForm = ({
                 name="addressLine2"
                 placeholder="Enter apartment"
               />
+            </div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="min-w-0 flex-1 sm:max-w-sm">
+                <FormSelectField<EmployeeCreateForm>
+                  label="Country"
+                  name="country"
+                  onValueChange={handleCountryChange}
+                  options={countryOptions}
+                  placeholder="Select country"
+                  required
+                />
+              </div>
+              <div className="pb-1">
+                <FormSwitchField<EmployeeCreateForm>
+                  label="Verify with Google"
+                  name="verifyWithGoogle"
+                />
+              </div>
+            </div>
+            <div className={gridThree}>
+              <FormTextInput<EmployeeCreateForm>
+                label="Zip Code"
+                name="postalCode"
+                placeholder="Enter code"
+                required
+              />
               <FormSelectField<EmployeeCreateForm>
-                label="Country"
-                name="country"
-                onValueChange={handleCountryChange}
-                options={countryOptions}
-                placeholder="Select country"
+                disabled={!state}
+                label="City"
+                name="city"
+                options={cityOptions}
+                placeholder="Select city"
                 required
               />
               <FormSelectField<EmployeeCreateForm>
@@ -343,36 +382,19 @@ export const AddEmployeeForm = ({
                 placeholder="Select state"
                 required
               />
-              <FormSelectField<EmployeeCreateForm>
-                disabled={!state}
-                label="City"
-                name="city"
-                options={cityOptions}
-                placeholder="Select city"
-                required
-              />
-              <FormTextInput<EmployeeCreateForm>
-                label="Zip Code"
-                name="postalCode"
-                placeholder="Enter code"
-                required
-              />
             </div>
-            <FormSwitchField<EmployeeCreateForm>
-              label="Verify with Google"
-              name="verifyWithGoogle"
-            />
-          </section>
+          </EmployeeFormSection>
 
-          <section className="flex flex-col gap-4">
-            <SectionSubheading className="text-action">
-              Employment details
-            </SectionSubheading>
+          <EmployeeFormSection
+            contentClassName={sectionFieldStack}
+            icon={BriefcaseIcon}
+            title="Employment details"
+          >
             <div className={gridThree}>
-              <FormTextInput<EmployeeCreateForm>
+              <FormDatePicker<EmployeeCreateForm>
                 label="Hire Date"
                 name="hireDate"
-                type="date"
+                placeholder="Select date"
               />
               <FormSelectField<EmployeeCreateForm>
                 label="Overhead Type"
@@ -385,12 +407,15 @@ export const AddEmployeeForm = ({
                 name="laborBurdenValue"
                 placeholder="Enter amount"
               />
+            </div>
+            <div className={gridThree}>
               <FormTextInput<EmployeeCreateForm>
                 label="Regular Rate"
                 name="regularRate"
                 placeholder="Enter rate"
               />
               <TextInput
+                className="bg-muted"
                 disabled
                 label="Overtime Rate"
                 placeholder="$0.00"
@@ -398,6 +423,7 @@ export const AddEmployeeForm = ({
                 variant="soft"
               />
               <TextInput
+                className="bg-muted"
                 disabled
                 label="Double Time Rate"
                 placeholder="$0.00"
@@ -405,41 +431,46 @@ export const AddEmployeeForm = ({
                 variant="soft"
               />
             </div>
-            <FormSwitchField<EmployeeCreateForm>
-              label="Is Technician"
-              name="isTechnician"
-            />
-          </section>
+            <div className="pt-0.5">
+              <FormSwitchField<EmployeeCreateForm>
+                label="Is Technician"
+                name="isTechnician"
+              />
+            </div>
+          </EmployeeFormSection>
 
-          <section className="flex flex-col gap-4">
-            <SectionSubheading className="text-action">
-              Mobile access
-            </SectionSubheading>
-            <FormSwitchField<EmployeeCreateForm>
-              label="Mobile Access"
-              name="mobileAccess"
-            />
-            <BodySmall color="foreground-subtle">
-              {MOBILE_ACCESS_HELPER}
-            </BodySmall>
-
-            {mobileAccess ? (
-              <>
-                <div className={gridTwo}>
-                  <FormTextInput<EmployeeCreateForm>
+          <EmployeeFormSection icon={MobileIcon} title="Mobile access">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-5">
+              <div className="flex flex-col gap-3">
+                <FormSwitchField<EmployeeCreateForm>
+                  label="Mobile Access"
+                  name="mobileAccess"
+                />
+                <p className="text-[11px] leading-4 text-foreground-subtle">
+                  {MOBILE_ACCESS_HELPER}
+                </p>
+                {mobileAccess ? (
+                  <FormPhoneInput<EmployeeCreateForm>
                     label="Masked Phone"
                     name="maskedPhone"
                     placeholder="eg. +91 454 455 56"
                     required
                   />
-                  <FormTextarea<EmployeeCreateForm>
-                    label="Bio"
-                    name="bio"
-                    placeholder="Enter bio"
-                    rows={4}
-                  />
-                </div>
-                <div className={`${gridFour} xl:grid-cols-4`}>
+                ) : null}
+              </div>
+              {mobileAccess ? (
+                <FormTextarea<EmployeeCreateForm>
+                  className="min-h-[114px]"
+                  label="Bio"
+                  name="bio"
+                  placeholder="Enter bio"
+                  rows={5}
+                />
+              ) : null}
+            </div>
+            {mobileAccess ? (
+              <>
+                <div className={gridFour}>
                   <FormSelectField<EmployeeCreateForm>
                     label="Zone"
                     name="dispatchZoneId"
@@ -467,10 +498,13 @@ export const AddEmployeeForm = ({
                     placeholder="Select skills"
                     required
                   />
-                  <FormTextInput<EmployeeCreateForm>
+                </div>
+                <div className={`${gridTwo} max-w-2xl`}>
+                  <FormTimePicker<EmployeeCreateForm>
+                    clearable
                     label="Start Time"
                     name="startTime"
-                    type="time"
+                    placeholder="Select time"
                   />
                   <FormTextInput<EmployeeCreateForm>
                     label="Daily Capacity"
@@ -481,22 +515,8 @@ export const AddEmployeeForm = ({
                 </div>
               </>
             ) : null}
-          </section>
-        </SectionCard>
-
-        <footer className="mt-4 flex shrink-0 items-center justify-end gap-3 border-t border-border bg-surface px-8 py-3.5">
-          <Button
-            disabled={isPending}
-            onClick={onCancel}
-            type="button"
-            variant="outline"
-          >
-            {CANCEL_LABEL}
-          </Button>
-          <Button loading={isPending} type="submit">
-            {SAVE_EMPLOYEE_LABEL}
-          </Button>
-        </footer>
+          </EmployeeFormSection>
+        </div>
       </form>
     </FormProvider>
   );

@@ -17,6 +17,15 @@ function phoneDigitCount(value: string): number {
   return value.replace(/\D/g, '').length;
 }
 
+function toApiPhoneDigits(value: string): string {
+  return value.replace(/\D/g, '');
+}
+
+function toOptionalApiPhone(value: string): string | null {
+  const digits = toApiPhoneDigits(value);
+  return digits === '' ? null : digits;
+}
+
 function parseOptionalNumber(value: string): number | null {
   const trimmed = value.trim();
   if (trimmed === '') return null;
@@ -234,8 +243,7 @@ export function toEmployeeCreateDto(
         techTradeId: parseOptionalNumber(values.techTradeId),
         techSkillId: parseOptionalNumber(values.techSkillId),
         truckId: parseOptionalNumber(values.truckId),
-        customerFacingPhone:
-          values.maskedPhone.trim() === '' ? null : values.maskedPhone.trim(),
+        customerFacingPhone: toOptionalApiPhone(values.maskedPhone),
         notes: values.bio.trim() === '' ? null : values.bio.trim(),
       }
     : null;
@@ -254,9 +262,8 @@ export function toEmployeeCreateDto(
     personalEmail:
       values.personalEmail.trim() === '' ? null : values.personalEmail.trim(),
     officeEmail: values.officeEmail.trim(),
-    personalPhone:
-      values.personalPhone.trim() === '' ? null : values.personalPhone.trim(),
-    officePhone: values.officePhone.trim(),
+    personalPhone: toOptionalApiPhone(values.personalPhone),
+    officePhone: toApiPhoneDigits(values.officePhone),
     address: {
       addressLine1: values.addressLine1.trim(),
       addressLine2:
