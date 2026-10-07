@@ -21,6 +21,12 @@ export {
   type AttachmentMetadataDto,
 } from './lib/attachment.schema';
 export {
+  inventoryLocationLookupDtoSchema,
+  inventoryLocationLookupResponseSchema,
+  type InventoryLocationLookupDto,
+  type InventoryLocationLookupParams,
+} from './lib/inventory-location.schema';
+export {
   gloBillingCategoryTypeLookupDtoSchema,
   gloBillingCategoryTypeLookupResponseSchema,
   gloCountryLookupDtoSchema,

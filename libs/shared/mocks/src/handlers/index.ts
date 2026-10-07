@@ -7,6 +7,7 @@ import { subcategoryHandlers } from './subcategory';
 import { employeeHandlers } from './employee';
 import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
+import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
@@ -33,6 +34,7 @@ export const handlers = [
   ...timeslotHandlers,
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,
+  ...inventoryLocationHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
   ...nonWorkingDateHandlers,
