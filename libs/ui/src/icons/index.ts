@@ -28,6 +28,7 @@ export * from './home-icon';
 export * from './import-icon';
 export * from './info-circle-icon';
 export * from './invoice-icon';
+export * from './label-icon';
 export * from './lead-icon';
 export * from './location-pin-icon';
 export * from './lock-icon';

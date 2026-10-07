@@ -112,6 +112,13 @@ export const AddressFormFields = ({
           readOnly={fieldsLocked}
         />
       </div>
+      <FormTextInput<CompanyAddressForm>
+        label="Postal Code"
+        name="postalCode"
+        placeholder="Enter postal code"
+        readOnly={fieldsLocked}
+        required
+      />
       <FormSelectField<CompanyAddressForm>
         disabled={fieldsLocked}
         label="Country"
@@ -136,13 +143,6 @@ export const AddressFormFields = ({
         name="city"
         options={cityOptions}
         placeholder="Select city"
-        required
-      />
-      <FormTextInput<CompanyAddressForm>
-        label="Postal Code"
-        name="postalCode"
-        placeholder="Enter postal code"
-        readOnly={fieldsLocked}
         required
       />
     </div>

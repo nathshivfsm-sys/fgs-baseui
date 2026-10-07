@@ -1,4 +1,11 @@
-import { BodySmall, Button, cn, CollapseIcon, PlusIcon } from '@cms/ui';
+import {
+  BodySmall,
+  Button,
+  cn,
+  CollapseIcon,
+  LabelIcon,
+  PlusIcon,
+} from '@cms/ui';
 import { NavLink, useMatch } from 'react-router-dom';
 import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from '../constant';
 import styles from './Sidebar.module.css';
@@ -75,6 +82,10 @@ export function Sidebar({
   onToggleIconOnly,
   showCollapseControl = true,
 }: SidebarProps) {
+  const handleToggleCollapsedLabels = () => {
+    onToggleIconOnly?.();
+  };
+
   return (
     <aside
       aria-label="Primary"
@@ -162,12 +173,16 @@ export function Sidebar({
           {collapsed && onToggleIconOnly && (
             <button
               aria-label={iconOnly ? 'Show labels' : 'Hide labels'}
-              className="flex items-center gap-1 rounded-sm text-control text-foreground-subtle transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              onClick={onToggleIconOnly}
+              aria-pressed={!iconOnly}
+              className={cn(
+                'flex size-7 items-center justify-center rounded-sm transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+                !iconOnly ? 'text-primary' : 'text-secondary-foreground',
+              )}
+              onClick={handleToggleCollapsedLabels}
               title={iconOnly ? 'Show text labels' : 'Hide text labels'}
               type="button"
             >
-              <span className="text-xs">{iconOnly ? 'A' : 'A'}</span>
+              <LabelIcon aria-hidden="true" className="size-4" />
             </button>
           )}
           <button
