@@ -30,6 +30,12 @@ export const gloBillingCategoryTypeLookupDtoSchema = z.object({
   displayOrder: z.number(),
 });
 
+export const gloSetupDescriptionTypeLookupDtoSchema = z.object({
+  id: z.number(),
+  code: nullableText,
+  name: nullableText,
+});
+
 export const gloCountryLookupResponseSchema = apiResponseSchema(
   z.array(gloCountryLookupDtoSchema),
 );
@@ -42,6 +48,9 @@ export const postalCodeCityLookupResponseSchema = apiResponseSchema(
 export const gloBillingCategoryTypeLookupResponseSchema = apiResponseSchema(
   z.array(gloBillingCategoryTypeLookupDtoSchema),
 );
+export const gloSetupDescriptionTypeLookupResponseSchema = apiResponseSchema(
+  z.array(gloSetupDescriptionTypeLookupDtoSchema),
+);
 
 export type GloCountryLookupDto = z.infer<typeof gloCountryLookupDtoSchema>;
 export type GloStateProvinceLookupDto = z.infer<
@@ -53,12 +62,19 @@ export type PostalCodeCityLookupDto = z.infer<
 export type GloBillingCategoryTypeLookupDto = z.infer<
   typeof gloBillingCategoryTypeLookupDtoSchema
 >;
+export type GloSetupDescriptionTypeLookupDto = z.infer<
+  typeof gloSetupDescriptionTypeLookupDtoSchema
+>;
 
 export type GloCountryLookupParams = {
   activeOnly?: boolean;
 };
 
 export type GloBillingCategoryTypeLookupParams = {
+  activeOnly?: boolean;
+};
+
+export type GloSetupDescriptionTypeLookupParams = {
   activeOnly?: boolean;
 };
 

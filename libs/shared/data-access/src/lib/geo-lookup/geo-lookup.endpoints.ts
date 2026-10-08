@@ -8,6 +8,8 @@ import { toSearchParams } from '../util';
 export const gloCountryLookupCollectionEndpoint = '/glo/country/lookup';
 export const gloBillingCategoryTypeLookupCollectionEndpoint =
   '/glo/billingcategorytype/lookup';
+export const gloSetupDescriptionTypeLookupCollectionEndpoint =
+  '/glo/setupdescriptiontype/lookup';
 export const gloStateProvinceLookupCollectionEndpoint =
   '/glo/stateprovince/lookup';
 export const postalCodeCitiesCollectionEndpoint = '/postalcode/cities';
@@ -20,6 +22,14 @@ export function gloBillingCategoryTypeLookupEndpoint(
   activeOnly = true,
 ): string {
   return `${gloBillingCategoryTypeLookupCollectionEndpoint}${toSearchParams({
+    activeOnly,
+  })}`;
+}
+
+export function gloSetupDescriptionTypeLookupEndpoint(
+  activeOnly = true,
+): string {
+  return `${gloSetupDescriptionTypeLookupCollectionEndpoint}${toSearchParams({
     activeOnly,
   })}`;
 }

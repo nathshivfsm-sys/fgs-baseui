@@ -29,6 +29,7 @@ import {
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createResolutionCodeMutationOptions,
+  createSetupDescriptionMutationOptions,
   createTimeslotMutationOptions,
   createNonWorkingDateMutationOptions,
   createTaxMutationOptions,
@@ -54,6 +55,9 @@ import {
   resolutionCodeKeys,
   resolutionCodeListQueryOptions,
   resolutionCodeLookupQueryOptions,
+  setupDescriptionKeys,
+  setupDescriptionListQueryOptions,
+  setupDescriptionLookupQueryOptions,
   postalCodeKeys,
   postalCodeListQueryOptions,
   postalCodeLookupQueryOptions,
@@ -103,6 +107,9 @@ import {
   resolutionCodeDetailResponseFixture,
   resolutionCodeListResponseFixture,
   resolutionCodeLookupResponseFixture,
+  setupDescriptionDetailResponseFixture,
+  setupDescriptionListResponseFixture,
+  setupDescriptionLookupResponseFixture,
   postalCodeDetailResponseFixture,
   postalCodeListResponseFixture,
   postalCodeLookupResponseFixture,
@@ -1472,6 +1479,72 @@ describe('resolution code through customFetch', () => {
     expect(
       client.getQueryState(resolutionCodeKeys.list({}))?.isInvalidated,
     ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('setup description through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(setupDescriptionListResponseFixture))
+      .mockResolvedValueOnce(
+        jsonResponse(setupDescriptionLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      setupDescriptionListQueryOptions({
+        descriptionTypeCode: 'JOB',
+        isActive: true,
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      setupDescriptionLookupQueryOptions({ activeOnly: false }),
+    );
+
+    expect(page.items[0]?.descriptionTypeCode).toBe('JOB');
+    expect(lookup[0]?.sortOrder).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/setupdescription?descriptionTypeCode=JOB&isActive=true',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/setupdescription/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates setup description queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(setupDescriptionDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    const listKey = setupDescriptionKeys.list({
+      descriptionTypeCode: 'JOB',
+      isActive: true,
+    });
+    const otherTypeListKey = setupDescriptionKeys.list({
+      descriptionTypeCode: 'WORK_DESCRIPTION',
+      isActive: true,
+    });
+    client.setQueryData(listKey, { items: [], page: 1 });
+    client.setQueryData(otherTypeListKey, { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSetupDescriptionMutationOptions(client));
+    await mutation.execute({
+      descriptionTypeCode: 'JOB',
+      shortNote: 'Standard job footer',
+      body: 'Thank you for choosing our services.',
+      sortOrder: 1,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/setupdescription');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(listKey)?.isInvalidated).toBe(true);
+    expect(client.getQueryState(otherTypeListKey)?.isInvalidated).toBeFalsy();
     disposeCmsQueryClient(client);
   });
 });

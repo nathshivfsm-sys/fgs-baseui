@@ -145,6 +145,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Manage reason-for-call and resolution descriptions.',
       icon: 'SettingsSetupDescriptionsIcon',
       totalSettings: { count: 32, label: 'Descriptions' },
+      href: 'operations/standard-description',
     },
     {
       title: 'Recommendation Status',

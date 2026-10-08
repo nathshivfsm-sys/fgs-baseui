@@ -15,6 +15,7 @@ export * from './lib/subcategory';
 export * from './lib/employee';
 export * from './lib/resolution-code';
 export * from './lib/timeslot';
+export * from './lib/setup-description';
 export * from './lib/user-service';
 export type {
   PagedResult,
