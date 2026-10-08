@@ -936,6 +936,49 @@ export const resolutionCodeLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const setupDescriptionListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 501,
+        descriptionTypeCode: 'JOB',
+        shortNote: 'Standard job footer',
+        body: 'Thank you for choosing our services.',
+        fgsSetupTechTradeId: null,
+        sortOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const setupDescriptionDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: setupDescriptionListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const setupDescriptionLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 501,
+      descriptionTypeCode: 'JOB',
+      body: 'Thank you for choosing our services.',
+      sortOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const roleLookupResponseFixture = {
   success: true,
   statusCode: 200,

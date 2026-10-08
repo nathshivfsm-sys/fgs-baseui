@@ -1,6 +1,8 @@
 export {
   gloBillingCategoryTypeLookupCollectionEndpoint,
   gloBillingCategoryTypeLookupEndpoint,
+  gloSetupDescriptionTypeLookupCollectionEndpoint,
+  gloSetupDescriptionTypeLookupEndpoint,
   gloCountryLookupCollectionEndpoint,
   gloCountryLookupEndpoint,
   gloStateProvinceLookupCollectionEndpoint,
@@ -11,9 +13,11 @@ export {
 export { geoLookupKeys } from './geo-lookup.keys';
 export {
   gloBillingCategoryTypeLookupQueryOptions,
+  gloSetupDescriptionTypeLookupQueryOptions,
   gloCountryLookupQueryOptions,
   gloStateProvinceLookupQueryOptions,
   loadGloBillingCategoryTypeLookup,
+  loadGloSetupDescriptionTypeLookup,
   loadGloCountryLookup,
   loadGloStateProvinceLookup,
   loadPostalCodeCities,
@@ -22,6 +26,10 @@ export {
 export {
   gloBillingCategoryTypeLookupDtoSchema,
   gloBillingCategoryTypeLookupResponseSchema,
+  gloSetupDescriptionTypeLookupDtoSchema,
+  gloSetupDescriptionTypeLookupResponseSchema,
+  type GloSetupDescriptionTypeLookupDto,
+  type GloSetupDescriptionTypeLookupParams,
   gloCountryLookupDtoSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupDtoSchema,

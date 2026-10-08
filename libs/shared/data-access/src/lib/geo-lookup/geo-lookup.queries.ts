@@ -3,10 +3,12 @@ import type { QueryRequestContext } from '@cms/platform-contract';
 import { customFetch } from '@cms/shared-api';
 import {
   gloBillingCategoryTypeLookupResponseSchema,
+  gloSetupDescriptionTypeLookupResponseSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupResponseSchema,
   postalCodeCityLookupResponseSchema,
   type GloBillingCategoryTypeLookupDto,
+  type GloSetupDescriptionTypeLookupDto,
   type GloCountryLookupDto,
   type GloStateProvinceLookupDto,
   type GloStateProvinceLookupParams,
@@ -15,6 +17,7 @@ import {
 } from '@cms/shared-contract';
 import {
   gloBillingCategoryTypeLookupEndpoint,
+  gloSetupDescriptionTypeLookupEndpoint,
   gloCountryLookupEndpoint,
   gloStateProvinceLookupEndpoint,
   postalCodeCitiesEndpoint,
@@ -30,6 +33,17 @@ export const loadGloBillingCategoryTypeLookup = async (
     { signal },
   );
   return gloBillingCategoryTypeLookupResponseSchema.parse(body).data;
+};
+
+export const loadGloSetupDescriptionTypeLookup = async (
+  activeOnly: boolean,
+  { signal }: QueryRequestContext,
+): Promise<readonly GloSetupDescriptionTypeLookupDto[]> => {
+  const body = await customFetch<unknown>(
+    gloSetupDescriptionTypeLookupEndpoint(activeOnly),
+    { signal },
+  );
+  return gloSetupDescriptionTypeLookupResponseSchema.parse(body).data;
 };
 
 export const loadGloCountryLookup = async (
@@ -73,6 +87,18 @@ export const gloBillingCategoryTypeLookupQueryOptions = (activeOnly = true) =>
     meta: {
       feature: 'geo-lookup',
       operation: 'billing-category-type-lookup',
+    },
+  });
+
+export const gloSetupDescriptionTypeLookupQueryOptions = (activeOnly = true) =>
+  queryOptions({
+    queryKey: geoLookupKeys.setupDescriptionType(activeOnly),
+    queryFn: ({ signal }) =>
+      loadGloSetupDescriptionTypeLookup(activeOnly, { signal }),
+    staleTime: 5 * 60 * 1000,
+    meta: {
+      feature: 'geo-lookup',
+      operation: 'setup-description-type-lookup',
     },
   });
 

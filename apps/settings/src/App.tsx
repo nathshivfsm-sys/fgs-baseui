@@ -54,6 +54,11 @@ const ResolutionCodePage = lazy(() =>
     default: module.ResolutionCodePage,
   })),
 );
+const StandardDescriptionPage = lazy(() =>
+  import('./pages/StandardDescriptionPage').then((module) => ({
+    default: module.StandardDescriptionPage,
+  })),
+);
 const TimeslotPage = lazy(() =>
   import('./pages/TimeslotPage').then((module) => ({
     default: module.TimeslotPage,
@@ -161,6 +166,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/resolution-codes"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <StandardDescriptionPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/standard-description"
         />
         <Route
           element={
