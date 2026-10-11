@@ -120,14 +120,6 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       href: 'operations/timeslots',
     },
     {
-      title: 'Zone',
-      description:
-        'Define service territories used for scheduling and dispatch.',
-      icon: 'SettingsZoneIcon',
-      totalSettings: { count: 24, label: 'Zones' },
-      href: 'company/zone-postal-code',
-    },
-    {
       title: 'Resolution Codes',
       description: 'Manage standard resolution outcomes for completed work.',
       icon: 'SettingsResolutionCodesIcon',

@@ -7,14 +7,19 @@ import { Sidebar } from './Sidebar';
 /** The real shell owns the collapsed flag, so the round-trip needs a host. */
 function CollapsibleSidebar({
   initialCollapsed,
+  initialIconOnly = false,
 }: {
   initialCollapsed: boolean;
+  initialIconOnly?: boolean;
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const [iconOnly, setIconOnly] = useState(initialIconOnly);
   return (
     <Sidebar
       collapsed={collapsed}
+      iconOnly={iconOnly}
       onToggleCollapse={() => setCollapsed((value) => !value)}
+      onToggleIconOnly={() => setIconOnly((value) => !value)}
     />
   );
 }
@@ -58,7 +63,7 @@ export const Expanded: Story = {
 };
 
 export const Collapsed: Story = {
-  args: { collapsed: true },
+  render: () => <CollapsibleSidebar initialCollapsed={true} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -70,6 +75,26 @@ export const Collapsed: Story = {
     ).toBeVisible();
     // FR-22: section headers still give way to hairlines.
     await expect(canvas.queryByText('Sales')).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole('button', { name: 'Hide labels' }),
+    ).toHaveAttribute('aria-pressed', 'true');
+  },
+};
+
+/** Collapsed rail switches between stacked labels and icon-only tooltips. */
+export const CollapsedLayoutToggle: Story = {
+  render: () => <CollapsibleSidebar initialCollapsed={true} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Hide labels' }));
+    await expect(canvas.getByText('Dispatch Board')).not.toBeInTheDocument();
+    await expect(
+      canvas.getByRole('link', { name: 'Dispatch Board' }),
+    ).toHaveAttribute('title', 'Dispatch Board');
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Show labels' }));
+    await expect(canvas.getByText('Dispatch Board')).toBeVisible();
   },
 };
 

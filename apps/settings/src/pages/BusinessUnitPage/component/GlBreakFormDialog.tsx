@@ -180,21 +180,11 @@ export const GlBreakFormDialog = ({
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormTextInput<GlBreakForm>
-                label="Zip/Postal Code"
+                label="Postal Code"
                 name="postalCode"
                 placeholder={POSTAL_CODE_PLACEHOLDER}
                 required
               />
-              <FormSelectField<GlBreakForm>
-                disabled={!state}
-                label="City"
-                name="city"
-                options={cityOptions}
-                placeholder={CITY_PLACEHOLDER}
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormSelectField<GlBreakForm>
                 label="Country"
                 name="country"
@@ -203,6 +193,8 @@ export const GlBreakFormDialog = ({
                 placeholder={COUNTRY_PLACEHOLDER}
                 required
               />
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormSelectField<GlBreakForm>
                 disabled={!country}
                 label="State/Province"
@@ -210,6 +202,14 @@ export const GlBreakFormDialog = ({
                 onValueChange={handleStateChange}
                 options={stateOptions}
                 placeholder={STATE_PLACEHOLDER}
+                required
+              />
+              <FormSelectField<GlBreakForm>
+                disabled={!state}
+                label="City"
+                name="city"
+                options={cityOptions}
+                placeholder={CITY_PLACEHOLDER}
                 required
               />
             </div>

@@ -16,20 +16,20 @@ export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, signInWithRefreshToken } = useAuth();
-  const token = searchParams.get('token');
+  const refreshToken = searchParams.get('refresh_token');
   const [settling, setSettling] = useState(
-    () => token !== null && token.length > 0 && !isAuthenticated,
+    () => refreshToken !== null && refreshToken.length > 0 && !isAuthenticated,
   );
 
   useEffect(() => {
-    if (!token) {
+    if (!refreshToken) {
       setSettling(false);
       return;
     }
 
     if (isAuthenticated) {
       const next = new URLSearchParams(searchParams);
-      next.delete('token');
+      next.delete('refresh_token');
       setSearchParams(next, { replace: true });
       setSettling(false);
       return;
@@ -38,14 +38,14 @@ export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
     let cancelled = false;
 
     const settleReturnToken = async () => {
-      const result = await signInWithRefreshToken(token);
+      const result = await signInWithRefreshToken(refreshToken);
       if (cancelled) {
         return;
       }
 
       if (result.ok) {
         const next = new URLSearchParams(searchParams);
-        next.delete('token');
+        next.delete('refreshToken');
         setSearchParams(next, { replace: true });
         setSettling(false);
         return;
@@ -69,7 +69,7 @@ export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
     searchParams,
     setSearchParams,
     signInWithRefreshToken,
-    token,
+    refreshToken,
   ]);
 
   if (settling) {
