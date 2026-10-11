@@ -78,6 +78,42 @@ const indexHtml = readFileSync(join(outDir, 'index.html'), 'utf8');
 writeFileSync(join(outDir, '404.html'), indexHtml);
 writeFileSync(join(outDir, '.nojekyll'), '');
 
+/**
+ * GitHub Pages serves static files only. Deep links such as `/fgs-baseui/today` return
+ * HTTP 404 unless a file exists at that path — the 404.html SPA fallback still uses
+ * status 404, which breaks some IdP redirect checks. Copy index.html for each top-level
+ * shell route so OAuth return URLs (e.g. `/today?refresh_token=`) respond with 200.
+ */
+const SPA_ROUTE_SEGMENTS = [
+  'login',
+  'today',
+  'dashboard',
+  'workorders',
+  'dispatch-board',
+  'customers',
+  'service-locations',
+  'leads',
+  'invoice',
+  'estimates',
+  'service-agreements',
+  'capacity-planning',
+  'projects',
+  'payments',
+  'schedule-payment',
+  'refunds',
+  'purchase-orders',
+  'returns',
+  'vendors',
+  'reports',
+  'settings',
+];
+
+for (const segment of SPA_ROUTE_SEGMENTS) {
+  const routeDir = join(outDir, segment);
+  mkdirSync(routeDir, { recursive: true });
+  writeFileSync(join(routeDir, 'index.html'), indexHtml);
+}
+
 console.log(`Assembled GitHub Pages site at dist-pages/ (base ${repoBase})`);
 for (const name of remotes) {
   console.log(`  remote ${name} -> ${repoBase}mf/${name}/remoteEntry.js`);
