@@ -29,6 +29,8 @@ export {
 export {
   gloBillingCategoryTypeLookupDtoSchema,
   gloBillingCategoryTypeLookupResponseSchema,
+  gloSetupDescriptionTypeLookupDtoSchema,
+  gloSetupDescriptionTypeLookupResponseSchema,
   gloCountryLookupDtoSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupDtoSchema,
@@ -37,6 +39,8 @@ export {
   postalCodeCityLookupResponseSchema,
   type GloBillingCategoryTypeLookupDto,
   type GloBillingCategoryTypeLookupParams,
+  type GloSetupDescriptionTypeLookupDto,
+  type GloSetupDescriptionTypeLookupParams,
   type GloCountryLookupDto,
   type GloCountryLookupParams,
   type GloStateProvinceLookupDto,

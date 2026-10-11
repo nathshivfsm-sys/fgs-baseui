@@ -339,3 +339,22 @@ export {
   type TimeslotSummaryDto,
   type TimeslotUpdateDto,
 } from './lib/timeslot.schema';
+export {
+  setupDescriptionCreateDtoSchema,
+  setupDescriptionDetailDtoSchema,
+  setupDescriptionDetailResponseSchema,
+  setupDescriptionListResponseSchema,
+  setupDescriptionLookupDtoSchema,
+  setupDescriptionLookupResponseSchema,
+  setupDescriptionPatchDtoSchema,
+  setupDescriptionSummaryDtoSchema,
+  setupDescriptionUpdateDtoSchema,
+  type SetupDescriptionCreateDto,
+  type SetupDescriptionDetailDto,
+  type SetupDescriptionListParams,
+  type SetupDescriptionLookupDto,
+  type SetupDescriptionLookupParams,
+  type SetupDescriptionPatchDto,
+  type SetupDescriptionSummaryDto,
+  type SetupDescriptionUpdateDto,
+} from './lib/setup-description.schema';

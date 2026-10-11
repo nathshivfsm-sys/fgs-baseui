@@ -2,6 +2,7 @@ import { http } from 'msw';
 import type {
   GloBillingCategoryTypeLookupDto,
   GloCountryLookupDto,
+  GloSetupDescriptionTypeLookupDto,
   GloStateProvinceLookupDto,
   PostalCodeCityLookupDto,
 } from '@cms/shared-contract';
@@ -17,6 +18,51 @@ type CityRecord = PostalCodeCityLookupDto & {
   stateProvinceCode: string;
   isActive: boolean;
 };
+
+type SetupDescriptionTypeRecord = GloSetupDescriptionTypeLookupDto & {
+  isActive: boolean;
+};
+
+function seedSetupDescriptionTypes(): SetupDescriptionTypeRecord[] {
+  return [
+    {
+      id: 1,
+      code: 'REASON_FOR_CALL',
+      name: 'Reason For Call',
+      isActive: true,
+    },
+    {
+      id: 2,
+      code: 'WORK_DESCRIPTION',
+      name: 'Work Description',
+      isActive: true,
+    },
+    {
+      id: 3,
+      code: 'CANCELLATION_REASON',
+      name: 'Cancellation reason',
+      isActive: true,
+    },
+    {
+      id: 4,
+      code: 'LEAD_DISQUALIFICATION',
+      name: 'Lead Disqualification Reason',
+      isActive: true,
+    },
+  ];
+}
+
+const setupDescriptionTypes = seedSetupDescriptionTypes();
+
+function toSetupDescriptionTypeLookup(
+  record: SetupDescriptionTypeRecord,
+): GloSetupDescriptionTypeLookupDto {
+  return {
+    id: record.id,
+    code: record.code,
+    name: record.name,
+  };
+}
 
 function seedBillingCategoryTypes(): BillingCategoryTypeRecord[] {
   return [
@@ -252,6 +298,15 @@ function matchesCode(
  * by `/postalcode/:id`.
  */
 export const geoLookupHandlers = [
+  http.get('/api/v1/glo/setupdescriptiontype/lookup', ({ request }) => {
+    const url = new URL(request.url);
+    const activeOnly = readOptionalBoolean(url, 'activeOnly') ?? true;
+    const items = setupDescriptionTypes
+      .filter((record) => (activeOnly ? record.isActive : true))
+      .map(toSetupDescriptionTypeLookup);
+    return setupOk(items);
+  }),
+
   http.get('/api/v1/glo/billingcategorytype/lookup', ({ request }) => {
     const url = new URL(request.url);
     const activeOnly = readOptionalBoolean(url, 'activeOnly') ?? true;
