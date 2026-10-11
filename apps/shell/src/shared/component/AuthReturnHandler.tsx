@@ -9,14 +9,16 @@ interface AuthReturnHandlerProps {
 }
 
 /**
- * After external IdP sign-in the app loads with `?token=` on the target route. Exchange
- * that refresh token before `RequireAuth` runs so the query param is not lost on redirect.
+ * After external IdP sign-in the app loads with `?refresh_token=` (or `?token=`) on the
+ * target route. Exchange that refresh token before `RequireAuth` runs so the query param
+ * is not lost on redirect.
  */
 export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, signInWithRefreshToken } = useAuth();
-  const refreshToken = searchParams.get('refresh_token');
+  const refreshToken =
+    searchParams.get('refresh_token') ?? searchParams.get('token');
   const [settling, setSettling] = useState(
     () => refreshToken !== null && refreshToken.length > 0 && !isAuthenticated,
   );
@@ -30,6 +32,7 @@ export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
     if (isAuthenticated) {
       const next = new URLSearchParams(searchParams);
       next.delete('refresh_token');
+      next.delete('token');
       setSearchParams(next, { replace: true });
       setSettling(false);
       return;
@@ -45,7 +48,8 @@ export function AuthReturnHandler({ children }: AuthReturnHandlerProps) {
 
       if (result.ok) {
         const next = new URLSearchParams(searchParams);
-        next.delete('refreshToken');
+        next.delete('refresh_token');
+        next.delete('token');
         setSearchParams(next, { replace: true });
         setSettling(false);
         return;
