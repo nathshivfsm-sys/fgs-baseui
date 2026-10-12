@@ -358,3 +358,21 @@ export {
   type SetupDescriptionSummaryDto,
   type SetupDescriptionUpdateDto,
 } from './lib/setup-description.schema';
+export {
+  sourceCreateDtoSchema,
+  sourceDetailDtoSchema,
+  sourceDetailResponseSchema,
+  sourceListResponseSchema,
+  sourceLookupDtoSchema,
+  sourceLookupResponseSchema,
+  sourcePatchDtoSchema,
+  sourceSummaryDtoSchema,
+  sourceUpdateDtoSchema,
+  type SourceCreateDto,
+  type SourceDetailDto,
+  type SourceListParams,
+  type SourceLookupDto,
+  type SourcePatchDto,
+  type SourceSummaryDto,
+  type SourceUpdateDto,
+} from './lib/source.schema';

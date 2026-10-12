@@ -150,6 +150,14 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
 
   sales: [
     {
+      title: 'Source',
+      description:
+        'Define and manage sources for leads, customers and work orders.',
+      icon: 'SettingsSourceIcon',
+      href: 'sales/source',
+      totalSettings: { count: 10, label: 'Sources' },
+    },
+    {
       title: 'Lead',
       description:
         'Configure lead sources, statuses, and qualification defaults.',

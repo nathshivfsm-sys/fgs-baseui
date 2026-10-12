@@ -180,6 +180,46 @@ export const zoneLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const sourceListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1,
+        sourceCode: 'WEB',
+        sourceName: 'Website',
+        description: 'Leads from company website',
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const sourceDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: sourceListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const sourceLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1,
+      sourceCode: 'WEB',
+      sourceName: 'Website',
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const postalCodeListResponseFixture = {
   success: true,
   statusCode: 200,

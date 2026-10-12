@@ -12,6 +12,7 @@ import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
 import { setupDescriptionHandlers } from './setup-description';
+import { sourceHandlers } from './source';
 import { companyHandlers } from './company';
 import { nonWorkingDateHandlers } from './non-working-date';
 import { taxHandlers } from './tax';
@@ -39,6 +40,7 @@ export const handlers = [
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
   ...setupDescriptionHandlers,
+  ...sourceHandlers,
   ...nonWorkingDateHandlers,
   ...zoneHandlers,
   ...glBreakHandlers,

@@ -35,6 +35,7 @@ import {
   createTaxMutationOptions,
   createTechSkillLevelMutationOptions,
   createTechTradeMutationOptions,
+  createSourceMutationOptions,
   createZoneMutationOptions,
   deleteNonWorkingDateMutationOptions,
   glBreakDetailQueryOptions,
@@ -76,6 +77,9 @@ import {
   techTradeKeys,
   techTradeListQueryOptions,
   techTradeLookupQueryOptions,
+  sourceKeys,
+  sourceListQueryOptions,
+  sourceLookupQueryOptions,
   zoneKeys,
   zoneListQueryOptions,
   zoneLookupQueryOptions,
@@ -130,6 +134,9 @@ import {
   techTradeDetailResponseFixture,
   techTradeListResponseFixture,
   techTradeLookupResponseFixture,
+  sourceDetailResponseFixture,
+  sourceListResponseFixture,
+  sourceLookupResponseFixture,
   zoneDetailResponseFixture,
   zoneListResponseFixture,
   zoneLookupResponseFixture,
@@ -424,6 +431,52 @@ describe('non-working date through customFetch', () => {
       pageSize: 10,
       totalCount: 0,
     });
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('source through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(sourceListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(sourceLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      sourceListQueryOptions({ sourceName: 'Website' }),
+    );
+    const lookup = await client.fetchQuery(sourceLookupQueryOptions(false));
+
+    expect(page.items[0]?.sourceCode).toBe('WEB');
+    expect(lookup[0]?.sourceName).toBe('Website');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/source?sourceName=Website',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/source/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates source queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(sourceDetailResponseFixture, 201));
+    const client = createCmsQueryClient();
+    client.setQueryData(sourceKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSourceMutationOptions(client));
+    await mutation.execute({
+      sourceCode: 'WEB',
+      sourceName: 'Website',
+      description: 'Leads from company website',
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/source');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(sourceKeys.list({}))?.isInvalidated).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
