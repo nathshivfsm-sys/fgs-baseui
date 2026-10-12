@@ -43,8 +43,9 @@ export const sourcePatchDtoSchema = z.object({
 export const sourceListResponseSchema = setupResponseSchema(
   pagedResultSchema(sourceSummaryDtoSchema),
 );
-export const sourceDetailResponseSchema =
-  setupResponseSchema(sourceDetailDtoSchema);
+export const sourceDetailResponseSchema = setupResponseSchema(
+  sourceDetailDtoSchema,
+);
 export const sourceLookupResponseSchema = setupResponseSchema(
   z.array(sourceLookupDtoSchema),
 );

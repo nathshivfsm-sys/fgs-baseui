@@ -27,12 +27,10 @@ export const DISCARD_DESCRIPTION =
 export const DISCARD_CONFIRM_LABEL = 'Discard';
 export const SEARCH_SOURCES_PLACEHOLDER = 'Search sources...';
 export const NO_SOURCES_FOUND = 'No sources found.';
-export const NO_SOURCES_SEARCH_FOUND =
-  'No sources found matching your search.';
+export const NO_SOURCES_SEARCH_FOUND = 'No sources found matching your search.';
 export const LOAD_SOURCES_ERROR_TITLE = 'Unable to load sources';
 export const SOURCE_NAME_PLACEHOLDER = 'Enter source name';
 export const SOURCE_DESCRIPTION_PLACEHOLDER = 'Enter a short description';
 export const ACTIVE_TOGGLE_LABEL = 'Active';
-export const ACTIVE_TOGGLE_HELP =
-  'Active sources are available for selection.';
+export const ACTIVE_TOGGLE_HELP = 'Active sources are available for selection.';
 export { SOURCE_PAGE_SIZE } from './options';

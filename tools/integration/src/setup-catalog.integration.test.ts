@@ -451,7 +451,9 @@ describe('source through customFetch', () => {
 
     expect(page.items[0]?.sourceCode).toBe('WEB');
     expect(lookup[0]?.sourceName).toBe('Website');
-    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/source?sourceName=Website');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/source?sourceName=Website',
+    );
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
       '/api/v1/source/lookup?activeOnly=false',
     );

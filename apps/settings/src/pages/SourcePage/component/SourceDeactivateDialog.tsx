@@ -42,8 +42,8 @@ export const SourceDeactivateDialog = ({
           </DialogDescription>
         </DialogHeader>
         <p className="text-control text-foreground-subtle">
-          Deactivate <span className="font-semibold text-foreground">{name}</span>
-          ?
+          Deactivate{' '}
+          <span className="font-semibold text-foreground">{name}</span>?
         </p>
         <div className="flex justify-end gap-2">
           <Button
