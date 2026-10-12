@@ -64,6 +64,11 @@ const TimeslotPage = lazy(() =>
     default: module.TimeslotPage,
   })),
 );
+const SourcePage = lazy(() =>
+  import('./pages/SourcePage').then((module) => ({
+    default: module.SourcePage,
+  })),
+);
 
 const UsersPage = lazy(() =>
   import('./pages/UsersPage').then((module) => ({
@@ -182,6 +187,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/timeslots"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <SourcePage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="sales/source"
         />
         <Route
           element={

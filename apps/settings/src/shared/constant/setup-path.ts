@@ -6,3 +6,5 @@ export const SETUP_OPERATIONS_TAB = 'operations';
 export const SETUP_OPERATIONS_LABEL = 'Operations';
 export const SETUP_USERS_PAYROLL_TAB = 'usersAndPayroll';
 export const SETUP_USERS_PAYROLL_LABEL = 'Users & Payroll';
+export const SETUP_SALES_TAB = 'sales';
+export const SETUP_SALES_LABEL = 'Sales';

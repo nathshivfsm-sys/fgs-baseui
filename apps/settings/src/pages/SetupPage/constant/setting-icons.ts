@@ -75,6 +75,7 @@ export const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   SettingsRecommendationStatusIcon,
 
   // Sales — partially traced from Figma (18/39 icons complete)
+  SettingsSourceIcon: OrganizationIcon,
   SettingsLeadIcon,
   SettingsSalesPipelineStatusIcon,
   SettingsSalesActivitiesIcon,
