@@ -180,6 +180,53 @@ export const zoneLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const salesPipelineStatusListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 81,
+        statusCode: 'NEW',
+        statusName: 'New Lead',
+        description: 'Initial pipeline stage',
+        displayOrder: 1,
+        isSystem: true,
+        appliesToLead: true,
+        appliesToOpportunity: false,
+        isTerminal: false,
+        allowManualSelection: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const salesPipelineStatusDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: salesPipelineStatusListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const salesPipelineStatusLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 81,
+      statusCode: 'NEW',
+      statusName: 'New Lead',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const sourceListResponseFixture = {
   success: true,
   statusCode: 200,

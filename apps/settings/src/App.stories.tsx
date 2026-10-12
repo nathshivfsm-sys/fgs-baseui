@@ -33,6 +33,7 @@ import {
   STORY_COMPANY_ID,
   withCmsRuntime,
 } from '../../../.storybook/fixtures/runtime';
+import { salesPipelineStatusHandlers } from '@cms/shared-mocks';
 import { App } from './App';
 
 configure({ asyncUtilTimeout: 5000 });
@@ -2365,6 +2366,33 @@ export const BusinessTypeFromGrid: Story = {
     ).toBeVisible();
     await expect(
       await canvas.findByText('Plumbing', {}, LAZY_PAGE),
+    ).toBeVisible();
+  },
+};
+
+export const SalesPipelineStatusFromGrid: Story = {
+  beforeEach: () => api.install(salesPipelineStatusHandlers),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(
+      await canvas.findByRole('tab', { name: 'Sales' }, LAZY_PAGE),
+    );
+    await userEvent.click(
+      await canvas.findByRole(
+        'button',
+        { name: /^Sales Pipeline Status/ },
+        LAZY_PAGE,
+      ),
+    );
+    await expect(
+      await canvas.findByRole(
+        'heading',
+        { name: 'Sales Pipeline Status' },
+        LAZY_PAGE,
+      ),
+    ).toBeVisible();
+    await expect(
+      await canvas.findByText('New Lead', {}, LAZY_PAGE),
     ).toBeVisible();
   },
 };
