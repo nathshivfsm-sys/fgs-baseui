@@ -168,6 +168,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       title: 'Sales Pipeline Status',
       description: 'Manage sales pipeline stages.',
       icon: 'SettingsSalesPipelineStatusIcon',
+      href: 'sales/sales-pipeline-status',
       totalSettings: { count: 7, label: 'Stages' },
     },
     {

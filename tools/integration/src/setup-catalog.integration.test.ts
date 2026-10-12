@@ -29,6 +29,7 @@ import {
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createResolutionCodeMutationOptions,
+  createSalesPipelineStatusMutationOptions,
   createSetupDescriptionMutationOptions,
   createTimeslotMutationOptions,
   createNonWorkingDateMutationOptions,
@@ -56,6 +57,9 @@ import {
   resolutionCodeKeys,
   resolutionCodeListQueryOptions,
   resolutionCodeLookupQueryOptions,
+  salesPipelineStatusKeys,
+  salesPipelineStatusListQueryOptions,
+  salesPipelineStatusLookupQueryOptions,
   setupDescriptionKeys,
   setupDescriptionListQueryOptions,
   setupDescriptionLookupQueryOptions,
@@ -111,6 +115,9 @@ import {
   resolutionCodeDetailResponseFixture,
   resolutionCodeListResponseFixture,
   resolutionCodeLookupResponseFixture,
+  salesPipelineStatusDetailResponseFixture,
+  salesPipelineStatusListResponseFixture,
+  salesPipelineStatusLookupResponseFixture,
   setupDescriptionDetailResponseFixture,
   setupDescriptionListResponseFixture,
   setupDescriptionLookupResponseFixture,
@@ -477,6 +484,71 @@ describe('source through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/source');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(client.getQueryState(sourceKeys.list({}))?.isInvalidated).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('sales pipeline status through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(salesPipelineStatusListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(salesPipelineStatusLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      salesPipelineStatusListQueryOptions({ statusName: 'New' }),
+    );
+    const lookup = await client.fetchQuery(
+      salesPipelineStatusLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.statusCode).toBe('NEW');
+    expect(lookup[0]?.statusName).toBe('New Lead');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/salespipelinestatus?statusName=New',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/salespipelinestatus/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates sales pipeline status queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(salesPipelineStatusDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(salesPipelineStatusKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSalesPipelineStatusMutationOptions(client));
+    await mutation.execute({
+      statusCode: 'FOLLOWUP',
+      statusName: 'Follow Up',
+      description: 'Awaiting customer response',
+      isSystem: false,
+      appliesToLead: true,
+      appliesToOpportunity: true,
+      isTerminal: false,
+      allowManualSelection: true,
+      displayOrder: 6,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/salespipelinestatus');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(salesPipelineStatusKeys.list({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });

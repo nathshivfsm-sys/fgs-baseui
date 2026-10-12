@@ -11,6 +11,7 @@ import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
+import { salesPipelineStatusHandlers } from './sales-pipeline-status';
 import { setupDescriptionHandlers } from './setup-description';
 import { sourceHandlers } from './source';
 import { companyHandlers } from './company';
@@ -39,6 +40,7 @@ export const handlers = [
   ...inventoryLocationHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
+  ...salesPipelineStatusHandlers,
   ...setupDescriptionHandlers,
   ...sourceHandlers,
   ...nonWorkingDateHandlers,

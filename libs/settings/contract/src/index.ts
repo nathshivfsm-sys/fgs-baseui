@@ -302,6 +302,24 @@ export {
   type EmployeeUpdateDto,
 } from './lib/employee.schema';
 export {
+  salesPipelineStatusCreateDtoSchema,
+  salesPipelineStatusDetailDtoSchema,
+  salesPipelineStatusDetailResponseSchema,
+  salesPipelineStatusListResponseSchema,
+  salesPipelineStatusLookupDtoSchema,
+  salesPipelineStatusLookupResponseSchema,
+  salesPipelineStatusPatchDtoSchema,
+  salesPipelineStatusSummaryDtoSchema,
+  salesPipelineStatusUpdateDtoSchema,
+  type SalesPipelineStatusCreateDto,
+  type SalesPipelineStatusDetailDto,
+  type SalesPipelineStatusListParams,
+  type SalesPipelineStatusLookupDto,
+  type SalesPipelineStatusPatchDto,
+  type SalesPipelineStatusSummaryDto,
+  type SalesPipelineStatusUpdateDto,
+} from './lib/sales-pipeline-status.schema';
+export {
   resolutionCodeCreateDtoSchema,
   resolutionCodeDetailDtoSchema,
   resolutionCodeDetailResponseSchema,

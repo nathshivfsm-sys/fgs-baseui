@@ -14,6 +14,7 @@ export * from './lib/job-type';
 export * from './lib/subcategory';
 export * from './lib/employee';
 export * from './lib/resolution-code';
+export * from './lib/sales-pipeline-status';
 export * from './lib/timeslot';
 export * from './lib/setup-description';
 export * from './lib/source';
