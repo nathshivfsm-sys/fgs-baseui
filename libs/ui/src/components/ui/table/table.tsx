@@ -61,8 +61,6 @@ export function TableRow({ className, interactive, ...props }: TableRowProps) {
   return (
     <tr
       className={cn(
-        // Tints are kept light on purpose: the muted cell foreground only clears
-        // the 4.5:1 contrast threshold against a near-white row background.
         'border-b border-divider bg-surface transition-colors hover:bg-secondary/40 data-[state=selected]:bg-action-subtle/30',
         interactive &&
           'cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/30',
@@ -90,7 +88,7 @@ export function TableCell({ className, ...props }: ComponentProps<'td'>) {
   return (
     <td
       className={cn(
-        'px-3 py-2.5 align-middle text-foreground-subtle first:pl-4 last:pr-4',
+        'px-3 py-2.5 align-middle text-foreground first:pl-4 last:pr-4',
         className,
       )}
       {...props}
