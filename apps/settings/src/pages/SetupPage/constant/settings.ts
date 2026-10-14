@@ -23,6 +23,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Define roles and control access across the system.',
       icon: 'SettingsRoleIcon',
       totalSettings: { count: 14, label: 'Roles' },
+      href: 'users-and-payroll/roles-permissions',
     },
     {
       title: 'Pay Period Setup',

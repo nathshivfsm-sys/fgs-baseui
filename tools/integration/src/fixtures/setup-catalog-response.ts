@@ -784,6 +784,93 @@ export const userRoleLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const rolePermissionListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 601,
+      fgsRoleId: 1,
+      fgsPermissionId: 10,
+      createdOn: '2026-01-15T10:00:00Z',
+      createdBy: 'system',
+      permission: {
+        id: 10,
+        permissionCode: 'PERM-10',
+        module: 'Settings',
+        resource: 'Role',
+        action: 'Read',
+        name: 'Permission 10',
+        description: 'Mock permission 10',
+        displayOrder: 10,
+        isActive: true,
+      },
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const rolePermissionDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: rolePermissionListResponseFixture.data[0],
+  errors: [] as string[],
+};
+
+export const permissionListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1,
+        permissionCode: 'BACKOFFICE.DASHBOARD.READ',
+        module: 'BackOffice',
+        resource: 'Dashboard',
+        action: 'Read',
+        name: 'Dashboard — View',
+        description: null,
+        displayOrder: 1,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 50,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const permissionLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1,
+      permissionCode: 'BACKOFFICE.DASHBOARD.READ',
+      module: 'BackOffice',
+      resource: 'Dashboard',
+      action: 'Read',
+      name: 'Dashboard — View',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const rolePermissionLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 601,
+      fgsRoleId: 1,
+      fgsPermissionId: 10,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const roleListResponseFixture = {
   success: true,
   statusCode: 200,

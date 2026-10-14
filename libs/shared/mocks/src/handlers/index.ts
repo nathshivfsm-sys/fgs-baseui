@@ -25,6 +25,8 @@ import { zoneHandlers } from './zone';
 import { userHandlers } from './user';
 import { userRoleHandlers } from './user-role';
 import { roleHandlers } from './role';
+import { rolePermissionHandlers } from './role-permission';
+import { permissionHandlers } from './permission';
 
 /** Domain handlers composed for the browser worker. Add a file per domain. */
 export const handlers = [
@@ -33,6 +35,8 @@ export const handlers = [
   ...userHandlers,
   ...userRoleHandlers,
   ...roleHandlers,
+  ...rolePermissionHandlers,
+  ...permissionHandlers,
   ...taxHandlers,
   ...timeslotHandlers,
   ...taxAuthorityHandlers,

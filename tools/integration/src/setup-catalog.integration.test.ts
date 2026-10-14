@@ -152,15 +152,25 @@ import {
   userRoleDetailResponseFixture,
   userRoleListResponseFixture,
   userRoleLookupResponseFixture,
+  permissionLookupResponseFixture,
+  rolePermissionDetailResponseFixture,
+  rolePermissionListResponseFixture,
+  rolePermissionLookupResponseFixture,
   roleDetailResponseFixture,
   roleListResponseFixture,
   roleLookupResponseFixture,
 } from './fixtures/setup-catalog-response';
 import {
   createRoleMutationOptions,
+  createRolePermissionMutationOptions,
   createUserRoleMutationOptions,
   createUsersMutationOptions,
+  permissionLookupQueryOptions,
   roleDetailQueryOptions,
+  rolePermissionDetailQueryOptions,
+  rolePermissionKeys,
+  rolePermissionLookupQueryOptions,
+  rolePermissionsByRoleQueryOptions,
   roleKeys,
   roleListQueryOptions,
   roleLookupQueryOptions,
@@ -1340,6 +1350,95 @@ describe('user role through customFetch', () => {
     expect(client.getQueryState(userRoleKeys.lookup({}))?.isInvalidated).toBe(
       true,
     );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('permission through customFetch', () => {
+  it('GETs permission lookup rows', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(permissionLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const rows = await client.fetchQuery(permissionLookupQueryOptions(true));
+
+    expect(rows[0]?.module).toBe('BackOffice');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/permission/lookup?activeOnly=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('role permission through customFetch', () => {
+  it('GETs permissions for a role', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(rolePermissionListResponseFixture),
+    );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const permissions = await client.fetchQuery(
+      rolePermissionsByRoleQueryOptions(1),
+    );
+
+    expect(permissions[0]?.fgsPermissionId).toBe(10);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/rolepermission/1');
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs lookup rows', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(rolePermissionLookupResponseFixture),
+    );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await client.fetchQuery(rolePermissionLookupQueryOptions({ fgsRoleId: 1 }));
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/rolepermission/lookup?fgsRoleId=1',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs a role permission item', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(rolePermissionDetailResponseFixture),
+    );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const item = await client.fetchQuery(rolePermissionDetailQueryOptions(601));
+
+    expect(item.id).toBe(601);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/rolepermission/item/601',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a role permission and invalidates role permission queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(rolePermissionDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(rolePermissionKeys.lookup({}), []);
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createRolePermissionMutationOptions(client));
+    await mutation.execute({ fgsRoleId: 1, fgsPermissionId: 12 });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/rolepermission');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(rolePermissionKeys.lookup({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
