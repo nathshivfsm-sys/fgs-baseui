@@ -4,9 +4,12 @@ import type { TimeslotSummaryDto } from '@cms/settings-contract';
 import { timeslotListQueryOptions } from '@cms/settings-data-access';
 import {
   Badge,
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -29,7 +32,7 @@ import {
 import { TimeslotListFilter } from './TimeslotListFilter';
 
 const column = createDataTableColumnHelper<TimeslotSummaryDto>();
-const FILTERED_PAGE_SIZE = 1000;
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 const yesNoBadge = (value: boolean) => (
   <Badge size="sm" tone={value ? 'success' : 'neutral'} variant="soft">
@@ -61,18 +64,17 @@ export const TimeslotTablePanel = ({
     [zoneOptions],
   );
 
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+  });
+
   const query = useQuery(
     timeslotListQueryOptions({
-      page: zoneFilter ? 1 : pagination.pageIndex + 1,
-      pageSize: zoneFilter ? FILTERED_PAGE_SIZE : pagination.pageSize,
+      ...listRequest,
       isActive: status === 'active',
-      sortBy: sorting[0]?.id,
-      sortDirection: sorting[0]
-        ? sorting[0].desc
-          ? 'desc'
-          : 'asc'
-        : undefined,
-      search: globalFilter.trim() || undefined,
     }),
     queryClient,
   );
@@ -180,19 +182,18 @@ export const TimeslotTablePanel = ({
     [onDeactivate, onEdit, zoneNames],
   );
 
-  const loadedItems = query.data?.items ?? [];
-  const filteredItems = zoneFilter
-    ? loadedItems.filter(
-        (item) => String(item.fgsSetupZoneId ?? '') === zoneFilter,
-      )
-    : loadedItems;
-  const pageStart = pagination.pageIndex * pagination.pageSize;
-  const items = zoneFilter
-    ? filteredItems.slice(pageStart, pageStart + pagination.pageSize)
-    : filteredItems;
-  const totalCount = zoneFilter
-    ? filteredItems.length
-    : (query.data?.totalCount ?? 0);
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    filterItems: zoneFilter
+      ? (loaded) =>
+          loaded.filter(
+            (item) => String(item.fgsSetupZoneId ?? '') === zoneFilter,
+          )
+      : undefined,
+  });
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -255,12 +256,7 @@ export const TimeslotTablePanel = ({
           enableSearch={false}
           errorState={query.isError ? loadErrorCopy : undefined}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

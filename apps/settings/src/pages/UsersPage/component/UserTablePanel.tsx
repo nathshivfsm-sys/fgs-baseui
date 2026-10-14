@@ -6,12 +6,14 @@ import type { RoleLookupDto, UserSummaryDto } from '@cms/user-contract';
 import {
   patchUserMutationOptions,
   userListQueryOptions,
-  type UserListParams,
 } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -30,6 +32,7 @@ import { UserListRoleFilter } from './UserListRoleFilter';
 import { UserRoleBadge } from './UserRoleBadge';
 
 const column = createDataTableColumnHelper<UserSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export interface UserTablePanelProps {
   activeCount: number;
@@ -59,20 +62,20 @@ export const UserTablePanel = ({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const params: UserListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-    search: globalFilter.trim() || undefined,
-    roleIds:
-      appliedRoleIds.length > 0
-        ? appliedRoleIds.map((id) => Number(id))
-        : undefined,
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+  });
 
-  const query = useQuery(userListQueryOptions(params), queryClient);
+  const query = useQuery(
+    userListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+    }),
+    queryClient,
+  );
   const patchMutation = useMutation(
     patchUserMutationOptions(queryClient),
     queryClient,
@@ -160,8 +163,25 @@ export const UserTablePanel = ({
     [onEdit, patchMutation],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const appliedRoleIdSet = useMemo(
+    () => new Set(appliedRoleIds),
+    [appliedRoleIds],
+  );
+
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    filterItems:
+      appliedRoleIds.length > 0
+        ? (loaded) =>
+            loaded.filter((user) =>
+              appliedRoleIdSet.has(String(user.roleId ?? '')),
+            )
+        : undefined,
+  });
+
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -221,12 +241,7 @@ export const UserTablePanel = ({
           enableRowSelection={false}
           enableSearch={false}
           getRowId={(row) => row.id}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

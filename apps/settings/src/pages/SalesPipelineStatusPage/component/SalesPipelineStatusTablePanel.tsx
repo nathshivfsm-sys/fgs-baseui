@@ -3,9 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import type { SalesPipelineStatusSummaryDto } from '@cms/settings-contract';
 import { salesPipelineStatusListQueryOptions } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -24,6 +27,7 @@ import { describeSalesPipelineStatusError } from '../util';
 import { PipelineBooleanCell } from './PipelineBooleanCell';
 
 const column = createDataTableColumnHelper<SalesPipelineStatusSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export const SalesPipelineStatusTablePanel = ({
   activeCount,
@@ -42,14 +46,18 @@ export const SalesPipelineStatusTablePanel = ({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+    serverManual: { sorting: true },
+  });
+
   const query = useQuery(
     salesPipelineStatusListQueryOptions({
-      page: pagination.pageIndex + 1,
-      pageSize: pagination.pageSize,
+      ...listRequest,
       isActive: status === 'active',
-      sortBy: sorting[0]?.id ?? 'displayOrder',
-      sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-      search: globalFilter.trim() || undefined,
     }),
     queryClient,
   );
@@ -148,8 +156,13 @@ export const SalesPipelineStatusTablePanel = ({
     [onDeactivate, onEdit],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+  });
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -198,12 +211,7 @@ export const SalesPipelineStatusTablePanel = ({
           errorState={query.isError ? loadErrorCopy : undefined}
           formatPageSizeOption={formatPageSize}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

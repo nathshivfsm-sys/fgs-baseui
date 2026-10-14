@@ -5,12 +5,14 @@ import type { TaxAuthoritySummaryDto } from '@cms/settings-contract';
 import {
   patchTaxAuthorityMutationOptions,
   taxAuthorityListQueryOptions,
-  type TaxAuthorityListParams,
 } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -29,6 +31,7 @@ import type { TaxStatusFilter } from '../types';
 import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<TaxAuthoritySummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export interface TaxAuthorityTablePanelProps {
   activeCount: number;
@@ -55,15 +58,21 @@ export function TaxAuthorityTablePanel({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const params: TaxAuthorityListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+    serverManual: { sorting: true },
+  });
 
-  const query = useQuery(taxAuthorityListQueryOptions(params), queryClient);
+  const query = useQuery(
+    taxAuthorityListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+    }),
+    queryClient,
+  );
   const patchMutation = useMutation(
     patchTaxAuthorityMutationOptions(queryClient),
     queryClient,
@@ -146,8 +155,14 @@ export function TaxAuthorityTablePanel({
     [onEdit, patchMutation],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+  });
+
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -188,12 +203,7 @@ export function TaxAuthorityTablePanel({
           enableRowSelection={false}
           enableSearch={false}
           getRowId={getRowId}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

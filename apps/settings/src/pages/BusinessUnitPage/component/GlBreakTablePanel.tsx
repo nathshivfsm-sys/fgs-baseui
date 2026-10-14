@@ -1,19 +1,19 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type {
-  GlBreakListParams,
-  GlBreakSummaryDto,
-} from '@cms/settings-contract';
+import type { GlBreakSummaryDto } from '@cms/settings-contract';
 import {
   glBreakListQueryOptions,
   patchGlBreakMutationOptions,
 } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   Callout,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
   DataTableStackedCell,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -21,6 +21,7 @@ import type { CatalogStatusFilter, GlBreakTablePanelProps } from '../types';
 import { describeGlBreakError, formatGlBreakAddress } from '../util';
 
 const column = createDataTableColumnHelper<GlBreakSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export const GlBreakTablePanel = ({
   activeCount,
@@ -42,16 +43,21 @@ export const GlBreakTablePanel = ({
     { id: 'code', desc: false },
   ]);
 
-  const params: GlBreakListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    breakLevel,
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    serverManual: { sorting: true },
+  });
 
-  const query = useQuery(glBreakListQueryOptions(params), queryClient);
+  const query = useQuery(
+    glBreakListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+      breakLevel,
+    }),
+    queryClient,
+  );
   const patchMutation = useMutation(
     patchGlBreakMutationOptions(queryClient),
     queryClient,
@@ -143,8 +149,14 @@ export const GlBreakTablePanel = ({
     [nameHeader, onEdit, patchMutation],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+  });
+
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -182,15 +194,7 @@ export const GlBreakTablePanel = ({
             enableRowSelection={false}
             enableSearch={false}
             getRowId={getRowId}
-            manual={{
-              pagination: true,
-              sorting: true,
-              pageCount: Math.max(
-                1,
-                Math.ceil(totalCount / pagination.pageSize),
-              ),
-              rowCount: totalCount,
-            }}
+            manual={manual}
             onPaginationChange={setPagination}
             onSortingChange={setSorting}
             rowLabel="entries"

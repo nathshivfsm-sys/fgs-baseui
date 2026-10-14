@@ -5,12 +5,14 @@ import type { ZoneSummaryDto } from '@cms/settings-contract';
 import {
   patchZoneMutationOptions,
   zoneListQueryOptions,
-  type ZoneListParams,
 } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import {
@@ -24,6 +26,7 @@ import { CatalogStatusTabBar } from '../../../shared';
 import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<ZoneSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export interface ZoneTablePanelProps {
   activeCount: number;
@@ -49,15 +52,20 @@ export function ZoneTablePanel({
     { id: 'code', desc: false },
   ]);
 
-  const params: ZoneListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    serverManual: { sorting: true },
+  });
 
-  const query = useQuery(zoneListQueryOptions(params), queryClient);
+  const query = useQuery(
+    zoneListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+    }),
+    queryClient,
+  );
   const patchMutation = useMutation(
     patchZoneMutationOptions(queryClient),
     queryClient,
@@ -133,8 +141,14 @@ export function ZoneTablePanel({
     [onEdit, patchMutation],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+  });
+
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -167,12 +181,7 @@ export function ZoneTablePanel({
           enableRowSelection={false}
           enableSearch={false}
           getRowId={getRowId}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}
           rowLabel="entries"
