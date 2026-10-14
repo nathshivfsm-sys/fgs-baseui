@@ -85,6 +85,11 @@ const EmployeesPage = lazy(() =>
     default: module.EmployeesPage,
   })),
 );
+const RolesPermissionsPage = lazy(() =>
+  import('./pages/RolesPermissionsPage').then((module) => ({
+    default: module.RolesPermissionsPage,
+  })),
+);
 const AddEmployeePage = lazy(() =>
   import('./pages/AddEmployeePage').then((module) => ({
     default: module.AddEmployeePage,
@@ -232,6 +237,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="users-and-payroll/employees"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <RolesPermissionsPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="users-and-payroll/roles-permissions"
         />
         <Route
           element={
