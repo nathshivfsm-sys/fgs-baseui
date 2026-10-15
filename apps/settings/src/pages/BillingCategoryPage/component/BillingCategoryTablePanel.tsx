@@ -5,9 +5,12 @@ import type { GloBillingCategoryTypeLookupDto } from '@cms/shared-contract';
 import type { BillingCategorySummaryDto } from '@cms/settings-contract';
 import { billingCategoryListQueryOptions } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -21,7 +24,10 @@ import type {
   BillingCategoryListFilters,
   BillingCategoryStatusFilter,
 } from '../types';
-import { toBillingCategoryListQueryFilters } from '../types';
+import {
+  countBillingCategoryListFilters,
+  toBillingCategoryListQueryFilters,
+} from '../types';
 import {
   describeBillingCategoryError,
   formatBillingCategoryTypeLabel,
@@ -29,6 +35,39 @@ import {
 import { BillingCategoryListFilter } from './BillingCategoryListFilter';
 
 const column = createDataTableColumnHelper<BillingCategorySummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
+
+const matchesBillingCategoryFilters = (
+  record: BillingCategorySummaryDto,
+  filters: BillingCategoryListFilters,
+) => {
+  const queryFilters = toBillingCategoryListQueryFilters(filters);
+  if (
+    queryFilters.billingCategoryType &&
+    record.billingCategoryType !== queryFilters.billingCategoryType
+  ) {
+    return false;
+  }
+  if (
+    queryFilters.isSystemDefined !== undefined &&
+    record.isSystemDefined !== queryFilters.isSystemDefined
+  ) {
+    return false;
+  }
+  if (
+    queryFilters.showToFieldTech !== undefined &&
+    record.showToFieldTech !== queryFilters.showToFieldTech
+  ) {
+    return false;
+  }
+  if (
+    queryFilters.allowToPick !== undefined &&
+    record.allowToPick !== queryFilters.allowToPick
+  ) {
+    return false;
+  }
+  return true;
+};
 
 const formatYesNo = (value: boolean | null | undefined) =>
   value ? 'Yes' : 'No';
@@ -68,17 +107,18 @@ export const BillingCategoryTablePanel = ({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const listFilters = toBillingCategoryListQueryFilters(appliedFilters);
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+    serverManual: { sorting: true },
+  });
 
   const query = useQuery(
     billingCategoryListQueryOptions({
-      page: pagination.pageIndex + 1,
-      pageSize: pagination.pageSize,
+      ...listRequest,
       isActive: status === 'active',
-      sortBy: sorting[0]?.id,
-      sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-      search: globalFilter.trim() || undefined,
-      ...listFilters,
     }),
     queryClient,
   );
@@ -170,8 +210,21 @@ export const BillingCategoryTablePanel = ({
     [onDeactivate, onEdit, typeOptions],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const hasPopoverFilters = countBillingCategoryListFilters(appliedFilters) > 0;
+
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+    filterItems: hasPopoverFilters
+      ? (loaded) =>
+          loaded.filter((record) =>
+            matchesBillingCategoryFilters(record, appliedFilters),
+          )
+      : undefined,
+  });
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -234,12 +287,7 @@ export const BillingCategoryTablePanel = ({
           enableSearch={false}
           errorState={query.isError ? loadErrorCopy : undefined}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

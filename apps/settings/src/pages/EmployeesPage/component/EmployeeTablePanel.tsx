@@ -5,12 +5,14 @@ import type { EmployeeSummaryDto } from '@cms/settings-contract';
 import {
   employeeListQueryOptions,
   patchEmployeeMutationOptions,
-  type EmployeeListParams,
 } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -35,6 +37,7 @@ import { EmployeeRoleBadge } from './EmployeeRoleBadge';
 import { useEmployeeListLoadToast } from './use-employee-list-load-toast';
 
 const column = createDataTableColumnHelper<EmployeeSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export const EmployeeTablePanel = ({
   activeCount,
@@ -55,20 +58,21 @@ export const EmployeeTablePanel = ({
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const params: EmployeeListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-    search: globalFilter.trim() || undefined,
-    roleIds:
-      appliedRoleIds.length > 0
-        ? appliedRoleIds.map((id) => Number(id))
-        : undefined,
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    globalFilter,
+    serverManual: { sorting: true },
+  });
 
-  const query = useQuery(employeeListQueryOptions(params), queryClient);
+  const query = useQuery(
+    employeeListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+    }),
+    queryClient,
+  );
   const patchMutation = useMutation(
     patchEmployeeMutationOptions(queryClient),
     queryClient,
@@ -183,8 +187,26 @@ export const EmployeeTablePanel = ({
     [onEdit, patchMutation, status],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const appliedRoleIdSet = useMemo(
+    () => new Set(appliedRoleIds),
+    [appliedRoleIds],
+  );
+
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+    filterItems:
+      appliedRoleIds.length > 0
+        ? (loaded) =>
+            loaded.filter((employee) =>
+              appliedRoleIdSet.has(String(employee.roleId ?? '')),
+            )
+        : undefined,
+  });
+
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -244,12 +266,7 @@ export const EmployeeTablePanel = ({
           enableRowSelection={false}
           enableSearch={false}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}

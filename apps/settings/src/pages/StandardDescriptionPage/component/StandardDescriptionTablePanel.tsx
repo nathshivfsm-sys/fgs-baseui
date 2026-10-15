@@ -3,9 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import type { SetupDescriptionSummaryDto } from '@cms/settings-contract';
 import { setupDescriptionListQueryOptions } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -25,7 +28,7 @@ import { describeStandardDescriptionError, findTradeLabel } from '../util';
 import { StandardDescriptionListFilter } from './StandardDescriptionListFilter';
 
 const column = createDataTableColumnHelper<SetupDescriptionSummaryDto>();
-const TRADE_FILTER_PAGE_SIZE = 1000;
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export const StandardDescriptionTablePanel = ({
   activeCount,
@@ -54,16 +57,17 @@ export const StandardDescriptionTablePanel = ({
   const effectiveTypeCode =
     appliedFilters.descriptionTypeCode || descriptionTypeCode;
   const tradeFilter = appliedFilters.tradeId;
-  const useClientTradeFilter = Boolean(tradeFilter);
+
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    globalFilter,
+  });
 
   const query = useQuery(
     setupDescriptionListQueryOptions({
-      page: useClientTradeFilter ? 1 : pagination.pageIndex + 1,
-      pageSize: useClientTradeFilter
-        ? TRADE_FILTER_PAGE_SIZE
-        : pagination.pageSize,
+      ...listRequest,
       isActive: status === 'active',
-      search: globalFilter.trim() || undefined,
       descriptionTypeCode: effectiveTypeCode,
     }),
     queryClient,
@@ -151,19 +155,18 @@ export const StandardDescriptionTablePanel = ({
     [onDeactivate, onEdit, onReactivate, showTradeColumn, tradeOptions],
   );
 
-  const loadedItems = query.data?.items ?? [];
-  const filteredItems = tradeFilter
-    ? loadedItems.filter(
-        (item) => String(item.fgsSetupTechTradeId ?? '') === tradeFilter,
-      )
-    : loadedItems;
-  const pageStart = pagination.pageIndex * pagination.pageSize;
-  const items = useClientTradeFilter
-    ? filteredItems.slice(pageStart, pageStart + pagination.pageSize)
-    : filteredItems;
-  const totalCount = useClientTradeFilter
-    ? filteredItems.length
-    : (query.data?.totalCount ?? 0);
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    filterItems: tradeFilter
+      ? (loaded) =>
+          loaded.filter(
+            (item) => String(item.fgsSetupTechTradeId ?? '') === tradeFilter,
+          )
+      : undefined,
+  });
 
   const tableStatus = query.isPending
     ? 'loading'
@@ -237,11 +240,7 @@ export const StandardDescriptionTablePanel = ({
           enableSearch={false}
           errorState={query.isError ? loadErrorCopy : undefined}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           formatPageSizeOption={formatPageSize}

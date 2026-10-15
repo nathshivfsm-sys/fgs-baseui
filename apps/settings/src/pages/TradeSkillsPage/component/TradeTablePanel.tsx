@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import type { TechTradeSummaryDto } from '@cms/settings-contract';
+import { techTradeListQueryOptions } from '@cms/settings-data-access';
 import {
-  techTradeListQueryOptions,
-  type TechTradeListParams,
-} from '@cms/settings-data-access';
-import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -23,6 +23,7 @@ import { describeTradeError, joinLabelsByIds } from '../util';
 import { useCatalogLoadToast } from './use-catalog-load-toast';
 
 const column = createDataTableColumnHelper<TechTradeSummaryDto>();
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export interface TradeTablePanelProps {
   activeCount: number;
@@ -52,15 +53,20 @@ export const TradeTablePanel = ({
     { id: 'tradeCode', desc: false },
   ]);
 
-  const params: TechTradeListParams = {
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-    isActive: status === 'active',
-    sortBy: sorting[0]?.id,
-    sortDirection: sorting[0]?.desc ? 'desc' : 'asc',
-  };
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    sorting,
+    serverManual: { sorting: true },
+  });
 
-  const query = useQuery(techTradeListQueryOptions(params), queryClient);
+  const query = useQuery(
+    techTradeListQueryOptions({
+      ...listRequest,
+      isActive: status === 'active',
+    }),
+    queryClient,
+  );
   useCatalogLoadToast(
     query,
     LOAD_TRADES_ERROR_TITLE,
@@ -131,8 +137,13 @@ export const TradeTablePanel = ({
     [onDelete, onEdit, skillLabelsById],
   );
 
-  const items = query.data?.items ?? [];
-  const totalCount = query.data?.totalCount ?? 0;
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    serverManual: { sorting: true },
+  });
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -160,12 +171,7 @@ export const TradeTablePanel = ({
           enableRowSelection={false}
           enableSearch={false}
           getRowId={getRowId}
-          manual={{
-            pagination: true,
-            sorting: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onPaginationChange={setPagination}
           onSortingChange={setSorting}
           rowLabel="entries"

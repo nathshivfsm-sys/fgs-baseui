@@ -3,9 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import type { ResolutionCodeSummaryDto } from '@cms/settings-contract';
 import { resolutionCodeListQueryOptions } from '@cms/settings-data-access';
 import {
+  buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  resolveDataTableRows,
+  type DataTableDataMode,
   type DataTableState,
 } from '@cms/ui';
 import { CatalogStatusTabBar } from '../../../shared';
@@ -24,7 +27,7 @@ import { describeResolutionCodeError, findResolutionTypeLabel } from '../util';
 import { ResolutionCodeListFilter } from './ResolutionCodeListFilter';
 
 const column = createDataTableColumnHelper<ResolutionCodeSummaryDto>();
-const FILTERED_PAGE_SIZE = 1000;
+const LIST_DATA_MODE: DataTableDataMode = 'client';
 
 export const ResolutionCodeTablePanel = ({
   activeCount,
@@ -44,12 +47,16 @@ export const ResolutionCodeTablePanel = ({
   const [globalFilter, setGlobalFilter] = useState('');
   const typeFilter = appliedFilters.typeId;
 
+  const listRequest = buildDataTableListRequest({
+    mode: LIST_DATA_MODE,
+    pagination,
+    globalFilter,
+  });
+
   const query = useQuery(
     resolutionCodeListQueryOptions({
-      page: typeFilter ? 1 : pagination.pageIndex + 1,
-      pageSize: typeFilter ? FILTERED_PAGE_SIZE : pagination.pageSize,
+      ...listRequest,
       isActive: status === 'active',
-      search: globalFilter.trim() || undefined,
     }),
     queryClient,
   );
@@ -126,19 +133,18 @@ export const ResolutionCodeTablePanel = ({
     [onDeactivate, onEdit],
   );
 
-  const loadedItems = query.data?.items ?? [];
-  const filteredItems = typeFilter
-    ? loadedItems.filter(
-        (item) => String(item.gloResolutionTypeId) === typeFilter,
-      )
-    : loadedItems;
-  const pageStart = pagination.pageIndex * pagination.pageSize;
-  const items = typeFilter
-    ? filteredItems.slice(pageStart, pageStart + pagination.pageSize)
-    : filteredItems;
-  const totalCount = typeFilter
-    ? filteredItems.length
-    : (query.data?.totalCount ?? 0);
+  const { rows: items, manual } = resolveDataTableRows({
+    mode: LIST_DATA_MODE,
+    pagination,
+    items: query.data?.items ?? [],
+    totalCount: query.data?.totalCount ?? 0,
+    filterItems: typeFilter
+      ? (loaded) =>
+          loaded.filter(
+            (item) => String(item.gloResolutionTypeId) === typeFilter,
+          )
+      : undefined,
+  });
   const tableStatus = query.isPending
     ? 'loading'
     : query.isFetching
@@ -200,11 +206,7 @@ export const ResolutionCodeTablePanel = ({
           enableSearch={false}
           errorState={query.isError ? loadErrorCopy : undefined}
           getRowId={(row) => String(row.id)}
-          manual={{
-            pagination: true,
-            pageCount: Math.max(1, Math.ceil(totalCount / pagination.pageSize)),
-            rowCount: totalCount,
-          }}
+          manual={manual}
           onGlobalFilterChange={setGlobalFilter}
           onPaginationChange={setPagination}
           formatPageSizeOption={formatPageSize}
