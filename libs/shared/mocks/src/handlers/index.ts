@@ -21,6 +21,7 @@ import { timeslotHandlers } from './timeslot';
 import { taxAuthorityHandlers } from './tax-authority';
 import { techSkillLevelHandlers } from './tech-skill-level';
 import { techTradeHandlers } from './tech-trade';
+import { workOrderBookingHandlers } from './work-order-booking';
 import { zoneHandlers } from './zone';
 import { userHandlers } from './user';
 import { userRoleHandlers } from './user-role';
@@ -39,6 +40,7 @@ export const handlers = [
   ...permissionHandlers,
   ...taxHandlers,
   ...timeslotHandlers,
+  ...workOrderBookingHandlers,
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,
   ...inventoryLocationHandlers,

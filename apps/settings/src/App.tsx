@@ -39,6 +39,11 @@ const TradeSkillsPage = lazy(() =>
     default: module.TradeSkillsPage,
   })),
 );
+const WorkOrderBookingPage = lazy(() =>
+  import('./pages/WorkOrderBookingPage').then((module) => ({
+    default: module.WorkOrderBookingPage,
+  })),
+);
 const JobTypePage = lazy(() =>
   import('./pages/JobTypePage').then((module) => ({
     default: module.JobTypePage,
@@ -221,6 +226,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/trade-skills"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <WorkOrderBookingPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/work-order-booking"
         />
         <Route
           element={

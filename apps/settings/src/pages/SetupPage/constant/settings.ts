@@ -98,6 +98,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
         'Configure booking workflow, work-order defaults, and behavior.',
       icon: 'SettingsWorkOrderBookingIcon',
       totalSettings: { count: 14, label: 'Settings' },
+      href: 'operations/work-order-booking',
     },
     {
       title: 'Job Type',
