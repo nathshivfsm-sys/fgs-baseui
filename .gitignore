@@ -79,3 +79,4 @@ Thumbs.db
 .mcp.json
 .cursor/mcp.json
 *CLAUDE.md
+.pnpm-store/

@@ -15,9 +15,12 @@ export {
   START_LOCATION_HOME,
   START_LOCATION_OFFICE,
   employeeCreateFormSchema,
+  employeeDetailToForm,
   emptyEmployeeCreateForm,
   toEmployeeCreateDto,
+  toEmployeePatchDto,
   type EmployeeCreateForm,
+  type EmployeeCreateFormDirtyFields,
 } from './employee.form';
 export {
   createEmployee,

@@ -58,8 +58,8 @@ export const EmployeesPage = ({ queryClient }: EmployeesPageProps) => {
     navigate('new');
   };
 
-  const handleEditEmployee = (_employee: EmployeeSummaryDto) => {
-    return;
+  const handleEditEmployee = (employee: EmployeeSummaryDto) => {
+    navigate(String(employee.id));
   };
 
   return (
