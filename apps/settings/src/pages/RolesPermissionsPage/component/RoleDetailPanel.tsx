@@ -11,11 +11,12 @@ import {
 import {
   CANCEL_LABEL,
   CLONE_ROLE_LABEL,
+  DELETE_ROLE_MENU_LABEL,
   NO_ROLE_SELECTED,
   SAVE_LABEL,
-  SEEDED_BADGE,
-  SEEDED_ROLE_CALLOUT,
-  SEEDED_ROLE_HINT,
+  SYSTEM_BADGE,
+  SYSTEM_ROLE_CALLOUT,
+  SYSTEM_ROLE_HINT,
   TAB_BACK_OFFICE,
   TAB_MOBILE,
   TAB_USERS,
@@ -27,13 +28,15 @@ import { RoleUsersTab } from './RoleUsersTab';
 
 export const RoleDetailPanel = ({
   activeTab,
+  allowedPermissionIds,
   canEdit,
   dirty,
   employeeCount,
   employees,
   employeesLoading,
   onCancel,
-  onClone,
+  onDeleteRole,
+  onOpenCloneDialog,
   onSave,
   onTabChange,
   onTogglePermission,
@@ -69,26 +72,33 @@ export const RoleDetailPanel = ({
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface">
       <div className="border-b border-border-subtle px-6 pb-4 pt-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-heading-3 font-bold text-foreground">
-            {roleName}
-          </h2>
-          {seeded ? (
-            <span className="rounded-md bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-800">
-              {SEEDED_BADGE}
-            </span>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-heading-3 font-bold text-foreground">
+              {roleName}
+            </h2>
+            {seeded ? (
+              <span className="rounded-md bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-800">
+                {SYSTEM_BADGE}
+              </span>
+            ) : null}
+          </div>
+          {!seeded ? (
+            <Button onClick={onDeleteRole} size="sm" variant="outline">
+              {DELETE_ROLE_MENU_LABEL}
+            </Button>
           ) : null}
         </div>
         {seeded ? (
           <BodySmall className="mt-1" color="foreground-subtle">
-            {SEEDED_ROLE_HINT}
+            {SYSTEM_ROLE_HINT}
           </BodySmall>
         ) : null}
         {seeded ? (
           <Callout className="mt-3" variant="info">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <BodySmall color="foreground">{SEEDED_ROLE_CALLOUT}</BodySmall>
-              <Button onClick={onClone} size="sm" variant="outline">
+              <BodySmall color="foreground">{SYSTEM_ROLE_CALLOUT}</BodySmall>
+              <Button onClick={onOpenCloneDialog} size="sm" variant="outline">
                 {CLONE_ROLE_LABEL}
               </Button>
             </div>
@@ -117,6 +127,7 @@ export const RoleDetailPanel = ({
               </div>
             ) : (
               <BackOfficePermissionsTab
+                allowedPermissionIds={allowedPermissionIds}
                 canEdit={canEdit}
                 catalog={permissionCatalog}
                 onTogglePermission={onTogglePermission}
@@ -132,6 +143,7 @@ export const RoleDetailPanel = ({
               </div>
             ) : (
               <MobilePermissionsTab
+                allowedPermissionIds={allowedPermissionIds}
                 canEdit={canEdit}
                 catalog={permissionCatalog}
                 onTogglePermission={onTogglePermission}

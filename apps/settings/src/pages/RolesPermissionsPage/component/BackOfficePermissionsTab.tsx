@@ -11,6 +11,7 @@ import type { BackOfficePermissionsTabProps } from '../types';
 import { PermissionToggle } from './PermissionToggle';
 
 export const BackOfficePermissionsTab = ({
+  allowedPermissionIds,
   canEdit,
   catalog,
   onTogglePermission,
@@ -29,7 +30,7 @@ export const BackOfficePermissionsTab = ({
       ) : (
         <PermissionToggle
           checked={selectedPermissionIds.has(permissionId)}
-          disabled={!canEdit}
+          disabled={!canEdit || !allowedPermissionIds.has(permissionId)}
           id={`permission-${permissionId}`}
           label={label}
           onCheckedChange={(next) => onTogglePermission(permissionId, next)}
@@ -78,7 +79,7 @@ export const BackOfficePermissionsTab = ({
             >
               <PermissionToggle
                 checked={selectedPermissionIds.has(permission.id)}
-                disabled={!canEdit}
+                disabled={!canEdit || !allowedPermissionIds.has(permission.id)}
                 id={`settings-permission-${permission.id}`}
                 label={permission.name ?? permission.resource ?? 'Setting'}
                 onCheckedChange={(next) =>

@@ -57,6 +57,7 @@ export const roleCloneDtoSchema = z.object({
   roleCode: nullableText,
   name: nullableText,
   description: nullableText,
+  parentRoleId: z.number().nullish(),
   displayOrder: z.number().nullish(),
   fgsPermissionIds: z.array(z.number()).nullish(),
 });

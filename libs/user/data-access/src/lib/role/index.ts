@@ -11,6 +11,8 @@ export {
   cloneRoleMutationOptions,
   createRole,
   createRoleMutationOptions,
+  deleteRole,
+  deleteRoleMutationOptions,
   patchRole,
   patchRoleMutationOptions,
   updateRole,

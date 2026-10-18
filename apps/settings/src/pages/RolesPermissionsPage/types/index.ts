@@ -1,4 +1,6 @@
+export type { CloneRoleDialogProps } from './clone-role-dialog.types';
 export type { BackOfficePermissionsTabProps } from './back-office-permissions-tab.types';
+export type { RoleDeleteDialogProps } from './role-delete-dialog.types';
 export type { MobilePermissionsTabProps } from './mobile-permissions-tab.types';
 export type { PermissionToggleProps } from './permission-toggle.types';
 export type { RoleUsersTabProps } from './role-users-tab.types';
