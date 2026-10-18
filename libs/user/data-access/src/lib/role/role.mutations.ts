@@ -14,6 +14,7 @@ import {
   roleCollectionEndpoint,
   roleDetailEndpoint,
 } from './role.endpoints';
+import { rolePermissionKeys } from '../role-permission/role-permission.keys';
 import { roleKeys } from './role.keys';
 
 async function parseRoleDetail(body: unknown): Promise<RoleDetailDto> {
@@ -71,6 +72,16 @@ export const cloneRole = async (
   return parseRoleDetail(response);
 };
 
+export const deleteRole = async (
+  id: number,
+  context?: QueryRequestContext,
+): Promise<void> => {
+  await customFetch<unknown>(roleDetailEndpoint(id), {
+    method: 'DELETE',
+    signal: context?.signal,
+  });
+};
+
 function invalidateRoles(queryClient: QueryClient) {
   return queryClient.invalidateQueries({ queryKey: roleKeys.all });
 }
@@ -103,5 +114,20 @@ export const cloneRoleMutationOptions = (queryClient: QueryClient) =>
     mutationFn: ({ id, body }: { id: number; body: RoleCloneDto }) =>
       cloneRole(id, body),
     meta: { feature: 'role', operation: 'clone' },
-    onSuccess: () => invalidateRoles(queryClient),
+    onSuccess: (data) => {
+      invalidateRoles(queryClient);
+      return queryClient.invalidateQueries({
+        queryKey: rolePermissionKeys.byRole(data.id),
+      });
+    },
+  });
+
+export const deleteRoleMutationOptions = (queryClient: QueryClient) =>
+  mutationOptions({
+    mutationFn: (id: number) => deleteRole(id),
+    meta: { feature: 'role', operation: 'delete' },
+    onSuccess: (_data, id) => {
+      invalidateRoles(queryClient);
+      queryClient.removeQueries({ queryKey: rolePermissionKeys.byRole(id) });
+    },
   });

@@ -162,6 +162,7 @@ import {
 } from './fixtures/setup-catalog-response';
 import {
   createRoleMutationOptions,
+  deleteRoleMutationOptions,
   createRolePermissionMutationOptions,
   createUserRoleMutationOptions,
   createUsersMutationOptions,
@@ -1580,6 +1581,22 @@ describe('role through customFetch', () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role');
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(roleKeys.list({}))?.isInvalidated).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+
+  it('DELETEs a role and invalidates role queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(null));
+    const client = createCmsQueryClient();
+    client.setQueryData(roleKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, deleteRoleMutationOptions(client));
+    await mutation.execute(2);
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/role/2');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
     expect(client.getQueryState(roleKeys.list({}))?.isInvalidated).toBe(true);
     disposeCmsQueryClient(client);
   });

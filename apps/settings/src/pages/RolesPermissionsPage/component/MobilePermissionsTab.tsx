@@ -4,6 +4,7 @@ import type { MobilePermissionsTabProps } from '../types';
 import { PermissionToggle } from './PermissionToggle';
 
 export const MobilePermissionsTab = ({
+  allowedPermissionIds,
   canEdit,
   catalog,
   onTogglePermission,
@@ -25,7 +26,9 @@ export const MobilePermissionsTab = ({
               >
                 <PermissionToggle
                   checked={selectedPermissionIds.has(permission.id)}
-                  disabled={!canEdit}
+                  disabled={
+                    !canEdit || !allowedPermissionIds.has(permission.id)
+                  }
                   id={`mobile-permission-${permission.id}`}
                   label={permission.name ?? 'Permission'}
                   onCheckedChange={(next) =>

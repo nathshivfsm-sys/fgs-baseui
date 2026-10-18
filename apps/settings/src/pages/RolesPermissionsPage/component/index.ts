@@ -1,5 +1,7 @@
 export { BackOfficePermissionsTab } from './BackOfficePermissionsTab';
+export { CloneRoleDialog } from './CloneRoleDialog';
 export { MobilePermissionsTab } from './MobilePermissionsTab';
+export { RoleDeleteDialog } from './RoleDeleteDialog';
 export { PermissionToggle } from './PermissionToggle';
 export { RoleDetailPanel } from './RoleDetailPanel';
 export { RoleListPanel } from './RoleListPanel';

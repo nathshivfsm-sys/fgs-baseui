@@ -1,6 +1,7 @@
 import type { PermissionLookupDto } from '@cms/user-contract';
 
 export interface MobilePermissionsTabProps {
+  allowedPermissionIds: ReadonlySet<number>;
   canEdit: boolean;
   catalog: readonly PermissionLookupDto[];
   onTogglePermission: (permissionId: number, checked: boolean) => void;

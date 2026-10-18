@@ -12,6 +12,7 @@ export type RoleDetailTab = 'back-office' | 'mobile' | 'users';
 export interface RoleListPanelProps {
   customRoles: RoleSummaryDto[];
   employeeCountByRole: Map<number, number>;
+  onDeleteRole: (roleId: number) => void;
   onSelectRole: (roleId: number) => void;
   selectedRoleId: number | null;
   seededRoles: RoleSummaryDto[];
@@ -19,13 +20,15 @@ export interface RoleListPanelProps {
 
 export interface RoleDetailPanelProps {
   activeTab: RoleDetailTab;
+  allowedPermissionIds: ReadonlySet<number>;
   canEdit: boolean;
   dirty: boolean;
   employeeCount: number;
   employees: EmployeeSummaryDto[];
   employeesLoading: boolean;
   onCancel: () => void;
-  onClone: () => void;
+  onOpenCloneDialog: () => void;
+  onDeleteRole: () => void;
   onSave: () => void;
   onTabChange: (tab: RoleDetailTab) => void;
   onTogglePermission: (permissionId: number, checked: boolean) => void;

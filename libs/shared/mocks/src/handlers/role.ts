@@ -155,13 +155,24 @@ export const roleHandlers = [
       roleCode: parsed.data.roleCode ?? `${source.roleCode}-COPY`,
       name: parsed.data.name ?? `${source.name ?? 'Role'} Copy`,
       description: parsed.data.description ?? source.description,
-      parentRoleId: source.parentRoleId,
+      parentRoleId: parsed.data.parentRoleId ?? source.id,
       isBuiltIn: false,
       displayOrder: parsed.data.displayOrder ?? source.displayOrder,
       isActive: true,
     };
     roles.push(cloned);
     return setupOk(cloned, 201);
+  }),
+
+  http.delete('/api/v1/role/:id', ({ params }) => {
+    const record = findRole(parseRouteId(params['id']));
+    if (!record) return setupError(404, 'Role not found.');
+    if (record.isBuiltIn) {
+      return setupError(403, 'System roles cannot be deleted.');
+    }
+    const index = roles.findIndex((item) => item.id === record.id);
+    if (index >= 0) roles.splice(index, 1);
+    return setupOk(null);
   }),
 
   http.get('/api/v1/role/:id', ({ params }) => {

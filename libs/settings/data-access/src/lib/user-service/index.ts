@@ -4,6 +4,7 @@
  */
 export {
   cloneRoleMutationOptions,
+  deleteRoleMutationOptions,
   createUsersMutationOptions,
   patchUserMutationOptions,
   permissionLookupQueryOptions,
