@@ -377,6 +377,16 @@ export {
   type SetupDescriptionUpdateDto,
 } from './lib/setup-description.schema';
 export {
+  earliestAvailabilityUnitSchema,
+  workOrderBookingConfigDtoSchema,
+  workOrderBookingConfigResponseSchema,
+  workOrderBookingConfigUpdateDtoSchema,
+  type EarliestAvailabilityRuleDto,
+  type EarliestAvailabilityUnit,
+  type WorkOrderBookingConfigDto,
+  type WorkOrderBookingConfigUpdateDto,
+} from './lib/work-order-booking.schema';
+export {
   sourceCreateDtoSchema,
   sourceDetailDtoSchema,
   sourceDetailResponseSchema,
