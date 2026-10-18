@@ -1153,6 +1153,50 @@ export const setupDescriptionLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const tagListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 501,
+        tagCode: 'VIP',
+        name: 'VIP Customer',
+        description: 'High-value repeat customer',
+        backgroundColor: '#1F4E79',
+        textColor: '#FFFFFF',
+        iconFileId: 12,
+        usageCount: 42,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const tagDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: tagListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const tagLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 501,
+      tagCode: 'VIP',
+      name: 'VIP Customer',
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const roleLookupResponseFixture = {
   success: true,
   statusCode: 200,

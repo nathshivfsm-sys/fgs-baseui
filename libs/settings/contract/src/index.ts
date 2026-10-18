@@ -404,3 +404,21 @@ export {
   type SourceSummaryDto,
   type SourceUpdateDto,
 } from './lib/source.schema';
+export {
+  tagCreateDtoSchema,
+  tagDetailDtoSchema,
+  tagDetailResponseSchema,
+  tagListResponseSchema,
+  tagLookupDtoSchema,
+  tagLookupResponseSchema,
+  tagPatchDtoSchema,
+  tagSummaryDtoSchema,
+  tagUpdateDtoSchema,
+  type TagCreateDto,
+  type TagDetailDto,
+  type TagListParams,
+  type TagLookupDto,
+  type TagPatchDto,
+  type TagSummaryDto,
+  type TagUpdateDto,
+} from './lib/tag.schema';

@@ -4,6 +4,7 @@ import { businessTypeHandlers } from './business-type';
 import { jobCategoryHandlers } from './job-category';
 import { jobTypeHandlers } from './job-type';
 import { subcategoryHandlers } from './subcategory';
+import { tagHandlers } from './tag';
 import { employeeHandlers } from './employee';
 import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
@@ -60,5 +61,6 @@ export const handlers = [
   ...jobCategoryHandlers,
   ...jobTypeHandlers,
   ...subcategoryHandlers,
+  ...tagHandlers,
   ...attachmentHandlers,
 ];

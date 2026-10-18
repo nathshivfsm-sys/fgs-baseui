@@ -59,6 +59,11 @@ const ResolutionCodePage = lazy(() =>
     default: module.ResolutionCodePage,
   })),
 );
+const TagsPage = lazy(() =>
+  import('./pages/TagsPage').then((module) => ({
+    default: module.TagsPage,
+  })),
+);
 const StandardDescriptionPage = lazy(() =>
   import('./pages/StandardDescriptionPage').then((module) => ({
     default: module.StandardDescriptionPage,
@@ -186,6 +191,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="operations/resolution-codes"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <TagsPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="operations/tags"
         />
         <Route
           element={
