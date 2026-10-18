@@ -133,6 +133,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       description: 'Create and manage operational tags for classification.',
       icon: 'SettingsTagsIcon',
       totalSettings: { count: 66, label: 'Tags' },
+      href: 'operations/tags',
     },
     {
       title: 'Setup Descriptions',

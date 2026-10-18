@@ -17,6 +17,9 @@ import {
   subcategoryKeys,
   subcategoryListQueryOptions,
   subcategoryLookupQueryOptions,
+  tagKeys,
+  tagListQueryOptions,
+  tagLookupQueryOptions,
   billingCategoryKeys,
   billingCategoryListQueryOptions,
   billingCategoryLookupQueryOptions,
@@ -25,6 +28,7 @@ import {
   createJobCategoryMutationOptions,
   createJobTypeMutationOptions,
   createSubcategoryMutationOptions,
+  createTagMutationOptions,
   createEmployeeMutationOptions,
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
@@ -106,6 +110,9 @@ import {
   subcategoryDetailResponseFixture,
   subcategoryListResponseFixture,
   subcategoryLookupResponseFixture,
+  tagDetailResponseFixture,
+  tagListResponseFixture,
+  tagLookupResponseFixture,
   employeeDetailResponseFixture,
   employeeListResponseFixture,
   employeeLookupResponseFixture,
@@ -1202,6 +1209,55 @@ describe('subcategory through customFetch', () => {
     expect(client.getQueryState(subcategoryKeys.list({}))?.isInvalidated).toBe(
       true,
     );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('tag through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(tagListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(tagLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      tagListQueryOptions({ tagCode: 'VIP', name: 'VIP Customer' }),
+    );
+    const lookup = await client.fetchQuery(tagLookupQueryOptions(false));
+
+    expect(page.items[0]?.tagCode).toBe('VIP');
+    expect(lookup[0]?.name).toBe('VIP Customer');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/tag?tagCode=VIP&name=VIP+Customer',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/tag/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates tag queries', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(tagDetailResponseFixture, 201));
+    const client = createCmsQueryClient();
+    client.setQueryData(tagKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createTagMutationOptions(client));
+    await mutation.execute({
+      tagCode: 'VIP',
+      name: 'VIP Customer',
+      description: 'High-value repeat customer',
+      backgroundColor: '#1F4E79',
+      textColor: '#FFFFFF',
+      iconFileId: 12,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/tag');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(tagKeys.list({}))?.isInvalidated).toBe(true);
     disposeCmsQueryClient(client);
   });
 });
