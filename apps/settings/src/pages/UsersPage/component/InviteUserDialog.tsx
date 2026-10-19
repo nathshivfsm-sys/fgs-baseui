@@ -12,7 +12,11 @@ import {
   SectionCard,
   type SelectOption,
 } from '@cms/ui';
-import { FormEmailInput, FormTextInput } from '../../../shared/component/form';
+import {
+  FormEmailInput,
+  FormPhoneInput,
+  FormTextInput,
+} from '../../../shared/component/form';
 import { INVITE_USER_DESCRIPTION, INVITE_USER_TITLE } from '../constant';
 import {
   emptyInviteUserForm,
@@ -113,7 +117,7 @@ export const InviteUserDialog = ({
                     A verification email will be sent to this address
                   </p>
                 </div>
-                <FormTextInput<InviteUserForm>
+                <FormPhoneInput<InviteUserForm>
                   label="Phone"
                   name="phoneNumber"
                   placeholder="Enter phone"

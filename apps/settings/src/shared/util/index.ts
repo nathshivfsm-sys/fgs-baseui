@@ -1,4 +1,5 @@
 export { describeCatalogError } from './describe-catalog-error';
+export { requiredPhoneNumberSchema } from './required-phone-number.schema';
 export {
   toCitySelectOptions,
   toCountrySelectOptions,

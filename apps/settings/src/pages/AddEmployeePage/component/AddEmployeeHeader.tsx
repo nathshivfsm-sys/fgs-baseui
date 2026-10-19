@@ -14,16 +14,16 @@ import {
   SETUP_USERS_PAYROLL_LABEL,
   SETUP_USERS_PAYROLL_TAB,
 } from '../../../shared';
-import {
-  EMPLOYEES_LIST_LABEL,
-  PAGE_DESCRIPTION,
-  PAGE_TITLE,
-} from '../constant';
+import { EMPLOYEES_LIST_LABEL } from '../constant';
+import type { AddEmployeeHeaderProps } from '../types';
 
 const CRUMB_LINK_CLASS =
   'rounded-sm outline-none transition-colors hover:text-action focus-visible:ring-[3px] focus-visible:ring-ring/30';
 
-export const AddEmployeeHeader = () => (
+export const AddEmployeeHeader = ({
+  description,
+  title,
+}: AddEmployeeHeaderProps) => (
   <header className="border-b border-border px-0 pb-4">
     <Breadcrumb>
       <BreadcrumbList>
@@ -44,17 +44,17 @@ export const AddEmployeeHeader = () => (
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <Link className={CRUMB_LINK_CLASS} to="..">
+          <Link className={CRUMB_LINK_CLASS} relative="path" to="..">
             {EMPLOYEES_LIST_LABEL}
           </Link>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{PAGE_TITLE}</BreadcrumbPage>
+          <BreadcrumbPage>{title}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-    <Heading1 className="mt-2">{PAGE_TITLE}</Heading1>
-    <BodySmall color="foreground-subtle">{PAGE_DESCRIPTION}</BodySmall>
+    <Heading1 className="mt-2">{title}</Heading1>
+    <BodySmall color="foreground-subtle">{description}</BodySmall>
   </header>
 );

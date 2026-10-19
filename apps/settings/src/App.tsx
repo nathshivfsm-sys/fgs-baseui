@@ -280,6 +280,14 @@ export const App = ({ runtime }: AppProps) => (
           }
           path="users-and-payroll/employees/new"
         />
+        <Route
+          element={
+            <RouteBoundary>
+              <AddEmployeePage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="users-and-payroll/employees/:employeeId"
+        />
       </Routes>
     </div>
   </RemoteErrorBoundary>

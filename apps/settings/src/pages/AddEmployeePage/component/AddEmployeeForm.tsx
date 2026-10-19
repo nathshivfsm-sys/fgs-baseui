@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -45,7 +45,14 @@ import { EmployeeFormSection } from './EmployeeFormSection';
 import { FormSelectField, FormSwitchField } from './form';
 
 export interface AddEmployeeFormProps {
-  onSubmit: (values: EmployeeCreateForm, profilePhotoFile: File | null) => void;
+  hasExistingPhoto?: boolean;
+  initialValues?: EmployeeCreateForm;
+  onDirtyChange?: (dirty: boolean) => void;
+  onSubmit: (
+    values: EmployeeCreateForm,
+    profilePhotoFile: File | null,
+    dirtyFields: Partial<Record<keyof EmployeeCreateForm, boolean>>,
+  ) => void;
   queryClient: QueryClient;
 }
 
@@ -79,18 +86,27 @@ function toLookupOptions(
 }
 
 export const AddEmployeeForm = ({
+  hasExistingPhoto = false,
+  initialValues,
+  onDirtyChange,
   onSubmit,
   queryClient,
 }: AddEmployeeFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
-  const [photoLabel, setPhotoLabel] = useState('Upload');
+  const [photoLabel, setPhotoLabel] = useState(
+    hasExistingPhoto ? 'Photo on file' : 'Upload',
+  );
 
   const form = useForm<EmployeeCreateForm>({
     mode: 'onBlur',
     resolver: zodResolver(employeeCreateFormSchema),
-    defaultValues: emptyEmployeeCreateForm(),
+    defaultValues: initialValues ?? emptyEmployeeCreateForm(),
   });
+
+  useEffect(() => {
+    onDirtyChange?.(form.formState.isDirty || profilePhotoFile !== null);
+  }, [form.formState.isDirty, onDirtyChange, profilePhotoFile]);
 
   const mobileAccess = form.watch('mobileAccess');
   const country = form.watch('country');
@@ -190,15 +206,19 @@ export const AddEmployeeForm = ({
       form.setValue('roleName', '');
       return;
     }
-    form.setValue('roleName', user.roleName ?? '');
+    form.setValue('roleName', user.roleName ?? '', { shouldDirty: true });
     if (!form.getValues('displayName').trim()) {
-      form.setValue('displayName', user.displayName ?? '');
+      form.setValue('displayName', user.displayName ?? '', {
+        shouldDirty: true,
+      });
     }
     if (!form.getValues('officeEmail').trim() && user.email) {
-      form.setValue('officeEmail', user.email);
+      form.setValue('officeEmail', user.email, { shouldDirty: true });
     }
     if (!form.getValues('officePhone').trim() && user.phoneNumber) {
-      form.setValue('officePhone', phoneDigitsOnly(user.phoneNumber));
+      form.setValue('officePhone', phoneDigitsOnly(user.phoneNumber), {
+        shouldDirty: true,
+      });
     }
   };
 
@@ -213,7 +233,11 @@ export const AddEmployeeForm = ({
   };
 
   const handleFormSubmit = (values: EmployeeCreateForm) => {
-    onSubmit(values, profilePhotoFile);
+    const dirtyFields: Partial<Record<keyof EmployeeCreateForm, boolean>> = {};
+    for (const [key, value] of Object.entries(form.formState.dirtyFields)) {
+      if (value) dirtyFields[key as keyof EmployeeCreateForm] = true;
+    }
+    onSubmit(values, profilePhotoFile, dirtyFields);
   };
 
   return (

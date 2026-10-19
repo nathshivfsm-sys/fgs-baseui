@@ -1,10 +1,12 @@
-import { z } from 'zod';
 import type { UserSummaryDto } from '@cms/user-contract';
+import { phoneDigitsOnly } from '@cms/ui';
+import { requiredPhoneNumberSchema } from '../../../shared/util';
+import { z } from 'zod';
 
 export const editUserFormSchema = z.object({
   displayName: z.string().trim().min(1, 'User name is required'),
   email: z.string().trim().email('Enter a valid email address'),
-  phoneNumber: z.string().trim().min(1, 'Phone is required'),
+  phoneNumber: requiredPhoneNumberSchema,
   roleId: z.string().trim().min(1, 'Role is required'),
 });
 
@@ -20,6 +22,6 @@ export const emptyEditUserForm = (): EditUserForm => ({
 export const toEditUserForm = (user: UserSummaryDto): EditUserForm => ({
   displayName: user.displayName?.trim() ?? '',
   email: user.email?.trim() ?? '',
-  phoneNumber: user.phoneNumber?.trim() ?? '',
+  phoneNumber: phoneDigitsOnly(user.phoneNumber ?? ''),
   roleId: user.roleId != null ? String(user.roleId) : '',
 });

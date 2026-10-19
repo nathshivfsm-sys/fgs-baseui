@@ -1,1 +1,6 @@
-export type { AddEmployeePageProps } from './add-employee-page.types';
+export type {
+  AddEmployeeFormFooterProps,
+  AddEmployeeHeaderProps,
+  AddEmployeePageProps,
+  EmployeeDiscardDialogProps,
+} from './add-employee-page.types';

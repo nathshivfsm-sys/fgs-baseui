@@ -12,7 +12,11 @@ import {
   SectionCard,
   type SelectOption,
 } from '@cms/ui';
-import { FormEmailInput, FormTextInput } from '../../../shared/component/form';
+import {
+  FormEmailInput,
+  FormPhoneInput,
+  FormTextInput,
+} from '../../../shared/component/form';
 import { EDIT_USER_DESCRIPTION, EDIT_USER_TITLE } from '../constant';
 import {
   editUserFormSchema,
@@ -117,7 +121,7 @@ export const EditUserDialog = ({
                     Email cannot be changed after the user is created
                   </p>
                 </div>
-                <FormTextInput<EditUserForm>
+                <FormPhoneInput<EditUserForm>
                   label="Phone"
                   name="phoneNumber"
                   placeholder="Enter phone"
