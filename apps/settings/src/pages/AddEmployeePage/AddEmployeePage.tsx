@@ -109,8 +109,13 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
     dirtyFields: EmployeeCreateFormDirtyFields,
   ) => {
     try {
+      const profilePhotoFileId = photo.uploadedFileId;
+
       if (isEdit && employeeId != null) {
         const patch = toEmployeePatchDto(values, dirtyFields);
+        if (profilePhotoFileId != null) {
+          patch.profilePhotoFileId = profilePhotoFileId;
+        }
         if (Object.keys(patch).length > 0) {
           await patchEmployeeMutation.mutateAsync({
             id: employeeId,
@@ -124,10 +129,11 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
         return;
       }
 
-      const created = await createEmployeeMutation.mutateAsync(
-        toEmployeeCreateDto(values),
-      );
-      await photo.uploadPendingPhoto(created.id);
+      const createBody = toEmployeeCreateDto(values);
+      if (profilePhotoFileId != null) {
+        createBody.profilePhotoFileId = profilePhotoFileId;
+      }
+      await createEmployeeMutation.mutateAsync(createBody);
 
       alert.success(SAVE_SUCCESS_TITLE, {
         description: SAVE_SUCCESS_MESSAGE,
