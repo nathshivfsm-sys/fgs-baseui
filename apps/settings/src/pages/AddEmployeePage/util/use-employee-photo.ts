@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, type QueryClient } from '@tanstack/react-query';
-import { patchEmployeeMutationOptions } from '@cms/settings-data-access';
 import {
   attachmentDownloadQueryOptions,
   createAttachmentMutationOptions,
@@ -11,6 +10,8 @@ import { PHOTO_UPLOAD_ERROR_TITLE } from '../constant';
 
 const EMPLOYEE_ENTITY_TYPE = 'Employee';
 const PROFILE_PHOTO_CATEGORY = 'profilePhoto';
+/** Create has no employee id yet. The file is linked on save via profilePhotoFileId. */
+const UNASSIGNED_ENTITY_ID = 0;
 
 interface UseEmployeePhotoParams {
   employeeId: number | undefined;
@@ -28,17 +29,12 @@ export const useEmployeePhoto = ({
   existingFileId,
   queryClient,
 }: UseEmployeePhotoParams) => {
-  const pendingFileRef = useRef<File | null>(null);
   const localPreviewUrlRef = useRef<string | null>(null);
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
-  const [hasPendingPhoto, setHasPendingPhoto] = useState(false);
+  const [uploadedFileId, setUploadedFileId] = useState<number | null>(null);
 
   const createAttachmentMutation = useMutation(
     createAttachmentMutationOptions(queryClient),
-    queryClient,
-  );
-  const patchEmployeeMutation = useMutation(
-    patchEmployeeMutationOptions(queryClient),
     queryClient,
   );
 
@@ -84,52 +80,29 @@ export const useEmployeePhoto = ({
     setLocalPreviewUrl(nextUrl);
   };
 
-  const uploadProfilePhoto = async (recordId: number, file: File) => {
-    const attachment = await createAttachmentMutation.mutateAsync({
-      file,
-      entityType: EMPLOYEE_ENTITY_TYPE,
-      entityId: recordId,
-      category: PROFILE_PHOTO_CATEGORY,
-    });
-    await patchEmployeeMutation.mutateAsync({
-      id: recordId,
-      body: { profilePhotoFileId: attachment.attachmentId },
-    });
-    pendingFileRef.current = null;
-    setHasPendingPhoto(false);
-  };
-
   const handleFileSelected = async (file: File) => {
     replaceLocalPreview(file);
-    if (employeeId == null) {
-      pendingFileRef.current = file;
-      setHasPendingPhoto(true);
-      return;
-    }
     try {
-      await uploadProfilePhoto(employeeId, file);
+      const attachment = await createAttachmentMutation.mutateAsync({
+        file,
+        entityType: EMPLOYEE_ENTITY_TYPE,
+        entityId: employeeId ?? UNASSIGNED_ENTITY_ID,
+        category: PROFILE_PHOTO_CATEGORY,
+      });
+      setUploadedFileId(attachment.attachmentId);
     } catch (error) {
-      pendingFileRef.current = file;
-      setHasPendingPhoto(true);
       alert.error(PHOTO_UPLOAD_ERROR_TITLE, {
         description: describeEmployeeError(error),
       });
     }
   };
 
-  const uploadPendingPhoto = async (recordId: number) => {
-    const file = pendingFileRef.current;
-    if (!file) return;
-    await uploadProfilePhoto(recordId, file);
-  };
-
   return {
     handleFileSelected,
-    hasPendingPhoto,
+    hasPendingPhoto: uploadedFileId != null,
     hasStoredPhoto: storedFileId != null,
-    isUploading:
-      createAttachmentMutation.isPending || patchEmployeeMutation.isPending,
+    isUploading: createAttachmentMutation.isPending,
     previewUrl: localPreviewUrl ?? remotePreviewUrl,
-    uploadPendingPhoto,
+    uploadedFileId,
   };
 };
