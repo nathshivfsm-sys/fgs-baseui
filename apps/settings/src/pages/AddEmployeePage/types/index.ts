@@ -3,4 +3,5 @@ export type {
   AddEmployeeHeaderProps,
   AddEmployeePageProps,
   EmployeeDiscardDialogProps,
+  EmployeePhotoFieldProps,
 } from './add-employee-page.types';

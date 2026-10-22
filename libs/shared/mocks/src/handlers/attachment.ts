@@ -241,10 +241,32 @@ function createFromUpload(
 
 const placeholderBytes = new Uint8Array([137, 80, 78, 71]);
 
-function binaryOk(): HttpResponse<Uint8Array> {
-  return new HttpResponse(placeholderBytes, {
+const uploadedBytes = new Map<
+  number,
+  { body: ArrayBuffer; contentType: string }
+>();
+
+function binaryOk(
+  attachmentId?: number,
+): HttpResponse<ArrayBuffer | Uint8Array> {
+  const stored =
+    attachmentId == null ? undefined : uploadedBytes.get(attachmentId);
+  if (!stored) {
+    return new HttpResponse(placeholderBytes, {
+      status: 200,
+      headers: { 'Content-Type': 'application/octet-stream' },
+    });
+  }
+  return new HttpResponse(stored.body, {
     status: 200,
-    headers: { 'Content-Type': 'application/octet-stream' },
+    headers: { 'Content-Type': stored.contentType },
+  });
+}
+
+async function rememberUpload(attachmentId: number, file: Blob): Promise<void> {
+  uploadedBytes.set(attachmentId, {
+    body: await file.arrayBuffer(),
+    contentType: file.type || 'application/octet-stream',
   });
 }
 
@@ -266,16 +288,18 @@ export const attachmentHandlers = [
   http.get(
     '/api/v1/attachment/:entityType/:attachmentId/thumbnail',
     ({ params }) => {
-      const record = findAttachment(parseRouteId(params['attachmentId']));
+      const attachmentId = parseRouteId(params['attachmentId']);
+      const record = findAttachment(attachmentId);
       if (!record) return setupError(404, 'Attachment not found.');
-      return binaryOk();
+      return binaryOk(attachmentId);
     },
   ),
 
   http.get('/api/v1/attachment/:entityType/:attachmentId', ({ params }) => {
-    const record = findAttachment(parseRouteId(params['attachmentId']));
+    const attachmentId = parseRouteId(params['attachmentId']);
+    const record = findAttachment(attachmentId);
     if (!record) return setupError(404, 'Attachment not found.');
-    return binaryOk();
+    return binaryOk(attachmentId);
   }),
 
   http.delete('/api/v1/attachment/by-entity', ({ request }) => {
@@ -289,6 +313,7 @@ export const attachmentHandlers = [
       if (entityType && record.entityType !== entityType) continue;
       if (entityId && String(record.entityId) !== entityId) continue;
       if (category && record.category !== category) continue;
+      uploadedBytes.delete(record.attachmentId);
       attachments.splice(index, 1);
     }
     return setupNoContent();
@@ -299,7 +324,10 @@ export const attachmentHandlers = [
     const index = attachments.findIndex(
       (record) => record.attachmentId === attachmentId,
     );
-    if (index < 0) return setupError(404, 'Attachment not found.');
+    if (index < 0 || attachmentId == null) {
+      return setupError(404, 'Attachment not found.');
+    }
+    uploadedBytes.delete(attachmentId);
     attachments.splice(index, 1);
     return setupNoContent();
   }),
@@ -338,6 +366,7 @@ export const attachmentHandlers = [
       return setupError(400, firstIssueMessage(parsed.error));
     }
     const created = createFromUpload(parsed.data, file);
+    await rememberUpload(created.attachmentId, file);
     attachments.push(created);
     return setupOk(created, 201);
   }),

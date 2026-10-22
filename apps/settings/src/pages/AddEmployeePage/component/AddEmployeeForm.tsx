@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +16,6 @@ import {
 import { inventoryLocationLookupQueryOptions } from '@cms/shared-data-access';
 import {
   BriefcaseIcon,
-  ImportIcon,
   MobileIcon,
   PhoneLineIcon,
   phoneDigitsOnly,
@@ -42,17 +41,21 @@ import {
   MOBILE_ACCESS_HELPER,
 } from '../constant';
 import { EmployeeFormSection } from './EmployeeFormSection';
+import { EmployeePhotoField } from './EmployeePhotoField';
 import { FormSelectField, FormSwitchField } from './form';
 
 export interface AddEmployeeFormProps {
-  hasExistingPhoto?: boolean;
+  hasStoredPhoto: boolean;
   initialValues?: EmployeeCreateForm;
   onDirtyChange?: (dirty: boolean) => void;
+  onPhotoSelected: (file: File) => void;
   onSubmit: (
     values: EmployeeCreateForm,
-    profilePhotoFile: File | null,
     dirtyFields: Partial<Record<keyof EmployeeCreateForm, boolean>>,
   ) => void;
+  photoPending: boolean;
+  photoPreviewUrl: string | null;
+  photoUploading: boolean;
   queryClient: QueryClient;
 }
 
@@ -86,18 +89,16 @@ function toLookupOptions(
 }
 
 export const AddEmployeeForm = ({
-  hasExistingPhoto = false,
+  hasStoredPhoto,
   initialValues,
   onDirtyChange,
+  onPhotoSelected,
   onSubmit,
+  photoPending,
+  photoPreviewUrl,
+  photoUploading,
   queryClient,
 }: AddEmployeeFormProps) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
-  const [photoLabel, setPhotoLabel] = useState(
-    hasExistingPhoto ? 'Photo on file' : 'Upload',
-  );
-
   const form = useForm<EmployeeCreateForm>({
     mode: 'onBlur',
     resolver: zodResolver(employeeCreateFormSchema),
@@ -105,8 +106,8 @@ export const AddEmployeeForm = ({
   });
 
   useEffect(() => {
-    onDirtyChange?.(form.formState.isDirty || profilePhotoFile !== null);
-  }, [form.formState.isDirty, onDirtyChange, profilePhotoFile]);
+    onDirtyChange?.(form.formState.isDirty || photoPending);
+  }, [form.formState.isDirty, onDirtyChange, photoPending]);
 
   const mobileAccess = form.watch('mobileAccess');
   const country = form.watch('country');
@@ -222,22 +223,12 @@ export const AddEmployeeForm = ({
     }
   };
 
-  const handlePhotoClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-    setProfilePhotoFile(file);
-    setPhotoLabel(file?.name ?? 'Upload');
-  };
-
   const handleFormSubmit = (values: EmployeeCreateForm) => {
     const dirtyFields: Partial<Record<keyof EmployeeCreateForm, boolean>> = {};
     for (const [key, value] of Object.entries(form.formState.dirtyFields)) {
       if (value) dirtyFields[key as keyof EmployeeCreateForm] = true;
     }
-    onSubmit(values, profilePhotoFile, dirtyFields);
+    onSubmit(values, dirtyFields);
   };
 
   return (
@@ -285,22 +276,11 @@ export const AddEmployeeForm = ({
                 <span className="text-caption font-medium text-surface-foreground">
                   Image
                 </span>
-                <button
-                  className="flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border bg-surface px-3 text-foreground-subtle transition-colors hover:border-action hover:text-action"
-                  onClick={handlePhotoClick}
-                  type="button"
-                >
-                  <ImportIcon aria-hidden className="size-[18px]" />
-                  <span className="text-[11px] leading-[16.5px]">
-                    {photoLabel}
-                  </span>
-                </button>
-                <input
-                  accept="image/*"
-                  className="sr-only"
-                  onChange={handlePhotoChange}
-                  ref={fileInputRef}
-                  type="file"
+                <EmployeePhotoField
+                  hasStoredPhoto={hasStoredPhoto}
+                  isUploading={photoUploading}
+                  onFileSelected={onPhotoSelected}
+                  previewUrl={photoPreviewUrl}
                 />
               </div>
               <FormTextInput<EmployeeCreateForm>
@@ -390,20 +370,20 @@ export const AddEmployeeForm = ({
                 required
               />
               <FormSelectField<EmployeeCreateForm>
-                disabled={!state}
-                label="City"
-                name="city"
-                options={cityOptions}
-                placeholder="Select city"
-                required
-              />
-              <FormSelectField<EmployeeCreateForm>
                 disabled={!country}
                 label="State"
                 name="state"
                 onValueChange={handleStateChange}
                 options={stateOptions}
                 placeholder="Select state"
+                required
+              />
+              <FormSelectField<EmployeeCreateForm>
+                disabled={!state}
+                label="City"
+                name="city"
+                options={cityOptions}
+                placeholder="Select city"
                 required
               />
             </div>
