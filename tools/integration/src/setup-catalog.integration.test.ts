@@ -33,6 +33,8 @@ import {
   createGlBreakMutationOptions,
   createPostalCodeMutationOptions,
   createResolutionCodeMutationOptions,
+  createSalesActivityOutcomeMutationOptions,
+  createSalesActivityTypeMutationOptions,
   createSalesPipelineStatusMutationOptions,
   createSetupDescriptionMutationOptions,
   createTimeslotMutationOptions,
@@ -61,6 +63,12 @@ import {
   resolutionCodeKeys,
   resolutionCodeListQueryOptions,
   resolutionCodeLookupQueryOptions,
+  salesActivityOutcomeKeys,
+  salesActivityOutcomeListQueryOptions,
+  salesActivityOutcomeLookupQueryOptions,
+  salesActivityTypeKeys,
+  salesActivityTypeListQueryOptions,
+  salesActivityTypeLookupQueryOptions,
   salesPipelineStatusKeys,
   salesPipelineStatusListQueryOptions,
   salesPipelineStatusLookupQueryOptions,
@@ -122,6 +130,12 @@ import {
   resolutionCodeDetailResponseFixture,
   resolutionCodeListResponseFixture,
   resolutionCodeLookupResponseFixture,
+  salesActivityOutcomeDetailResponseFixture,
+  salesActivityOutcomeListResponseFixture,
+  salesActivityOutcomeLookupResponseFixture,
+  salesActivityTypeDetailResponseFixture,
+  salesActivityTypeListResponseFixture,
+  salesActivityTypeLookupResponseFixture,
   salesPipelineStatusDetailResponseFixture,
   salesPipelineStatusListResponseFixture,
   salesPipelineStatusLookupResponseFixture,
@@ -566,6 +580,135 @@ describe('sales pipeline status through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(
       client.getQueryState(salesPipelineStatusKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('sales activity outcome through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(salesActivityOutcomeListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(salesActivityOutcomeLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      salesActivityOutcomeListQueryOptions({ outcomeName: 'Won' }),
+    );
+    const lookup = await client.fetchQuery(
+      salesActivityOutcomeLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.outcomeCode).toBe('WON');
+    expect(lookup[0]?.outcomeName).toBe('Won');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/salesactivityoutcome?outcomeName=Won',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/salesactivityoutcome/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates sales activity outcome queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(salesActivityOutcomeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(salesActivityOutcomeKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSalesActivityOutcomeMutationOptions(client));
+    await mutation.execute({
+      outcomeCode: 'FOLLOWUP',
+      outcomeName: 'Follow Up',
+      description: 'Scheduled a follow-up',
+      isSystem: false,
+      appliesToLead: true,
+      appliesToOpportunity: true,
+      nextSalesPipelineStatusId: 82,
+      isTerminal: false,
+      requireComment: true,
+      allowManualSelection: true,
+      displayOrder: 6,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/salesactivityoutcome');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(salesActivityOutcomeKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('sales activity type through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(salesActivityTypeListResponseFixture))
+      .mockResolvedValueOnce(
+        jsonResponse(salesActivityTypeLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      salesActivityTypeListQueryOptions({ activityTypeName: 'Phone' }),
+    );
+    const lookup = await client.fetchQuery(
+      salesActivityTypeLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.activityTypeCode).toBe('CALL');
+    expect(lookup[0]?.activityTypeName).toBe('Phone Call');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/salesactivitytype?activityTypeName=Phone',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/salesactivitytype/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates sales activity type queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(salesActivityTypeDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(salesActivityTypeKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createSalesActivityTypeMutationOptions(client));
+    await mutation.execute({
+      activityTypeCode: 'SMS',
+      activityTypeName: 'Text Message',
+      description: 'SMS outreach',
+      isSystem: false,
+      appliesToLead: true,
+      appliesToOpportunity: true,
+      allowManualSelection: true,
+      displayOrder: 6,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/salesactivitytype');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(salesActivityTypeKeys.list({}))?.isInvalidated,
     ).toBe(true);
     disposeCmsQueryClient(client);
   });

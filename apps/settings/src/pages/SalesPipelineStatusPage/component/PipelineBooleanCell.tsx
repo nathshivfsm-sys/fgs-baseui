@@ -1,4 +1,4 @@
-import { CircleCheckIcon, CircleXIcon } from '@cms/ui';
+import { CircleCheckFilledIcon, CircleXFilledIcon } from '@cms/ui';
 
 export interface PipelineBooleanCellProps {
   value: boolean;
@@ -6,7 +6,13 @@ export interface PipelineBooleanCellProps {
 
 export const PipelineBooleanCell = ({ value }: PipelineBooleanCellProps) =>
   value ? (
-    <CircleCheckIcon aria-label="Yes" className="mx-auto size-4 text-success" />
+    <CircleCheckFilledIcon
+      aria-label="Yes"
+      className="mx-auto size-[18px] text-success"
+    />
   ) : (
-    <CircleXIcon aria-label="No" className="mx-auto size-4 text-destructive" />
+    <CircleXFilledIcon
+      aria-label="No"
+      className="mx-auto size-[18px] text-destructive"
+    />
   );

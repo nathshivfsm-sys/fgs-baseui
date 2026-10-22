@@ -84,6 +84,11 @@ const SalesPipelineStatusPage = lazy(() =>
     default: module.SalesPipelineStatusPage,
   })),
 );
+const SalesActivitiesPage = lazy(() =>
+  import('./pages/SalesActivitiesPage').then((module) => ({
+    default: module.SalesActivitiesPage,
+  })),
+);
 
 const UsersPage = lazy(() =>
   import('./pages/UsersPage').then((module) => ({
@@ -231,6 +236,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="sales/sales-pipeline-status"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <SalesActivitiesPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="sales/sales-activities"
         />
         <Route
           element={

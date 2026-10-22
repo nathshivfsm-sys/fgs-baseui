@@ -227,6 +227,101 @@ export const salesPipelineStatusLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const salesActivityOutcomeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 91,
+        outcomeCode: 'WON',
+        outcomeName: 'Won',
+        description: 'Deal won',
+        displayOrder: 1,
+        isSystem: true,
+        appliesToLead: false,
+        appliesToOpportunity: true,
+        nextSalesPipelineStatusId: null,
+        isTerminal: true,
+        requireComment: false,
+        allowManualSelection: false,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const salesActivityOutcomeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: salesActivityOutcomeListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const salesActivityOutcomeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 91,
+      outcomeCode: 'WON',
+      outcomeName: 'Won',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const salesActivityTypeListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 101,
+        activityTypeCode: 'CALL',
+        activityTypeName: 'Phone Call',
+        description: 'Outbound or inbound call',
+        displayOrder: 1,
+        isSystem: true,
+        appliesToLead: true,
+        appliesToOpportunity: true,
+        allowManualSelection: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const salesActivityTypeDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: salesActivityTypeListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const salesActivityTypeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 101,
+      activityTypeCode: 'CALL',
+      activityTypeName: 'Phone Call',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
 export const sourceListResponseFixture = {
   success: true,
   statusCode: 200,

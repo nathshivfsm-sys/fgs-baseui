@@ -178,12 +178,14 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       title: 'Sales Activities',
       description: 'Manage activities performed by the sales team.',
       icon: 'SettingsSalesActivitiesIcon',
+      href: 'sales/sales-activities',
       totalSettings: { count: 24, label: 'Activities' },
     },
     {
       title: 'Sales Activity Outcome',
       description: 'Define standard outcomes for sales activities.',
       icon: 'SettingsSalesActivityOutcomeIcon',
+      href: 'sales/sales-activities?catalog=outcome',
       totalSettings: { count: 12, label: 'Outcomes' },
     },
     {
