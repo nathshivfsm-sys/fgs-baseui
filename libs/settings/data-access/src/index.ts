@@ -15,6 +15,8 @@ export * from './lib/subcategory';
 export * from './lib/employee';
 export * from './lib/resolution-code';
 export * from './lib/sales-pipeline-status';
+export * from './lib/sales-activity-outcome';
+export * from './lib/sales-activity-type';
 export * from './lib/timeslot';
 export * from './lib/setup-description';
 export * from './lib/source';

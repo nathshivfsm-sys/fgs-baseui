@@ -12,6 +12,8 @@ import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
+import { salesActivityOutcomeHandlers } from './sales-activity-outcome';
+import { salesActivityTypeHandlers } from './sales-activity-type';
 import { salesPipelineStatusHandlers } from './sales-pipeline-status';
 import { setupDescriptionHandlers } from './setup-description';
 import { sourceHandlers } from './source';
@@ -47,6 +49,8 @@ export const handlers = [
   ...inventoryLocationHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
+  ...salesActivityOutcomeHandlers,
+  ...salesActivityTypeHandlers,
   ...salesPipelineStatusHandlers,
   ...setupDescriptionHandlers,
   ...sourceHandlers,
