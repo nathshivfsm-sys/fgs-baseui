@@ -21,3 +21,10 @@ export interface EmployeeDiscardDialogProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
+
+export interface EmployeePhotoFieldProps {
+  hasStoredPhoto: boolean;
+  isUploading: boolean;
+  onFileSelected: (file: File) => void;
+  previewUrl: string | null;
+}

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createAttachmentMutationOptions } from '@cms/shared-data-access';
 import {
   createEmployeeMutationOptions,
   employeeDetailQueryOptions,
@@ -36,6 +35,7 @@ import {
   UPDATE_SUCCESS_TITLE,
 } from './constant';
 import type { AddEmployeePageProps } from './types';
+import { useEmployeePhoto } from './util';
 
 export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
   const navigate = useNavigate();
@@ -61,10 +61,12 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
     patchEmployeeMutationOptions(queryClient),
     queryClient,
   );
-  const createAttachmentMutation = useMutation(
-    createAttachmentMutationOptions(queryClient),
+
+  const photo = useEmployeePhoto({
+    employeeId: isEdit ? employeeId : undefined,
+    existingFileId: detailQuery.data?.profilePhotoFileId,
     queryClient,
-  );
+  });
 
   const initialValues = useMemo(
     () =>
@@ -75,7 +77,7 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
   const isPending =
     createEmployeeMutation.isPending ||
     patchEmployeeMutation.isPending ||
-    createAttachmentMutation.isPending;
+    photo.isUploading;
 
   const handleDirtyChange = (dirty: boolean) => {
     setFormDirty(dirty);
@@ -102,22 +104,8 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
     handleLeave();
   };
 
-  const uploadProfilePhoto = async (employeeRecordId: number, file: File) => {
-    const attachment = await createAttachmentMutation.mutateAsync({
-      file,
-      entityType: 'Employee',
-      entityId: employeeRecordId,
-      category: 'profilePhoto',
-    });
-    await patchEmployeeMutation.mutateAsync({
-      id: employeeRecordId,
-      body: { profilePhotoFileId: attachment.attachmentId },
-    });
-  };
-
   const handleSubmit = async (
     values: EmployeeCreateForm,
-    profilePhotoFile: File | null,
     dirtyFields: EmployeeCreateFormDirtyFields,
   ) => {
     try {
@@ -129,9 +117,6 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
             body: patch,
           });
         }
-        if (profilePhotoFile) {
-          await uploadProfilePhoto(employeeId, profilePhotoFile);
-        }
         alert.success(UPDATE_SUCCESS_TITLE, {
           description: UPDATE_SUCCESS_MESSAGE,
         });
@@ -142,10 +127,7 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
       const created = await createEmployeeMutation.mutateAsync(
         toEmployeeCreateDto(values),
       );
-
-      if (profilePhotoFile) {
-        await uploadProfilePhoto(created.id, profilePhotoFile);
-      }
+      await photo.uploadPendingPhoto(created.id);
 
       alert.success(SAVE_SUCCESS_TITLE, {
         description: SAVE_SUCCESS_MESSAGE,
@@ -183,10 +165,14 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
         ) : null}
         {showForm ? (
           <AddEmployeeForm
-            hasExistingPhoto={detailQuery.data?.profilePhotoFileId != null}
+            hasStoredPhoto={photo.hasStoredPhoto}
             initialValues={initialValues}
             onDirtyChange={handleDirtyChange}
+            onPhotoSelected={photo.handleFileSelected}
             onSubmit={handleSubmit}
+            photoPending={photo.hasPendingPhoto}
+            photoPreviewUrl={photo.previewUrl}
+            photoUploading={photo.isUploading}
             queryClient={queryClient}
           />
         ) : null}

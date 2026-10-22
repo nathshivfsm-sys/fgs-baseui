@@ -20,6 +20,12 @@ export const UPDATE_SUCCESS_MESSAGE = 'Employee updated successfully.';
 export const SAVE_ERROR_TITLE = 'Could not save employee';
 export const LOAD_EMPLOYEE_ERROR_TITLE = 'Could not load employee';
 
+export const PHOTO_UPLOAD_LABEL = 'Upload';
+export const PHOTO_CHANGE_LABEL = 'Change';
+export const PHOTO_ON_FILE_LABEL = 'Photo on file';
+export const PHOTO_UPLOADING_LABEL = 'Uploading…';
+export const PHOTO_UPLOAD_ERROR_TITLE = 'Could not upload photo';
+
 export const DISCARD_TITLE = 'Discard changes?';
 export const DISCARD_DESCRIPTION =
   'You have unsaved changes. Discard them and return to the employee list?';
