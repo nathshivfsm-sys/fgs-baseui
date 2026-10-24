@@ -7,6 +7,7 @@ import {
   type UserInviteDto,
   type UserSummaryDto,
 } from '@cms/user-contract';
+import { lookupRoleName } from './role';
 import {
   assignDefined,
   firstIssueMessage,
@@ -85,12 +86,7 @@ function findUser(id: string | undefined): UserRecord | undefined {
 
 function roleNameForId(roleId: number | null | undefined): string | null {
   if (roleId == null) return null;
-  const names: Record<number, string> = {
-    1: 'Admin',
-    2: 'Manager',
-    3: 'Technician',
-  };
-  return names[roleId] ?? `Role ${roleId}`;
+  return lookupRoleName(roleId) ?? `Role ${roleId}`;
 }
 
 function filterUsers(url: URL): UserRecord[] {
@@ -136,7 +132,7 @@ function createFromInvite(body: UserInviteDto, index: number): UserRecord {
     email: body.email ?? null,
     phoneNumber: body.phoneNumber ?? null,
     roleId,
-    roleName: roleId === 1 ? 'Administrator' : 'Scheduler',
+    roleName: roleNameForId(roleId),
     invitationStatus: 'Pending',
     isActive: true,
     hasAcceptedInvitation: false,

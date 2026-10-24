@@ -1,7 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
-import type { EmployeeSummaryDto } from '@cms/settings-contract';
-import type { PermissionLookupDto } from '@cms/user-contract';
-import type { RoleSummaryDto } from '@cms/user-contract';
+import type {
+  PermissionLookupDto,
+  RoleSummaryDto,
+  UserSummaryDto,
+} from '@cms/user-contract';
 
 export interface RolesPermissionsPageProps {
   queryClient: QueryClient;
@@ -11,7 +13,7 @@ export type RoleDetailTab = 'back-office' | 'mobile' | 'users';
 
 export interface RoleListPanelProps {
   customRoles: RoleSummaryDto[];
-  employeeCountByRole: Map<number, number>;
+  userCountByRole: Map<number, number>;
   onDeleteRole: (roleId: number) => void;
   onSelectRole: (roleId: number) => void;
   selectedRoleId: number | null;
@@ -23,9 +25,9 @@ export interface RoleDetailPanelProps {
   allowedPermissionIds: ReadonlySet<number>;
   canEdit: boolean;
   dirty: boolean;
-  employeeCount: number;
-  employees: EmployeeSummaryDto[];
-  employeesLoading: boolean;
+  userCount: number;
+  users: UserSummaryDto[];
+  usersLoading: boolean;
   onCancel: () => void;
   onOpenCloneDialog: () => void;
   onDeleteRole: () => void;

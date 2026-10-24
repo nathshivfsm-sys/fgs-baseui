@@ -31,9 +31,9 @@ export const RoleDetailPanel = ({
   allowedPermissionIds,
   canEdit,
   dirty,
-  employeeCount,
-  employees,
-  employeesLoading,
+  userCount,
+  users,
+  usersLoading,
   onCancel,
   onDeleteRole,
   onOpenCloneDialog,
@@ -61,7 +61,7 @@ export const RoleDetailPanel = ({
     );
   }
 
-  const usersTabLabel = `${TAB_USERS} (${employeeCount})`;
+  const usersTabLabel = `${TAB_USERS} (${userCount})`;
 
   const handleTabChange = (value: string) => {
     if (value === 'back-office' || value === 'mobile' || value === 'users') {
@@ -153,9 +153,9 @@ export const RoleDetailPanel = ({
           </TabsContent>
           <TabsContent className="mt-0 h-full" value="users">
             <RoleUsersTab
-              employees={employees}
-              loading={employeesLoading}
+              loading={usersLoading}
               roleName={roleName}
+              users={users}
             />
           </TabsContent>
         </div>

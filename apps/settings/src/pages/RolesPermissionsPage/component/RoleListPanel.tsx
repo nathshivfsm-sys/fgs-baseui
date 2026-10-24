@@ -108,7 +108,7 @@ const RoleListItem = ({
 
 export const RoleListPanel = ({
   customRoles,
-  employeeCountByRole,
+  userCountByRole,
   onDeleteRole,
   onSelectRole,
   selectedRoleId,
@@ -129,7 +129,7 @@ export const RoleListPanel = ({
           active={role.id === selectedRoleId}
           badge={SYSTEM_BADGE}
           badgeTone="system"
-          count={employeeCountByRole.get(role.id) ?? 0}
+          count={userCountByRole.get(role.id) ?? 0}
           key={role.id}
           locked
           name={role.name ?? role.roleCode ?? `Role ${role.id}`}
@@ -149,7 +149,7 @@ export const RoleListPanel = ({
             active={role.id === selectedRoleId}
             badge={CUSTOM_BADGE}
             badgeTone="custom"
-            count={employeeCountByRole.get(role.id) ?? 0}
+            count={userCountByRole.get(role.id) ?? 0}
             key={role.id}
             name={role.name ?? role.roleCode ?? `Role ${role.id}`}
             onDelete={() => onDeleteRole(role.id)}

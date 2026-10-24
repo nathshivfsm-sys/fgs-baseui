@@ -1,7 +1,7 @@
-import type { EmployeeSummaryDto } from '@cms/settings-contract';
+import type { UserSummaryDto } from '@cms/user-contract';
 
 export interface RoleUsersTabProps {
-  employees: EmployeeSummaryDto[];
   loading: boolean;
   roleName: string;
+  users: UserSummaryDto[];
 }
