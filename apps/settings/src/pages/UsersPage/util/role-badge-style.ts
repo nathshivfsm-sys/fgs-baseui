@@ -30,7 +30,7 @@ export const formatRoleLabel = (
 ): string => {
   const trimmed = (roleName ?? '').trim();
   if (!trimmed) return '—';
-  if (/administrator/i.test(trimmed)) return 'Admin';
+  if (/^administrator$/i.test(trimmed)) return 'Admin';
   return trimmed;
 };
 

@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   cloneRoleMutationOptions,
   deleteRoleMutationOptions,
-  employeeListQueryOptions,
   permissionLookupQueryOptions,
   roleDetailQueryOptions,
   roleListQueryOptions,
   rolePermissionsByRoleQueryOptions,
   syncRolePermissionsMutationOptions,
+  userListQueryOptions,
 } from '@cms/settings-data-access';
 import { alert } from '@cms/ui';
 import type { RoleSummaryDto } from '@cms/user-contract';
@@ -30,7 +30,8 @@ import {
 import type { RoleDetailTab, RolesPermissionsPageProps } from './types';
 import {
   buildAllowedPermissionIds,
-  countEmployeesByRole,
+  buildCopyRoleCode,
+  countUsersByRole,
   describeRolesPermissionsError,
   resolvePermissionSourceRoleId,
 } from './util';
@@ -43,11 +44,6 @@ const buildRoleById = (roles: readonly RoleSummaryDto[]) => {
     map.set(role.id, role);
   }
   return map;
-};
-
-const buildCopyRoleCode = (roleCode: string | null | undefined) => {
-  const base = (roleCode ?? 'ROLE').replace(/-COPY$/i, '');
-  return `${base}-COPY`;
 };
 
 export const RolesPermissionsPage = ({
@@ -65,6 +61,7 @@ export const RolesPermissionsPage = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [rolePendingDelete, setRolePendingDelete] =
     useState<RoleSummaryDto | null>(null);
+  const reservedRoleCodes = useRef(new Set<string>());
 
   const rolesQuery = useQuery(
     roleListQueryOptions({ page: 1, pageSize: 100, isActive: true }),
@@ -74,8 +71,8 @@ export const RolesPermissionsPage = ({
     permissionLookupQueryOptions(true),
     queryClient,
   );
-  const employeesQuery = useQuery(
-    employeeListQueryOptions({ page: 1, pageSize: 500 }),
+  const usersQuery = useQuery(
+    userListQueryOptions({ page: 1, pageSize: 500 }),
     queryClient,
   );
 
@@ -93,9 +90,9 @@ export const RolesPermissionsPage = ({
     },
     queryClient,
   );
-  const roleEmployeesQuery = useQuery(
+  const roleUsersQuery = useQuery(
     {
-      ...employeeListQueryOptions({
+      ...userListQueryOptions({
         page: 1,
         pageSize: 100,
         roleIds: selectedRoleId != null ? [selectedRoleId] : undefined,
@@ -129,9 +126,9 @@ export const RolesPermissionsPage = ({
     [roles],
   );
 
-  const employeeCountByRole = useMemo(
-    () => countEmployeesByRole(employeesQuery.data?.items ?? []),
-    [employeesQuery.data?.items],
+  const userCountByRole = useMemo(
+    () => countUsersByRole(usersQuery.data?.items ?? []),
+    [usersQuery.data?.items],
   );
 
   useEffect(() => {
@@ -174,26 +171,22 @@ export const RolesPermissionsPage = ({
     [savedPermissionIds],
   );
 
+  const ownPermissionIds = useMemo(
+    () => rolePermissionsQuery.data?.map((row) => row.fgsPermissionId) ?? [],
+    [rolePermissionsQuery.data],
+  );
+
+  const hasSourceCeiling =
+    permissionSourceRoleId != null && permissionSourceRoleId !== selectedRoleId;
+
   const allowedPermissionIds = useMemo(
     () =>
-      buildAllowedPermissionIds({
-        catalog: permissionCatalog,
-        sourcePermissionIds:
-          permissionSourceRoleId === selectedRoleId
-            ? rolePermissionsQuery.data?.map((row) => row.fgsPermissionId)
-            : sourceRolePermissionsQuery.data?.map(
-                (row) => row.fgsPermissionId,
-              ),
-        unrestricted: !seeded && permissionSourceRoleId == null,
-      }),
-    [
-      permissionCatalog,
-      permissionSourceRoleId,
-      rolePermissionsQuery.data,
-      seeded,
-      selectedRoleId,
-      sourceRolePermissionsQuery.data,
-    ],
+      buildAllowedPermissionIds(
+        hasSourceCeiling
+          ? sourceRolePermissionsQuery.data?.map((row) => row.fgsPermissionId)
+          : ownPermissionIds,
+      ),
+    [hasSourceCeiling, ownPermissionIds, sourceRolePermissionsQuery.data],
   );
 
   const dirty = useMemo(() => {
@@ -258,11 +251,17 @@ export const RolesPermissionsPage = ({
     permissionIds: number[];
   }) => {
     if (selectedRoleId == null || selectedRole == null) return;
+    const roleCode = buildCopyRoleCode(selectedRole.roleCode, [
+      ...roles.map((role) => role.roleCode),
+      ...reservedRoleCodes.current,
+    ]);
+    reservedRoleCodes.current.add(roleCode);
+    let createdRoleId: number | null = null;
     try {
       const cloned = await cloneRoleMutation.mutateAsync({
         id: selectedRoleId,
         body: {
-          roleCode: buildCopyRoleCode(selectedRole.roleCode),
+          roleCode,
           name,
           description: selectedRole.description,
           displayOrder: selectedRole.displayOrder,
@@ -270,6 +269,7 @@ export const RolesPermissionsPage = ({
           fgsPermissionIds: permissionIds,
         },
       });
+      createdRoleId = cloned.id;
       await syncPermissionsMutation.mutateAsync({
         fgsRoleId: cloned.id,
         fgsPermissionIds: permissionIds,
@@ -280,6 +280,9 @@ export const RolesPermissionsPage = ({
         description: CLONE_SUCCESS_MESSAGE,
       });
     } catch (error) {
+      if (createdRoleId == null) {
+        reservedRoleCodes.current.delete(roleCode);
+      }
       alert.error('Clone failed', {
         description: describeRolesPermissionsError(error),
       });
@@ -287,7 +290,7 @@ export const RolesPermissionsPage = ({
   };
 
   const openDeleteDialog = (role: RoleSummaryDto) => {
-    const assignedCount = employeeCountByRole.get(role.id) ?? 0;
+    const assignedCount = userCountByRole.get(role.id) ?? 0;
     if (assignedCount > 0) {
       alert.error(DELETE_ROLE_BLOCKED_TITLE, {
         description: DELETE_ROLE_BLOCKED_MESSAGE,
@@ -331,12 +334,15 @@ export const RolesPermissionsPage = ({
   };
 
   const roleName = selectedRole?.name ?? selectedRole?.roleCode ?? null;
-  const employeeCount =
+  const userCount =
     selectedRoleId != null
-      ? (employeeCountByRole.get(selectedRoleId) ??
-        roleEmployeesQuery.data?.totalCount ??
+      ? (userCountByRole.get(selectedRoleId) ??
+        roleUsersQuery.data?.totalCount ??
         0)
       : 0;
+
+  const sourcePermissionsLoading =
+    hasSourceCeiling && sourceRolePermissionsQuery.isPending;
 
   const clonePending =
     cloneRoleMutation.isPending || syncPermissionsMutation.isPending;
@@ -351,7 +357,7 @@ export const RolesPermissionsPage = ({
       <div className="flex min-h-0 flex-1 gap-5 overflow-hidden">
         <RoleListPanel
           customRoles={customRoles}
-          employeeCountByRole={employeeCountByRole}
+          userCountByRole={userCountByRole}
           onDeleteRole={handleDeleteFromList}
           onSelectRole={handleSelectRole}
           selectedRoleId={selectedRoleId}
@@ -362,9 +368,9 @@ export const RolesPermissionsPage = ({
           allowedPermissionIds={allowedPermissionIds}
           canEdit={canEdit}
           dirty={dirty}
-          employeeCount={employeeCount}
-          employees={roleEmployeesQuery.data?.items ?? []}
-          employeesLoading={roleEmployeesQuery.isPending}
+          userCount={userCount}
+          users={roleUsersQuery.data?.items ?? []}
+          usersLoading={roleUsersQuery.isPending}
           onCancel={handleCancel}
           onDeleteRole={handleDeleteFromDetail}
           onOpenCloneDialog={handleOpenCloneDialog}
@@ -373,7 +379,9 @@ export const RolesPermissionsPage = ({
           onTogglePermission={handleTogglePermission}
           permissionCatalog={permissionCatalog}
           permissionCatalogLoading={permissionCatalogQuery.isPending}
-          permissionsLoading={rolePermissionsQuery.isPending}
+          permissionsLoading={
+            rolePermissionsQuery.isPending || sourcePermissionsLoading
+          }
           roleLoading={roleDetailQuery.isPending && selectedRoleId != null}
           roleName={roleName}
           savePending={syncPermissionsMutation.isPending}

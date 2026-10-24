@@ -90,6 +90,21 @@ function findRole(id: number | undefined): RoleRecord | undefined {
     : roles.find((record) => record.id === id);
 }
 
+export function lookupRoleName(
+  roleId: number | null | undefined,
+): string | null {
+  if (roleId == null) return null;
+  const role = findRole(roleId);
+  return role?.name ?? role?.roleCode ?? null;
+}
+
+function roleCodeTaken(roleCode: string): boolean {
+  const normalized = roleCode.trim().toLowerCase();
+  return roles.some(
+    (record) => (record.roleCode ?? '').trim().toLowerCase() === normalized,
+  );
+}
+
 function filterRoles(url: URL): RoleRecord[] {
   const isActive = readOptionalBoolean(url, 'isActive');
   const isBuiltIn = readOptionalBoolean(url, 'isBuiltIn');
@@ -150,9 +165,14 @@ export const roleHandlers = [
     const parsed = roleCloneDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    const roleCode =
+      parsed.data.roleCode?.trim() || `${source.roleCode ?? 'ROLE'}-COPY`;
+    if (roleCodeTaken(roleCode)) {
+      return setupError(409, 'A role with this code already exists.');
+    }
     const cloned: RoleRecord = {
       id: nextId(roles),
-      roleCode: parsed.data.roleCode ?? `${source.roleCode}-COPY`,
+      roleCode,
       name: parsed.data.name ?? `${source.name ?? 'Role'} Copy`,
       description: parsed.data.description ?? source.description,
       parentRoleId: parsed.data.parentRoleId ?? source.id,
