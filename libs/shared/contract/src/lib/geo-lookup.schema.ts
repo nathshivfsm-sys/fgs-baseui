@@ -36,6 +36,12 @@ export const gloSetupDescriptionTypeLookupDtoSchema = z.object({
   name: nullableText,
 });
 
+export const gloBusinessTypeLookupDtoSchema = z.object({
+  id: z.number(),
+  code: nullableText,
+  name: nullableText,
+});
+
 export const gloCountryLookupResponseSchema = apiResponseSchema(
   z.array(gloCountryLookupDtoSchema),
 );
@@ -52,6 +58,13 @@ export const gloSetupDescriptionTypeLookupResponseSchema = apiResponseSchema(
   z.array(gloSetupDescriptionTypeLookupDtoSchema),
 );
 
+export const gloBusinessTypeLookupResponseSchema = apiResponseSchema(
+  z.array(gloBusinessTypeLookupDtoSchema),
+);
+
+export type GloBusinessTypeLookupDto = z.infer<
+  typeof gloBusinessTypeLookupDtoSchema
+>;
 export type GloCountryLookupDto = z.infer<typeof gloCountryLookupDtoSchema>;
 export type GloStateProvinceLookupDto = z.infer<
   typeof gloStateProvinceLookupDtoSchema
@@ -67,6 +80,10 @@ export type GloSetupDescriptionTypeLookupDto = z.infer<
 >;
 
 export type GloCountryLookupParams = {
+  activeOnly?: boolean;
+};
+
+export type GloBusinessTypeLookupParams = {
   activeOnly?: boolean;
 };
 

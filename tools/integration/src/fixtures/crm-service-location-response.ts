@@ -1,0 +1,78 @@
+export const serviceLocationListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 9001,
+        locationNumber: 'ID-2345',
+        name: 'Main Office',
+        displayName: 'Joe Prit',
+        formattedAddress: '124 Oak Street, Springfield, IL, USA',
+        email: 'joeprit@gmail.com',
+        phone: '+1 (217) 555-0192',
+        isActive: true,
+        customerType: 'commercial',
+        city: 'Springfield',
+        postalCode: '62701',
+        createdOn: '2026-01-20T10:00:00Z',
+        createdBy: 'system',
+      },
+    ],
+    page: 1,
+    pageSize: 10,
+    totalCount: 1,
+    summary: {
+      activeCount: 6,
+      inactiveCount: 2,
+    },
+  },
+  errors: [] as string[],
+};
+
+export const serviceLocationDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    id: 9001,
+    customerId: 501,
+    locationSequence: 1,
+    locationNumber: 'ID-2345',
+    isActive: true,
+    serviceLocationType: 'commercial',
+    name: 'Main Office',
+    displayName: 'Joe Prit',
+    addressLine1: '124 Oak Street',
+    addressLine2: null,
+    addressLine3: null,
+    addressLine4: null,
+    city: 'Springfield',
+    state: 'IL',
+    county: null,
+    country: 'US',
+    postalCode: '62701',
+    formattedAddress: '124 Oak Street, Springfield, IL, USA',
+    latitude: null,
+    longitude: null,
+    placeId: null,
+    primaryContactName: 'Joe Prit',
+    primaryContactEmail: 'joeprit@gmail.com',
+    primaryContactPhone: '+1 (217) 555-0192',
+    customerType: 'commercial',
+    createdOn: '2026-01-20T10:00:00Z',
+    createdBy: 'system',
+  },
+  errors: [] as string[],
+};
+
+export const serviceLocationCreateResponseFixture = {
+  success: true,
+  statusCode: 201,
+  data: {
+    serviceLocationId: 9010,
+    customerId: 501,
+    locationSequence: 9,
+    locationNumber: 'ID-2354',
+  },
+  errors: [] as string[],
+};

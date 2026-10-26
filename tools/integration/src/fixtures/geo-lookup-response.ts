@@ -13,6 +13,13 @@ export const gloBillingCategoryTypeLookupResponseFixture = {
   errors: [] as string[],
 };
 
+export const gloBusinessTypeLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [{ id: 1, code: 'HVAC', name: 'HVAC' }],
+  errors: [] as string[],
+};
+
 export const gloCountryLookupResponseFixture = {
   success: true,
   statusCode: 200,

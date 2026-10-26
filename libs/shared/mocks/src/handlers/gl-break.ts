@@ -7,12 +7,12 @@ import {
   type GlBreakCreateDto,
   type GlBreakDetailDto,
   type GlBreakLocationWriteDto,
-  type GlBreakLookupDto,
   type GlBreakPatchDto,
   type GlBreakSummaryDto,
   type GlBreakTradeDto,
   type GlBreakUpdateDto,
 } from '@cms/settings-contract';
+import type { GlBreakLookupDto } from '@cms/shared-contract';
 import {
   assignDefined,
   firstIssueMessage,

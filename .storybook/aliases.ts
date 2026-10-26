@@ -72,6 +72,18 @@ export function storybookAliases(workspaceRoot: string) {
       replacement: join(workspaceRoot, 'libs/settings/contract/src/index.ts'),
     },
     {
+      find: '@cms/customer-contract',
+      replacement: join(workspaceRoot, 'libs/customer/contract/src/index.ts'),
+    },
+    {
+      find: '@cms/customer-data-access',
+      replacement: join(workspaceRoot, 'libs/customer/data-access/src/index.ts'),
+    },
+    {
+      find: '@cms/customer-ui',
+      replacement: join(workspaceRoot, 'libs/customer/ui/src/index.ts'),
+    },
+    {
       find: '@cms/lead-data-access',
       replacement: join(workspaceRoot, 'libs/lead/data-access/src/index.ts'),
     },

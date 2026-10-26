@@ -1,6 +1,7 @@
 import { http } from 'msw';
 import type {
   GloBillingCategoryTypeLookupDto,
+  GloBusinessTypeLookupDto,
   GloCountryLookupDto,
   GloSetupDescriptionTypeLookupDto,
   GloStateProvinceLookupDto,
@@ -22,6 +23,26 @@ type CityRecord = PostalCodeCityLookupDto & {
 type SetupDescriptionTypeRecord = GloSetupDescriptionTypeLookupDto & {
   isActive: boolean;
 };
+
+type BusinessTypeRecord = GloBusinessTypeLookupDto & { isActive: boolean };
+
+function seedBusinessTypes(): BusinessTypeRecord[] {
+  return [
+    { id: 1, code: 'HVAC', name: 'HVAC', isActive: true },
+    { id: 2, code: 'PLUMBING', name: 'Plumbing', isActive: true },
+    { id: 3, code: 'ELECTRICAL', name: 'Electrical', isActive: true },
+    { id: 4, code: 'LANDSCAPING', name: 'Landscaping', isActive: true },
+    { id: 5, code: 'LEGACY', name: 'Legacy Trade', isActive: false },
+  ];
+}
+
+const businessTypes = seedBusinessTypes();
+
+function toBusinessTypeLookup(
+  record: BusinessTypeRecord,
+): GloBusinessTypeLookupDto {
+  return { id: record.id, code: record.code, name: record.name };
+}
 
 function seedSetupDescriptionTypes(): SetupDescriptionTypeRecord[] {
   return [
@@ -291,7 +312,8 @@ function matchesCode(
 }
 
 /**
- * In-memory geo lookups (`/glo/country/lookup`, `/glo/billingcategorytype/lookup`,
+ * In-memory geo lookups (`/glo/country/lookup`, `/glo/businesstype/lookup`,
+ * `/glo/billingcategorytype/lookup`,
  * `/glo/stateprovince/lookup`, `/postalcode/cities`). Request/response shapes come
  * from `@cms/shared-contract`.
  * Register before `postalCodeHandlers` so `/postalcode/cities` is not swallowed
@@ -304,6 +326,15 @@ export const geoLookupHandlers = [
     const items = setupDescriptionTypes
       .filter((record) => (activeOnly ? record.isActive : true))
       .map(toSetupDescriptionTypeLookup);
+    return setupOk(items);
+  }),
+
+  http.get('/api/v1/glo/businesstype/lookup', ({ request }) => {
+    const url = new URL(request.url);
+    const activeOnly = readOptionalBoolean(url, 'activeOnly') ?? true;
+    const items = businessTypes
+      .filter((record) => (activeOnly ? record.isActive : true))
+      .map(toBusinessTypeLookup);
     return setupOk(items);
   }),
 

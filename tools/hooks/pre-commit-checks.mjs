@@ -50,6 +50,17 @@ function stagedExistingFiles(matcher) {
   );
 }
 
+/** Avoid Windows "command line is too long" when linting hundreds of staged paths. */
+const STAGED_LINT_CHUNK_SIZE = 40;
+
+function chunkArray(items, size) {
+  const chunks = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
 function runCommand(label, args, options) {
   if (options?.inherit) {
     process.stderr.write(`\npre-commit: ${label}\n`);
@@ -76,29 +87,57 @@ function runCommand(label, args, options) {
   };
 }
 
+function runStagedToolInChunks(
+  toolName,
+  toolArgsPrefix,
+  targets,
+  options,
+) {
+  const failures = [];
+  const chunks = chunkArray(targets, STAGED_LINT_CHUNK_SIZE);
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+    const chunkLabel =
+      chunks.length > 1
+        ? `${toolName} (${chunk.length} staged file(s), batch ${index + 1}/${chunks.length})`
+        : `${toolName} (${chunk.length} staged file(s))`;
+    const failure = runCommand(
+      chunkLabel,
+      ['exec', ...toolArgsPrefix, ...chunk],
+      options,
+    );
+    if (failure) failures.push(failure);
+  }
+  return failures;
+}
+
 /** Prettier on staged paths (optional ESLint when PRE_COMMIT_ESLINT=1). */
 export function runStagedLintChecks(options) {
   const failures = [];
   const prettierTargets = stagedExistingFiles(PRETTIER_FILE);
   if (prettierTargets.length > 0) {
-    const failure = runCommand(
-      `prettier --check (${prettierTargets.length} staged file(s))`,
-      ['exec', 'prettier', '--check', ...prettierTargets],
-      options,
+    failures.push(
+      ...runStagedToolInChunks(
+        'prettier --check',
+        ['prettier', '--check'],
+        prettierTargets,
+        options,
+      ),
     );
-    if (failure) failures.push(failure);
   }
 
   // Off by default: root `pnpm exec eslint` needs the `eslint` package (use nx lint in CI).
   // Re-enable locally with PRE_COMMIT_ESLINT=1 once eslint is on the root devDependencies.
   const eslintTargets = stagedExistingFiles(ESLINT_FILE);
   if (process.env.PRE_COMMIT_ESLINT === '1' && eslintTargets.length > 0) {
-    const failure = runCommand(
-      `eslint (${eslintTargets.length} staged file(s))`,
-      ['exec', 'eslint', '--max-warnings', '0', ...eslintTargets],
-      options,
+    failures.push(
+      ...runStagedToolInChunks(
+        'eslint',
+        ['eslint', '--max-warnings', '0'],
+        eslintTargets,
+        options,
+      ),
     );
-    if (failure) failures.push(failure);
   }
 
   return failures;

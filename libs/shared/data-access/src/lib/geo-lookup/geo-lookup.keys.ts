@@ -16,6 +16,9 @@ export const geoLookupKeys = {
     [...geoLookupKeys.all, 'setup-description-type'] as const,
   setupDescriptionType: (activeOnly: boolean) =>
     [...geoLookupKeys.setupDescriptionTypes(), { activeOnly }] as const,
+  businessTypes: () => [...geoLookupKeys.all, 'business-type'] as const,
+  businessType: (activeOnly: boolean) =>
+    [...geoLookupKeys.businessTypes(), { activeOnly }] as const,
   stateProvinces: () => [...geoLookupKeys.all, 'state-province'] as const,
   stateProvince: (params: GloStateProvinceLookupParams = {}) =>
     [...geoLookupKeys.stateProvinces(), params] as const,

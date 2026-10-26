@@ -1,0 +1,31 @@
+---
+description: Postal / zip code field order in address forms (before state)
+globs: "{**/AddressFormFields.tsx,**/AddressFormDialog.tsx,**/*address*form*,**/AddEmployeeForm.tsx,**/GlBreakFormDialog.tsx,**/PostalCodeFormDialog.tsx}"
+alwaysApply: false
+---
+
+# Address form field order
+
+Every address capture UI (dialogs, inline sections, employee address blocks) must use the same **locality field order** after street lines:
+
+1. **Address line 1** (required when the form requires an address)
+2. **Address line 2** (optional)
+3. **Country**
+4. **Postal code / Zip code** — required when the form requires an address
+5. **State / province**
+6. **City**
+
+## Rules
+
+- **Postal code always comes before state** in DOM order, visual layout, and keyboard tab order. Never place state above or to the left of postal on an earlier row when postal appears later.
+- **City always comes after state** (geo lookups depend on state).
+- In a two-column grid, typical rows are: `Country | Postal code`, then `State | City`. A `Postal code | Country` row is acceptable when it matches an existing screen (e.g. company settings, GL break); postal must still appear before the state row.
+- Read-only display strings (cards, summaries) may format as `City, ST ZIP`; that does not change form field order.
+
+## Reference implementations
+
+- `apps/settings/src/pages/CompanySettingsPage/component/general-info/address/AddressFormFields.tsx`
+- `apps/settings/src/pages/BusinessUnitPage/component/GlBreakFormDialog.tsx`
+- `libs/customer/ui/src/lib/create-customer-form/component/AddressFormFields.tsx`
+
+When adding a new address form, copy field order from one of these files rather than inventing a new sequence.

@@ -5,6 +5,7 @@ import {
 } from '@cms/platform-contract';
 import {
   gloBillingCategoryTypeLookupQueryOptions,
+  gloBusinessTypeLookupQueryOptions,
   gloCountryLookupQueryOptions,
   gloStateProvinceLookupQueryOptions,
   postalCodeCitiesQueryOptions,
@@ -12,6 +13,7 @@ import {
 import { configureCustomFetch } from '@cms/shared-api';
 import {
   gloBillingCategoryTypeLookupResponseFixture,
+  gloBusinessTypeLookupResponseFixture,
   gloCountryLookupResponseFixture,
   gloStateProvinceLookupResponseFixture,
   postalCodeCitiesResponseFixture,
@@ -88,6 +90,25 @@ describe('geo lookup through customFetch', () => {
     );
     expect(fetchMock.mock.calls[3]?.[0]).toBe(
       '/api/v1/postalcode/cities?countryCode=US&stateProvinceCode=TX&activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('GETs the glo business type lookup', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(gloBusinessTypeLookupResponseFixture),
+    );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const businessTypes = await client.fetchQuery(
+      gloBusinessTypeLookupQueryOptions(false),
+    );
+
+    expect(businessTypes[0]?.code).toBe('HVAC');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/glo/businesstype/lookup?activeOnly=false',
     );
     disposeCmsQueryClient(client);
   });

@@ -11,7 +11,3 @@ export function glBreakListEndpoint(params: GlBreakListParams = {}): string {
 export function glBreakDetailEndpoint(id: number): string {
   return `${glBreakCollectionEndpoint}/${id}`;
 }
-
-export function glBreakLookupEndpoint(activeOnly = true): string {
-  return `${glBreakCollectionEndpoint}/lookup${toSearchParams({ activeOnly })}`;
-}

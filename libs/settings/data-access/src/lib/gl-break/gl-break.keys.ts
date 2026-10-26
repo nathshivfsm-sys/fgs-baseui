@@ -7,7 +7,4 @@ export const glBreakKeys = {
     [...glBreakKeys.lists(), params] as const,
   details: () => [...glBreakKeys.all, 'detail'] as const,
   detail: (id: number) => [...glBreakKeys.details(), id] as const,
-  lookups: () => [...glBreakKeys.all, 'lookup'] as const,
-  lookup: (activeOnly: boolean) =>
-    [...glBreakKeys.lookups(), { activeOnly }] as const,
 } as const;

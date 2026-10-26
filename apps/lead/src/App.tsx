@@ -1,3 +1,4 @@
+import { Route, Routes } from 'react-router-dom';
 import type { CmsRuntime } from '@cms/platform-contract';
 import { loadLeads, type LoadLeads } from '@cms/lead-data-access';
 import { RemoteErrorBoundary } from './error-boundary';
@@ -11,12 +12,12 @@ export interface AppProps {
   loadLeads?: LoadLeads;
 }
 
-export function App({ runtime, loadLeads: load = loadLeads }: AppProps) {
-  return (
-    <RemoteErrorBoundary>
-      <LeadsPage loadLeads={load} runtime={runtime} />
-    </RemoteErrorBoundary>
-  );
-}
+export const App = ({ runtime, loadLeads: load = loadLeads }: AppProps) => (
+  <RemoteErrorBoundary>
+    <Routes>
+      <Route index element={<LeadsPage loadLeads={load} runtime={runtime} />} />
+    </Routes>
+  </RemoteErrorBoundary>
+);
 
 export default App;

@@ -2,7 +2,6 @@ export {
   glBreakCollectionEndpoint,
   glBreakDetailEndpoint,
   glBreakListEndpoint,
-  glBreakLookupEndpoint,
 } from './gl-break.endpoints';
 export { glBreakKeys } from './gl-break.keys';
 export {
@@ -23,9 +22,7 @@ export {
 export {
   glBreakDetailQueryOptions,
   glBreakListQueryOptions,
-  glBreakLookupQueryOptions,
   loadGlBreak,
-  loadGlBreakLookup,
   loadGlBreaks,
 } from './gl-break.queries';
 export {
@@ -35,8 +32,6 @@ export {
   glBreakDetailResponseSchema,
   glBreakListResponseSchema,
   glBreakLocationWriteDtoSchema,
-  glBreakLookupDtoSchema,
-  glBreakLookupResponseSchema,
   glBreakPatchDtoSchema,
   glBreakSummaryDtoSchema,
   glBreakTradeDtoSchema,
@@ -46,9 +41,19 @@ export {
   type GlBreakDetailDto,
   type GlBreakListParams,
   type GlBreakLocationWriteDto,
-  type GlBreakLookupDto,
   type GlBreakPatchDto,
   type GlBreakSummaryDto,
   type GlBreakTradeDto,
   type GlBreakUpdateDto,
 } from '@cms/settings-contract';
+/** Lookup moved to shared; re-exported so Settings imports are unchanged. */
+export {
+  glBreakLookupCollectionEndpoint,
+  glBreakLookupDtoSchema,
+  glBreakLookupEndpoint,
+  glBreakLookupKeys,
+  glBreakLookupQueryOptions,
+  glBreakLookupResponseSchema,
+  loadGlBreakLookup,
+  type GlBreakLookupDto,
+} from '@cms/shared-data-access';

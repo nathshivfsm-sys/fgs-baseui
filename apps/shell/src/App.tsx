@@ -24,11 +24,13 @@ import { GUEST_USER, shellStore } from './store';
 
 const Workorder = lazyProvider<{ runtime: CmsRuntime }>('workorder', 'App');
 const Lead = lazyProvider<{ runtime: CmsRuntime }>('lead', 'App');
+const Customer = lazyProvider<{ runtime: CmsRuntime }>('customer', 'App');
 const Settings = lazyProvider<{ runtime: CmsRuntime }>('settings', 'App');
 const Invoice = lazyProvider<{ runtime: CmsRuntime }>('invoice', 'App');
 
 const MFE_ROUTE_PATHS = new Set([
   '/leads',
+  '/customers',
   '/workorders',
   '/invoice',
   '/settings',
@@ -78,6 +80,14 @@ export function App() {
           element={
             <ProviderBoundary name="Leads">
               <Lead runtime={mfeRuntime} />
+            </ProviderBoundary>
+          }
+        />
+        <Route
+          path="/customers/*"
+          element={
+            <ProviderBoundary name="Customers">
+              <Customer runtime={mfeRuntime} />
             </ProviderBoundary>
           }
         />

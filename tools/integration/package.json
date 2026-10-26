@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@cms/lead-data-access": "workspace:*",
+    "@cms/customer-data-access": "workspace:*",
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-data-access": "workspace:*",
     "@cms/user-data-access": "workspace:*",

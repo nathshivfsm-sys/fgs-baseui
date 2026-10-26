@@ -21,12 +21,57 @@ export {
   type AttachmentMetadataDto,
 } from './lib/attachment.schema';
 export {
+  glBreakLookupDtoSchema,
+  glBreakLookupResponseSchema,
+  type GlBreakLookupDto,
+} from './lib/gl-break-lookup.schema';
+export {
   inventoryLocationLookupDtoSchema,
   inventoryLocationLookupResponseSchema,
   type InventoryLocationLookupDto,
   type InventoryLocationLookupParams,
 } from './lib/inventory-location.schema';
 export {
+  tagCreateDtoSchema,
+  tagDetailDtoSchema,
+  tagDetailResponseSchema,
+  tagListResponseSchema,
+  tagLookupDtoSchema,
+  tagLookupResponseSchema,
+  tagPatchDtoSchema,
+  tagSummaryDtoSchema,
+  tagUpdateDtoSchema,
+  type TagCreateDto,
+  type TagDetailDto,
+  type TagListParams,
+  type TagLookupDto,
+  type TagPatchDto,
+  type TagSummaryDto,
+  type TagUpdateDto,
+} from './lib/tag.schema';
+export {
+  paymentTermCreateDtoSchema,
+  paymentTermDetailDtoSchema,
+  paymentTermDetailResponseSchema,
+  paymentTermListResponseSchema,
+  paymentTermLookupDtoSchema,
+  paymentTermLookupResponseSchema,
+  paymentTermPatchDtoSchema,
+  paymentTermSummaryDtoSchema,
+  paymentTermUpdateDtoSchema,
+  type PaymentTermCreateDto,
+  type PaymentTermDetailDto,
+  type PaymentTermListParams,
+  type PaymentTermLookupDto,
+  type PaymentTermPatchDto,
+  type PaymentTermSummaryDto,
+  type PaymentTermUpdateDto,
+} from './lib/payment-term.schema';
+export {
+  gloBusinessTypeLookupDtoSchema,
+  gloBusinessTypeLookupResponseSchema,
+  type GloBusinessTypeLookupDto,
+  type GloBusinessTypeLookupParams,
   gloBillingCategoryTypeLookupDtoSchema,
   gloBillingCategoryTypeLookupResponseSchema,
   gloSetupDescriptionTypeLookupDtoSchema,

@@ -29,6 +29,10 @@
       "@cms/workorder-data-access": [
         "./libs/workorder/data-access/src/index.ts"
       ],
+      "@cms/customer-contract": ["./libs/customer/contract/src/index.ts"],
+      "@cms/customer-data-access": ["./libs/customer/data-access/src/index.ts"],
+      "@cms/customer-ui": ["./libs/customer/ui/src/index.ts"],
+      "@cms/lead-contract": ["./libs/lead/contract/src/index.ts"],
       "@cms/lead-data-access": ["./libs/lead/data-access/src/index.ts"],
       "@cms/settings-data-access": ["./libs/settings/data-access/src/index.ts"],
       "@cms/user-contract": ["./libs/user/contract/src/index.ts"],

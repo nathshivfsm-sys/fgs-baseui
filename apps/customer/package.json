@@ -1,0 +1,32 @@
+{
+  "name": "customer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5105 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --port 5105 --strictPort"
+  },
+  "dependencies": {
+    "@cms/customer-contract": "workspace:*",
+    "@cms/customer-data-access": "workspace:*",
+    "@cms/customer-ui": "workspace:*",
+    "@cms/platform-contract": "workspace:*",
+    "@cms/settings-contract": "workspace:*",
+    "@cms/shared-contract": "workspace:*",
+    "@cms/shared-data-access": "workspace:*",
+    "@cms/shared-api": "workspace:*",
+    "@cms/shared-auth": "workspace:*",
+    "@cms/shared-locale": "workspace:*",
+    "@cms/user-contract": "workspace:*",
+    "@cms/ui": "workspace:*",
+    "@hookform/resolvers": "5.2.2",
+    "@tanstack/react-query": "5.101.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "7.66.1",
+    "react-router-dom": "7.18.2",
+    "zod": "4.4.3"
+  }
+}

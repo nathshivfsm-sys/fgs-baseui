@@ -4,10 +4,12 @@ import { customFetch } from '@cms/shared-api';
 import {
   gloBillingCategoryTypeLookupResponseSchema,
   gloSetupDescriptionTypeLookupResponseSchema,
+  gloBusinessTypeLookupResponseSchema,
   gloCountryLookupResponseSchema,
   gloStateProvinceLookupResponseSchema,
   postalCodeCityLookupResponseSchema,
   type GloBillingCategoryTypeLookupDto,
+  type GloBusinessTypeLookupDto,
   type GloSetupDescriptionTypeLookupDto,
   type GloCountryLookupDto,
   type GloStateProvinceLookupDto,
@@ -18,6 +20,7 @@ import {
 import {
   gloBillingCategoryTypeLookupEndpoint,
   gloSetupDescriptionTypeLookupEndpoint,
+  gloBusinessTypeLookupEndpoint,
   gloCountryLookupEndpoint,
   gloStateProvinceLookupEndpoint,
   postalCodeCitiesEndpoint,
@@ -44,6 +47,17 @@ export const loadGloSetupDescriptionTypeLookup = async (
     { signal },
   );
   return gloSetupDescriptionTypeLookupResponseSchema.parse(body).data;
+};
+
+export const loadGloBusinessTypeLookup = async (
+  activeOnly: boolean,
+  { signal }: QueryRequestContext,
+): Promise<readonly GloBusinessTypeLookupDto[]> => {
+  const body = await customFetch<unknown>(
+    gloBusinessTypeLookupEndpoint(activeOnly),
+    { signal },
+  );
+  return gloBusinessTypeLookupResponseSchema.parse(body).data;
 };
 
 export const loadGloCountryLookup = async (
@@ -100,6 +114,14 @@ export const gloSetupDescriptionTypeLookupQueryOptions = (activeOnly = true) =>
       feature: 'geo-lookup',
       operation: 'setup-description-type-lookup',
     },
+  });
+
+export const gloBusinessTypeLookupQueryOptions = (activeOnly = true) =>
+  queryOptions({
+    queryKey: geoLookupKeys.businessType(activeOnly),
+    queryFn: ({ signal }) => loadGloBusinessTypeLookup(activeOnly, { signal }),
+    staleTime: 5 * 60 * 1000,
+    meta: { feature: 'geo-lookup', operation: 'business-type-lookup' },
   });
 
 export const gloCountryLookupQueryOptions = (activeOnly = true) =>

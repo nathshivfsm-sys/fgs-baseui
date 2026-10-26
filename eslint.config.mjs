@@ -115,6 +115,23 @@ export default tseslint.config(
               ],
             },
             {
+              sourceTag: 'scope:customer',
+              onlyDependOnLibsWithTags: [
+                'scope:customer',
+                'scope:shared',
+                'type:contract',
+              ],
+            },
+            {
+              sourceTag: 'scope:servicelocation',
+              onlyDependOnLibsWithTags: [
+                'scope:servicelocation',
+                'scope:customer',
+                'scope:shared',
+                'type:contract',
+              ],
+            },
+            {
               sourceTag: 'scope:invoice',
               onlyDependOnLibsWithTags: [
                 'scope:invoice',

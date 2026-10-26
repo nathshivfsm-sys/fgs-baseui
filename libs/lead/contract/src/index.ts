@@ -1,0 +1,42 @@
+/**
+ * Wire request/response contracts for the lead MFE CRM catalog resources.
+ */
+export {
+  pagedResultSchema,
+  setupResponseSchema,
+  type PagedResult,
+  type SetupListParams,
+  type SortDirection,
+} from './lib/envelope.schema';
+export {
+  customerCreateDtoSchema,
+  customerCreateResponseSchema,
+  customerCreateResultDtoSchema,
+  customerCreationOptionSchema,
+  customerDetailDtoSchema,
+  customerDetailResponseSchema,
+  customerListResponseSchema,
+  customerListResultDtoSchema,
+  customerListSummaryDtoSchema,
+  customerLookupDtoSchema,
+  customerLookupResponseSchema,
+  customerPatchDtoSchema,
+  customerSummaryDtoSchema,
+  customerTypeSchema,
+  customerUpdateDtoSchema,
+  serviceLocationCreateDtoSchema,
+  serviceLocationTypeSchema,
+  type CustomerCreateDto,
+  type CustomerCreateResultDto,
+  type CustomerCreationOption,
+  type CustomerDetailDto,
+  type CustomerListParams,
+  type CustomerListResult,
+  type CustomerListResultDto,
+  type CustomerListSummaryDto,
+  type CustomerLookupDto,
+  type CustomerPatchDto,
+  type CustomerSummaryDto,
+  type CustomerUpdateDto,
+  type ServiceLocationCreateDto,
+} from './lib/customer.schema';

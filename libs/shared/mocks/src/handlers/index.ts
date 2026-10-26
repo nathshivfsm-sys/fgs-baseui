@@ -9,13 +9,17 @@ import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
 import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
+import { paymentTermHandlers } from './payment-term';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
 import { salesPipelineStatusHandlers } from './sales-pipeline-status';
 import { setupDescriptionHandlers } from './setup-description';
 import { sourceHandlers } from './source';
 import { companyHandlers } from './company';
+import { customerHandlers } from './customer';
+import { serviceLocationHandlers } from './service-location';
 import { nonWorkingDateHandlers } from './non-working-date';
+import { tagHandlers } from './tag';
 import { taxHandlers } from './tax';
 import { timeslotHandlers } from './timeslot';
 import { taxAuthorityHandlers } from './tax-authority';
@@ -30,6 +34,8 @@ import { roleHandlers } from './role';
 export const handlers = [
   ...authHandlers,
   ...companyHandlers,
+  ...customerHandlers,
+  ...serviceLocationHandlers,
   ...userHandlers,
   ...userRoleHandlers,
   ...roleHandlers,
@@ -38,6 +44,8 @@ export const handlers = [
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,
   ...inventoryLocationHandlers,
+  ...paymentTermHandlers,
+  ...tagHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
   ...salesPipelineStatusHandlers,

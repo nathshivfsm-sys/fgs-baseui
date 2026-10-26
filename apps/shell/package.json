@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@cms/auth-data-access": "workspace:*",
+    "@cms/customer-contract": "workspace:*",
     "@cms/platform-contract": "workspace:*",
     "@cms/settings-contract": "workspace:*",
     "@cms/user-contract": "workspace:*",

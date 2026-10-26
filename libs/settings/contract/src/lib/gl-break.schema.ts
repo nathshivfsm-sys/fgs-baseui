@@ -63,13 +63,6 @@ export const glBreakDetailDtoSchema = glBreakSummaryDtoSchema.extend({
   trades: z.array(glBreakTradeDtoSchema).nullish(),
 });
 
-export const glBreakLookupDtoSchema = z.object({
-  id: z.number(),
-  code: nullableText,
-  name: nullableText,
-  breakLevel: z.number(),
-});
-
 export const glBreakCreateDtoSchema = z.object({
   code: nullableText,
   name: nullableText,
@@ -99,10 +92,6 @@ export const glBreakListResponseSchema = setupResponseSchema(
 export const glBreakDetailResponseSchema = setupResponseSchema(
   glBreakDetailDtoSchema,
 );
-export const glBreakLookupResponseSchema = setupResponseSchema(
-  z.array(glBreakLookupDtoSchema),
-);
-
 export type GlBreakAddressDetailDto = z.infer<
   typeof glBreakAddressDetailDtoSchema
 >;
@@ -112,7 +101,6 @@ export type GlBreakLocationWriteDto = z.infer<
 export type GlBreakTradeDto = z.infer<typeof glBreakTradeDtoSchema>;
 export type GlBreakSummaryDto = z.infer<typeof glBreakSummaryDtoSchema>;
 export type GlBreakDetailDto = z.infer<typeof glBreakDetailDtoSchema>;
-export type GlBreakLookupDto = z.infer<typeof glBreakLookupDtoSchema>;
 export type GlBreakCreateDto = z.infer<typeof glBreakCreateDtoSchema>;
 export type GlBreakUpdateDto = z.infer<typeof glBreakUpdateDtoSchema>;
 export type GlBreakPatchDto = z.infer<typeof glBreakPatchDtoSchema>;

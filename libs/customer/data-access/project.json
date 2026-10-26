@@ -1,0 +1,30 @@
+{
+  "name": "customer-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/customer/data-access/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:customer"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/customer/data-access",
+        "main": "libs/customer/data-access/src/index.ts",
+        "tsConfig": "libs/customer/data-access/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/customer/data-access/tsconfig.json"
+      }
+    }
+  }
+}

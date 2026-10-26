@@ -1,0 +1,19 @@
+{
+  "name": "customer-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/customer/ui/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:customer"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "tsc --noEmit -p libs/customer/ui/tsconfig.json"
+      }
+    }
+  }
+}

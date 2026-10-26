@@ -366,20 +366,20 @@ export const AddEmployeeForm = ({
                 required
               />
               <FormSelectField<EmployeeCreateForm>
-                disabled={!state}
-                label="City"
-                name="city"
-                options={cityOptions}
-                placeholder="Select city"
-                required
-              />
-              <FormSelectField<EmployeeCreateForm>
                 disabled={!country}
                 label="State"
                 name="state"
                 onValueChange={handleStateChange}
                 options={stateOptions}
                 placeholder="Select state"
+                required
+              />
+              <FormSelectField<EmployeeCreateForm>
+                disabled={!state}
+                label="City"
+                name="city"
+                options={cityOptions}
+                placeholder="Select city"
                 required
               />
             </div>
