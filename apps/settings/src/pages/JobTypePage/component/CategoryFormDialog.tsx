@@ -64,7 +64,9 @@ export const CategoryFormDialog = ({
             {isEdit ? EDIT_CATEGORY_TITLE : CREATE_CATEGORY_TITLE}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            Name, colors, and active status for a job type category.
+            {isEdit
+              ? 'Name, colors, and active status for a job type category.'
+              : 'Name and colors for a job type category.'}
           </DialogDescription>
         </DialogHeader>
         <FormProvider {...form}>
@@ -93,7 +95,9 @@ export const CategoryFormDialog = ({
                   name="textColor"
                 />
               </div>
-              <FormSwitchField<JobCategoryForm> name="isActive" />
+              {isEdit ? (
+                <FormSwitchField<JobCategoryForm> name="isActive" />
+              ) : null}
               <div className="mt-8 flex justify-end gap-2">
                 <Button
                   disabled={isPending}

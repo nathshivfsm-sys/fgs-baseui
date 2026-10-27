@@ -147,10 +147,12 @@ export const SalesActivityFormDialog = ({
                     label={MANUAL_SELECTION_LABEL}
                     name="allowManualSelection"
                   />
-                  <FormToggleField<SalesActivityTypeForm>
-                    label={ACTIVE_LABEL}
-                    name="isActive"
-                  />
+                  {isEdit ? (
+                    <FormToggleField<SalesActivityTypeForm>
+                      label={ACTIVE_LABEL}
+                      name="isActive"
+                    />
+                  ) : null}
                 </div>
               </SectionCard>
               <div className="mt-4 flex justify-end gap-2">

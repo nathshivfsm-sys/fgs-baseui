@@ -108,7 +108,9 @@ export const TagFormDialog = ({
               {isEdit ? EDIT_TAG_TITLE : CREATE_TAG_TITLE}
             </DialogTitle>
             <DialogDescription className="sr-only">
-              Tag name, entity scope, description, colors, and active status.
+              {isEdit
+                ? 'Tag name, entity scope, description, colors, and active status.'
+                : 'Tag name, entity scope, description, and colors.'}
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...form}>
@@ -151,7 +153,7 @@ export const TagFormDialog = ({
                     name="textColor"
                   />
                 </div>
-                <FormSwitchField<TagForm> name="isActive" />
+                {isEdit ? <FormSwitchField<TagForm> name="isActive" /> : null}
                 <div className="mt-4 flex justify-end gap-2">
                   <Button
                     disabled={isPending}

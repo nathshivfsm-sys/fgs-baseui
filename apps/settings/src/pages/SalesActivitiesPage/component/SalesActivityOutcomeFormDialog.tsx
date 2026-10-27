@@ -186,10 +186,12 @@ export const SalesActivityOutcomeFormDialog = ({
                     label={REQUIRED_COMMENT_LABEL}
                     name="requireComment"
                   />
-                  <FormToggleField<SalesActivityOutcomeForm>
-                    label={ACTIVE_LABEL}
-                    name="isActive"
-                  />
+                  {isEdit ? (
+                    <FormToggleField<SalesActivityOutcomeForm>
+                      label={ACTIVE_LABEL}
+                      name="isActive"
+                    />
+                  ) : null}
                 </div>
               </SectionCard>
               <div className="mt-4 flex justify-end gap-2">

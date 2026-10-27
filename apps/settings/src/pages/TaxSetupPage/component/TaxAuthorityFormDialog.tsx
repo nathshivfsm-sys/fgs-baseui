@@ -114,21 +114,23 @@ export function TaxAuthorityFormDialog({
                   placeholder="Select date"
                   required
                 />
-                <Controller
-                  control={form.control}
-                  name="isActive"
-                  render={({ field }) => (
-                    <div className="flex items-end pb-1">
-                      <SwitchField
-                        checked={field.value}
-                        label="Active"
-                        labelPosition="after"
-                        name={field.name}
-                        onCheckedChange={field.onChange}
-                      />
-                    </div>
-                  )}
-                />
+                {isEdit ? (
+                  <Controller
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                      <div className="flex items-end pb-1">
+                        <SwitchField
+                          checked={field.value}
+                          label="Active"
+                          labelPosition="after"
+                          name={field.name}
+                          onCheckedChange={field.onChange}
+                        />
+                      </div>
+                    )}
+                  />
+                ) : null}
               </div>
               <div className="mt-8 flex justify-end gap-2">
                 <Button
