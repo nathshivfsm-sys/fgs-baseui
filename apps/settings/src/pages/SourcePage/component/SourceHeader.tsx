@@ -1,7 +1,8 @@
-import { BodySmall, Button, Heading1, PlusIcon } from '@cms/ui';
+import { BodySmall, Button, PlusIcon } from '@cms/ui';
 import {
   SETUP_SALES_LABEL,
   SETUP_SALES_TAB,
+  SettingsPageTitle,
   SetupBreadcrumb,
 } from '../../../shared';
 import { ADD_SOURCE_LABEL, PAGE_DESCRIPTION, PAGE_TITLE } from '../constant';
@@ -20,7 +21,9 @@ export const SourceHeader = ({ onAdd }: SourceHeaderProps) => {
           moduleLabel={SETUP_SALES_LABEL}
           pageLabel={PAGE_TITLE}
         />
-        <Heading1 className="mt-2">{PAGE_TITLE}</Heading1>
+        <SettingsPageTitle moduleKey={SETUP_SALES_TAB}>
+          {PAGE_TITLE}
+        </SettingsPageTitle>
         <BodySmall color="foreground-subtle">{PAGE_DESCRIPTION}</BodySmall>
       </div>
       <Button className="shrink-0" onClick={handleAdd} type="button">

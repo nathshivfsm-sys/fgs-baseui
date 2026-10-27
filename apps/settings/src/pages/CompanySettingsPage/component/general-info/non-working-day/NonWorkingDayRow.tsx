@@ -28,19 +28,19 @@ export const NonWorkingDayRow = ({
         <div className="flex items-center gap-1">
           <IconButton
             className="text-action"
-            icon={<EditIcon className="size-4" />}
+            icon={<EditIcon className="size-5" />}
             label={`Edit ${description}`}
             onClick={handleEdit}
-            size="xs"
+            size="sm"
             type="button"
             variant="ghost"
           />
           <IconButton
             className="text-destructive"
-            icon={<TrashIcon className="size-4" />}
+            icon={<TrashIcon className="size-5" />}
             label={`Delete ${description}`}
             onClick={handleDelete}
-            size="xs"
+            size="sm"
             type="button"
             variant="ghost"
           />

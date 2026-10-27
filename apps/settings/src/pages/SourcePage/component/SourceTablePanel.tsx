@@ -73,9 +73,7 @@ export const SourceTablePanel = ({
         enableSorting: false,
         meta: { label: 'Description' },
         cell: ({ getValue }) => (
-          <span className="line-clamp-2 text-foreground-subtle">
-            {getValue()?.trim() || '—'}
-          </span>
+          <span className="line-clamp-2">{getValue()?.trim() || '—'}</span>
         ),
       }),
       column.display({

@@ -6,6 +6,7 @@ import {
   buildDataTableListRequest,
   createDataTableColumnHelper,
   DataTable,
+  DataTableBooleanCell,
   DataTableRowActions,
   resolveDataTableRows,
   type DataTableDataMode,
@@ -24,7 +25,6 @@ import type {
   SalesPipelineStatusTablePanelProps,
 } from '../types';
 import { describeSalesPipelineStatusError } from '../util';
-import { PipelineBooleanCell } from './PipelineBooleanCell';
 
 const column = createDataTableColumnHelper<SalesPipelineStatusSummaryDto>();
 const LIST_DATA_MODE: DataTableDataMode = 'client';
@@ -83,34 +83,32 @@ export const SalesPipelineStatusTablePanel = ({
         enableSorting: false,
         meta: { label: 'Description' },
         cell: ({ getValue }) => (
-          <span className="line-clamp-2 text-foreground-subtle">
-            {getValue()?.trim() || '—'}
-          </span>
+          <span className="line-clamp-2">{getValue()?.trim() || '—'}</span>
         ),
       }),
       column.accessor('appliesToLead', {
         header: 'Applies To Lead',
         enableSorting: false,
         meta: { align: 'center', label: 'Applies To Lead' },
-        cell: ({ getValue }) => <PipelineBooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('appliesToOpportunity', {
         header: 'Applies To Opportunity',
         enableSorting: false,
         meta: { align: 'center', label: 'Applies To Opportunity' },
-        cell: ({ getValue }) => <PipelineBooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('isTerminal', {
         header: 'Is Terminal',
         enableSorting: false,
         meta: { align: 'center', label: 'Is Terminal' },
-        cell: ({ getValue }) => <PipelineBooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('allowManualSelection', {
         header: 'Allow Manual Selection',
         enableSorting: false,
         meta: { align: 'center', label: 'Allow Manual Selection' },
-        cell: ({ getValue }) => <PipelineBooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',

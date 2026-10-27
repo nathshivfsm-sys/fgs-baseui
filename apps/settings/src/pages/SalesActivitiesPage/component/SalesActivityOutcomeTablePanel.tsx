@@ -3,6 +3,7 @@ import type { SalesActivityOutcomeSummaryDto } from '@cms/settings-contract';
 import {
   createDataTableColumnHelper,
   DataTable,
+  DataTableBooleanCell,
   DataTableRowActions,
   resolveDataTableRows,
   type DataTableDataMode,
@@ -26,7 +27,6 @@ import type {
   SalesActivityOutcomeTablePanelProps,
 } from '../types';
 import { describeSalesActivityOutcomeError } from '../util';
-import { BooleanCell } from './BooleanCell';
 
 const column = createDataTableColumnHelper<SalesActivityOutcomeSummaryDto>();
 const LIST_DATA_MODE: DataTableDataMode = 'client';
@@ -77,28 +77,26 @@ export const SalesActivityOutcomeTablePanel = ({
         enableSorting: false,
         meta: { label: 'Description' },
         cell: ({ getValue }) => (
-          <span className="line-clamp-2 text-foreground-subtle">
-            {getValue()?.trim() || '—'}
-          </span>
+          <span className="line-clamp-2">{getValue()?.trim() || '—'}</span>
         ),
       }),
       column.accessor('appliesToLead', {
         header: APPLIES_TO_LEAD_COLUMN,
         enableSorting: false,
         meta: { align: 'center', label: APPLIES_TO_LEAD_COLUMN },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('appliesToOpportunity', {
         header: APPLIES_TO_OPPORTUNITY_COLUMN,
         enableSorting: false,
         meta: { align: 'center', label: APPLIES_TO_OPPORTUNITY_COLUMN },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('allowManualSelection', {
         header: MANUAL_SELECTION_LABEL,
         enableSorting: false,
         meta: { align: 'center', label: MANUAL_SELECTION_LABEL },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('nextSalesPipelineStatusId', {
         header: 'Next Sales Status',
@@ -114,13 +112,13 @@ export const SalesActivityOutcomeTablePanel = ({
         header: TERMINAL_LABEL,
         enableSorting: false,
         meta: { align: 'center', label: TERMINAL_LABEL },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('requireComment', {
         header: REQUIRED_COMMENT_LABEL,
         enableSorting: false,
         meta: { align: 'center', label: REQUIRED_COMMENT_LABEL },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',

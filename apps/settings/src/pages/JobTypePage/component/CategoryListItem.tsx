@@ -82,10 +82,10 @@ export function CategoryListItem({
       </button>
       <IconButton
         className="shrink-0 rounded-md"
-        icon={<EditIcon className="size-3.5" />}
+        icon={<EditIcon className="size-5" />}
         label={`Edit ${entry.name}`}
         onClick={handleEdit}
-        size="xs"
+        size="sm"
         variant="outline"
       />
     </div>

@@ -7,6 +7,7 @@ import {
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  DataTableYesNoCell,
   resolveDataTableRows,
   type DataTableDataMode,
   type DataTableState,
@@ -86,8 +87,8 @@ export const ResolutionCodeTablePanel = ({
       column.accessor('isMobileVisible', {
         header: 'Mobile Visible',
         enableSorting: false,
-        meta: { label: 'Mobile Visible' },
-        cell: ({ getValue }) => (getValue() ? 'Yes' : 'No'),
+        meta: { align: 'center', label: 'Mobile Visible' },
+        cell: ({ getValue }) => <DataTableYesNoCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',
