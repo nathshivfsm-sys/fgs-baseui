@@ -29,11 +29,13 @@ const meta = {
     ),
   ],
   args: {
+    collapsed: false,
     currentUser: MOCK_CURRENT_USER,
     onLogout: fn(),
     onOpenMobileSidebar: fn(),
+    onToggleTheme: fn(),
     tenantId: 'northwind',
-    collapsed: false,
+    theme: 'light',
   },
 } satisfies Meta<typeof TopNav>;
 export default meta;

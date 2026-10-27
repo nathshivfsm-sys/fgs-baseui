@@ -12,5 +12,6 @@ export type {
   FormTextareaProps,
   FormTimePickerProps,
 } from './form.types';
+export type { SettingsPageTitleProps } from './settings-page-title.types';
 export type { SetupBreadcrumbProps } from './setup-breadcrumb.types';
 export type { SetupLocationState } from './setup-location-state.types';

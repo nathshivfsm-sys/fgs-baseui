@@ -1,6 +1,7 @@
 export {
   CatalogNavCard,
   CatalogStatusTabBar,
+  SettingsPageTitle,
   SetupBreadcrumb,
 } from './component';
 export {
@@ -26,6 +27,7 @@ export type {
   CatalogNavCardProps,
   CatalogStatusFilter,
   CatalogStatusTabBarProps,
+  SettingsPageTitleProps,
   SetupBreadcrumbProps,
   SetupLocationState,
 } from './types';

@@ -21,10 +21,10 @@ const jobTypeColumn = createDataTableColumnHelper<JobTypeGroupRow>();
 const subcategoryColumn = createDataTableColumnHelper<SubcategoryRow>();
 
 const jobTypeHeaderClassName =
-  'h-[2.125rem] bg-surface-sunken py-0 text-[0.8125rem] font-medium uppercase tracking-[0.025em] text-foreground-muted';
+  'h-[2.125rem] bg-surface-sunken py-0 text-control font-medium uppercase tracking-[0.025em] text-foreground-muted';
 
 const subcategoryHeaderClassName =
-  'h-[2.125rem] bg-action-subtle py-0 text-[0.8125rem] font-medium uppercase tracking-[0.025em] text-foreground-muted';
+  'h-[2.125rem] bg-action-subtle py-0 text-control font-medium uppercase tracking-[0.025em] text-foreground-muted';
 
 /** Figma node 2139:841 — nested grid inset from the parent row. */
 const expandedSubTableInsetClass = 'pl-14 pr-4';

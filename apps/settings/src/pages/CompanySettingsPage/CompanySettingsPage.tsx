@@ -1,7 +1,8 @@
-import { BodySmall, Callout, Heading1 } from '@cms/ui';
+import { BodySmall, Callout } from '@cms/ui';
 import {
   SETUP_COMPANY_LABEL,
   SETUP_COMPANY_TAB,
+  SettingsPageTitle,
   SetupBreadcrumb,
 } from '../../shared';
 import { CompanySettingsEditor } from './component';
@@ -22,7 +23,9 @@ export const CompanySettingsPage = ({
     />
 
     <header>
-      <Heading1>General Info</Heading1>
+      <SettingsPageTitle className="mt-0" moduleKey={SETUP_COMPANY_TAB}>
+        General Info
+      </SettingsPageTitle>
       <BodySmall color="foreground-subtle">
         Manage your company details, address, logo and non working days.
       </BodySmall>

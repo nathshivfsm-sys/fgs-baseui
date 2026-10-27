@@ -19,12 +19,15 @@ import {
   IconButton,
   MenuIcon,
   MessageIcon,
+  MoonIcon,
   PhoneIcon,
   SearchIcon,
   SettingsIcon,
+  SunIcon,
   TextInput,
 } from '@cms/ui';
 import { TENANT_NAMES } from '../../store';
+import type { Theme } from '../../util';
 import { formatBadgeCount, getInitials } from '../util';
 
 /**
@@ -35,26 +38,38 @@ const TOPNAV_ICON_CLASSES =
   'text-surface-inverse-foreground hover:bg-surface-inverse-hover hover:text-surface-inverse-foreground active:bg-surface-inverse-hover focus-visible:ring-surface-inverse-foreground/70 cursor-pointer';
 
 export interface TopNavProps {
+  collapsed: boolean;
   currentUser: UserDetails;
   notificationCount?: number;
   onLogout: () => void;
   onOpenMobileSidebar: () => void;
+  onToggleTheme: () => void;
   tenantId: string;
-  collapsed: boolean;
+  theme: Theme;
 }
 
 /** Persistent brand bar: identity, global search, utilities, and the account menu. */
 export function TopNav({
+  collapsed,
   currentUser,
   notificationCount = 5,
   onLogout,
   onOpenMobileSidebar,
+  onToggleTheme,
   tenantId,
-  collapsed,
+  theme,
 }: TopNavProps) {
   const navigate = useNavigate();
   const tenantName = TENANT_NAMES[tenantId] ?? tenantId;
   const initials = getInitials(currentUser.displayName) || '?';
+  const themeLabel =
+    theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+  const themeIcon =
+    theme === 'dark' ? (
+      <SunIcon className="size-6" />
+    ) : (
+      <MoonIcon className="size-6" />
+    );
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-divider bg-surface-inverse px-4 text-surface-inverse-foreground sm:px-5">
@@ -98,7 +113,7 @@ export function TopNav({
         />
       </div>
 
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="flex shrink-0 items-center gap-3">
         <IconButton
           className={`hidden md:inline-flex! ${TOPNAV_ICON_CLASSES}`}
           icon={<PhoneIcon className="size-6" />}
@@ -136,6 +151,15 @@ export function TopNav({
             </span>
           )}
         </div>
+
+        <IconButton
+          className={TOPNAV_ICON_CLASSES}
+          icon={themeIcon}
+          label={themeLabel}
+          onClick={onToggleTheme}
+          size="lg"
+          variant="ghost"
+        />
 
         <IconButton
           className={`hidden sm:inline-flex! ${TOPNAV_ICON_CLASSES}`}

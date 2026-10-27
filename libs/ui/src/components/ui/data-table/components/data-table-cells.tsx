@@ -1,5 +1,11 @@
 import { Fragment } from 'react';
-import { EditIcon, MoreVerticalIcon, TrashIcon } from '../../../../icons';
+import {
+  CircleCheckFilledIcon,
+  CircleXFilledIcon,
+  EditIcon,
+  MoreVerticalIcon,
+  TrashIcon,
+} from '../../../../icons';
 import { cn } from '../../../../lib/cn';
 import { Button } from '../../button';
 import {
@@ -10,10 +16,12 @@ import {
   DropdownMenuTrigger,
 } from '../../dropdown-menu';
 import type {
+  DataTableBooleanCellProps,
   DataTableIconCellProps,
   DataTableLinkCellProps,
   DataTableRowActionsProps,
   DataTableStackedCellProps,
+  DataTableYesNoCellProps,
 } from '../types';
 
 /** Blue identifier link used by the ID column. */
@@ -86,6 +94,30 @@ export function DataTableIconCell({
   );
 }
 
+/** Centered check or cross for a Yes/No column. */
+export function DataTableBooleanCell({ value }: DataTableBooleanCellProps) {
+  const icon = value ? (
+    <CircleCheckFilledIcon
+      aria-label="Yes"
+      className="size-[18px] text-success"
+    />
+  ) : (
+    <CircleXFilledIcon
+      aria-label="No"
+      className="size-[18px] text-destructive"
+    />
+  );
+
+  return <span className="flex w-full justify-center">{icon}</span>;
+}
+
+/** Centered Yes or No text. */
+export function DataTableYesNoCell({ value }: DataTableYesNoCellProps) {
+  return (
+    <span className="flex w-full justify-center">{value ? 'Yes' : 'No'}</span>
+  );
+}
+
 /** Trailing pencil, optional trash, and overflow menu for the Actions column. */
 export function DataTableRowActions({
   actions,
@@ -101,23 +133,23 @@ export function DataTableRowActions({
       {onEdit ? (
         <Button
           aria-label={editLabel}
-          className="size-7 border-input bg-surface p-0 text-foreground"
+          className="size-8 border-input bg-surface p-0 text-foreground"
           onClick={onEdit}
           title={editLabel}
           variant="outline"
         >
-          <EditIcon className="size-3.5" />
+          <EditIcon className="size-5" />
         </Button>
       ) : null}
       {onDelete ? (
         <Button
           aria-label={deleteLabel}
-          className="size-7 border-input bg-surface p-0 text-destructive"
+          className="size-8 border-input bg-surface p-0 text-destructive"
           onClick={onDelete}
           title={deleteLabel}
           variant="outline"
         >
-          <TrashIcon className="size-3.5" />
+          <TrashIcon className="size-5" />
         </Button>
       ) : null}
       {actions?.length ? (
@@ -126,11 +158,11 @@ export function DataTableRowActions({
             render={
               <Button
                 aria-label={menuLabel}
-                className="size-7 border-input bg-surface p-0 text-foreground"
+                className="size-8 border-input bg-surface p-0 text-foreground"
                 title={menuLabel}
                 variant="outline"
               >
-                <MoreVerticalIcon className="size-3.5" />
+                <MoreVerticalIcon className="size-5" />
               </Button>
             }
           />

@@ -200,6 +200,14 @@ export interface DataTableIconCellProps {
   icon: ReactNode;
 }
 
+export interface DataTableBooleanCellProps {
+  value: boolean;
+}
+
+export interface DataTableYesNoCellProps {
+  value: boolean | null | undefined;
+}
+
 export interface DataTableRowAction {
   destructive?: boolean;
   disabled?: boolean;

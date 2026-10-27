@@ -75,7 +75,7 @@ export function TableHead({ className, ...props }: ComponentProps<'th'>) {
   return (
     <th
       className={cn(
-        'relative h-9 whitespace-nowrap px-3 text-left align-middle text-caption font-semibold text-heading first:pl-4 last:pr-4',
+        'relative h-9 whitespace-nowrap px-3 text-left align-middle text-control font-semibold text-heading first:pl-4 last:pr-4',
         className,
       )}
       scope="col"

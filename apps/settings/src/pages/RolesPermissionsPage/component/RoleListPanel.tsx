@@ -89,9 +89,9 @@ const RoleListItem = ({
         <DropdownMenuTrigger
           render={
             <IconButton
-              icon={<MoreVerticalIcon className="size-3.5" />}
+              icon={<MoreVerticalIcon className="size-5" />}
               label="Role actions"
-              size="xs"
+              size="sm"
               variant="ghost"
             />
           }

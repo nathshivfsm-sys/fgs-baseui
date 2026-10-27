@@ -9,6 +9,7 @@ import {
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  DataTableYesNoCell,
   resolveDataTableRows,
   type DataTableDataMode,
   type DataTableState,
@@ -68,9 +69,6 @@ const matchesBillingCategoryFilters = (
   }
   return true;
 };
-
-const formatYesNo = (value: boolean | null | undefined) =>
-  value ? 'Yes' : 'No';
 
 export interface BillingCategoryTablePanelProps {
   activeCount: number;
@@ -149,18 +147,18 @@ export const BillingCategoryTablePanel = ({
       }),
       column.accessor('isSystemDefined', {
         header: 'System Defined',
-        meta: { label: 'System Defined' },
-        cell: ({ getValue }) => formatYesNo(getValue()),
+        meta: { align: 'center', label: 'System Defined' },
+        cell: ({ getValue }) => <DataTableYesNoCell value={getValue()} />,
       }),
       column.accessor('showToFieldTech', {
         header: 'Show To Field Tech',
-        meta: { label: 'Show To Field Tech' },
-        cell: ({ getValue }) => formatYesNo(getValue()),
+        meta: { align: 'center', label: 'Show To Field Tech' },
+        cell: ({ getValue }) => <DataTableYesNoCell value={getValue()} />,
       }),
       column.accessor('allowToPick', {
         header: 'Allow To Pick',
-        meta: { label: 'Allow To Pick' },
-        cell: ({ getValue }) => formatYesNo(getValue()),
+        meta: { align: 'center', label: 'Allow To Pick' },
+        cell: ({ getValue }) => <DataTableYesNoCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',

@@ -1,5 +1,7 @@
 import type { UserDetails } from '@cms/platform-contract';
 import { useState, type ReactNode } from 'react';
+import { useStore } from 'zustand';
+import { shellStore } from '../../store';
 import { PageContainer } from './PageContainer';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
@@ -21,15 +23,19 @@ export function AppShell({
   const [collapsed, setCollapsed] = useState(false);
   const [iconOnly, setIconOnly] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useStore(shellStore, (state) => state.theme);
+  const toggleTheme = useStore(shellStore, (state) => state.toggleTheme);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <TopNav
-        currentUser={currentUser}
-        onOpenMobileSidebar={() => setMobileOpen(true)}
-        tenantId={tenantId}
-        onLogout={onLogout}
         collapsed={collapsed}
+        currentUser={currentUser}
+        onLogout={onLogout}
+        onOpenMobileSidebar={() => setMobileOpen(true)}
+        onToggleTheme={toggleTheme}
+        tenantId={tenantId}
+        theme={theme}
       />
 
       <div className="flex min-h-0 flex-1">
@@ -59,7 +65,7 @@ export function AppShell({
           </div>
         )}
 
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto bg-white">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto bg-background">
           <PageContainer>{children}</PageContainer>
         </main>
       </div>

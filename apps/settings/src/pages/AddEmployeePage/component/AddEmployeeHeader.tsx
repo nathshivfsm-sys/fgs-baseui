@@ -6,13 +6,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  Heading1,
 } from '@cms/ui';
 import {
   SETUP_PATH,
   SETUP_TAB_STATE_KEY,
   SETUP_USERS_PAYROLL_LABEL,
   SETUP_USERS_PAYROLL_TAB,
+  SettingsPageTitle,
 } from '../../../shared';
 import { EMPLOYEES_LIST_LABEL } from '../constant';
 import type { AddEmployeeHeaderProps } from '../types';
@@ -54,7 +54,9 @@ export const AddEmployeeHeader = ({
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-    <Heading1 className="mt-2">{title}</Heading1>
+    <SettingsPageTitle to=".." urlRelative>
+      {title}
+    </SettingsPageTitle>
     <BodySmall color="foreground-subtle">{description}</BodySmall>
   </header>
 );

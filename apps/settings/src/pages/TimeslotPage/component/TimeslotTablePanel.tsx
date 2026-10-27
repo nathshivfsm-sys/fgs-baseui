@@ -8,6 +8,7 @@ import {
   createDataTableColumnHelper,
   DataTable,
   DataTableRowActions,
+  DataTableYesNoCell,
   resolveDataTableRows,
   type DataTableDataMode,
   type DataTableState,
@@ -131,14 +132,18 @@ export const TimeslotTablePanel = ({
       column.accessor('isMobileVisible', {
         header: 'Mobile Visible',
         enableSorting: false,
-        meta: { label: 'Mobile Visible' },
-        cell: ({ getValue }) => yesNoBadge(getValue()),
+        meta: { align: 'center', label: 'Mobile Visible' },
+        cell: ({ getValue }) => (
+          <span className="flex w-full justify-center">
+            {yesNoBadge(getValue())}
+          </span>
+        ),
       }),
       column.accessor('isCustomerPortalVisible', {
         header: 'Customer Portal',
         enableSorting: false,
-        meta: { label: 'Customer Portal' },
-        cell: ({ getValue }) => (getValue() ? 'Yes' : 'No'),
+        meta: { align: 'center', label: 'Customer Portal' },
+        cell: ({ getValue }) => <DataTableYesNoCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',

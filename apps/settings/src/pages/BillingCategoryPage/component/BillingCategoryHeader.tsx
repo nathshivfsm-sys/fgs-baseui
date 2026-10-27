@@ -1,7 +1,8 @@
-import { BodySmall, Heading1 } from '@cms/ui';
+import { BodySmall } from '@cms/ui';
 import {
   SETUP_OPERATIONS_LABEL,
   SETUP_OPERATIONS_TAB,
+  SettingsPageTitle,
   SetupBreadcrumb,
 } from '../../../shared';
 import { PAGE_DESCRIPTION, PAGE_TITLE } from '../constant';
@@ -13,7 +14,9 @@ export const BillingCategoryHeader = () => (
       moduleLabel={SETUP_OPERATIONS_LABEL}
       pageLabel={PAGE_TITLE}
     />
-    <Heading1 className="mt-2">{PAGE_TITLE}</Heading1>
+    <SettingsPageTitle moduleKey={SETUP_OPERATIONS_TAB}>
+      {PAGE_TITLE}
+    </SettingsPageTitle>
     <BodySmall color="foreground-subtle">{PAGE_DESCRIPTION}</BodySmall>
   </header>
 );

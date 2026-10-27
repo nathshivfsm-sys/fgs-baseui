@@ -11,7 +11,7 @@ import { NAV_SECTIONS, PRIMARY_NAV_ITEMS, type NavItem } from '../constant';
 import styles from './Sidebar.module.css';
 
 const NAV_ITEM_CLASSES =
-  'flex w-full items-center text-control text-foreground transition-colors hover:bg-secondary';
+  'flex w-full items-center text-body text-foreground transition-colors hover:bg-secondary';
 const NAV_ITEM_EXPANDED_CLASSES = 'h-9 gap-2.5 rounded-md px-3';
 const NAV_ITEM_ICON_ONLY_CLASSES = 'h-9 justify-center rounded-md px-3';
 const NAV_ITEM_ACTIVE_CLASSES =
@@ -37,7 +37,7 @@ function SidebarNavLink({
       className={cn(
         NAV_ITEM_CLASSES,
         collapsed && !iconOnly
-          ? 'flex-col justify-center gap-1 px-1 py-2 text-center text-caption leading-tight'
+          ? 'min-w-0 flex-col justify-center gap-1 px-1 py-2 text-center text-[0.9375rem] leading-tight'
           : collapsed && iconOnly
             ? NAV_ITEM_ICON_ONLY_CLASSES
             : NAV_ITEM_EXPANDED_CLASSES,
@@ -56,7 +56,9 @@ function SidebarNavLink({
         )}
       />
       {showText && (
-        <span className={!collapsed ? 'truncate' : ''}>{item.label}</span>
+        <span className={collapsed ? 'block w-full' : 'truncate'}>
+          {item.label}
+        </span>
       )}
     </NavLink>
   );
@@ -94,7 +96,7 @@ export function Sidebar({
         // #2e323c in dark, only 1.14:1 against the surface, so the edge all but
         // disappears. divider tracks the original value in both schemes.
         'flex h-full flex-col border-r border-divider bg-surface transition-[width]',
-        collapsed && iconOnly ? 'w-20' : collapsed ? 'w-24' : 'w-52',
+        collapsed && iconOnly ? 'w-20' : collapsed ? 'w-28' : 'w-52',
         className,
       )}
     >
@@ -117,8 +119,8 @@ export function Sidebar({
 
       <nav
         className={cn(
-          `flex min-h-0 flex-1 flex-col overflow-y-auto pb-2 ${styles.collapsed}`,
-          !collapsed ? 'gap-1 px-2' : iconOnly ? 'gap-2 px-1.5' : 'gap-1 px-2',
+          `flex min-h-0 flex-1 flex-col overflow-x-clip overflow-y-auto pb-2 ${styles.collapsed}`,
+          !collapsed ? 'gap-1 px-2' : iconOnly ? 'gap-2 px-1.5' : 'gap-1 px-1',
         )}
       >
         <div className={cn('flex flex-col', !collapsed && 'gap-1')}>

@@ -3,6 +3,7 @@ import type { SalesActivityTypeSummaryDto } from '@cms/settings-contract';
 import {
   createDataTableColumnHelper,
   DataTable,
+  DataTableBooleanCell,
   DataTableRowActions,
   resolveDataTableRows,
   type DataTableDataMode,
@@ -24,7 +25,6 @@ import type {
   SalesActivityTablePanelProps,
 } from '../types';
 import { describeSalesActivityError } from '../util';
-import { BooleanCell } from './BooleanCell';
 
 const column = createDataTableColumnHelper<SalesActivityTypeSummaryDto>();
 const LIST_DATA_MODE: DataTableDataMode = 'client';
@@ -74,28 +74,26 @@ export const SalesActivityTablePanel = ({
         enableSorting: false,
         meta: { label: 'Description' },
         cell: ({ getValue }) => (
-          <span className="line-clamp-2 text-foreground-subtle">
-            {getValue()?.trim() || '—'}
-          </span>
+          <span className="line-clamp-2">{getValue()?.trim() || '—'}</span>
         ),
       }),
       column.accessor('appliesToLead', {
         header: APPLIES_TO_LEAD_COLUMN,
         enableSorting: false,
         meta: { align: 'center', label: APPLIES_TO_LEAD_COLUMN },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('appliesToOpportunity', {
         header: APPLIES_TO_OPPORTUNITY_COLUMN,
         enableSorting: false,
         meta: { align: 'center', label: APPLIES_TO_OPPORTUNITY_COLUMN },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.accessor('allowManualSelection', {
         header: MANUAL_SELECTION_LABEL,
         enableSorting: false,
         meta: { align: 'center', label: MANUAL_SELECTION_LABEL },
-        cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+        cell: ({ getValue }) => <DataTableBooleanCell value={getValue()} />,
       }),
       column.display({
         id: 'actions',
