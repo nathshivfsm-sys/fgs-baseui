@@ -14,12 +14,6 @@ export interface WorkOrderBookingHeaderProps {
   isPending: boolean;
 }
 
-export interface WorkOrderBookingDiscardDialogProps {
-  onConfirm: () => void;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-}
-
 export interface WorkOrderBookingConfigurationFormProps {
   businessUnitOptions: readonly { value: string; label: string }[];
   canEdit: boolean;
