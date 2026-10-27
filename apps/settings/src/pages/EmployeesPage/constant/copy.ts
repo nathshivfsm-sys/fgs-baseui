@@ -12,8 +12,6 @@ export const FILTER_APPLY_LABEL = 'Apply';
 export const FILTER_CLEAR_LABEL = 'Clear';
 export const NO_EMPLOYEES_FOUND = 'No employees found.';
 
-export const NEVER_LOGGED_IN = 'Never Logged In';
-
 export const LOAD_EMPLOYEES_ERROR_TITLE = 'Could not load employees';
 export const LOAD_EMPLOYEES_ERROR_TOAST_ID = 'employees-list-load-error';
 

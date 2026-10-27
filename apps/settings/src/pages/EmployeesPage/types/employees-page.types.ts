@@ -29,10 +29,6 @@ export interface EmployeeListAvatarProps {
   employeeId: number;
 }
 
-export interface EmployeeRoleBadgeProps {
-  roleName: string | null | undefined;
-}
-
 export interface EmployeeListRoleFilterProps {
   appliedRoleIds: readonly string[];
   onApply: (roleIds: readonly string[]) => void;

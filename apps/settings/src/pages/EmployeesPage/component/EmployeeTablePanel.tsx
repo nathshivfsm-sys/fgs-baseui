@@ -28,12 +28,10 @@ import {
   describeEmployeeError,
   employeeListEmail,
   employeeListPhone,
-  formatEmployeeLastLogin,
   formatExternalName,
 } from '../util';
 import { EmployeeListAvatar } from './EmployeeListAvatar';
 import { EmployeeListRoleFilter } from './EmployeeListRoleFilter';
-import { EmployeeRoleBadge } from './EmployeeRoleBadge';
 import { useEmployeeListLoadToast } from './use-employee-list-load-toast';
 
 const column = createDataTableColumnHelper<EmployeeSummaryDto>();
@@ -119,11 +117,6 @@ export const EmployeeTablePanel = ({
             ),
         },
       ),
-      column.accessor('roleName', {
-        header: 'Role',
-        meta: { label: 'Role' },
-        cell: ({ getValue }) => <EmployeeRoleBadge roleName={getValue()} />,
-      }),
       column.accessor((row) => employeeListEmail(row) ?? '', {
         id: 'officeEmail',
         header: 'Email',
@@ -143,11 +136,6 @@ export const EmployeeTablePanel = ({
           if (!raw) return '—';
           return formatLocaleMobile(raw) || raw;
         },
-      }),
-      column.accessor('lastLoginOn', {
-        header: 'Last Login',
-        meta: { label: 'Last Login' },
-        cell: ({ getValue }) => formatEmployeeLastLogin(getValue()),
       }),
       column.display({
         id: 'actions',
