@@ -1,7 +1,6 @@
 export type {
   EmployeeListAvatarProps,
   EmployeeListRoleFilterProps,
-  EmployeeRoleBadgeProps,
   EmployeeStatusFilter,
   EmployeeTablePanelProps,
   EmployeesPageProps,
