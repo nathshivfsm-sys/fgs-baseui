@@ -6,6 +6,9 @@ import { PageContainer } from './PageContainer';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 
+/** Stand-in portrait until the signed-in user has an avatarUrl. */
+const DEMO_PROFILE_AVATAR = '/demo-profile.jpg';
+
 export interface AppShellProps {
   children: ReactNode;
   currentUser: UserDetails;
@@ -25,12 +28,16 @@ export function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useStore(shellStore, (state) => state.theme);
   const toggleTheme = useStore(shellStore, (state) => state.toggleTheme);
+  const profileUser = {
+    ...currentUser,
+    avatarUrl: currentUser.avatarUrl ?? DEMO_PROFILE_AVATAR,
+  };
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <TopNav
         collapsed={collapsed}
-        currentUser={currentUser}
+        currentUser={profileUser}
         onLogout={onLogout}
         onOpenMobileSidebar={() => setMobileOpen(true)}
         onToggleTheme={toggleTheme}

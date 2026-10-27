@@ -181,11 +181,13 @@ export const SalesPipelineStatusFormDialog = ({
                     label={MANUAL_SELECTION_TOGGLE_LABEL}
                     name="allowManualSelection"
                   />
-                  <FormToggleField<SalesPipelineStatusForm>
-                    description={ACTIVE_TOGGLE_HELP}
-                    label={ACTIVE_TOGGLE_LABEL}
-                    name="isActive"
-                  />
+                  {isEdit ? (
+                    <FormToggleField<SalesPipelineStatusForm>
+                      description={ACTIVE_TOGGLE_HELP}
+                      label={ACTIVE_TOGGLE_LABEL}
+                      name="isActive"
+                    />
+                  ) : null}
                 </div>
               </SectionCard>
               <div className="mt-4 flex justify-end gap-2">

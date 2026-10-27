@@ -213,19 +213,21 @@ export const GlBreakFormDialog = ({
                 required
               />
             </div>
-            <Controller
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <SwitchField
-                  checked={field.value}
-                  label="Active"
-                  labelPosition="after"
-                  name={field.name}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
+            {isEdit ? (
+              <Controller
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <SwitchField
+                    checked={field.value}
+                    label="Active"
+                    labelPosition="after"
+                    name={field.name}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+            ) : null}
             <div className="mt-3 flex justify-end gap-2">
               <Button
                 disabled={isPending}

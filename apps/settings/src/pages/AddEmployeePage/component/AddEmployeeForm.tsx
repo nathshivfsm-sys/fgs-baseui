@@ -46,6 +46,7 @@ import { FormSelectField, FormSwitchField } from './form';
 
 export interface AddEmployeeFormProps {
   hasStoredPhoto: boolean;
+  isEdit?: boolean;
   initialValues?: EmployeeCreateForm;
   onDirtyChange?: (dirty: boolean) => void;
   onPhotoSelected: (file: File) => void;
@@ -91,6 +92,7 @@ function toLookupOptions(
 export const AddEmployeeForm = ({
   hasStoredPhoto,
   initialValues,
+  isEdit = false,
   onDirtyChange,
   onPhotoSelected,
   onSubmit,
@@ -241,7 +243,13 @@ export const AddEmployeeForm = ({
       >
         <div className="flex flex-col gap-7 p-6">
           <EmployeeFormSection icon={UsersIcon} title="Select existing user">
-            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-[258px_258px_minmax(0,1fr)] md:items-end">
+            <div
+              className={
+                isEdit
+                  ? 'grid w-full grid-cols-1 gap-4 md:grid-cols-[258px_258px_minmax(0,1fr)] md:items-end'
+                  : 'grid w-full grid-cols-1 gap-4 md:grid-cols-[258px_258px] md:items-end'
+              }
+            >
               <FormSelectField<EmployeeCreateForm>
                 label="Select User"
                 name="userId"
@@ -258,12 +266,14 @@ export const AddEmployeeForm = ({
                 value={roleName}
                 variant="soft"
               />
-              <div className="flex w-full items-center justify-end md:pb-0.5">
-                <FormSwitchField<EmployeeCreateForm>
-                  label="Is Active"
-                  name="isActive"
-                />
-              </div>
+              {isEdit ? (
+                <div className="flex w-full items-center justify-end md:pb-0.5">
+                  <FormSwitchField<EmployeeCreateForm>
+                    label="Is Active"
+                    name="isActive"
+                  />
+                </div>
+              ) : null}
             </div>
           </EmployeeFormSection>
 

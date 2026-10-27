@@ -189,12 +189,6 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       totalSettings: { count: 12, label: 'Outcomes' },
     },
     {
-      title: 'Sales Disposition Reason',
-      description: 'Manage reasons for sales disposition.',
-      icon: 'SettingsSalesDispositionReasonIcon',
-      totalSettings: { count: 18, label: 'Reasons' },
-    },
-    {
       title: 'Estimate Settings',
       description:
         'Configure estimate numbering, terms, templates, and options.',

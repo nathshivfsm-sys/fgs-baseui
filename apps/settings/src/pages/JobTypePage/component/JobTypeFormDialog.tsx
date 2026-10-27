@@ -156,7 +156,7 @@ export const JobTypeFormDialog = ({
                   />
                 </div>
               </div>
-              <FormSwitchField<JobTypeForm> name="isActive" />
+              {isEdit ? <FormSwitchField<JobTypeForm> name="isActive" /> : null}
               <div className="mt-8 flex justify-end gap-2">
                 <Button
                   disabled={isPending}

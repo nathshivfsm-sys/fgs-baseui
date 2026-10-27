@@ -140,9 +140,11 @@ export const SubcategoryFormDialog = ({
                   placeholder={SUBCATEGORY_PRIORITY_PLACEHOLDER}
                   required
                 />
-                <div className="flex items-end pb-2">
-                  <FormSwitchField<SubcategoryForm> name="isActive" />
-                </div>
+                {isEdit ? (
+                  <div className="flex items-end pb-2">
+                    <FormSwitchField<SubcategoryForm> name="isActive" />
+                  </div>
+                ) : null}
               </div>
               <div className="mt-8 flex justify-end gap-2">
                 <Button

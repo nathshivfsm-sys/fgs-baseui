@@ -7,7 +7,6 @@ import {
   InvoiceIcon,
   LockIcon,
   MailIcon,
-  MessageIcon,
   OrganizationIcon,
   PaymentIcon,
   ReportIcon,
@@ -80,7 +79,6 @@ export const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   SettingsSalesPipelineStatusIcon,
   SettingsSalesActivitiesIcon,
   SettingsSalesActivityOutcomeIcon: CheckIcon,
-  SettingsSalesDispositionReasonIcon: MessageIcon,
   SettingsEstimateSettingsIcon,
 
   // Billing & Finance — fallback icons (Figma designs pending)

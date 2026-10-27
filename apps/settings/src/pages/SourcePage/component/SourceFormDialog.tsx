@@ -128,11 +128,13 @@ export const SourceFormDialog = ({
                   placeholder={SOURCE_DESCRIPTION_PLACEHOLDER}
                   rows={3}
                 />
-                <FormToggleField<SourceForm>
-                  description={ACTIVE_TOGGLE_HELP}
-                  label={ACTIVE_TOGGLE_LABEL}
-                  name="isActive"
-                />
+                {isEdit ? (
+                  <FormToggleField<SourceForm>
+                    description={ACTIVE_TOGGLE_HELP}
+                    label={ACTIVE_TOGGLE_LABEL}
+                    name="isActive"
+                  />
+                ) : null}
               </SectionCard>
               <div className="mt-4 flex justify-end gap-2">
                 <Button

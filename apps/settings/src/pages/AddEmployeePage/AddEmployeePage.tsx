@@ -173,6 +173,7 @@ export const AddEmployeePage = ({ queryClient }: AddEmployeePageProps) => {
           <AddEmployeeForm
             hasStoredPhoto={photo.hasStoredPhoto}
             initialValues={initialValues}
+            isEdit={isEdit}
             onDirtyChange={handleDirtyChange}
             onPhotoSelected={photo.handleFileSelected}
             onSubmit={handleSubmit}
