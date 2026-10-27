@@ -11,11 +11,6 @@ export const SAVE_SUCCESS_MESSAGE =
 export const SAVE_ERROR_TITLE = 'Could not save configuration';
 export const LOAD_ERROR_TITLE = 'Unable to load configuration';
 
-export const DISCARD_TITLE = 'Discard unsaved changes?';
-export const DISCARD_DESCRIPTION =
-  'You have changed settings that have not been saved. Leaving this page will discard your changes.';
-export const DISCARD_CONFIRM_LABEL = 'Discard';
-
 export const SECTION_CALL_BOOKING = 'Call Booking';
 export const SECTION_EARLIEST_AVAILABILITY = 'Earliest Availability';
 export const SECTION_EARLIEST_AVAILABILITY_DESCRIPTION =

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useBlocker } from 'react-router-dom';
 import {
   glBreakLookupQueryOptions,
   toWorkOrderBookingConfigUpdateDto,
@@ -13,7 +12,6 @@ import {
 import { alert, Callout, Skeleton } from '@cms/ui';
 import {
   WorkOrderBookingConfigurationForm,
-  WorkOrderBookingDiscardDialog,
   WorkOrderBookingHeader,
 } from './component';
 import {
@@ -32,7 +30,6 @@ export const WorkOrderBookingPage = ({
   queryClient,
 }: WorkOrderBookingPageProps) => {
   const [isDirty, setIsDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
 
   const configQuery = useQuery(
     workOrderBookingConfigQueryOptions(),
@@ -71,13 +68,6 @@ export const WorkOrderBookingPage = ({
     [businessUnitLookupQuery.data],
   );
 
-  const blocker = useBlocker(isDirty && !updateMutation.isPending);
-
-  useEffect(() => {
-    if (blocker.state !== 'blocked') return;
-    setDiscardOpen(true);
-  }, [blocker.state]);
-
   useEffect(() => {
     if (!isDirty) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -108,21 +98,6 @@ export const WorkOrderBookingPage = ({
         setIsDirty(false);
       },
     });
-  };
-
-  const handleDiscardOpenChange = (open: boolean) => {
-    setDiscardOpen(open);
-    if (!open && blocker.state === 'blocked') {
-      blocker.reset?.();
-    }
-  };
-
-  const handleDiscardConfirm = () => {
-    setDiscardOpen(false);
-    setIsDirty(false);
-    if (blocker.state === 'blocked') {
-      blocker.proceed?.();
-    }
   };
 
   return (
@@ -157,12 +132,6 @@ export const WorkOrderBookingPage = ({
           values={formValues}
         />
       ) : null}
-
-      <WorkOrderBookingDiscardDialog
-        onConfirm={handleDiscardConfirm}
-        onOpenChange={handleDiscardOpenChange}
-        open={discardOpen}
-      />
     </section>
   );
 };
