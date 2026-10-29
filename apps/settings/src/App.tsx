@@ -84,6 +84,11 @@ const PaymentMethodPage = lazy(() =>
     default: module.PaymentMethodPage,
   })),
 );
+const PaymentTermPage = lazy(() =>
+  import('./pages/PaymentTermPage').then((module) => ({
+    default: module.PaymentTermPage,
+  })),
+);
 const SalesPipelineStatusPage = lazy(() =>
   import('./pages/SalesPipelineStatusPage').then((module) => ({
     default: module.SalesPipelineStatusPage,
@@ -241,6 +246,14 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="billing/payment-methods"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <PaymentTermPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="billing/payment-terms"
         />
         <Route
           element={

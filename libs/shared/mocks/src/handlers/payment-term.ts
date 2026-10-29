@@ -38,7 +38,7 @@ function seedPaymentTerms(): PaymentTermDetailDto[] {
       dueDateMethod: 'NetDays',
       numberOfDays: 15,
       isAccountsReceivable: true,
-      isAccountsPayable: true,
+      isAccountsPayable: false,
       isMobileVisible: true,
       isActive: true,
     },
@@ -48,8 +48,28 @@ function seedPaymentTerms(): PaymentTermDetailDto[] {
       dueDateMethod: 'NetDays',
       numberOfDays: 30,
       isAccountsReceivable: true,
-      isAccountsPayable: true,
+      isAccountsPayable: false,
       isMobileVisible: true,
+      isActive: true,
+    },
+    {
+      id: 706,
+      name: 'End of Month',
+      dueDateMethod: 'EndOfMonth',
+      numberOfDays: 0,
+      isAccountsReceivable: true,
+      isAccountsPayable: false,
+      isMobileVisible: true,
+      isActive: true,
+    },
+    {
+      id: 707,
+      name: 'Vendor Net 30',
+      dueDateMethod: 'NetDays',
+      numberOfDays: 30,
+      isAccountsReceivable: false,
+      isAccountsPayable: true,
+      isMobileVisible: false,
       isActive: true,
     },
     {
@@ -90,6 +110,19 @@ function findPaymentTerm(
   return id === undefined
     ? undefined
     : paymentTerms.find((record) => record.id === id);
+}
+
+function hasDuplicateName(
+  name: string | null | undefined,
+  exceptId?: number,
+): boolean {
+  const normalized = name?.trim().toLowerCase();
+  if (!normalized) return false;
+  return paymentTerms.some(
+    (record) =>
+      record.id !== exceptId &&
+      (record.name ?? '').trim().toLowerCase() === normalized,
+  );
 }
 
 function filterPaymentTerms(url: URL): PaymentTermDetailDto[] {
@@ -150,6 +183,9 @@ export const paymentTermHandlers = [
     const parsed = paymentTermUpdateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (hasDuplicateName(parsed.data.name, record.id)) {
+      return setupError(409, 'Payment term name already exists.');
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -162,6 +198,12 @@ export const paymentTermHandlers = [
     const parsed = paymentTermPatchDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (
+      parsed.data.name !== undefined &&
+      hasDuplicateName(parsed.data.name, record.id)
+    ) {
+      return setupError(409, 'Payment term name already exists.');
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -177,6 +219,9 @@ export const paymentTermHandlers = [
     const parsed = paymentTermCreateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (hasDuplicateName(parsed.data.name)) {
+      return setupError(409, 'Payment term name already exists.');
+    }
     const created = createFromBody(parsed.data);
     paymentTerms.push(created);
     return setupOk(created, 201);

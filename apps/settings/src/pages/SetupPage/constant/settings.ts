@@ -209,6 +209,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       title: 'Payment Terms',
       description: 'Manage due dates and customer payment terms.',
       icon: 'SettingsPaymentTermsIcon',
+      href: 'billing/payment-terms',
       totalSettings: { count: 10, label: 'Terms' },
     },
     {
