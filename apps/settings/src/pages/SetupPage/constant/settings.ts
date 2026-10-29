@@ -202,6 +202,7 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       title: 'Payment Methods',
       description: 'Configure payment methods accepted from customers.',
       icon: 'SettingsPaymentMethodsIcon',
+      href: 'billing/payment-methods',
       totalSettings: { count: 9, label: 'Methods' },
     },
     {
