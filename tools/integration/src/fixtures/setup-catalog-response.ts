@@ -1306,3 +1306,86 @@ export const roleLookupResponseFixture = {
   ],
   errors: [] as string[],
 };
+
+export const paymentMethodListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 601,
+        displayName: 'Cash',
+        sortOrder: 1,
+        isMobileVisible: true,
+        isCustomerPortalVisible: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const paymentMethodDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: paymentMethodListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const paymentMethodLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 601,
+      displayName: 'Cash',
+      sortOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const paymentTermListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 701,
+        name: 'Net30',
+        dueDateMethod: 'NetDays',
+        numberOfDays: 30,
+        isAccountsReceivable: true,
+        isAccountsPayable: true,
+        isMobileVisible: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const paymentTermDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: paymentTermListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const paymentTermLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 701,
+      name: 'Net30',
+    },
+  ],
+  errors: [] as string[],
+};

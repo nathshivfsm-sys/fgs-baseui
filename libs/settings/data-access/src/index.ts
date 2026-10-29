@@ -21,6 +21,8 @@ export * from './lib/timeslot';
 export * from './lib/setup-description';
 export * from './lib/source';
 export * from './lib/tag';
+export * from './lib/payment-method';
+export * from './lib/payment-term';
 export * from './lib/work-order-booking';
 export * from './lib/user-service';
 export type {
