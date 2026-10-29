@@ -83,6 +83,19 @@ function findPaymentMethod(
     : paymentMethods.find((record) => record.id === id);
 }
 
+function hasDuplicateName(
+  displayName: string | null | undefined,
+  exceptId?: number,
+): boolean {
+  const normalized = displayName?.trim().toLowerCase();
+  if (!normalized) return false;
+  return paymentMethods.some(
+    (record) =>
+      record.id !== exceptId &&
+      (record.displayName ?? '').trim().toLowerCase() === normalized,
+  );
+}
+
 function filterPaymentMethods(url: URL): PaymentMethodDetailDto[] {
   const isActive = readOptionalBoolean(url, 'isActive');
   const displayName = url.searchParams.get('displayName');
@@ -161,6 +174,9 @@ export const paymentMethodHandlers = [
     const parsed = paymentMethodUpdateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (hasDuplicateName(parsed.data.displayName, record.id)) {
+      return setupError(409, 'Payment method name already exists.');
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -173,6 +189,12 @@ export const paymentMethodHandlers = [
     const parsed = paymentMethodPatchDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (
+      parsed.data.displayName !== undefined &&
+      hasDuplicateName(parsed.data.displayName, record.id)
+    ) {
+      return setupError(409, 'Payment method name already exists.');
+    }
     assignDefined(record, parsed.data);
     return setupOk(record);
   }),
@@ -188,6 +210,9 @@ export const paymentMethodHandlers = [
     const parsed = paymentMethodCreateDtoSchema.safeParse(body.value);
     if (!parsed.success)
       return setupError(400, firstIssueMessage(parsed.error));
+    if (hasDuplicateName(parsed.data.displayName)) {
+      return setupError(409, 'Payment method name already exists.');
+    }
     const created = createFromBody(parsed.data);
     paymentMethods.push(created);
     return setupOk(created, 201);

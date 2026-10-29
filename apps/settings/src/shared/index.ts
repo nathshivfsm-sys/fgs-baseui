@@ -15,6 +15,8 @@ export {
   SETUP_USERS_PAYROLL_TAB,
   SETUP_SALES_LABEL,
   SETUP_SALES_TAB,
+  SETUP_BILLING_LABEL,
+  SETUP_BILLING_TAB,
 } from './constant';
 export {
   describeCatalogError,
