@@ -10,6 +10,8 @@ import { authHandlers } from './auth';
 import { geoLookupHandlers } from './geo-lookup';
 import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
+import { paymentMethodHandlers } from './payment-method';
+import { paymentTermHandlers } from './payment-term';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
 import { salesActivityOutcomeHandlers } from './sales-activity-outcome';
@@ -47,6 +49,8 @@ export const handlers = [
   ...taxAuthorityHandlers,
   ...geoLookupHandlers,
   ...inventoryLocationHandlers,
+  ...paymentMethodHandlers,
+  ...paymentTermHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
   ...salesActivityOutcomeHandlers,

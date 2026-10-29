@@ -31,6 +31,8 @@ import {
   createTagMutationOptions,
   createEmployeeMutationOptions,
   createGlBreakMutationOptions,
+  createPaymentMethodMutationOptions,
+  createPaymentTermMutationOptions,
   createPostalCodeMutationOptions,
   createResolutionCodeMutationOptions,
   createSalesActivityOutcomeMutationOptions,
@@ -75,6 +77,12 @@ import {
   setupDescriptionKeys,
   setupDescriptionListQueryOptions,
   setupDescriptionLookupQueryOptions,
+  paymentMethodKeys,
+  paymentMethodListQueryOptions,
+  paymentMethodLookupQueryOptions,
+  paymentTermKeys,
+  paymentTermListQueryOptions,
+  paymentTermLookupQueryOptions,
   postalCodeKeys,
   postalCodeListQueryOptions,
   postalCodeLookupQueryOptions,
@@ -142,6 +150,12 @@ import {
   setupDescriptionDetailResponseFixture,
   setupDescriptionListResponseFixture,
   setupDescriptionLookupResponseFixture,
+  paymentMethodDetailResponseFixture,
+  paymentMethodListResponseFixture,
+  paymentMethodLookupResponseFixture,
+  paymentTermDetailResponseFixture,
+  paymentTermListResponseFixture,
+  paymentTermLookupResponseFixture,
   postalCodeDetailResponseFixture,
   postalCodeListResponseFixture,
   postalCodeLookupResponseFixture,
@@ -1985,6 +1999,115 @@ describe('setup description through customFetch', () => {
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
     expect(client.getQueryState(listKey)?.isInvalidated).toBe(true);
     expect(client.getQueryState(otherTypeListKey)?.isInvalidated).toBeFalsy();
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('payment method through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(paymentMethodListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(paymentMethodLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      paymentMethodListQueryOptions({ displayName: 'Cash' }),
+    );
+    const lookup = await client.fetchQuery(
+      paymentMethodLookupQueryOptions({
+        activeOnly: false,
+        isCustomerPortalVisible: true,
+      }),
+    );
+
+    expect(page.items[0]?.displayName).toBe('Cash');
+    expect(lookup[0]?.sortOrder).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/paymentmethod?displayName=Cash',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/paymentmethod/lookup?activeOnly=false&isCustomerPortalVisible=true',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates payment method queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(paymentMethodDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(paymentMethodKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPaymentMethodMutationOptions(client));
+    await mutation.execute({
+      displayName: 'Cash',
+      sortOrder: 1,
+      isMobileVisible: true,
+      isCustomerPortalVisible: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/paymentmethod');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(paymentMethodKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('payment term through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(paymentTermListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(paymentTermLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      paymentTermListQueryOptions({ name: 'Net30' }),
+    );
+    const lookup = await client.fetchQuery(
+      paymentTermLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.name).toBe('Net30');
+    expect(lookup[0]?.name).toBe('Net30');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/paymentterm?name=Net30');
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/paymentterm/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates payment term queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(paymentTermDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(paymentTermKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPaymentTermMutationOptions(client));
+    await mutation.execute({
+      name: 'Net30',
+      dueDateMethod: 'NetDays',
+      numberOfDays: 30,
+      isAccountsReceivable: true,
+      isAccountsPayable: true,
+      isMobileVisible: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/paymentterm');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(paymentTermKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
     disposeCmsQueryClient(client);
   });
 });
