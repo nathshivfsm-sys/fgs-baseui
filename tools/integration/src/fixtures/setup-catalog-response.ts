@@ -1389,3 +1389,319 @@ export const paymentTermLookupResponseFixture = {
   ],
   errors: [] as string[],
 };
+
+export const priceBookListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 801,
+        priceBookCode: 'TUNE',
+        priceBookName: 'Tune Up',
+        jobTypeId: 1,
+        pricingModel: 'FLAT',
+        estimatedDurationMinutes: 60,
+        basePrice: 129,
+        isTaxable: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const priceBookDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    ...priceBookListResponseFixture.data.items[0],
+    description: 'Seasonal tune-up flat rate',
+  },
+  errors: [] as string[],
+};
+
+export const priceBookLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 801,
+      priceBookCode: 'TUNE',
+      priceBookName: 'Tune Up',
+      pricingModel: 'FLAT',
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const priceBookItemListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 901,
+        priceBookId: 801,
+        inventoryItemId: 11,
+        itemCode: 'FILTER',
+        itemDescription: 'Standard filter',
+        quantity: 1,
+        displayOrder: 1,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const priceBookItemDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    ...priceBookItemListResponseFixture.data.items[0],
+    notes: 'Replace annually',
+  },
+  errors: [] as string[],
+};
+
+export const priceBookItemLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 901,
+      priceBookId: 801,
+      itemCode: 'FILTER',
+      itemDescription: 'Standard filter',
+      displayOrder: 1,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const pricingMatrixListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1001,
+        code: 'STD',
+        name: 'Standard',
+        isDefault: true,
+        isLaborTierStructure: false,
+        isLaborRateBySkillLevel: false,
+        priceAdjustmentTypeId: 1,
+        effectiveFrom: '2026-01-01',
+        effectiveTo: null,
+        isMobileVisible: true,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const pricingMatrixDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: pricingMatrixListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const pricingMatrixLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1001,
+      code: 'STD',
+      name: 'Standard',
+      isDefault: true,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1101,
+        pricingMatrixId: 1001,
+        laborRateTypeId: 1,
+        techSkillLevelId: null,
+        baseRate: 85,
+        overtimeMultiplier: 1.5,
+        doubleTimeMultiplier: 2,
+        discountPercent: null,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: pricingMatrixLaborListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1101,
+      pricingMatrixId: 1001,
+      laborRateTypeId: 1,
+      baseRate: 85,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborTierListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1201,
+        pricingMatrixLaborId: 1101,
+        sequenceOrder: 1,
+        durationMinutes: 30,
+        rate: 85,
+        techSkillLevelId: null,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborTierDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: pricingMatrixLaborTierListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const pricingMatrixLaborTierLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1201,
+      pricingMatrixLaborId: 1101,
+      sequenceOrder: 1,
+      rate: 85,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const pricingMatrixMaterialTierListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1301,
+        pricingMatrixId: 1001,
+        fromCost: 0,
+        toCost: 100,
+        adjustmentValue: 1.35,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const pricingMatrixMaterialTierDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: pricingMatrixMaterialTierListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const pricingMatrixMaterialTierLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1301,
+      pricingMatrixId: 1001,
+      fromCost: 0,
+      toCost: 100,
+      adjustmentValue: 1.35,
+    },
+  ],
+  errors: [] as string[],
+};
+
+export const pricingMatrixOtherListResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: {
+    items: [
+      {
+        id: 1401,
+        pricingMatrixId: 1001,
+        categoryCode: 'PERMIT',
+        name: 'Permit Fee',
+        adjustmentValue: 25,
+        discountPercent: null,
+        isActive: true,
+      },
+    ],
+    page: 1,
+    pageSize: 25,
+    totalCount: 1,
+  },
+  errors: [] as string[],
+};
+
+export const pricingMatrixOtherDetailResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: pricingMatrixOtherListResponseFixture.data.items[0],
+  errors: [] as string[],
+};
+
+export const pricingMatrixOtherLookupResponseFixture = {
+  success: true,
+  statusCode: 200,
+  data: [
+    {
+      id: 1401,
+      pricingMatrixId: 1001,
+      categoryCode: 'PERMIT',
+      name: 'Permit Fee',
+    },
+  ],
+  errors: [] as string[],
+};

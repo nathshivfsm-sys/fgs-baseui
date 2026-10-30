@@ -98,6 +98,13 @@ export function readOptionalBoolean(
   return undefined;
 }
 
+export function readOptionalNumber(url: URL, key: string): number | undefined {
+  const value = url.searchParams.get(key);
+  if (value === null || value === '') return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 export function pagedResult<T>(items: readonly T[], url: URL) {
   const page = Number(url.searchParams.get('page') ?? '1') || 1;
   const pageSize = Number(url.searchParams.get('pageSize') ?? '25') || 25;
