@@ -10,6 +10,8 @@ import {
  * Wire shapes of `/pricebookitem` from the FGS Setup Service swagger
  * (`FgsPriceBookItem*` DTOs). This resource has no `isActive` field.
  * Create leaves `displayOrder` optional; update requires it.
+ * Swagger puts `notes` on the detail DTO only. It is nullish on the summary
+ * so a list that omits it still parses, and a list that includes it keeps it.
  */
 export const priceBookItemSummaryDtoSchema = z.object({
   id: z.number(),
@@ -19,6 +21,12 @@ export const priceBookItemSummaryDtoSchema = z.object({
   itemDescription: nullableText,
   quantity: z.number(),
   displayOrder: z.number(),
+  /**
+   * Present on detail. List responses omit it in swagger; keep it nullish so a
+   * payload that does include notes (the in-memory mock does) still parses.
+   * The price book screen stores the line tab here: material, equipment, or other.
+   */
+  notes: nullableText,
 });
 
 export const priceBookItemDetailDtoSchema =

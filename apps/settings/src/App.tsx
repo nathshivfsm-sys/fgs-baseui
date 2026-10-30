@@ -89,6 +89,16 @@ const PaymentTermPage = lazy(() =>
     default: module.PaymentTermPage,
   })),
 );
+const PricebookPage = lazy(() =>
+  import('./pages/PricebookPage').then((module) => ({
+    default: module.PricebookPage,
+  })),
+);
+const PricebookEditorPage = lazy(() =>
+  import('./pages/PricebookPage').then((module) => ({
+    default: module.PricebookEditorPage,
+  })),
+);
 const SalesPipelineStatusPage = lazy(() =>
   import('./pages/SalesPipelineStatusPage').then((module) => ({
     default: module.SalesPipelineStatusPage,
@@ -254,6 +264,30 @@ export const App = ({ runtime }: AppProps) => (
             </RouteBoundary>
           }
           path="billing/payment-terms"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <PricebookPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="billing/pricebook"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <PricebookEditorPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="billing/pricebook/new"
+        />
+        <Route
+          element={
+            <RouteBoundary>
+              <PricebookEditorPage queryClient={runtime.queryClient} />
+            </RouteBoundary>
+          }
+          path="billing/pricebook/:priceBookId"
         />
         <Route
           element={
