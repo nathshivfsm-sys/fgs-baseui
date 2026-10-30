@@ -213,6 +213,13 @@ export const allSettings: Record<SettingsTabKey, SettingCategory[]> = {
       totalSettings: { count: 10, label: 'Terms' },
     },
     {
+      title: 'Pricebook',
+      description: 'Define and manage services.',
+      icon: 'SettingsPricebookIcon',
+      href: 'billing/pricebook',
+      totalSettings: { count: 6, label: 'Services' },
+    },
+    {
       title: 'Invoice Settings',
       description: 'Configure invoice numbering, prefixes, and defaults.',
       icon: 'SettingsInvoiceSettingsIcon',

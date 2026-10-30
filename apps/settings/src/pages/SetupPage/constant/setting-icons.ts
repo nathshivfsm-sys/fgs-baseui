@@ -84,6 +84,7 @@ export const SETTING_ICON_MAP: Record<string, ComponentType<FigmaIconProps>> = {
   // Billing & Finance — fallback icons (Figma designs pending)
   SettingsPaymentMethodsIcon: PaymentIcon,
   SettingsPaymentTermsIcon: ScheduleIcon,
+  SettingsPricebookIcon: InvoiceIcon,
   SettingsInvoiceSettingsIcon: InvoiceIcon,
   SettingsPricingMatrixIcon: ColumnsIcon,
   SettingsUniversalPricingIcon: TrendingUpIcon,
