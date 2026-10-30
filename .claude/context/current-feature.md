@@ -2,6 +2,25 @@
 
 ## Status
 
+**Price book and pricing matrix catalog APIs** — implemented on
+`feature/price-book-pricing-matrix-api`. Adds TanStack Query options factories
+in `@cms/settings-data-access` for PriceBook, PriceBookItem, PricingMatrix,
+PricingMatrixLabor, PricingMatrixLaborTier, PricingMatrixMaterialTier, and
+PricingMatrixOther from the FGS Setup Service swagger. Same four-layer stack as
+Billing Category / Payment Term. No UI.
+
+PriceBookItem is the only resource with DELETE. PricingMatrixLabor,
+PricingMatrixLaborTier, PricingMatrixMaterialTier, and PricingMatrixOther
+publish write DTOs only; read DTOs are the create fields plus `id` and
+`isActive`.
+
+- Spec: [features/price-book-pricing-matrix-catalog-api-prd.md](features/price-book-pricing-matrix-catalog-api-prd.md)
+
+Verified: `test:query` 125/125. Lint and typecheck clean for `settings-contract`,
+`settings-data-access`, `shared-mocks`, and `integration`. No screen in this pass.
+
+## History
+
 **Job type listing and create** — implemented on `feature/jobtype`. The Job Type
 catalog loads `GET /jobtype` and each detail for category, task count, and the
 expanded subcategory rows. Nav counts come from `GET /jobtype/counts`. Create

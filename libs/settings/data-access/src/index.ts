@@ -23,6 +23,13 @@ export * from './lib/source';
 export * from './lib/tag';
 export * from './lib/payment-method';
 export * from './lib/payment-term';
+export * from './lib/price-book';
+export * from './lib/price-book-item';
+export * from './lib/pricing-matrix';
+export * from './lib/pricing-matrix-labor';
+export * from './lib/pricing-matrix-labor-tier';
+export * from './lib/pricing-matrix-material-tier';
+export * from './lib/pricing-matrix-other';
 export * from './lib/work-order-booking';
 export * from './lib/user-service';
 export type {

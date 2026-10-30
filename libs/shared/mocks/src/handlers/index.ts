@@ -12,6 +12,13 @@ import { inventoryLocationHandlers } from './inventory-location';
 import { glBreakHandlers } from './gl-break';
 import { paymentMethodHandlers } from './payment-method';
 import { paymentTermHandlers } from './payment-term';
+import { priceBookHandlers } from './price-book';
+import { priceBookItemHandlers } from './price-book-item';
+import { pricingMatrixHandlers } from './pricing-matrix';
+import { pricingMatrixLaborHandlers } from './pricing-matrix-labor';
+import { pricingMatrixLaborTierHandlers } from './pricing-matrix-labor-tier';
+import { pricingMatrixMaterialTierHandlers } from './pricing-matrix-material-tier';
+import { pricingMatrixOtherHandlers } from './pricing-matrix-other';
 import { postalCodeHandlers } from './postal-code';
 import { resolutionCodeHandlers } from './resolution-code';
 import { salesActivityOutcomeHandlers } from './sales-activity-outcome';
@@ -51,6 +58,13 @@ export const handlers = [
   ...inventoryLocationHandlers,
   ...paymentMethodHandlers,
   ...paymentTermHandlers,
+  ...priceBookHandlers,
+  ...priceBookItemHandlers,
+  ...pricingMatrixHandlers,
+  ...pricingMatrixLaborHandlers,
+  ...pricingMatrixLaborTierHandlers,
+  ...pricingMatrixMaterialTierHandlers,
+  ...pricingMatrixOtherHandlers,
   ...postalCodeHandlers,
   ...resolutionCodeHandlers,
   ...salesActivityOutcomeHandlers,

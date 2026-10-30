@@ -33,6 +33,14 @@ import {
   createGlBreakMutationOptions,
   createPaymentMethodMutationOptions,
   createPaymentTermMutationOptions,
+  createPriceBookItemMutationOptions,
+  createPriceBookMutationOptions,
+  createPricingMatrixLaborMutationOptions,
+  createPricingMatrixLaborTierMutationOptions,
+  createPricingMatrixMaterialTierMutationOptions,
+  createPricingMatrixMutationOptions,
+  createPricingMatrixOtherMutationOptions,
+  deletePriceBookItemMutationOptions,
   createPostalCodeMutationOptions,
   createResolutionCodeMutationOptions,
   createSalesActivityOutcomeMutationOptions,
@@ -83,6 +91,27 @@ import {
   paymentTermKeys,
   paymentTermListQueryOptions,
   paymentTermLookupQueryOptions,
+  priceBookItemKeys,
+  priceBookItemListQueryOptions,
+  priceBookItemLookupQueryOptions,
+  priceBookKeys,
+  priceBookListQueryOptions,
+  priceBookLookupQueryOptions,
+  pricingMatrixKeys,
+  pricingMatrixLaborKeys,
+  pricingMatrixLaborListQueryOptions,
+  pricingMatrixLaborLookupQueryOptions,
+  pricingMatrixLaborTierKeys,
+  pricingMatrixLaborTierListQueryOptions,
+  pricingMatrixLaborTierLookupQueryOptions,
+  pricingMatrixListQueryOptions,
+  pricingMatrixLookupQueryOptions,
+  pricingMatrixMaterialTierKeys,
+  pricingMatrixMaterialTierListQueryOptions,
+  pricingMatrixMaterialTierLookupQueryOptions,
+  pricingMatrixOtherKeys,
+  pricingMatrixOtherListQueryOptions,
+  pricingMatrixOtherLookupQueryOptions,
   postalCodeKeys,
   postalCodeListQueryOptions,
   postalCodeLookupQueryOptions,
@@ -156,6 +185,27 @@ import {
   paymentTermDetailResponseFixture,
   paymentTermListResponseFixture,
   paymentTermLookupResponseFixture,
+  priceBookDetailResponseFixture,
+  priceBookItemDetailResponseFixture,
+  priceBookItemListResponseFixture,
+  priceBookItemLookupResponseFixture,
+  priceBookListResponseFixture,
+  priceBookLookupResponseFixture,
+  pricingMatrixDetailResponseFixture,
+  pricingMatrixLaborDetailResponseFixture,
+  pricingMatrixLaborListResponseFixture,
+  pricingMatrixLaborLookupResponseFixture,
+  pricingMatrixLaborTierDetailResponseFixture,
+  pricingMatrixLaborTierListResponseFixture,
+  pricingMatrixLaborTierLookupResponseFixture,
+  pricingMatrixListResponseFixture,
+  pricingMatrixLookupResponseFixture,
+  pricingMatrixMaterialTierDetailResponseFixture,
+  pricingMatrixMaterialTierListResponseFixture,
+  pricingMatrixMaterialTierLookupResponseFixture,
+  pricingMatrixOtherDetailResponseFixture,
+  pricingMatrixOtherListResponseFixture,
+  pricingMatrixOtherLookupResponseFixture,
   postalCodeDetailResponseFixture,
   postalCodeListResponseFixture,
   postalCodeLookupResponseFixture,
@@ -2108,6 +2158,462 @@ describe('payment term through customFetch', () => {
     expect(client.getQueryState(paymentTermKeys.list({}))?.isInvalidated).toBe(
       true,
     );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('price book through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(priceBookListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(priceBookLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      priceBookListQueryOptions({
+        jobTypeId: 1,
+        pricingModel: 'FLAT',
+        priceBookCode: 'TUNE',
+        priceBookName: 'Tune',
+      }),
+    );
+    const lookup = await client.fetchQuery(priceBookLookupQueryOptions(false));
+
+    expect(page.items[0]?.priceBookCode).toBe('TUNE');
+    expect(lookup[0]?.priceBookName).toBe('Tune Up');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricebook?jobTypeId=1&pricingModel=FLAT&priceBookCode=TUNE&priceBookName=Tune',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricebook/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates price book queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(priceBookDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(priceBookKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPriceBookMutationOptions(client));
+    await mutation.execute({
+      priceBookCode: 'TUNE',
+      priceBookName: 'Tune Up',
+      description: 'Seasonal tune-up flat rate',
+      jobTypeId: 1,
+      pricingModel: 'FLAT',
+      estimatedDurationMinutes: 60,
+      basePrice: 129,
+      isTaxable: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricebook');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(client.getQueryState(priceBookKeys.list({}))?.isInvalidated).toBe(
+      true,
+    );
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('price book item through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(priceBookItemListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(priceBookItemLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      priceBookItemListQueryOptions({
+        priceBookId: 801,
+        itemCode: 'FILTER',
+        itemDescription: 'filter',
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      priceBookItemLookupQueryOptions({ priceBookId: 801 }),
+    );
+
+    expect(page.items[0]?.itemCode).toBe('FILTER');
+    expect(lookup[0]?.priceBookId).toBe(801);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricebookitem?priceBookId=801&itemCode=FILTER&itemDescription=filter',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricebookitem/lookup?priceBookId=801',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates price book item queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(priceBookItemDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(priceBookItemKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPriceBookItemMutationOptions(client));
+    await mutation.execute({
+      priceBookId: 801,
+      inventoryItemId: 11,
+      itemCode: 'FILTER',
+      itemDescription: 'Standard filter',
+      quantity: 1,
+      notes: 'Replace annually',
+      displayOrder: 1,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricebookitem');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(priceBookItemKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+
+  it('DELETEs an item and invalidates price book item queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(priceBookItemDetailResponseFixture),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(priceBookItemKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, deletePriceBookItemMutationOptions(client));
+    await mutation.execute(901);
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricebookitem/901');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('DELETE');
+    expect(
+      client.getQueryState(priceBookItemKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('pricing matrix through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(pricingMatrixListResponseFixture))
+      .mockResolvedValueOnce(jsonResponse(pricingMatrixLookupResponseFixture));
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      pricingMatrixListQueryOptions({ code: 'STD', isDefault: true }),
+    );
+    const lookup = await client.fetchQuery(
+      pricingMatrixLookupQueryOptions(false),
+    );
+
+    expect(page.items[0]?.code).toBe('STD');
+    expect(lookup[0]?.name).toBe('Standard');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrix?code=STD&isDefault=true',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricingmatrix/lookup?activeOnly=false',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates pricing matrix queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(pricingMatrixDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(pricingMatrixKeys.list({}), { items: [], page: 1 });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPricingMatrixMutationOptions(client));
+    await mutation.execute({
+      name: 'Standard',
+      description: 'Default matrix',
+      isDefault: true,
+      isLaborTierStructure: false,
+      isLaborRateBySkillLevel: false,
+      priceAdjustmentTypeId: 1,
+      effectiveFrom: '2026-01-01',
+      isMobileVisible: true,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricingmatrix');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(pricingMatrixKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('pricing matrix labor through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixLaborListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixLaborLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      pricingMatrixLaborListQueryOptions({ pricingMatrixId: 1001 }),
+    );
+    const lookup = await client.fetchQuery(
+      pricingMatrixLaborLookupQueryOptions({
+        activeOnly: false,
+        pricingMatrixId: 1001,
+      }),
+    );
+
+    expect(page.items[0]?.baseRate).toBe(85);
+    expect(lookup[0]?.laborRateTypeId).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrixlabor?pricingMatrixId=1001',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricingmatrixlabor/lookup?activeOnly=false&pricingMatrixId=1001',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates pricing matrix labor queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(pricingMatrixLaborDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(pricingMatrixLaborKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPricingMatrixLaborMutationOptions(client));
+    await mutation.execute({
+      pricingMatrixId: 1001,
+      laborRateTypeId: 1,
+      baseRate: 85,
+      overtimeMultiplier: 1.5,
+      doubleTimeMultiplier: 2,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricingmatrixlabor');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(pricingMatrixLaborKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('pricing matrix labor tier through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixLaborTierListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixLaborTierLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      pricingMatrixLaborTierListQueryOptions({ pricingMatrixLaborId: 1101 }),
+    );
+    const lookup = await client.fetchQuery(
+      pricingMatrixLaborTierLookupQueryOptions({
+        activeOnly: false,
+        pricingMatrixLaborId: 1101,
+      }),
+    );
+
+    expect(page.items[0]?.rate).toBe(85);
+    expect(lookup[0]?.sequenceOrder).toBe(1);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrixlabortier?pricingMatrixLaborId=1101',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricingmatrixlabortier/lookup?activeOnly=false&pricingMatrixLaborId=1101',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates pricing matrix labor tier queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(pricingMatrixLaborTierDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(pricingMatrixLaborTierKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPricingMatrixLaborTierMutationOptions(client));
+    await mutation.execute({
+      pricingMatrixLaborId: 1101,
+      sequenceOrder: 1,
+      durationMinutes: 30,
+      rate: 85,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricingmatrixlabortier');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(pricingMatrixLaborTierKeys.list({}))?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('pricing matrix material tier through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixMaterialTierListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixMaterialTierLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      pricingMatrixMaterialTierListQueryOptions({ pricingMatrixId: 1001 }),
+    );
+    const lookup = await client.fetchQuery(
+      pricingMatrixMaterialTierLookupQueryOptions({
+        activeOnly: false,
+        pricingMatrixId: 1001,
+      }),
+    );
+
+    expect(page.items[0]?.adjustmentValue).toBe(1.35);
+    expect(lookup[0]?.fromCost).toBe(0);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrixmaterialtier?pricingMatrixId=1001',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricingmatrixmaterialtier/lookup?activeOnly=false&pricingMatrixId=1001',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates pricing matrix material tier queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(pricingMatrixMaterialTierDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(pricingMatrixMaterialTierKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPricingMatrixMaterialTierMutationOptions(client));
+    await mutation.execute({
+      pricingMatrixId: 1001,
+      fromCost: 0,
+      toCost: 100,
+      adjustmentValue: 1.35,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrixmaterialtier',
+    );
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(pricingMatrixMaterialTierKeys.list({}))
+        ?.isInvalidated,
+    ).toBe(true);
+    disposeCmsQueryClient(client);
+  });
+});
+
+describe('pricing matrix other through customFetch', () => {
+  it('GETs the paged list and lookup', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixOtherListResponseFixture),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(pricingMatrixOtherLookupResponseFixture),
+      );
+    const client = createCmsQueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    const page = await client.fetchQuery(
+      pricingMatrixOtherListQueryOptions({
+        pricingMatrixId: 1001,
+        categoryCode: 'PERMIT',
+      }),
+    );
+    const lookup = await client.fetchQuery(
+      pricingMatrixOtherLookupQueryOptions({
+        activeOnly: false,
+        pricingMatrixId: 1001,
+      }),
+    );
+
+    expect(page.items[0]?.name).toBe('Permit Fee');
+    expect(lookup[0]?.categoryCode).toBe('PERMIT');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/v1/pricingmatrixother?pricingMatrixId=1001&categoryCode=PERMIT',
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      '/api/v1/pricingmatrixother/lookup?activeOnly=false&pricingMatrixId=1001',
+    );
+    disposeCmsQueryClient(client);
+  });
+
+  it('POSTs a create body and invalidates pricing matrix other queries', async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(pricingMatrixOtherDetailResponseFixture, 201),
+    );
+    const client = createCmsQueryClient();
+    client.setQueryData(pricingMatrixOtherKeys.list({}), {
+      items: [],
+      page: 1,
+    });
+
+    const mutation = client
+      .getMutationCache()
+      .build(client, createPricingMatrixOtherMutationOptions(client));
+    await mutation.execute({
+      pricingMatrixId: 1001,
+      categoryCode: 'PERMIT',
+      name: 'Permit Fee',
+      adjustmentValue: 25,
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/pricingmatrixother');
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(
+      client.getQueryState(pricingMatrixOtherKeys.list({}))?.isInvalidated,
+    ).toBe(true);
     disposeCmsQueryClient(client);
   });
 });

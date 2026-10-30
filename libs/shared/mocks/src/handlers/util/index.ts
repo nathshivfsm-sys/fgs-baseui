@@ -9,6 +9,7 @@ export {
   readJsonBody,
   readJsonObject,
   readOptionalBoolean,
+  readOptionalNumber,
   setupDelay,
   setupError,
   setupNoContent,
